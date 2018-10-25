@@ -34,7 +34,7 @@
               {{ csrf_field() }}
 
             <dd class="user_icon">
-                <input type="text" id="name" name="name" placeholder="账号" class="login_txtbx"/>
+                <input type="text" id="name" name="name" placeholder="账号" value="{{ old('name') }}" class="login_txtbx"/>
                 @if ($errors->has('name'))
                     <span class="invalid-feedback ">
                         <strong>{{ $errors->first('name') }}</strong>
@@ -72,7 +72,7 @@
     <script src="{{URL::asset('/include/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
     <script>
       $("input.remember").iCheck({
-          checkboxClass: "icheckbox_futurico",//颜色主题需要与引入的css保持一致
+          checkboxClass: "icheckbox_futurico",
           cursor: true
       });
     </script>

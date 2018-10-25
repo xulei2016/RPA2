@@ -52,7 +52,7 @@ small,weak{color:#666}
 .admin_login dt strong{display:block;}
 .admin_login dt em{display:block;font-size:12px;margin-top:8px;}
 .admin_login dd{margin:5px 0;/*height:42px;*/overflow:hidden;position:relative;}
-.admin_login dd .login_txtbx{font-size:14px;height:26px;line-height:26px;padding:8px 5%;width:90%;text-indent:2em;border:none;background:#4c4c4c;color:white;}
+.admin_login dd .login_txtbx{font-size:14px;height:26px;line-height:26px;padding:8px 5%;width:90%;text-indent:2em;border:none;background:#4c4c4c;color:white; -webkit-box-shadow: 0 0 0px 1000px rgb(76,76,76) inset;}
 .admin_login dd .login_txtbx::-webkit-input-placeholder {color:#f4f4f4;line-height:inherit;} 
 .admin_login dd .login_txtbx:-moz-placeholder {color:#f4f4f4;line-height:inherit;} 
 .admin_login dd .login_txtbx::-moz-placeholder {color:#f4f4f4;line-height:inherit;}

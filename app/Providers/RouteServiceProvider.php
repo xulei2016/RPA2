@@ -52,6 +52,8 @@ class RouteServiceProvider extends ServiceProvider
 
         //rpa admin routes
         $this->mapAdminRoutes();
+
+        $this->mapBaseRoutes();
     }
 
     /**
@@ -100,10 +102,10 @@ class RouteServiceProvider extends ServiceProvider
      * 
      * @return void
      */
-    protected function mapSysRoutes(){
-        Route::prefix('sys')
+    protected function mapBaseRoutes(){
+        Route::prefix('admin')
              ->middleware(['auth.admin','web'])
              ->namespace($this->AdminNamespace)
-             ->group(base_path('routes/Admin/sys.php'));
+             ->group(base_path('routes/Admin/base.php'));
     }
 }

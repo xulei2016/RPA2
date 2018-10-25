@@ -37,7 +37,9 @@ class AdminAuthMiddleware
     public function handle($request, Closure $next)
     {
         if (auth()->guard('admin')->check()) {
+
             return redirect('/admin');
+            
         }
         return $next($request);
     }

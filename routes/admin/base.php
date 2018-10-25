@@ -12,12 +12,11 @@
 */
 
 // 后台路由管理 系统管理
-Route::group([ 'namespace' => 'sys'], function(){
+Route::group([ 'namespace' => 'base'], function(){
 
     // 首页
-    Route::get('/', 'SysController@index');
-    Route::get('/index', 'SysController@index')->name('index');
-    Route::post('/index', 'SysController@index')->name('index');
+    Route::get('/', 'SysController@index')->name('index');
+    Route::post('/index', 'SysController@index');
     Route::post('/dashboard', 'SysController@get_index');
 
 });
