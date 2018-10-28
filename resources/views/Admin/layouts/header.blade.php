@@ -1,58 +1,270 @@
-<div class="navbar">
-        <div class="navbar-header">
-            <div class="navbar-company">
-                
-                {{--  bread-bar  --}}
-                <div class="bread-bar">
-                    <div class="sidebar-fold topbar-sidebar-unfold"><b><i class="iconfont icon">&#xe63d;</i></b></div>
-                    <ol class="bread-crumb hidden-xs hidden-sm">
-                        <li><a href="#" url="./admin/dashboard" onclick="pjaxContent($(this))">首页</a></li>
-                        <li class="active"></li>
-                    </ol>
-                </div>
+<header class="main-header">
 
-            </div>
-        </div>
+        <!-- Logo -->
+        <a href="index2.html" class="logo">
+          <span class="logo-mini"> {!! config('admin.logo-mini') !!} </span>
+          <span class="logo-lg"> {!! config('admin.logo') !!} </span>
+        </a>
+
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top">
+          <!-- Sidebar toggle button-->
+          <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+            <span class="sr-only">Toggle navigation</span>
+          </a>
     
-        <div class="collapse">
-            <!-- Right Side Of Navbar -->
-    
-            <div class="nava change navbar-right">
-                <a href="#">
-                    <span><i class="iconfont">&#xe710;</i></span>
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+
+              <!-- Messages -->
+              <li class="dropdown messages-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-envelope-o"></i>
+                  <span class="label label-success">4</span>
                 </a>
-            </div>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 4 messages</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li><!-- start message -->
+                        <a href="#">
+                          <div class="pull-left">
+                            <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                          </div>
+                          <h4>
+                            Support Team
+                            <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                          </h4>
+                          <p>Why not buy a new awesome theme?</p>
+                        </a>
+                      </li>
+                      <!-- end message -->
+                      <li>
+                        <a href="#">
+                          <div class="pull-left">
+                            <img src="dist/img/user3-128x128.jpg" class="img-circle" alt="User Image">
+                          </div>
+                          <h4>
+                            AdminLTE Design Team
+                            <small><i class="fa fa-clock-o"></i> 2 hours</small>
+                          </h4>
+                          <p>Why not buy a new awesome theme?</p>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <div class="pull-left">
+                            <img src="dist/img/user4-128x128.jpg" class="img-circle" alt="User Image">
+                          </div>
+                          <h4>
+                            Developers
+                            <small><i class="fa fa-clock-o"></i> Today</small>
+                          </h4>
+                          <p>Why not buy a new awesome theme?</p>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <div class="pull-left">
+                            <img src="dist/img/user3-128x128.jpg" class="img-circle" alt="User Image">
+                          </div>
+                          <h4>
+                            Sales Department
+                            <small><i class="fa fa-clock-o"></i> Yesterday</small>
+                          </h4>
+                          <p>Why not buy a new awesome theme?</p>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <div class="pull-left">
+                            <img src="dist/img/user4-128x128.jpg" class="img-circle" alt="User Image">
+                          </div>
+                          <h4>
+                            Reviewers
+                            <small><i class="fa fa-clock-o"></i> 2 days</small>
+                          </h4>
+                          <p>Why not buy a new awesome theme?</p>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="#">See All Messages</a></li>
+                </ul>
+              </li>
 
-            <div class="nava navbar-right admin-message">
-                <a href="#">
-                    <span><i class="iconfont">&#xe61e;</i></span>
-                    @if($message['count'] != 0)
-                    <span class="topbar-notice-num">{{ $message['count'] }}</span>
-                    @endif
+              <!-- Notifications -->
+              <li class="dropdown notifications-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-bell-o"></i>
+                  <span class="label label-warning">10</span>
                 </a>
-                {{--  popup page  --}}
-                @include('admin.widgets.message')
-            </div>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 10 notifications</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
+                          page and may cause design problems
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-users text-red"></i> 5 new members joined
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-shopping-cart text-green"></i> 25 sales made
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <i class="fa fa-user text-red"></i> You changed your username
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <li class="footer"><a href="#">View all</a></li>
+                </ul>
+              </li>
 
-            <div class="nava navbar-right admin-theme"><a href="#">主题</a>
-                {{--  popup page  --}}
-                @include('admin.widgets.skins')
-            </div>
+              <!-- Tasks -->
+              <li class="dropdown tasks-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <i class="fa fa-flag-o"></i>
+                  <span class="label label-danger">9</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <li class="header">You have 9 tasks</li>
+                  <li>
+                    <!-- inner menu: contains the actual data -->
+                    <ul class="menu">
+                      <li><!-- Task item -->
+                        <a href="#">
+                          <h3>
+                            Design some buttons
+                            <small class="pull-right">20%</small>
+                          </h3>
+                          <div class="progress xs">
+                            <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar"
+                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                              <span class="sr-only">20% Complete</span>
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                      <!-- end task item -->
+                      <li><!-- Task item -->
+                        <a href="#">
+                          <h3>
+                            Create a nice theme
+                            <small class="pull-right">40%</small>
+                          </h3>
+                          <div class="progress xs">
+                            <div class="progress-bar progress-bar-green" style="width: 40%" role="progressbar"
+                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                              <span class="sr-only">40% Complete</span>
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                      <!-- end task item -->
+                      <li><!-- Task item -->
+                        <a href="#">
+                          <h3>
+                            Some task I need to do
+                            <small class="pull-right">60%</small>
+                          </h3>
+                          <div class="progress xs">
+                            <div class="progress-bar progress-bar-red" style="width: 60%" role="progressbar"
+                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                              <span class="sr-only">60% Complete</span>
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                      <!-- end task item -->
+                      <li><!-- Task item -->
+                        <a href="#">
+                          <h3>
+                            Make beautiful transitions
+                            <small class="pull-right">80%</small>
+                          </h3>
+                          <div class="progress xs">
+                            <div class="progress-bar progress-bar-yellow" style="width: 80%" role="progressbar"
+                                 aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+                              <span class="sr-only">80% Complete</span>
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                      <!-- end task item -->
+                    </ul>
+                  </li>
+                  <li class="footer">
+                    <a href="#">View all tasks</a>
+                  </li>
+                </ul>
+              </li>
 
-            <div class="nava navbar-right"><a href="javascript:void(0);" url="{{ url('/admin/admin_center') }}" onclick="pjaxContent($(this));">系统</a></div>
-
-            <div class="nava navbar-right admin-info-list">
-                <span>
-                    <a href="#">
-                        <img src="{{ session('sys_admin')['headImg'] }}">
-                        {{-- {{ session('sys_admin')['name'] }} <span class="caret"></span> --}}
-                    </a>
-                </span>
-                
-                {{--  popup page  --}}
-                @include('admin.widgets.admin')
-            </div>
-
-        </div>
-    </div>
+              <!-- User Account -->
+              <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <img src="dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                  <span class="hidden-xs">Alexander Pierce</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <!-- User image -->
+                  <li class="user-header">
+                    <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
     
+                    <p>
+                      Alexander Pierce - Web Developer
+                      <small>Member since Nov. 2012</small>
+                    </p>
+                  </li>
+                  <!-- Menu Body -->
+                  <li class="user-body">
+                        <div class="row">
+                            <div class="col-xs-4 text-center">
+                                <a href="https://www.fastadmin.net" target="_blank">FastAdmin</a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <a href="https://forum.fastadmin.net" target="_blank">交流社区</a>
+                            </div>
+                            <div class="col-xs-4 text-center">
+                                <a href="https://doc.fastadmin.net" target="_blank">官方文档</a>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- Menu Footer-->
+                    <li class="user-footer">
+                        <div class="pull-left">
+                            <a href="general/profile" class="btn btn-primary addtabsit"><i class="fa fa-user"></i>
+                                个人配置</a>
+                        </div>
+                        <div class="pull-right">
+                            <a href="/admin/index/logout" class="btn btn-danger"><i class="fa fa-sign-out"></i>
+                                注销</a>
+                        </div>
+                    </li>
+                </ul>
+              </li>
+              
+              <!-- Control Sidebar Toggle Button -->
+              <li>
+                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>

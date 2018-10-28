@@ -27,11 +27,11 @@ class SysController extends AdminController
      */
     public function index(){
         //管理员信息
-        $admin = session('sys_admin');
-        //通知列表
-        $message = $this->getMessage();
-        //系统信息
-        $info = $this->sys_info();
+        // $admin = session('sys_admin');
+        // //通知列表
+        // $message = $this->getMessage();
+        // //系统信息
+        // $info = $this->sys_info();
         return view('admin.index.index');
     }
     

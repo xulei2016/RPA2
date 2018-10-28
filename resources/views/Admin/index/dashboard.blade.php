@@ -1,6 +1,6 @@
 
     {{-- 管理员信息 --}}
-    <div class="row dashboard-container">
+    {{-- <div class="row dashboard-container">
 
             <div class="admin col-lg-6">
                 <div class="content row">
@@ -42,9 +42,9 @@
                 </div>
             </div>
             <div class="clear"></div>
-        </div>
+        </div> --}}
         {{-- 系统信息 --}}
-        <div class="sys row">
+        {{-- <div class="sys row">
             <div class="sys-info col-lg-6">
                 <div class="ibox-title">
                     <h5><i class="icon iconfont">&#xe6ec;</i> 服务器信息</h5>
@@ -63,4 +63,4 @@
             </div>
         </div>
     
-        <link href="{{URL::asset('/css/admin/common/index.css')}}" rel="stylesheet">
+        <link href="{{URL::asset('/css/admin/common/index.css')}}" rel="stylesheet"> --}}
