@@ -32,6 +32,7 @@ class SysController extends AdminController
         // $message = $this->getMessage();
         // //系统信息
         // $info = $this->sys_info();
+        // dd(auth()->guard('admin')->check(), auth()->guard('admin')->user());
         return view('admin.index.index');
     }
     

@@ -1,66 +1,157 @@
+<!-- Main content -->
+<section class="content">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-aqua">
+                <div class="inner">
+                    <h3>150</h3>
 
-    {{-- 管理员信息 --}}
-    {{-- <div class="row dashboard-container">
-
-            <div class="admin col-lg-6">
-                <div class="content row">
-                    <div class="head-img col-xs-4 col-lg-4">
-                        <img src="{{ $admin['headImg'] }}" alt="头像" >
-                    </div>
-                    <div class="info col-xs-8 col-lg-8">
-                        <ol>
-                            <li><b>{{ $admin['name']}}</b></li>
-                            <li>{{ $admin['email'] or ''}}</li>
-                            <li><b>上次活跃：</b> {{ $admin['lastTime'] or '首次登陆'}}</li>
-                        </ol>
-                    </div>
-                    <div class="clear"></div>
+                    <p>New Orders</p>
                 </div>
-            </div>
-            <div class="message col-lg-3" url="{{ url('/admin/sys_message_list') }}" onclick="pjaxContent($(this));">
-                <div class="content">
-                    <div class="card-panel blue left">
-                        <i class="icon iconfont">&#xe721;</i>
-                    </div>
-                    <div class="card-panel-description right ">
-                        <div class="card-panel-text">Messages</div>
-                        <span class="card-panel-num">{{ $message['count'] }}</span>
-                    </div>
-                    <div class="clear"></div>
+                <div class="icon">
+                    <i class="ion ion-bag"></i>
                 </div>
-            </div>
-            <div class="record col-lg-3">
-                <div class="content">
-                    <div class="card-panel red">
-                        <i class="icon iconfont">&#xe7c3;</i>
-                    </div>
-                    <div class="card-panel-description right">
-                        <div class="card-panel-text">Login Record</div>
-                        <span class="card-panel-num">10086</span>
-                    </div>
-                    <div class="clear"></div>
-                </div>
-            </div>
-            <div class="clear"></div>
-        </div> --}}
-        {{-- 系统信息 --}}
-        {{-- <div class="sys row">
-            <div class="sys-info col-lg-6">
-                <div class="ibox-title">
-                    <h5><i class="icon iconfont">&#xe6ec;</i> 服务器信息</h5>
-                </div>
-                <div class="ibox-content" style="display: block;">
-                    <ul class="todo-list m-t small-list">
-                        @foreach($info['sys'] as $key => $info)
-                            <li>{{ $key }}：{{ $info }}</li>
-                        @endforeach
-                        <li>GD图形处理库：bundled (2.1.0 compatible)</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
             </div>
         </div>
-    
-        <link href="{{URL::asset('/css/admin/common/index.css')}}" rel="stylesheet"> --}}
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-green">
+                <div class="inner">
+                    <h3>53<sup style="font-size: 20px">%</sup></h3>
+
+                    <p>Bounce Rate</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-stats-bars"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-yellow">
+                <div class="inner">
+                    <h3>44</h3>
+
+                    <p>User Registrations</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-person-add"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-xs-6">
+            <!-- small box -->
+            <div class="small-box bg-red">
+                <div class="inner">
+                    <h3>65</h3>
+
+                    <p>Unique Visitors</p>
+                </div>
+                <div class="icon">
+                    <i class="ion ion-pie-graph"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
+    <!-- /.row -->
+
+    <!-- Main row -->
+    <div class="row">
+
+        <!-- right col (We are only adding the ID to make the widgets sortable)-->
+        <section class="col-lg-5 connectedSortable">
+
+            <!-- Calendar -->
+            <div class="box box-solid bg-green-gradient">
+                <div class="box-header">
+                    <i class="fa fa-calendar"></i>
+
+                    <h3 class="box-title">Calendar</h3>
+                    <!-- tools box -->
+                    <div class="pull-right box-tools">
+                        <!-- button with a dropdown -->
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown">
+        <i class="fa fa-bars"></i></button>
+                            <ul class="dropdown-menu pull-right" role="menu">
+                                <li><a href="#">Add new event</a></li>
+                                <li><a href="#">Clear events</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">View calendar</a></li>
+                            </ul>
+                        </div>
+                        <button type="button" class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+    </button>
+                        <button type="button" class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+    </button>
+                    </div>
+                    <!-- /. tools -->
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body no-padding">
+                    <!--The calendar -->
+                    <div id="calendar" style="width: 100%"></div>
+                </div>
+                <!-- /.box-body -->
+                <div class="box-footer text-black">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <!-- Progress bars -->
+                            <div class="clearfix">
+                                <span class="pull-left">Task #1</span>
+                                <small class="pull-right">90%</small>
+                            </div>
+                            <div class="progress xs">
+                                <div class="progress-bar progress-bar-green" style="width: 90%;"></div>
+                            </div>
+
+                            <div class="clearfix">
+                                <span class="pull-left">Task #2</span>
+                                <small class="pull-right">70%</small>
+                            </div>
+                            <div class="progress xs">
+                                <div class="progress-bar progress-bar-green" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-6">
+                            <div class="clearfix">
+                                <span class="pull-left">Task #3</span>
+                                <small class="pull-right">60%</small>
+                            </div>
+                            <div class="progress xs">
+                                <div class="progress-bar progress-bar-green" style="width: 60%;"></div>
+                            </div>
+
+                            <div class="clearfix">
+                                <span class="pull-left">Task #4</span>
+                                <small class="pull-right">40%</small>
+                            </div>
+                            <div class="progress xs">
+                                <div class="progress-bar progress-bar-green" style="width: 40%;"></div>
+                            </div>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <!-- /.box -->
+
+        </section>
+        <!-- right col -->
+    </div>
+    <!-- /.row (main row) -->
+
+</section>
+<!-- /.content -->

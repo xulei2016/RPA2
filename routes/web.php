@@ -23,3 +23,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin\Base'], function(){
     Route::any('/logout', 'LoginController@logout')->name('logout');
 
 });
+
+// 后台路由管理
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
+    Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
+
+        //Base
+        Route::group(['namespace' => 'Base'], function(){
+            // 首页
+            Route::get('/', 'SysController@index');
+            Route::get('/index', 'SysController@index')->name('index');
+            Route::post('/index', 'SysController@index')->name('index');
+            Route::post('/dashboard', 'SysController@get_index');
+        });
+    });
+});

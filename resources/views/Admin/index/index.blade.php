@@ -1,4 +1,4 @@
-@extends('admin.layouts.index')
+@extends('admin.layouts.wrapper-content')
 
 @section('content')
 

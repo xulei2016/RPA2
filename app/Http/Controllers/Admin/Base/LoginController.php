@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Base;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Base\AdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -25,7 +26,7 @@ class LoginController extends AdminController
      *
      * @var string
      */
-    protected $redirectTo = '/Admin';
+    protected $redirectTo = '/admin';
 
     /**
      * Create a new controller instance.
@@ -34,7 +35,7 @@ class LoginController extends AdminController
      */
     public function __construct()
     {
-        $this->middleware('auth.admin')->except('logout');
+        $this->middleware('guest:admin')->except('logout');
     }
 
     /**
@@ -52,7 +53,7 @@ class LoginController extends AdminController
      */
     public function redirectTo()
     {
-        return '/admin';
+        return $this->redirectTo;
     }
 
     /**
@@ -70,4 +71,17 @@ class LoginController extends AdminController
     {
         return 'name';
     }
+
+    /**
+     * user logout
+     */
+    public function logout(Request $request)
+    {
+        if(auth()->Guard('admin')->check()){
+            auth()->Guard('admin')->logout();
+        }
+        $request->session()->invalidate();
+        return redirect('/');
+    }
+
 }
