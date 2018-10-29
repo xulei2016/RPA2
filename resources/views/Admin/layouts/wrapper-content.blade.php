@@ -2,23 +2,11 @@
 
 @section('wrapper-content')
     <!-- Content Wrapper. Contains page content -->
-    <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-            <h1>
-                仪表盘
-                <small>控制单元</small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
-                <li class="active">仪表盘</li>
-            </ol>
-        </section>
+    <div class="content-wrapper" id="pjax-container">
 
         {{-- content --}}
         @yield('content')
-        {{-- @include('admin.index.dashboard') --}}
-        
+
     </div>
     <!-- /.content-wrapper -->
 

@@ -35,6 +35,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/index', 'SysController@index')->name('index');
             Route::post('/index', 'SysController@index')->name('index');
             Route::post('/dashboard', 'SysController@get_index');
+
+            //管理员
+            // Route::resource('/admin', 'AdminController');
+            Route::get('/admin', 'AdminController@index');
+            Route::get('/admin/index', 'AdminController@index');
         });
     });
 });

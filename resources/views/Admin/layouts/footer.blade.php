@@ -1,6 +1,6 @@
 <!-- Scripts -->
-{{-- <script src="{{URL::asset('/include/jquery-pjax/JQuery.pjax.js')}}"></script>
-<script src="{{URL::asset('/include/nprogress/nprogress.js')}}"></script> --}}
+<script src="{{URL::asset('/include/jquery-pjax/JQuery.pjax.js')}}"></script>
+<script src="{{URL::asset('/include/nprogress/nprogress.js')}}"></script>
 
 <!-- jQuery UI 1.11.4 -->
 <script src="{{URL::asset('/include/jquery-ui/jquery-ui.min.js')}}"></script>
@@ -15,9 +15,6 @@
 <script src="{{URL::asset('/include/morris.js/morris.min.js')}}"></script>
 <!-- Sparkline -->
 <script src="{{URL::asset('/include/jquery-sparkline/dist/jquery.sparkline.min.js')}}"></script>
-<!-- jvectormap -->
-<script src="{{URL::asset('/include/jvectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>
-<script src="{{URL::asset('/include/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
 <!-- jQuery Knob Chart -->
 <script src="{{URL::asset('/include/jquery-knob/dist/jquery.knob.min.js')}}"></script>
 <!-- daterangepicker -->
@@ -33,7 +30,8 @@
 <script src="{{URL::asset('/include/fastclick/lib/fastclick.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{URL::asset('/js/admin/common/adminlte.min.js')}}"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="{{URL::asset('/js/pages/dashboard.js')}}"></script>
+<!-- toastr -->
+<script src="{{URL::asset('/include/toastr/toastr.min.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{URL::asset('/js/admin/common/demo.js')}}"></script>
+<script src="{{URL::asset('/js/admin/main.js')}}"></script>
