@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models\Admin\Admin;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable; 

@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Base\AdminController as admin;
+use App\Models\Admin\Admin\SysAdmin;
+use App\Http\Controllers\Base\AdminController as AdminBasecontroller;
 
 /**
  * AdminController
  * @author lay
  * @since 2018-10-25
  */
-class AdminController extends admin
+class AdminController extends AdminBasecontroller
 {
     /** 
      * Create a new controller instance. 
@@ -24,7 +25,8 @@ class AdminController extends admin
     // 
     public function index() 
     { 
-        return view('admin.base.admin.index');
+        $admin = SysAdmin::all();
+        return view('admin.admin.index');
     } 
 
     /**
@@ -32,6 +34,15 @@ class AdminController extends admin
      */
     public function show(Request $request){
         return view('admin.base.admin');
+    }
+
+    /**
+     * show
+     */
+    public function pagenation(Request $request){
+        $perPage = 10;
+        $result = SysAdmin::paginate($perPage);
+        return $result;
     }
     
 }

@@ -10,6 +10,9 @@
 </script>
 <!-- Bootstrap 3.3.7 -->
 <script src="{{URL::asset('/include/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+<!-- Bootstrap-table -->
+<script src="{{URL::asset('/include/bootstrap-table/bootstrap-table.min.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-table/local/bootstrap-table-zh-CN.js')}}"></script>
 <!-- Morris.js charts -->
 <script src="{{URL::asset('/include/raphael/raphael.min.js')}}"></script>
 <script src="{{URL::asset('/include/morris.js/morris.min.js')}}"></script>

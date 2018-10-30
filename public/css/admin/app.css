@@ -1,0 +1,26 @@
+/**
+* rpa projects
+* inner-content main style
+* @since 2018-10
+*/
+
+body .wrapper .content-wrapper .content-header {
+    min-height: 40px;
+}
+
+body .wrapper .content-wrapper .content-header h1 {
+    float: left;
+}
+
+body .wrapper .content-wrapper .content-header ol {
+    float: right;
+    background: #ecf0f5;
+}
+
+body .wrapper .content-wrapper section.content {
+    background-color: #fff;
+    margin: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0px -2px 1px #e0e0e0;
+}

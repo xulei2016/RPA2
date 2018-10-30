@@ -19,8 +19,9 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
         \App\Http\Middleware\TrustProxies::class,
-
-        \Spatie\Pjax\Middleware\FilterIfPjax::class,
+        
+        \Spatie\Pjax\Middleware\FilterIfPjax::class,//pjax-plungin
+        \App\Http\Middleware\OperationLog::class,//log
     ];
 
     /**

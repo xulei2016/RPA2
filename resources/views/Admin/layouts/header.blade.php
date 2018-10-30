@@ -23,7 +23,7 @@
                   <span class="label label-success">4</span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li class="header">You have 4 messages</li>
+                  <li class="header">You have 5 messages</li>
                   <li>
                     <!-- inner menu: contains the actual data -->
                     <ul class="menu">

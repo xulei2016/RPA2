@@ -40,6 +40,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             // Route::resource('/admin', 'AdminController');
             Route::get('/admin', 'AdminController@index');
             Route::get('/admin/index', 'AdminController@index');
+            Route::get('/admin/list', 'AdminController@pagenation');
         });
     });
 });

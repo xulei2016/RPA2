@@ -82,7 +82,7 @@ return [
 
         'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin\SysAdmin::class,
+            'model' => App\Models\Admin\Admin\SysAdmin::class,
         ],
     ],
 

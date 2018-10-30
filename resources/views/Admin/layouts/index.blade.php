@@ -9,31 +9,37 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap/dist/css/bootstrap.min.css')}}">
+    <!-- Bootstrap-table -->
+    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-table/bootstrap-table.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-table/extensions/export/bootstrap-export.css')}}">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{URL::asset('/include/font-awesome/css/font-awesome.min.css')}}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{URL::asset('/include/Ionicons/css/ionicons.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/AdminLTE.min.css')}}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{URL::asset('/css/admin/common/skins/_all-skins.min.css')}}">
     <!-- Toastr -->
     <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.min.css')}}">
     <!-- nprogress -->
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
-    <!-- AdminLTE Skins. Choose a skin from the css/skins
-       folder instead of downloading all of them to reduce the load. -->
-    <link rel="stylesheet" href="{{URL::asset('/css/admin/common/skins/_all-skins.min.css')}}">
     <!-- Morris chart -->
     <link rel="stylesheet" href="{{URL::asset('/include/morris.js/morris.css')}}">
-    <!-- Date Picker -->
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
     <!-- Daterange picker -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}">
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
 
+    <!-- app.css -->
+    <link rel="stylesheet" href="{{URL::asset('/css/admin/app.css')}}">
+
     <!-- jQuery -->
-    {{-- <script src="{{URL::asset('/include/jquery/jquery-3.3.1.min.js')}}"></script> --}}
-    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+    <script src="{{URL::asset('/include/jquery/jquery-3.3.1.min.js')}}"></script>
+    {{-- <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script> --}}
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
