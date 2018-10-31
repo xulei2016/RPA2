@@ -29,6 +29,8 @@
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
     <!-- Morris chart -->
     <link rel="stylesheet" href="{{URL::asset('/include/morris.js/morris.css')}}">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="{{URL::asset('/include/sweetalert2/sweetalert2.min.css')}}">
     <!-- Daterange picker -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}">
     <!-- bootstrap wysihtml5 - text editor -->
@@ -61,6 +63,11 @@
 
         {{-- wrapper content --}}
         @yield('wrapper-content')
+
+        <script>
+            function LA() {}
+            LA.token = '{{ csrf_token() }}';
+        </script>
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">

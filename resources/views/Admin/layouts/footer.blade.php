@@ -35,6 +35,10 @@
 <script src="{{URL::asset('/js/admin/common/adminlte.min.js')}}"></script>
 <!-- toastr -->
 <script src="{{URL::asset('/include/toastr/toastr.min.js')}}"></script>
+<!-- toastr -->
+<script src="{{URL::asset('/include/sweetalert2/sweetalert2.min.js')}}"></script>
+<!-- fix ie -->
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="{{URL::asset('/js/admin/common/demo.js')}}"></script>
 <script src="{{URL::asset('/js/admin/main.js')}}"></script>

@@ -143,7 +143,7 @@
     
             $('.tree_branch_delete').click(function() {
                 var id = $(this).data('id');
-                swal({
+                Swal({
                     title: "确认删除?",
                     type: "warning",
                     showCancelButton: true,
@@ -172,9 +172,9 @@
                     var data = result.value;
                     if (typeof data === 'object') {
                         if (data.status) {
-                            swal(data.message, '', 'success');
+                            Swal(data.message, '', 'success');
                         } else {
-                            swal(data.message, '', 'error');
+                            Swal(data.message, '', 'error');
                         }
                     }
                 });

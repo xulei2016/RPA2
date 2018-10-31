@@ -17,10 +17,29 @@ body .wrapper .content-wrapper .content-header ol {
     background: #ecf0f5;
 }
 
-body .wrapper .content-wrapper section.content {
-    background-color: #fff;
-    margin: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    box-shadow: 0px -2px 1px #e0e0e0;
+/* Fixed layout */
+.fixed .main-header,
+.fixed .main-sidebar,
+.fixed .left-side {
+  position: fixed;
+}
+.fixed .main-header {
+  top: 0;
+  right: 0;
+  left: 0;
+}
+.fixed .content-wrapper,
+.fixed .right-side {
+  padding-top: 50px;
+}
+@media (max-width: 767px) {
+  .fixed .content-wrapper,
+  .fixed .right-side {
+    padding-top: 100px;
+  }
+}
+
+.fixed .content-wrapper,
+.fixed .right-side {
+    padding-top: 0 !important;
 }

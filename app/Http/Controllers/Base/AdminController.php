@@ -41,7 +41,7 @@ class AdminController extends BaseController
     //获取菜单
     public function get_menu(){
         $id = session('sys_admin')['id'];//auth()->guard('admin')->user()->id;
-        $user = sysAdmin::find($id);
+        $user = SysAdmin::find($id);
         $top_menu = sysMenuTop::where('status', 1)
                         ->orderBy('sort', 'asc')
                         ->get()
@@ -145,7 +145,7 @@ class AdminController extends BaseController
             header('Location: /admin/logout');exit;
         }
         $id = (int) $admin_info->id;
-        $admin = new \App\Model\Admin\Base\sysAdmin();
+        $admin = new \App\Models\Admin\Base\SysAdmin();
         $info['lastIp'] = $this->getRealIp();
         $info['lastTime'] = $this->getTime();
         $info['isMobile'] = $this->isMobile()['isMobile'] ? 1 : 0 ;
