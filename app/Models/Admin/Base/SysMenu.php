@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Admin;
+namespace App\Models\Admin\Base;
 
-use App\Models\Base\BaseModel;
+use Illuminate\Database\Eloquent\Model;
 
-class SysError extends Model
+class SysMenu extends Model
 {
     /**
      * 关联到模型的数据表

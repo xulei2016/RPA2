@@ -41,6 +41,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/admin', 'AdminController@index');
             Route::get('/admin/index', 'AdminController@index');
             Route::get('/admin/list', 'AdminController@pagenation');
+
+            //菜单
+            Route::resource('/menu', 'MenuController');
         });
     });
 });

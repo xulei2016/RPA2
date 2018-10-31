@@ -13,8 +13,8 @@
     <link rel="icon" href="./themes/image/favicon.ico" sizes="16x16 32x32">
 
     <!-- Styles -->
-    <link rel="stylesheet" type="text/css" href="{{URL::asset('/css/style.css')}}" />
-    <link rel="stylesheet" type="text/css" href="{{URL::asset('/include/iCheck/skins/futurico/futurico.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{URL::asset('/css/admin/common/style.css')}}" />
+    <link rel="stylesheet" type="text/css" href="{{URL::asset('/include/iCheck/futurico/futurico.css')}}" />
 
     <!-- Scripts -->
     <script src="{{URL::asset('/include/jquery/jquery-3.3.1.min.js')}}"></script>
@@ -69,7 +69,7 @@
       </dl>
     </div>
 
-    <script src="{{URL::asset('/include/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
+    <script src="{{URL::asset('/include/bootstrap/dist/js/bootstrap.min.js')}}" type="text/javascript"></script>
     <script>
       $("input.remember").iCheck({
           checkboxClass: "icheckbox_futurico",

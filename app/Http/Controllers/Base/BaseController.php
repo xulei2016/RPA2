@@ -110,7 +110,7 @@ class BaseController extends Controller
     
     
     /**
-     * Flash a message bag to session.
+     * Flash a message bag to session. save once data
      *
      * @param string $title
      * @param string $message

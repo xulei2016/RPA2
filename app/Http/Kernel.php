@@ -21,7 +21,6 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrustProxies::class,
         
         \Spatie\Pjax\Middleware\FilterIfPjax::class,//pjax-plungin
-        \App\Http\Middleware\OperationLog::class,//log
     ];
 
     /**
