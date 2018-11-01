@@ -37,6 +37,8 @@
 <script src="{{URL::asset('/include/toastr/toastr.min.js')}}"></script>
 <!-- toastr -->
 <script src="{{URL::asset('/include/sweetalert2/sweetalert2.min.js')}}"></script>
+<!-- iCheck -->
+<script src="{{URL::asset('/include/iCheck/iCheck.min.js')}}"></script>
 <!-- fix ie -->
 <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js"></script>
 <!-- AdminLTE for demo purposes -->

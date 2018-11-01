@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/skins/_all-skins.min.css')}}">
     <!-- Toastr -->
     <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.min.css')}}">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="{{URL::asset('/include/iCheck/minimal/blue.css')}}">
     <!-- nprogress -->
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
     <!-- Morris chart -->
@@ -52,7 +54,7 @@
 
 </head>
 
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-blue fixed sidebar-mini">
     <div class="wrapper">
 
         {{-- header --}} 
@@ -63,6 +65,9 @@
 
         {{-- wrapper content --}}
         @yield('wrapper-content')
+
+        {{-- model --}} 
+        @include('admin.layouts.model')
 
         <script>
             function LA() {}

@@ -1,45 +1,11 @@
 /**
 * rpa projects
 * inner-content main style
-* @since 2018-10
 */
 
-body .wrapper .content-wrapper .content-header {
-    min-height: 40px;
-}
 
-body .wrapper .content-wrapper .content-header h1 {
-    float: left;
-}
+/* fix model content */
 
-body .wrapper .content-wrapper .content-header ol {
-    float: right;
-    background: #ecf0f5;
-}
-
-/* Fixed layout */
-.fixed .main-header,
-.fixed .main-sidebar,
-.fixed .left-side {
-  position: fixed;
-}
-.fixed .main-header {
-  top: 0;
-  right: 0;
-  left: 0;
-}
-.fixed .content-wrapper,
-.fixed .right-side {
-  padding-top: 50px;
-}
-@media (max-width: 767px) {
-  .fixed .content-wrapper,
-  .fixed .right-side {
-    padding-top: 100px;
-  }
-}
-
-.fixed .content-wrapper,
-.fixed .right-side {
-    padding-top: 0 !important;
+.modal-content {
+    border-radius: 6px !important;
 }

@@ -61,7 +61,9 @@
                 </div>
                 
                 <div class="btn-group">
-                    
+                    <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/menu/create" title="新增" onclick="operation($(this));">
+                        <i class="fa fa-add"></i><span class="hidden-xs">&nbsp;新增</span>
+                    </a>
                 </div>
         
             </div>

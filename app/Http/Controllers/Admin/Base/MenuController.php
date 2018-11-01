@@ -39,7 +39,7 @@ class MenuController extends AdminController
      */
     public function create()
     {
-        //
+        return view('admin.base.menu.add');
     }
 
     /**
