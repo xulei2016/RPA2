@@ -31,8 +31,10 @@
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
     <!-- Morris chart -->
     <link rel="stylesheet" href="{{URL::asset('/include/morris.js/morris.css')}}">
-    <!-- Morris chart -->
+    <!-- sweetalert2 -->
     <link rel="stylesheet" href="{{URL::asset('/include/sweetalert2/sweetalert2.min.css')}}">
+    <!-- select2 -->
+    <link rel="stylesheet" href="{{URL::asset('/include/select2/dist/css/select2.min.css')}}">
     <!-- Daterange picker -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}">
     <!-- bootstrap wysihtml5 - text editor -->

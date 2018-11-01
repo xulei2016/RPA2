@@ -15,12 +15,12 @@ class CreateSysMenusTable extends Migration
     {
         Schema::create('sys_menus', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('parent_id'); 
-            $table->integer('order'); 
+            $table->integer('parent_id')->default('0'); 
+            $table->integer('order')->default('1'); 
             $table->string('title', 50); 
             $table->string('icon', 50);
             $table->string('uri', 50);
-            $table->string('permission'); 
+            $table->integer('is_use')->default('1');
             $table->timestamps(); 
         });
     }

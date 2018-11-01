@@ -9,7 +9,20 @@
             <div class="form-group">
                 <label for="parent_id" class="col-sm-2 control-label">父级菜单</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="parent_id" id="parent_id" placeholder="父级菜单">
+                    <select name="" id="" class="form-control parent_id" id="select2-menu">
+                        <option value="">父级菜单</option>
+                        @foreach($menuList as $menus)
+                        @if(empty($menus['child']))
+                        <option value ="{{ $menus['id'] }}">{{ $menus['title'] }}</option>
+                        @else
+                        <option value ="{{ $menus['id'] }}">{{ $menus['title'] }}
+                            @foreach($menus['child'] as $menu)
+                                <option value="{{ $menu['id'] }}">{{ $menu['title'] }}</option>
+                            @endforeach
+                        </option>
+                        @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
             <div class="form-group">
@@ -59,4 +72,8 @@
       radioClass: 'iradio_minimal-blue'
     });
 
+    $("#select2-menu").select2({
+        "allowClear":true,
+        "placeholder":"父级菜单",
+    });
 </script>

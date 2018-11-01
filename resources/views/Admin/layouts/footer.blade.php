@@ -35,8 +35,10 @@
 <script src="{{URL::asset('/js/admin/common/adminlte.min.js')}}"></script>
 <!-- toastr -->
 <script src="{{URL::asset('/include/toastr/toastr.min.js')}}"></script>
-<!-- toastr -->
+<!-- sweetalert2 -->
 <script src="{{URL::asset('/include/sweetalert2/sweetalert2.min.js')}}"></script>
+<!-- select2 -->
+<script src="{{URL::asset('/include/select2/dist/js/select2.min.js')}}"></script>
 <!-- iCheck -->
 <script src="{{URL::asset('/include/iCheck/iCheck.min.js')}}"></script>
 <!-- fix ie -->
