@@ -174,11 +174,11 @@ class BaseController extends Controller
         $data = [];
         if(!empty($params)){
             if($type){
-                foreach($param as $val){
+                foreach($params as $val){
                     $data[$val] = $request->$val;
                 }
             }else{
-                foreach($param as $val){
+                foreach($params as $val){
                     if('' != $request->$val && null != $request->$val){
                         $data[$val] = $request->$val;
                     };

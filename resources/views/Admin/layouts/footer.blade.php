@@ -13,9 +13,7 @@
 <!-- Bootstrap-table -->
 <script src="{{URL::asset('/include/bootstrap-table/bootstrap-table.min.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap-table/local/bootstrap-table-zh-CN.js')}}"></script>
-<!-- Morris.js charts -->
-<script src="{{URL::asset('/include/raphael/raphael.min.js')}}"></script>
-<script src="{{URL::asset('/include/morris.js/morris.min.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-table/extensions/export/bootstrap-table-export.js')}}"></script>
 <!-- Sparkline -->
 <script src="{{URL::asset('/include/jquery-sparkline/dist/jquery.sparkline.min.js')}}"></script>
 <!-- jQuery Knob Chart -->
@@ -39,6 +37,8 @@
 <script src="{{URL::asset('/include/sweetalert2/sweetalert2.min.js')}}"></script>
 <!-- select2 -->
 <script src="{{URL::asset('/include/select2/dist/js/select2.min.js')}}"></script>
+<!-- jquery form -->
+<script src="{{URL::asset('/include/jquery-form/jquery.form.js')}}"></script>
 <!-- iCheck -->
 <script src="{{URL::asset('/include/iCheck/iCheck.min.js')}}"></script>
 <!-- fix ie -->

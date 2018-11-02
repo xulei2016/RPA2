@@ -39,6 +39,11 @@ RPA.prototype = {
 
         //moprogress
         NProgress.configure({ parent: '#pjax-container' });
+
+        //异步请求csrf头
+        $.ajaxSetup({
+            headers: { 'X-CSRF-TOKEN': LA.token }
+        });
     },
     screenOperation: {
         requestFullScreen: function() {
@@ -146,6 +151,27 @@ RPA.prototype = {
         selector.parent().addClass('active');
         selector.parents('ul.treeview-menu').css('display', 'block');
         selector.parents('li.treeview').addClass('menu-open');
+    },
+    ajaxSubmit: function(e, FormOptions) {
+        e.ajaxSubmit($.extend(true, {}, this.formOptions, FormOptions));
+    },
+    formValidation: function(arr, $form, options) {
+        for (var i = 0; i < arr.length; i++) {
+            //去除前后空格
+            if (arr[i].type != 'file') {
+                arr[i].value = $.trim(arr[i].value)+'0000000';
+            }
+        }
+    },
+    formOptions: {
+        beforeSubmit: this.formValidation,
+        type: 'post',
+        dataType: 'json',
+        clearForm: false, // clear all form fields after successful submit
+        resetForm: false,
+    },
+    errorResponse: function errorResponse(XMLHttpRequest, textStatus, errorThrown) {
+        toastr.success('网络异常，请求失败！');
     }
 }
 

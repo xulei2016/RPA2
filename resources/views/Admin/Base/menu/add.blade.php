@@ -4,12 +4,12 @@
     </div>
     <!-- /.box-header -->
     <!-- form start -->
-    <form class="form-horizontal">
+    <form class="form-horizontal" id="form" onsubmit="add($(this));return false;">
         <div class="box-body">
             <div class="form-group">
                 <label for="parent_id" class="col-sm-2 control-label">父级菜单</label>
                 <div class="col-sm-10">
-                    <select name="" id="" class="form-control parent_id" id="select2-menu">
+                    <select name="parent_id" id="select2-menu" class="form-control parent_id" id="select2-menu">
                         <option value="">父级菜单</option>
                         @foreach($menuList as $menus)
                         @if(empty($menus['child']))
@@ -17,7 +17,7 @@
                         @else
                         <option value ="{{ $menus['id'] }}">{{ $menus['title'] }}
                             @foreach($menus['child'] as $menu)
-                                <option value="{{ $menu['id'] }}">{{ $menu['title'] }}</option>
+                                <option value="{{ $menu['id'] }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $menu['title'] }}</option>
                             @endforeach
                         </option>
                         @endif
@@ -26,41 +26,47 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="name" class="col-sm-2 control-label">名称</label>
+                <label for="title" class="col-sm-2 control-label">名称</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="name" id="name" placeholder="名称">
+                    <input type="text" class="form-control" name="title" id="title" placeholder="名称" required>
                 </div>
             </div>
             <div class="form-group">
-                <label for="uri" class="col-sm-2 control-label">地址</label>
+                <label for="uri" class="col-sm-2 control-label">路径</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" name="uri" id="uri" placeholder="地址">
+                    <input type="text" class="form-control" name="uri" id="uri" placeholder="输入路径" required>
                 </div>
             </div>
             <div class="form-group">
                 <label for="icon" class="col-sm-2 control-label">图标</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" name="icon" id="icon" placeholder="图标">
+                    <input type="text" class="form-control" name="icon" id="icon" placeholder="图标">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="order" class="col-sm-2 control-label">排序</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" value="5" name="order" id="order" placeholder="排序">
                 </div>
             </div>
             <div class="form-group">
                 <label for="role" class="col-sm-2 control-label">角色</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" name="role" id="role" placeholder="角色">
+                    <input type="text" class="form-control" name="role" id="role" placeholder="角色">
                 </div>
             </div>
             <div class="form-group">
                 <label for="permission" class="col-sm-2 control-label">权限</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" name="permission" id="permission" placeholder="权限">
+                    <input type="text" class="form-control" name="permission" id="permission" placeholder="权限">
                 </div>
             </div>
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
-            <button type="reset" class="btn btn-warning">重置</button>
-            <button type="submit" class="btn btn-info pull-right">提交</button>
-            <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal">继续添加</label></div>
+            <button type="reset" class="btn btn-warning" id="form-reset">重置</button>
+            <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
+            <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
         </div>
         <!-- /.box-footer -->
     </form>
@@ -76,4 +82,23 @@
         "allowClear":true,
         "placeholder":"父级菜单",
     });
+
+    //添加
+    function add(e){
+        RPA.ajaxSubmit(e, FormOptions);
+    }
+    
+    //提交信息的表单配置
+    var FormOptions={
+        url:'/admin/menu',
+        success:successResponse,
+        error:RPA.errorReponse
+    };
+
+    var successResponse = function(json, xml){
+
+        var formContinue = $('#form-continue').is(':checked');
+        toastr.success('操作成功！');
+        !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
+    }
 </script>

@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap/dist/css/bootstrap.min.css')}}">
     <!-- Bootstrap-table -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-table/bootstrap-table.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-table/extensions/export/bootstrap-export.css')}}">
     <!-- Date Picker -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
     <!-- Font Awesome -->

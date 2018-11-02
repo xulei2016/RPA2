@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\SysMenu;
-use App\Http\Controllers\Base\AdminController;
+use App\Http\Controllers\Base\AdminController as AdminBaseController;
 
 /**
  * MenuController
  * @author lay
  * @since 2018-10-25
  */
-class MenuController extends AdminController
+class MenuController extends AdminBaseController
 {
     /** 
      * Create a new controller instance. 
@@ -44,31 +44,31 @@ class MenuController extends AdminController
                     ->get()
                     ->toArray();
 
-        // foreach($menuList as $key => $menu){
-        //     if(0 != $menu['parent_id']){
-        //         array_push($menuList[$menu['parent_id'] - 1]['child'], $menu);
-        //         unset($menuList[$key]);
-        //     }else{
-        //         $menuList[$key]['child'] = [];
-        //     }
-        // }
-        for($i = count($menuList)-1; $i>0; $i--){
-            for($j = 0; $j < $i; $j++){
-                if($menuList[$j]['parent_id'] > $menuList[$j+1]['parent_id']){
-                    $temp = $menuList[$j];
-                    $menuList[$j] = $menuList[$j+1];
-                    $menuList[$j+1] = $temp;
-                    $flag = 1;
-                }elseif($menuList[$j]['parent_id'] == $menuList[$j+1]['parent_id']){
-                    if($menuList[$j]['order'] > $menuList[$j+1]['order']){
-                        $temp = $menuList[$j];
-                        $menuList[$j] = $menuList[$j+1];
-                        $menuList[$j+1] = $temp;
-                        $flag = 1;
-                    }
-                }
+        foreach($menuList as $key => $menu){
+            if(0 != $menu['parent_id']){
+                array_push($menuList[$menu['parent_id'] - 1]['child'], $menu);
+                unset($menuList[$key]);
+            }else{
+                $menuList[$key]['child'] = [];
             }
         }
+        // for($i = count($menuList)-1; $i>0; $i--){
+        //     for($j = 0; $j < $i; $j++){
+        //         if($menuList[$j]['parent_id'] > $menuList[$j+1]['parent_id']){
+        //             $temp = $menuList[$j];
+        //             $menuList[$j] = $menuList[$j+1];
+        //             $menuList[$j+1] = $temp;
+        //             $flag = 1;
+        //         }elseif($menuList[$j]['parent_id'] == $menuList[$j+1]['parent_id']){
+        //             if($menuList[$j]['order'] > $menuList[$j+1]['order']){
+        //                 $temp = $menuList[$j];
+        //                 $menuList[$j] = $menuList[$j+1];
+        //                 $menuList[$j+1] = $temp;
+        //                 $flag = 1;
+        //             }
+        //         }
+        //     }
+        // }
         return view('admin.base.menu.add', ['menuList' => $menuList]);
     }
 
@@ -80,7 +80,8 @@ class MenuController extends AdminController
      */
     public function store(Request $request)
     {
-        //
+        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','role','permission'], false);
+        return $result = SysMenu::create($data);
     }
 
     /**
