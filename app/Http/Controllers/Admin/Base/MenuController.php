@@ -82,6 +82,12 @@ class MenuController extends AdminBaseController
     {
         $data = $this->get_params($request, ['parent_id','title','uri','icon','order','role','permission'], false);
         return $result = SysMenu::create($data);
+        // try{
+        //     $result = SysMenu::create($data);
+        // }catch(\Exception $ex){
+        //     return $this->return_content(500, '操作失败');
+        // }
+        // return $this->ajax_return($result);
     }
 
     /**

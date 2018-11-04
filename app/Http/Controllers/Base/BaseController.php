@@ -151,18 +151,6 @@ class BaseController extends Controller
     }
     
     /**
-     * ajax返回值信息
-     * @return array [code 状态码 200/500/ info 提示信息 data 返回数据] 
-     */
-    public function ajax_return($code, $info = null, $data = []){
-        return array(
-            'code' => $code,
-            'info' => $info,
-            'data' => $data
-        );
-    }
-    
-    /**
      * 批接收方法
      * @param $data string 
      * @param $params string 
@@ -393,5 +381,27 @@ class BaseController extends Controller
             return true;
         }
         return false;
+    }
+
+    /**
+     * 异常判断
+     * @param resourse $result
+     */
+    public function ajax_return(resourse $result){
+        $code = $result ? 200 : 500 ;
+        $info = $result ? '恭喜您，操作成功！' : config('app.APP_DEBUG') ? $result->message : '操作失败！！！' ;
+        return $this->return_content($code, $info);
+    }
+        
+    /**
+     * ajax返回值信息
+     * @return array [code 状态码 200/500/ info 提示信息 data 返回数据] 
+     */
+    function return_content($code, $info = null, $data = []){
+        return array(
+            'code' => $code,
+            'info' => $info,
+            'data' => $data
+        );
     }
 }

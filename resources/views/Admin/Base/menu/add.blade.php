@@ -96,9 +96,13 @@
     };
 
     var successResponse = function(json, xml){
-
-        var formContinue = $('#form-continue').is(':checked');
-        toastr.success('操作成功！');
-        !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
+        if(200 == json.code){
+            toastr.success('操作成功！');
+            var formContinue = $('#form-continue').is(':checked');
+            !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
+        }else{
+            console.log(11);
+            toastr.error('提交失败，'+json.info);
+        }
     }
 </script>
