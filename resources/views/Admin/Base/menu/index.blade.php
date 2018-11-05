@@ -71,69 +71,36 @@
             <div class="box-body table-responsive no-padding">
                 <div class="dd" id="tree-ntstable">
                     <ol class="dd-list">
-                        <li class="dd-item" data-id="1">
-                            <div class="dd-handle">
-                                <i class="fa fa-bar-chart"></i>&nbsp;<strong>首页</strong>&nbsp;&nbsp;&nbsp;<a href="/admin/" class="dd-nodrag">/admin/</a>
-                                <span class="pull-right dd-nodrag">
-                                    <a href="/admin/auth/menu/1/edit"><i class="fa fa-edit"></i></a>
-                                    <a href="javascript:void(0);" data-id="1" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                                </span>
-                            </div>
-                        </li>
-                        <li class="dd-item" data-id="2">
-                            <div class="dd-handle">
-                                <i class="fa fa-tasks"></i>&nbsp;<strong>系统管理</strong>
-                                <span class="pull-right dd-nodrag">
-                                    <a href="/admin/auth/menu/2/edit"><i class="fa fa-edit"></i></a>
-                                    <a href="javascript:void(0);" data-id="2" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                                </span>
-                            </div>
-                            <ol class="dd-list">
-                        <li class="dd-item" data-id="3">
-                        <div class="dd-handle">
-                            <i class="fa fa-users"></i>&nbsp;<strong>用户管理</strong>&nbsp;&nbsp;&nbsp;<a href="/admin/auth/users" class="dd-nodrag">/admin/auth/users</a>
-                            <span class="pull-right dd-nodrag">
-                                <a href="/admin/auth/menu/3/edit"><i class="fa fa-edit"></i></a>
-                                <a href="javascript:void(0);" data-id="3" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                            </span>
-                        </div>
-                        </li>                    <li class="dd-item" data-id="5">
-                        <div class="dd-handle">
-                            <i class="fa fa-ban"></i>&nbsp;<strong>权限管理</strong>&nbsp;&nbsp;&nbsp;<a href="/admin/auth/permissions" class="dd-nodrag">/admin/auth/permissions</a>
-                            <span class="pull-right dd-nodrag">
-                                <a href="/admin/auth/menu/5/edit"><i class="fa fa-edit"></i></a>
-                                <a href="javascript:void(0);" data-id="5" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                            </span>
-                        </div>
-                        </li>                    <li class="dd-item" data-id="4">
-                        <div class="dd-handle">
-                            <i class="fa fa-user"></i>&nbsp;<strong>角色管理</strong>&nbsp;&nbsp;&nbsp;<a href="/admin/auth/roles" class="dd-nodrag">/admin/auth/roles</a>
-                            <span class="pull-right dd-nodrag">
-                                <a href="/admin/auth/menu/4/edit"><i class="fa fa-edit"></i></a>
-                                <a href="javascript:void(0);" data-id="4" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                            </span>
-                        </div>
-                        </li>                    <li class="dd-item" data-id="6">
-                        <div class="dd-handle">
-                            <i class="fa fa-bars"></i>&nbsp;<strong>菜单管理</strong>&nbsp;&nbsp;&nbsp;<a href="/admin/auth/menu" class="dd-nodrag">/admin/auth/menu</a>
-                            <span class="pull-right dd-nodrag">
-                                <a href="/admin/auth/menu/6/edit"><i class="fa fa-edit"></i></a>
-                                <a href="javascript:void(0);" data-id="6" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                            </span>
-                        </div>
-                        </li>                    <li class="dd-item" data-id="7">
-                        <div class="dd-handle">
-                            <i class="fa fa-history"></i>&nbsp;<strong>系统日志</strong>&nbsp;&nbsp;&nbsp;<a href="/admin/auth/logs" class="dd-nodrag">/admin/auth/logs</a>
-                            <span class="pull-right dd-nodrag">
-                                <a href="/admin/auth/menu/7/edit"><i class="fa fa-edit"></i></a>
-                                <a href="javascript:void(0);" data-id="7" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                            </span>
-                        </div>
-                    </li>            
-                        </ol>
-                    </li>            
-                </ol>
-            </div>
+                        @foreach($menuList as $menus)
+                            <li class="dd-item" data-id="{{ $menus['id'] }}">
+                                <div class="dd-handle">
+                                    <i class="fa fa-bar-chart"></i>&nbsp;<strong>{{ $menus['title'] }}</strong>&nbsp;&nbsp;&nbsp;
+                                    <a href="{{ $menus['uri'] }}" class="dd-nodrag">{{ $menus['uri'] }}</a>
+                                    <span class="pull-right dd-nodrag">
+                                        <a url="/admin/menu/{{ $menus['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
+                                        <a href="javascript:void(0);" data-id="{{ $menus['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
+                                    </span>
+                                </div>
+                                @if(!empty($menus['child']))
+                                    <ol class="dd-list">
+                                    @foreach($menus['child'] as $menu)
+                                        <li class="dd-item" data-id="{{ $menu['id'] }}">
+                                            <div class="dd-handle">
+                                                <i class="fa fa-users"></i>&nbsp;<strong>{{ $menu['title'] }}</strong>&nbsp;&nbsp;&nbsp;
+                                                <a href="javascript:void(0);" class="dd-nodrag">{{ $menu['uri'] }}</a>
+                                                <span class="pull-right dd-nodrag">
+                                                    <a url="/admin/auth/menu/{{ $menu['id'] }}/edit"><i class="fa fa-edit"></i></a>
+                                                    <a href="javascript:void(0);" data-id="{{ $menu['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
+                                                </span>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                    </ol>
+                                @endif
+                            </li>
+                        @endforeach
+                    </ol>
+                </div>
             </div>
             <!-- /.box-body -->
         </div>
@@ -157,26 +124,30 @@
                         return new Promise(function(resolve) {
                             $.ajax({
                                 method: 'post',
-                                url: '/admin/auth/menu/' + id,
+                                url: '/admin/menu/' + id,
                                 data: {
                                     _method:'delete',
                                     _token:LA.token,
                                 },
-                                success: function (data) {
-                                    $.pjax.reload('#pjax-container');
-                                    toastr.success('删除成功 !');
-                                    resolve(data);
+                                success: function (json) {
+                                    if(200 == json.code){
+                                        $.pjax.reload('#pjax-container');
+                                        toastr.success('删除成功 !');
+                                        resolve(json);
+                                    }else{
+                                        toastr.error(json.info);
+                                    }
                                 }
                             });
                         });
                     }
-                }).then(function(result) {
-                    var data = result.value;
-                    if (typeof data === 'object') {
-                        if (data.status) {
-                            Swal(data.message, '', 'success');
+                }).then(function(json) {
+                    var json = json.value;
+                    if (typeof json === 'object') {
+                        if (200 == json.code) {
+                            Swal(json.info, '', 'success');
                         } else {
-                            Swal(data.message, '', 'error');
+                            Swal(json.info, '', 'error');
                         }
                     }
                 });

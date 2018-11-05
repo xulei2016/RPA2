@@ -27,7 +27,7 @@ class AdminController extends AdminBasecontroller
     public function index() 
     { 
         $admin = SysAdmin::all();
-        return view('admin.admins.index');
+        return view('admin.admin.index');
     } 
 
     /**

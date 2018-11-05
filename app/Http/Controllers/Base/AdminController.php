@@ -145,7 +145,7 @@ class AdminController extends BaseController
             header('Location: /admin/logout');exit;
         }
         $id = (int) $admin_info->id;
-        $admin = new \App\Models\Admin\Base\SysAdmin();
+        $admin = new \App\Models\Admin\Admin\SysAdmin();
         $info['lastIp'] = $this->getRealIp();
         $info['lastTime'] = $this->getTime();
         $info['isMobile'] = $this->isMobile()['isMobile'] ? 1 : 0 ;

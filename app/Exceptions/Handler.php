@@ -48,15 +48,15 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
-        if(config('app.debug')){
-            return parent::render($request, $exception);
-        }else{
+        if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
             $info = [
                 'code' => '500',
-                'info' => $exception->getMessage(),
+                'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
                 'data' => []
             ];
-            return $info;
+            return response()->json($info);
+        } else {
+            return parent::render($request, $exception);
         }
     }
 }

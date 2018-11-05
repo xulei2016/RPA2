@@ -101,8 +101,7 @@
             var formContinue = $('#form-continue').is(':checked');
             !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
         }else{
-            console.log(11);
-            toastr.error('提交失败，'+json.info);
+            toastr.error(json.info);
         }
     }
 </script>
