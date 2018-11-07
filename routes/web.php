@@ -11,6 +11,17 @@
 |
 */
 
+/**
+ * resource
+ * GET	/photos	index	photos.index
+GET	/photos/create	create	photos.create
+POST	/photos	store	photos.store
+GET	/photos/{photo}	show	photos.show
+GET	/photos/{photo}/edit	edit	photos.edit
+PUT/PATCH	/photos/{photo}	update	photos.update
+DELETE	/photos/{photo}     destory     photos.destory
+ */
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -39,11 +50,21 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             //管理员
             // Route::resource('/admin', 'AdminController');
             Route::get('/admin', 'AdminController@index');
+            Route::get('/admin/add', 'AdminController@add');
             Route::get('/admin/index', 'AdminController@index');
+            Route::post('/admin', 'AdminController@insert');
+            Route::post('/admin/admin/delete', 'AdminController@delete');
+            Route::post('/admin/admin/deleteAll', 'AdminController@deleteAll');
             Route::get('/admin/list', 'AdminController@pagenation');
 
             //菜单
             Route::resource('/menu', 'MenuController');
+            Route::post('/menu/edit', 'MenuController@update');
+            Route::post('/menu/order', 'MenuController@orderUpdate');
+
+            //角色
+            Route::resource('/role', 'RoleController');
+            Route::get('/role/list', 'RoleController@pagenation');
         });
     });
 });

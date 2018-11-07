@@ -2,10 +2,62 @@
 * rpa projects
 * inner-content main style
 */
-
+.must-tag {
+    color: #c00;
+    font-weight: bold;
+}
 
 /* fix model content */
 
 .modal-content {
     border-radius: 6px !important;
+}
+
+/* fixed bootstrap table style */
+
+body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments tbody{
+    color: #616161;
+    font-size: 12px;
+}
+
+.bella-checkbox{
+    position: relative;
+}
+
+/** 将初始的checkbox的样式改变 */
+#tb_departments .bella-checkbox input[type="checkbox"] {
+    opacity: 0; /*将初始的checkbox隐藏起来*/
+}
+ 
+/** 设计新的checkbox，位置 */
+#tb_departments .bella-checkbox label:before {
+    content: '';
+    width: 19px;
+    height: 19px;
+    display: inline-block;
+    border-radius: 2px;
+    border: 1px solid #bbb;
+    background: #fff;
+}
+ 
+/** 点击初始的checkbox，将新的checkbox关联起来 */
+#tb_departments .bella-checkbox input[type="checkbox"]:checked + label:after {
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    content: "\e013";
+    top: 15%;
+    left: 10%;
+    position: absolute;
+    font-size: 11px;
+    line-height: 1;
+    width: 16px;
+    height: 16px;
+    color: #008398;
+}
+ 
+#tb_departments .bella-checkbox label {
+    cursor: pointer;
+    text-align: center;
+    position: absolute;
+    left: 10px;
 }

@@ -6,9 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable; 
 use Illuminate\Foundation\Auth\User as Authenticatable; 
 
+use Spatie\Permission\Traits\HasRoles;
+
 class SysAdmin extends Authenticatable 
 {
     use Notifiable; 
+    use HasRoles;
+
+    protected $guard_name = 'admin';
  
     /** 
      * The attributes that are mass assignable. 
@@ -16,7 +21,7 @@ class SysAdmin extends Authenticatable
      * @var array 
      */ 
     protected $fillable = [ 
-        'username', 'email', 'password', 
+        'name', 'email', 'password', 'desc', 'sex', 'phone', 'realName'
     ]; 
  
     /** 

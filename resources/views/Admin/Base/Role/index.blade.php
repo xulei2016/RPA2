@@ -3,23 +3,21 @@
 @section('content')
 
     <div class="panel">
-        <div id="toolbar">
-            <div class="btn-group" >
-                <button type="button" class="btn btn-default btn-sm">操作</button>
-                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                    <span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">删除选中</a></li>
-                    <li><a href="#">导出全部</a></li>
-                    <li><a href="#">导出选中</a></li>
-                </ul>
-            </div>
+        <div class="btn-group" id="toolbar">
+            <button type="button" class="btn btn-default btn-sm">操作</button>
+            <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+                <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#">全部删除</a></li>
+                <li><a href="#">全部启用</a></li>
+                <li><a href="#">全部关闭</a></li>
+            </ul>
             <a class="btn btn-default btn-sm" data-toggle="collapse" data-target="#search-group" href="javascript:void(0)">
                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>筛选器
             </a>
-            <a href="javascript:void(0)" class="btn btn-info btn-sm" url="/admin/admin/add" onclick="operation($(this));">
+            <a href="#" class="btn btn-info btn-sm">
                 <span class="glyphicon glyphicon-plus"></span> 添加
             </a>
         </div>
@@ -51,5 +49,5 @@
         <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
     </div>
 
-<script src="{{URL::asset('/js/admin/admin/index.js')}}"></script>
+<script src="{{URL::asset('/js/admin/base/role/index.js')}}"></script>
 @endsection

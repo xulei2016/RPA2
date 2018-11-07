@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
-use App\Models\Admin\Base\SysMenu;
+use App\Models\Admin\Base\SysRole;
 use App\Http\Controllers\Base\AdminController as AdminBaseController;
 
 /**
- * MenuController
- * @author lay
- * @since 2018-10-25
+ * ROLE 角色管理
+ * @author hsu lay
+ * @since 2018/2
  */
-class MenuController extends AdminBaseController
+class RoleController extends AdminBaseController
 {
     /** 
      * Create a new controller instance. 
@@ -22,7 +22,7 @@ class MenuController extends AdminBaseController
     { 
         parent::__construct();
     }
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -113,57 +113,13 @@ class MenuController extends AdminBaseController
     }
 
     /**
-     * orderUpdate
-     * @return array $resulr
+     * pagenation
      */
-    public function orderUpdate(Request $request){
-        $order = $request->_order;
-        $order = json_decode($order,true);
-        if($this->sortUpdate($order)){
-            return $this->ajax_return(200, '操作成功！');
-        }
-    }
-
-    /**
-     * sortUpdate
-     * @return bool $resulr
-     */
-    protected function sortUpdate($order){
-        foreach($order as $k => $sort){
-            $id = $sort['id'];
-            $dbsort = SysMenu::find($id);
-            if($k != $dbsort->order){
-                SysMenu::where('id', $id)->update(['order' => $k]);
-            }
-            if(isset($sort['children'])){
-                $this->sortUpdate($sort['children']);
-            }
-        }
-        return true;
-    }
-
-    /**
-     * find all menus
-     * @return array menuList
-     */
-    protected function AllMenus(){
-        $menuList = SysMenu::where('is_use', 1)
-                    ->orderBy('order', 'asc')
-                    ->get()
-                    ->toArray();
-
-        $data = [];
-        foreach($menuList as $key => &$menus){
-            if(0 != $menus['parent_id']){
-                $data[$menus['parent_id']][] = $menus;
-                unset($menuList[$key]);
-            }
-        }
-        foreach($menuList as $key => &$menus){
-            if(!empty($data[$menus['id']])){
-                $menus['child'] = $data[$menus['id']];
-            }
-        }
-        return $menuList;
+    public function pagenation(Request $request){
+        $rows = $request->rows;
+        $conditions = $this->getPagingList($request->all(), ['name'=>'like', 'role'=>'=', 'status'=>'=']);
+        $result = SysAdmin::where($conditions)
+                ->paginate($rows);
+        return $result;
     }
 }

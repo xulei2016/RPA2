@@ -62,7 +62,7 @@
                 
                 <div class="btn-group">
                     <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/menu/create" title="新增" onclick="operation($(this));">
-                        <i class="fa fa-add"></i><span class="hidden-xs">&nbsp;新增</span>
+                        <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
                     </a>
                 </div>
         
@@ -89,7 +89,7 @@
                                                 <i class="fa fa-users"></i>&nbsp;<strong>{{ $menu['title'] }}</strong>&nbsp;&nbsp;&nbsp;
                                                 <a href="javascript:void(0);" class="dd-nodrag">{{ $menu['uri'] }}</a>
                                                 <span class="pull-right dd-nodrag">
-                                                    <a url="/admin/auth/menu/{{ $menu['id'] }}/edit"><i class="fa fa-edit"></i></a>
+                                                    <a url="/admin/menu/{{ $menu['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
                                                     <a href="javascript:void(0);" data-id="{{ $menu['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
                                                 </span>
                                             </div>
@@ -156,13 +156,17 @@
             $('.tree-ntstable-save').click(function () {
                 var serialize = $('#tree-ntstable').nestable('serialize');
     
-                $.post('/admin/auth/menu', {
+                $.post('/admin/menu/order', {
                     _token: LA.token,
                     _order: JSON.stringify(serialize)
                 },
-                function(data){
-                    $.pjax.reload('#pjax-container');
-                    toastr.success('保存成功 !');
+                function(json){
+                    if(200 == json.code){
+                        $.pjax.reload('#pjax-container');
+                        toastr.success('保存成功 !');
+                    }else{
+                        toastr.error(json.info);
+                    }
                 });
             });
     
