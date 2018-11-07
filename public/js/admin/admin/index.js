@@ -26,7 +26,7 @@ $(function(){
                 $('#tb_departments').bootstrapTable('refresh');
             }
         });
-        
+
         //批量删除
         $("#container .inner-content .middle-layer .deletebatch").on('click', function(){
         	var ids = idList.join(',');
@@ -76,10 +76,10 @@ $(function(){
             showLoaderOnConfirm: true,
             cancelButtonText: "取消",
             preConfirm: function() {
-                return new Promise(function(resolve) {
+                return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/admin/delete',
+                        url: '/admin/admin/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
@@ -88,10 +88,9 @@ $(function(){
                         success: function (json) {
                             if(200 == json.code){
                                 $.pjax.reload('#pjax-container');
-                                toastr.success('删除成功 !');
                                 resolve(json);
                             }else{
-                                toastr.error(json.info);
+                                reject(json.info);
                             }
                         }
                     });
@@ -99,24 +98,18 @@ $(function(){
             }
         }).then(function(json) {
             var json = json.value;
-            if (typeof json === 'object') {
-                if (200 == json.code) {
-                    Swal(json.info, '', 'success');
-                } else {
-                    Swal(json.info, '', 'error');
-                }
-            }
+            Swal(json.info, '', 'success');
+        },function(dismiss){
+            Swal(dismiss, '', 'error');
         });
     }
 
     /**
      * 切换状态
      */
-    function changeType(){
-        let type = $(this).attr("type");
-        let id = $(this).attr("id");
+    function changeType(id,type){
         $.ajax({
-            url:'/admin/sys_admin_manage/typeChange',
+            url:'/admin/admin/changeType',
             data:{id:id,type:type},
             type:'post',
             dataType:'json',
@@ -209,19 +202,33 @@ $(function(){
                     title: '操作',
                     align: 'center',
                     valign: 'middle',
+                    events: {
+                        "click #deleteOne":function (e, value, row, index){
+                            var id = row.id;
+                            DeleteOne(id);
+                        },
+                        "click #changeType":function (e, value, row, index){
+                            var id = row.id;
+                            var type = row.type;
+                            changeType(id,type);
+                        },
+                    },
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += "<a href='javascript:;' class='btn btn-xs btn-info' onclick=\"ViewOne('" + id + "', view='view')\" title='查看'><span class='glyphicon glyphicon-search'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"EditOne('" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' onclick=\"DeleteOne('" + id + "')\" title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        result += "<a href='javascript:;' class='btn btn-xs btn-info' id='changeType' title='查看'><span class='glyphicon glyphicon-search'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/admin/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;
                     }
                 }],
             }
+
         //初始化表格
         oTable.Init('#tb_departments', param);
+
+
     }
 
     init();

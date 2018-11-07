@@ -49,13 +49,16 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
 
             //管理员
             // Route::resource('/admin', 'AdminController');
-            Route::get('/admin', 'AdminController@index');
-            Route::get('/admin/add', 'AdminController@add');
-            Route::get('/admin/index', 'AdminController@index');
-            Route::post('/admin', 'AdminController@insert');
-            Route::post('/admin/admin/delete', 'AdminController@delete');
-            Route::post('/admin/admin/deleteAll', 'AdminController@deleteAll');
+            // Route::get('/admin', 'AdminController@index');
+            // Route::get('/admin/add', 'AdminController@add');
+            // Route::get('/admin/index', 'AdminController@index');
+            // Route::post('/admin', 'AdminController@insert');
+            // Route::delete('/admin/delete', 'AdminController@delete');
+            // Route::post('/admin/deleteAll', 'AdminController@deleteAll');
             Route::get('/admin/list', 'AdminController@pagenation');
+            Route::post('/admin/admin/changeType', 'AdminController@changeType');
+            Route::resource('/admin', 'AdminController');
+            Route::post('/admin/edit', 'AdminController@update');
 
             //菜单
             Route::resource('/menu', 'MenuController');

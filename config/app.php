@@ -179,6 +179,8 @@ return [
 
         //premission
         Spatie\Permission\PermissionServiceProvider::class,
+        //excel
+        Maatwebsite\Excel\ExcelServiceProvider::class,
     ],
 
     /*
@@ -228,6 +230,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        //excel
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ],
 
 ];

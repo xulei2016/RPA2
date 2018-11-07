@@ -212,8 +212,8 @@ RPA.prototype = {
     
                 showExport: true,                   //是否显示导出按钮
                 buttonsAlign:"right",               //按钮位置
-                exportTypes:['excel'],              //导出文件类型
-                Icons:'glyphicon-export',
+                exportTypes:['csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],              //导出文件类型
+                Icons:'glyphicon-export icon-share',
                 exportDataType: ['basic','all','selected'],
                 exportOptions:{
                     ignoreColumn: [0,1],            //忽略某一列的索引
