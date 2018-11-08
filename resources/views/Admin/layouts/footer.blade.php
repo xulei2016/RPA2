@@ -13,7 +13,6 @@
 <!-- Bootstrap-table -->
 <script src="{{URL::asset('/include/bootstrap-table/bootstrap-table.min.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap-table/local/bootstrap-table-zh-CN.js')}}"></script>
-<script src="{{URL::asset('/include/bootstrap-table/extensions/export/bootstrap-table-export.js')}}"></script>
 <!-- Sparkline -->
 <script src="{{URL::asset('/include/jquery-sparkline/dist/jquery.sparkline.min.js')}}"></script>
 <!-- jQuery Knob Chart -->

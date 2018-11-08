@@ -30,8 +30,7 @@ class RoleController extends AdminBaseController
      */
     public function index()
     {
-        $menuList = $this->AllMenus();
-        return view('admin.base.menu.index', ['menuList' => $menuList]);
+        return view('admin.base.role.index');
     }
 
     /**
@@ -41,8 +40,7 @@ class RoleController extends AdminBaseController
      */
     public function create()
     {
-        $menuList = $this->AllMenus();
-        return view('admin.base.menu.add', ['menuList' => $menuList]);
+        return view('admin.base.role.add');
     }
 
     /**
@@ -53,8 +51,8 @@ class RoleController extends AdminBaseController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','role','permission'], false);
-        $result = SysMenu::create($data);
+        $data = $this->get_params($request, ['name','guard_name','type','desc'], false);
+        $result = SysRole::create($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -78,9 +76,8 @@ class RoleController extends AdminBaseController
      */
     public function edit($id)
     {
-        $menuList = $this->AllMenus();
-        $menu = SysMenu::where('id', $id)->first();
-        return view('admin.base.menu.edit', ['menuList' => $menuList, 'menuInfo' => $menu]);
+        $info = SysRole::where('id', $id)->first();
+        return view('admin.base.role.edit', ['info' => $info]);
     }
 
     /**
@@ -92,8 +89,8 @@ class RoleController extends AdminBaseController
      */
     public function update(Request $request)
     {
-        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','id'], false);
-        $result = SysMenu::where('id', $data['id'])
+        $data = $this->get_params($request, ['name','guard_name','type','desc','id'], false);
+        $result = SysRole::where('id', $data['id'])
                 ->update($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
         return $this->ajax_return(200, '恭喜你，操作成功！');
@@ -107,7 +104,7 @@ class RoleController extends AdminBaseController
      */
     public function destroy($id)
     {
-        $result = SysMenu::destroy($id);
+        $result = SysRole::destroy($id);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -117,8 +114,21 @@ class RoleController extends AdminBaseController
      */
     public function pagenation(Request $request){
         $rows = $request->rows;
-        $conditions = $this->getPagingList($request->all(), ['name'=>'like', 'role'=>'=', 'status'=>'=']);
-        $result = SysAdmin::where($conditions)
+        $param = $this->get_params($request, ['name', 'type']);
+        $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
+        $result = SysRole::where($conditions)
+                ->paginate($rows);
+        return $result;
+    }
+
+    /**
+     * getPermission
+     */
+    public function getPermission(Request $request){
+        $rows = $request->rows;
+        $param = $this->get_params($request, ['name', 'type']);
+        $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
+        $result = SysRole::where($conditions)
                 ->paginate($rows);
         return $result;
     }

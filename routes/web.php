@@ -14,12 +14,12 @@
 /**
  * resource
  * GET	/photos	index	photos.index
-GET	/photos/create	create	photos.create
-POST	/photos	store	photos.store
-GET	/photos/{photo}	show	photos.show
-GET	/photos/{photo}/edit	edit	photos.edit
-PUT/PATCH	/photos/{photo}	update	photos.update
-DELETE	/photos/{photo}     destory     photos.destory
+ * GET	/photos/create	create	photos.create
+ * POST	/photos	store	photos.store
+ * GET	/photos/{photo}	show	photos.show
+ * GET	/photos/{photo}/edit	edit	photos.edit
+ * PUT/PATCH	/photos/{photo}	update	photos.update
+ * DELETE	/photos/{photo}     destory     photos.destory
  */
 
 Route::get('/', function () {
@@ -48,26 +48,21 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::post('/dashboard', 'SysController@get_index');
 
             //管理员
-            // Route::resource('/admin', 'AdminController');
-            // Route::get('/admin', 'AdminController@index');
-            // Route::get('/admin/add', 'AdminController@add');
-            // Route::get('/admin/index', 'AdminController@index');
-            // Route::post('/admin', 'AdminController@insert');
-            // Route::delete('/admin/delete', 'AdminController@delete');
-            // Route::post('/admin/deleteAll', 'AdminController@deleteAll');
+            Route::get('/admin/export', 'AdminController@export');
             Route::get('/admin/list', 'AdminController@pagenation');
             Route::post('/admin/admin/changeType', 'AdminController@changeType');
-            Route::resource('/admin', 'AdminController');
             Route::post('/admin/edit', 'AdminController@update');
+            Route::resource('/admin', 'AdminController');
 
             //菜单
             Route::resource('/menu', 'MenuController');
-            Route::post('/menu/edit', 'MenuController@update');
+            Route::post('/menu/edit', 'MenuController@update');//可优化掉
             Route::post('/menu/order', 'MenuController@orderUpdate');
 
             //角色
-            Route::resource('/role', 'RoleController');
             Route::get('/role/list', 'RoleController@pagenation');
+            Route::get('/role/{id}/permission', 'RoleController@getPermission');
+            Route::resource('/role', 'RoleController');
         });
     });
 });

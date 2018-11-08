@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Base;
 use Illuminate\Http\Request;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Http\Controllers\Base\AdminController as AdminBasecontroller;
+use Excel;
 
 /**
  * AdminController
@@ -82,8 +83,9 @@ class AdminController extends AdminBasecontroller
     /**
      * destroy
      */
-    public function destroy(Request $request, $id){
-        $result = SysAdmin::destroy($id);
+    public function destroy(Request $request, $ids){
+        $ids = explode(',', $ids);
+        $result = SysAdmin::destroy($ids);
         // $this->log(__CLASS__, __FUNCTION__, $request, "删除用户");
         return $this->ajax_return('200', '操作成功！');
     }
@@ -100,7 +102,8 @@ class AdminController extends AdminBasecontroller
      */
     public function pagenation(Request $request){
         $rows = $request->rows;
-        $conditions = $this->getPagingList($request->all(), ['name'=>'like', 'role'=>'=', 'status'=>'=']);
+        $data = $this->get_params($request, ['name','role','type']);
+        $conditions = $this->getPagingList($data, ['name'=>'like', 'role'=>'=', 'type'=>'=']);
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder;
         $result = SysAdmin::where($conditions)
@@ -108,5 +111,29 @@ class AdminController extends AdminBasecontroller
                 ->paginate($rows);
         return $result;
     }
-    
+
+    /**
+     * export
+     */
+    public function export(Request $request){
+        $param = $this->get_params($request, ['name', 'type', 'id']);
+        $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
+
+        if(isset($param['id'])){
+            $data = SysAdmin::where($conditions)->whereIn('id', explode(',',$param['id']))->get()->toArray();
+        }else{
+            $data = SysAdmin::where($conditions)->get()->toArray();
+        }
+        
+        $cellData = [];
+        $cellData[] = array_keys($data[0]);
+        foreach($data as $k => $info){
+            array_push($cellData, array_values($info));
+        }
+        Excel::create('管理员信息表',function($excel) use ($cellData){
+            $excel->sheet('信息库', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xls');
+    }
 }

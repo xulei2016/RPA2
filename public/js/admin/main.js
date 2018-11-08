@@ -208,20 +208,7 @@ RPA.prototype = {
                 detailView: false,                   //是否显示父子表
                 showFullscreen: false,               //全屏显示,无效勿用
                 maintainSelected: true,             //将记住checkbox的选择项
-                // classes: 'table-no-bordered',      //无边框
     
-                showExport: true,                   //是否显示导出按钮
-                buttonsAlign:"right",               //按钮位置
-                exportTypes:['csv', 'txt', 'sql', 'doc', 'excel', 'xlsx', 'pdf'],              //导出文件类型
-                Icons:'glyphicon-export icon-share',
-                exportDataType: ['basic','all','selected'],
-                exportOptions:{
-                    ignoreColumn: [0,1],            //忽略某一列的索引
-                    fileName: '用户表',          //文件名称设置
-                    worksheetName: 'sheet1',        //表格工作区名称
-                    tableName: '用户表',
-                    excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
-                },
                 columns: param.columns,
                 responseHandler: function(res){
                     res.rows = res.data;
@@ -246,12 +233,17 @@ RPA.prototype = {
                     if ($.isFunction(param.onPostBody)) {
                         param.onPostBody();
                     }
-                }
+                },
             });
         };
     
         return oTableInit;
     },
+    getIdSelections: function (table) {
+        return $.map($(table).bootstrapTable('getSelections'), function (row) {
+            return row.id
+        });
+    }
     /////////////////////////////////////////////////////////bootstrap table end//////////////////////////////////////////////////////////
 }
 
@@ -278,3 +270,26 @@ $.fn.serializeJsonObject = function () {
     });
     return json;
 }
+
+/** 
+ * param 将要转为URL参数字符串的对象 
+ * key URL参数字符串的前缀 
+ * encode true/false 是否进行URL编码,默认为true 
+ *  
+ * return URL参数字符串 
+ */  
+var urlEncode = function (param, key, encode) {  
+    if(param==null) return '';  
+    var paramStr = '';  
+    var t = typeof (param);  
+    if (t == 'string' || t == 'number' || t == 'boolean') {  
+      paramStr += '&' + key + '=' + ((encode==null||encode) ? encodeURIComponent(param) : param);  
+    } else {  
+      for (var i in param) {  
+        var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);  
+        paramStr += urlEncode(param[i], k, encode);  
+      }  
+    }  
+    return paramStr;  
+    // return paramStr.slice(1);  
+  }; 

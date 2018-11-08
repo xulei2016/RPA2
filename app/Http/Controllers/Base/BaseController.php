@@ -335,7 +335,7 @@ class BaseController extends Controller
 		foreach ($keyValueList as $key=>$operator){
             $value = $data[$key];
 			if(null != $value && '' != $value){
-				$dateKey = $this->isDateArea($key);
+                $dateKey = $this->isDateArea($key);
 				if($dateKey){//判断是否时间段
 					array_push($conditionList,  array($dateKey, $operator, $value));
 				}else{

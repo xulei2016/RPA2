@@ -26,47 +26,27 @@ $(function(){
                 $('#tb_departments').bootstrapTable('refresh');
             }
         });
-        
-        //批量删除
-        $("#container .inner-content .middle-layer .deletebatch").on('click', function(){
-        	var ids = idList.join(',');
-            if("" == ids){
-                responseTip(1,'您尚未选择要删除的数据！',1500);
-        	}else{
-	            myConfirmModal("确定要批量删除资讯吗？",function(){
-		            $.ajax({
-		                url:"/admin/sys_admin_manage/deleteAll",
-		                type:"post",
-		                data:{"ids":ids},
-		                dataType:"json",
-		                beforeSend:function(xhr){
-		                    $("#loading").modal('show');
-		                },
-		                complete:function(){
-		                    $("#loading").modal('hide');
-		                },
-		                success:function(json,statusText){
-		                    if(json.code == 200){
-                                if(currentPage != 1 && (total_count - idList.length) % pageSize == 0){
-                                    currentPage = currentPage - 1;
-                                }
-                                idList = [];//初始化idList的值
-                                render(currentPage);
-                            }else{
-                                responseTip(json.code,json.info,1500);
-                            }
-		                },
-		                error:errorResponse
-		            });
-	            });
-        	}
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/role/export?"+$url;
+        });
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #export").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/role/export?"+$url+'&id='+ids;
         });
     }
 
     /**
      * 删除单条记录
      */
-    function DeleteOne(id){
+    function Delete(id){
         Swal({
             title: "确认删除?",
             type: "warning",
@@ -76,21 +56,21 @@ $(function(){
             showLoaderOnConfirm: true,
             cancelButtonText: "取消",
             preConfirm: function() {
-                return new Promise(function(resolve) {
+                return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/menu/' + id,
+                        url: '/admin/role/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
+                            id:id
                         },
                         success: function (json) {
                             if(200 == json.code){
                                 $.pjax.reload('#pjax-container');
-                                toastr.success('删除成功 !');
                                 resolve(json);
                             }else{
-                                toastr.error(json.info);
+                                reject(json.info);
                             }
                         }
                     });
@@ -98,24 +78,18 @@ $(function(){
             }
         }).then(function(json) {
             var json = json.value;
-            if (typeof json === 'object') {
-                if (200 == json.code) {
-                    Swal(json.info, '', 'success');
-                } else {
-                    Swal(json.info, '', 'error');
-                }
-            }
+            Swal(json.info, '', 'success');
+        },function(dismiss){
+            Swal(dismiss, '', 'error');
         });
     }
 
     /**
      * 切换状态
      */
-    function changeType(){
-        let type = $(this).attr("type");
-        let id = $(this).attr("id");
+    function changeType(id,type){
         $.ajax({
-            url:'/admin/sys_admin_manage/typeChange',
+            url:'/admin/role/changeType',
             data:{id:id,type:type},
             type:'post',
             dataType:'json',
@@ -126,6 +100,16 @@ $(function(){
         },function(e){
             responseTip(1,'操作失败！',1500);
         });
+    }
+
+    //get searchGroup
+    function getSearchGroup(){
+        //特殊格式的条件处理
+        var temp = {
+            name : $("#pjax-container #search-group #name").val(),
+            type : $("#pjax-container #search-group #type").val()
+        }
+        return temp;
     }
 
     //分页参数
@@ -140,12 +124,12 @@ $(function(){
             temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
 
             //特殊格式的条件处理
-            temp["name"] = $("#pjax-container #search-group #name").val();
-            temp["role"] = $("#pjax-container #search-group #role").val();
-            temp["status"] = $("#pjax-container #search-group #status").val();
-
+            let obj = getSearchGroup();
+            for(let i in obj){
+                temp[i] = obj[i];
+            }
             return temp;
-        };
+        }
 
         var param = {
             url: '/admin/role/list',
@@ -153,30 +137,12 @@ $(function(){
                     checkbox: true
                 }, {
                     field: 'name',
-                    title: '姓名',
+                    title: '名称',
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'realName',
-                    title: '真实姓名',
-                    align: 'center',
-                    valign: 'middle'
-                }, {
-                    field: 'sex',
-                    title: '性别',
-                    formatter: function(res){
-                        return (res == 1) ? '男' : ((res == 0) ? '女' : '未知') ;
-                    },
-                    align: 'center',
-                    valign: 'middle'
-                }, {
-                    field: 'phone',
-                    title: '电话',
-                    align: 'center',
-                    valign: 'middle'
-                }, {
-                    field: 'email',
-                    title: '邮箱',
+                    field: 'guard_name',
+                    title: '用户组',
                     align: 'center',
                     valign: 'middle'
                 }, {
@@ -187,17 +153,12 @@ $(function(){
                     formatter: function(res){
                         return (1 == res) ? '<span class="text-success">启用</span>' : '<span class="text-danger">禁用</span>' ;
                     }
-                }, {
-                    field: 'lastIp',
-                    title: '最后登录ip',
-                    align: 'center',
-                    valign: 'middle',
-                }, {
-                    field: 'lastTime',
-                    title: '最后活跃时间',
+                },{
+                    field: 'desc',
+                    title: '描述',
                     align: 'center',
                     valign: 'middle'
-                }, {
+                },{
                     field: 'created_at',
                     title: '创建时间',
                     align: 'center',
@@ -208,17 +169,31 @@ $(function(){
                     title: '操作',
                     align: 'center',
                     valign: 'middle',
+                    events: {
+                        "click #deleteOne":function (e, value, row, index){
+                            var id = row.id;
+                            Delete(id);
+                        },
+                        "click #changeType":function (e, value, row, index){
+                            var id = row.id;
+                            var type = row.type;
+                            changeType(id,type);
+                        },
+                    },
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += "<a href='javascript:;' class='btn btn-xs btn-info' onclick=\"ViewOne('" + id + "', view='view')\" title='查看'><span class='glyphicon glyphicon-search'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"EditOne('" + id + "')\" title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' onclick=\"DeleteOne('" + id + "')\" title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        if(1 != id){
+                            result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/role/"+id+"/getPermission' title='权限分配'>权限管理</span></a>";
+                            result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/role/"+id+"/edit' title='编辑'>编辑</a>";
+                            result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'>删除</span></a>";
+                        }
 
                         return result;
                     }
                 }],
             }
+
         //初始化表格
         oTable.Init('#tb_departments', param);
     }

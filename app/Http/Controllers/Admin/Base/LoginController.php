@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Base;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\AdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends AdminController
 {
@@ -33,8 +34,9 @@ class LoginController extends AdminController
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Request $request)
     {
+        // dd(__CLASS__, __FUNCTION__, $request);
         $this->middleware('guest:admin')->except('logout');
     }
 
@@ -59,7 +61,7 @@ class LoginController extends AdminController
     /**
      * login page
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         return view('admin.login');
     }
@@ -83,5 +85,5 @@ class LoginController extends AdminController
         $request->session()->invalidate();
         return redirect('/');
     }
-
+    
 }

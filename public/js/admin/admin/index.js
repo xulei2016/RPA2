@@ -28,45 +28,35 @@ $(function(){
         });
 
         //批量删除
-        $("#container .inner-content .middle-layer .deletebatch").on('click', function(){
-        	var ids = idList.join(',');
+        $("#pjax-container section.content #toolbar #deleteAll").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
             if("" == ids){
-                responseTip(1,'您尚未选择要删除的数据！',1500);
+                swal('提示','你还没有选择需要操作的行！！！','warning');
         	}else{
-	            myConfirmModal("确定要批量删除资讯吗？",function(){
-		            $.ajax({
-		                url:"/admin/sys_admin_manage/deleteAll",
-		                type:"post",
-		                data:{"ids":ids},
-		                dataType:"json",
-		                beforeSend:function(xhr){
-		                    $("#loading").modal('show');
-		                },
-		                complete:function(){
-		                    $("#loading").modal('hide');
-		                },
-		                success:function(json,statusText){
-		                    if(json.code == 200){
-                                if(currentPage != 1 && (total_count - idList.length) % pageSize == 0){
-                                    currentPage = currentPage - 1;
-                                }
-                                idList = [];//初始化idList的值
-                                render(currentPage);
-                            }else{
-                                responseTip(json.code,json.info,1500);
-                            }
-		                },
-		                error:errorResponse
-		            });
-	            });
-        	}
+                Delete(ids);
+            }
+        });
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/admin/export?"+$url;
+        });
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #export").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/admin/export?"+$url+'&id='+ids;
         });
     }
 
     /**
      * 删除单条记录
      */
-    function DeleteOne(id){
+    function Delete(id){
         Swal({
             title: "确认删除?",
             type: "warning",
@@ -122,6 +112,16 @@ $(function(){
         });
     }
 
+    //get searchGroup
+    function getSearchGroup(){
+        //特殊格式的条件处理
+        var temp = {
+            name : $("#pjax-container #search-group #name").val(),
+            type : $("#pjax-container #search-group #type").val()
+        }
+        return temp;
+    }
+
     //分页参数
     function pageNation(oTable){
         oTable.queryParams = function (params) {
@@ -134,12 +134,12 @@ $(function(){
             temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
 
             //特殊格式的条件处理
-            temp["name"] = $("#pjax-container #search-group #name").val();
-            temp["role"] = $("#pjax-container #search-group #role").val();
-            temp["status"] = $("#pjax-container #search-group #status").val();
-
+            let obj = getSearchGroup();
+            for(let i in obj){
+                temp[i] = obj[i];
+            }
             return temp;
-        };
+        }
 
         var param = {
             url: '/admin/admin/list',
@@ -205,7 +205,7 @@ $(function(){
                     events: {
                         "click #deleteOne":function (e, value, row, index){
                             var id = row.id;
-                            DeleteOne(id);
+                            Delete(id);
                         },
                         "click #changeType":function (e, value, row, index){
                             var id = row.id;
@@ -227,8 +227,6 @@ $(function(){
 
         //初始化表格
         oTable.Init('#tb_departments', param);
-
-
     }
 
     init();
