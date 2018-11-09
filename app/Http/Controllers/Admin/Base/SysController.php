@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\admin\base;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Base\AdminController;
+use App\Http\Controllers\Base\BaseAdminController;
 
 /**
  * SysController
  * @author lay
  * @since 2018-10-25
  */
-class SysController extends AdminController
+class SysController extends BaseAdminController
 {
     
     /**

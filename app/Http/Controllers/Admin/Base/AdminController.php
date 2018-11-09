@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Admin\SysAdmin;
-use App\Http\Controllers\Base\AdminController as AdminBasecontroller;
+use App\Http\Controllers\Base\BaseAdminController;
 use Excel;
 
 /**
@@ -12,7 +12,7 @@ use Excel;
  * @author lay
  * @since 2018-10-25
  */
-class AdminController extends AdminBasecontroller
+class AdminController extends BaseAdminController
 {
     /** 
      * Create a new controller instance. 

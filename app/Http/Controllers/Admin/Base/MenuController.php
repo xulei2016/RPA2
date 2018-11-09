@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\SysMenu;
-use App\Http\Controllers\Base\AdminController as AdminBaseController;
+use App\Http\Controllers\Base\BaseAdminController;
 
 /**
  * MenuController
  * @author lay
  * @since 2018-10-25
  */
-class MenuController extends AdminBaseController
+class MenuController extends BaseAdminController
 {
     /** 
      * Create a new controller instance. 

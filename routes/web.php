@@ -61,8 +61,12 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
 
             //角色
             Route::get('/role/list', 'RoleController@pagenation');
-            Route::get('/role/{id}/permission', 'RoleController@getPermission');
+            Route::get('/role/{id}/getPermission', 'RoleController@getPermission');
             Route::resource('/role', 'RoleController');
+
+            //权限模型
+            Route::post('/permission/getTree', 'PermissionController@getTree');
+            Route::resource('/permission', 'PermissionController');
         });
     });
 });

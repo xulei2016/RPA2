@@ -14,7 +14,7 @@ use App\Http\Controllers\Base\BaseController;
  * @author hsu lay
  * @since 2018/2
  */
-class AdminController extends BaseController
+class BaseAdminController extends BaseController
 {
     //session变量
     protected $sys_info;

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Base\AdminController;
+use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Validation\ValidationException;
 
-class LoginController extends AdminController
+class LoginController extends BaseAdminController
 {
     /*
     |--------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 <div class="box box-info">
         <div class="box-header with-border">
-            <h3 class="box-title">添加管理员</h3>
+            <h3 class="box-title">添加操作</h3>
         </div>
         <!-- /.box-header -->
         <!-- form start -->

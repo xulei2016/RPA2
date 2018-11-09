@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\SysRole;
-use App\Http\Controllers\Base\AdminController as AdminBaseController;
+use App\Http\Controllers\Base\BaseAdminController;
 
 /**
  * ROLE 角色管理
  * @author hsu lay
  * @since 2018/2
  */
-class RoleController extends AdminBaseController
+class RoleController extends BaseAdminController
 {
     /** 
      * Create a new controller instance. 
@@ -125,11 +125,7 @@ class RoleController extends AdminBaseController
      * getPermission
      */
     public function getPermission(Request $request){
-        $rows = $request->rows;
-        $param = $this->get_params($request, ['name', 'type']);
-        $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
-        $result = SysRole::where($conditions)
-                ->paginate($rows);
-        return $result;
+        $roles = SysRole::all();
+        return view('admin.base.role.permission', ['roles' => $roles]);
     }
 }
