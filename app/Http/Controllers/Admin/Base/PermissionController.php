@@ -33,6 +33,7 @@ class PermissionController extends BaseAdminController
     {
         $top_list = SysPermission::where('table','=',1)->orderBy('sort','asc')->get();
         $lists = $this->get_group_menu($top_list);
+        $lists = $this->initTree($lists);
         return view('admin.base.permission.index', ['lists' => $lists]);
     }
 
@@ -56,7 +57,8 @@ class PermissionController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['pid','name','guard_name','status','sort','desc'], false);
+        $data = $this->get_params($request, ['pid','name','guard_name','status','sort','desc','table'], false);
+        $data['table'] = isset($data['table']) ? $data['table']+1 : 1 ;
         $result = SysPermission::create($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
@@ -81,9 +83,10 @@ class PermissionController extends BaseAdminController
      * @param  \DummyFullModelClass  $DummyModelVariable
      * @return \Illuminate\Http\Response
      */
-    public function edit()
+    public function edit(Request $request, $id)
     {
-        //
+        $info = SysPermission::where('id', $id)->first();
+        return view('admin.base.permission.edit', ['info' => $info]);
     }
 
     /**
@@ -96,7 +99,11 @@ class PermissionController extends BaseAdminController
      */
     public function update(Request $request)
     {
-        //
+        $data = $this->get_params($request, ['id','pid','name','guard_name','status','sort','desc','table'], false);
+        $data['table'] = isset($data['table']) ? $data['table']+1 : 1 ;
+        $result = SysPermission::where('id', $data['id'])->update($data);
+        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        return $this->ajax_return(200, '操作成功！');
     }
 
     /**
@@ -111,20 +118,33 @@ class PermissionController extends BaseAdminController
         $result = SysPermission::destroy($id);
         return $this->ajax_return(200, '操作成功！');
     }
+        
+    /**
+     * orderUpdate
+     * @return array $resulr
+     */
+    public function orderUpdate(Request $request){
+        $order = $request->_order;
+        $order = json_decode($order,true);
+        if($this->sortUpdate($order)){
+            return $this->ajax_return(200, '操作成功！');
+        }
+    }
     
     /**
      * sortUpdate
      * @return bool $resulr
      */
-    protected function sortUpdate($order){
+    protected function sortUpdate($order, $table = 0, $pid = 0){
+        $table += 1;
         foreach($order as $k => $sort){
             $id = $sort['id'];
             $dbsort = SysPermission::find($id);
-            if($k != $dbsort->order){
-                SysPermission::where('id', $id)->update(['order' => $k]);
+            if($k != $dbsort->sort || $table != $dbsort->table || $pid != $dbsort->pid){
+                SysPermission::where('id', $id)->update(['sort' => $k, 'table' => $table, 'pid' => $pid]);
             }
             if(isset($sort['children'])){
-                $this->sortUpdate($sort['children']);
+                $this->sortUpdate($sort['children'], $table, $id);
             }
         }
         return true;
@@ -145,12 +165,30 @@ class PermissionController extends BaseAdminController
     private function get_group_menu($menus){
         foreach($menus as $menu){
             $result = SysPermission::where('pid','=',$menu['id'])->orderBy('sort','asc')->get();
-            $result = $this->get_group_menu($result);
             if(!$result->isEmpty()){
+                $result = $this->get_group_menu($result);
                 // array_splice($menus, 1, 0, $result);
                 $menu['child'] = $result;
             }
         }
         return $menus;
+    }
+
+    public function initTree($data){
+        $html = "<ol class='dd-list'>";
+        foreach($data as $list){
+            $html .= "<li class='dd-item' data-id=".$list['id'].">";
+            $html .= "<div class='dd-handle'>".$list['desc']."</strong>&nbsp;&nbsp;&nbsp;<a href='javascript:void(0);' class='dd-nodrag'>".$list['name']."</a>";
+            $html .= "<span class='pull-right dd-nodrag'>";
+            $html .= "<a url='/admin/sys_permission/".$list['id']."/edit' onclick='operation($(this));'><i class='fa fa-edit'></i></a>";
+            $html .= "<a href='javascript:void(0);' data-id=".$list['id']." class='tree_branch_delete'><i class='fa fa-trash'></i></a>";
+            $html .= "</span></div>";
+            if(isset($list['child'])){
+                $html .= $this->initTree($list['child']);
+            }
+            $html .= "</li>";
+        }
+        $html .= "</ol>";
+        return $html;
     }
 }

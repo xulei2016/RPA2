@@ -4,7 +4,7 @@
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="form-horizontal" id="form" onsubmit="add($(this));return false;">
+        <form class="form-horizontal" id="form">
             <div class="box-body">
                 <div class="form-group">
                     <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
@@ -37,7 +37,7 @@
             <!-- /.box-body -->
             <div class="box-footer">
                 <button type="reset" class="btn btn-warning" id="form-reset">重置</button>
-                <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
+                <button type="button" class="btn btn-info pull-right" id="save">提交</button>
                 <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
             </div>
             <!-- /.box-footer -->
@@ -51,6 +51,10 @@
                 radioClass: 'iradio_minimal-blue',
             });
         });
+
+        $('#modal #form #save').click(function(){
+            add($(this).parents('#form'));
+        });
     
         //添加
         function add(e){
@@ -59,19 +63,17 @@
         
         //提交信息的表单配置
         var FormOptions={
-            url:'/admin/role',
-            success:successResponse,
+            url:'/admin/sys_role',
+            success:function(json, xml){
+                if(200 == json.code){
+                    toastr.success('操作成功！');
+                    $.pjax.reload('#pjax-container');
+                    var formContinue = $('#form-continue').is(':checked');
+                    !formContinue ? $('#modal').modal('hide') : $('#model #form-reset').click() ;
+                }else{
+                    toastr.error(json.info);
+                }
+            },
             error:RPA.errorReponse
         };
-    
-        var successResponse = function(json, xml){
-            if(200 == json.code){
-                toastr.success('操作成功！');
-                $.pjax.reload('#pjax-container');
-                var formContinue = $('#form-continue').is(':checked');
-                !formContinue ? $('#modal').modal('hide') : $('#model #form-reset').click() ;
-            }else{
-                toastr.error(json.info);
-            }
-        }
     </script>

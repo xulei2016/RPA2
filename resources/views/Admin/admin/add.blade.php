@@ -100,18 +100,16 @@
         //提交信息的表单配置
         var FormOptions={
             url:'/admin/admin',
-            success:successResponse,
+            success:function(json, xml){
+                if(200 == json.code){
+                    toastr.success('操作成功！');
+                    $.pjax.reload('#pjax-container');
+                    var formContinue = $('#form-continue').is(':checked');
+                    !formContinue ? $('#modal').modal('hide') : $('#model #form-reset').click() ;
+                }else{
+                    toastr.error(json.info);
+                }
+            },
             error:RPA.errorReponse
         };
-    
-        var successResponse = function(json, xml){
-            if(200 == json.code){
-                toastr.success('操作成功！');
-                $.pjax.reload('#pjax-container');
-                var formContinue = $('#form-continue').is(':checked');
-                !formContinue ? $('#modal').modal('hide') : $('#model #form-reset').click() ;
-            }else{
-                toastr.error(json.info);
-            }
-        }
     </script>

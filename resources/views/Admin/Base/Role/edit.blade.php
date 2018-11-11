@@ -62,19 +62,17 @@
 
         //提交信息的表单配置
         var FormOptions={
-            url:'/admin/role/'+id,
-            success:successResponse,
+            url:'/admin/sys_role/'+id,
+            success:function(json, xml){
+                if(200 == json.code){
+                    toastr.success('操作成功！');
+                    $.pjax.reload('#pjax-container');
+                    var formContinue = $('#form-continue').is(':checked');
+                    !formContinue ? $('#modal').modal('hide') : '' ;
+                }else{
+                    toastr.error(json.info);
+                }
+            },
             error:RPA.errorReponse
         };
-    
-        var successResponse = function(json, xml){
-            if(200 == json.code){
-                toastr.success('操作成功！');
-                $.pjax.reload('#pjax-container');
-                var formContinue = $('#form-continue').is(':checked');
-                !formContinue ? $('#modal').modal('hide') : '' ;
-            }else{
-                toastr.error(json.info);
-            }
-        }
     </script>

@@ -49,6 +49,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | cache configue
+    |--------------------------------------------------------------------------
+    |
+    | The logo of all admin pages when the sidebar menu is collapsed. You can
+    | also set it as an image by using a `img` tag, eg
+    | '<img src="http://logo-url" alt="Admin logo">'.
+    |
+    */
+    'cache' => [
+        'menuList' => 'menuList',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | RPA route settings
     |--------------------------------------------------------------------------
     |
@@ -100,94 +114,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | RPA auth setting
-    |--------------------------------------------------------------------------
-    |
-    | Authentication settings for all admin pages. Include an authentication
-    | guard and a user provider setting of authentication driver.
-    |
-    | You can specify a controller for `login` `logout` and other auth routes.
-    |
-    */
-    'auth' => [
-
-        'controller' => App\Admin\Controllers\AuthController::class,
-
-        'guards' => [
-            'admin' => [
-                'driver'   => 'session',
-                'provider' => 'admin',
-            ],
-        ],
-
-        'providers' => [
-            'admin' => [
-                'driver' => 'eloquent',
-                'model'  => Encore\Admin\Auth\Database\Administrator::class,
-            ],
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | RPA upload setting
-    |--------------------------------------------------------------------------
-    |
-    | File system configuration for form upload files and images, including
-    | disk and upload path.
-    |
-    */
-    'upload' => [
-
-        // Disk in `config/filesystem.php`.
-        'disk' => 'admin',
-
-        // Image and file upload path under the disk above.
-        'directory' => [
-            'image' => 'images',
-            'file'  => 'files',
-        ],
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | RPA database settings
-    |--------------------------------------------------------------------------
-    |
-    | Here are database settings for RPA builtin model & tables.
-    |
-    */
-    'database' => [
-
-        // Database connection for following tables.
-        'connection' => '',
-
-        // User tables and model.
-        'users_table' => 'sys_admin_users',
-        'users_model' => Encore\Admin\Auth\Database\Administrator::class,
-
-        // Role table and model.
-        'roles_table' => 'sys_admin_roles',
-        'roles_model' => Encore\Admin\Auth\Database\Role::class,
-
-        // Permission table and model.
-        'permissions_table' => 'sys_admin_permissions',
-        'permissions_model' => Encore\Admin\Auth\Database\Permission::class,
-
-        // Menu table and model.
-        'menu_table' => 'sys_admin_menu',
-        'menu_model' => Encore\Admin\Auth\Database\Menu::class,
-
-        // Pivot table for table above.
-        'operation_log_table'    => 'sys_admin_operation_log',
-        'user_permissions_table' => 'sys_admin_user_permissions',
-        'role_users_table'       => 'sys_admin_role_users',
-        'role_permissions_table' => 'sys_admin_role_permissions',
-        'role_menu_table'        => 'sys_admin_role_menu',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | User operation log setting
     |--------------------------------------------------------------------------
     |
@@ -213,16 +139,6 @@ return [
             'admin/auth/logs*',
         ],
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Admin map field provider
-    |--------------------------------------------------------------------------
-    |
-    | Supported: "tencent", "google", "yandex".
-    |
-    */
-    'map_provider' => 'tencent',
 
     /*
     |--------------------------------------------------------------------------
@@ -256,16 +172,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Login page background image
-    |--------------------------------------------------------------------------
-    |
-    | This value is used to set the background image of login page.
-    |
-    */
-    'login_background_image' => '',
-
-    /*
-    |--------------------------------------------------------------------------
     | Show version at footer
     |--------------------------------------------------------------------------
     |
@@ -287,15 +193,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Menu bind to permission
-    |--------------------------------------------------------------------------
-    |
-    | whether enable menu bind to a permission
-    */
-    'menu_bind_permission' => true,
-
-    /*
-    |--------------------------------------------------------------------------
     | Enable default breadcrumb
     |--------------------------------------------------------------------------
     |
@@ -312,17 +209,4 @@ return [
     | the extension files will be generated in this directory.
     */
     'extension_dir' => app_path('Admin/Extensions'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Settings for extensions.
-    |--------------------------------------------------------------------------
-    |
-    | You can find all available extensions here
-    | https://github.com/RPA-extensions.
-    |
-    */
-    'extensions' => [
-
-    ],
 ];

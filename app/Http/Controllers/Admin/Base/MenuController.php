@@ -53,7 +53,7 @@ class MenuController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','role','permission'], false);
+        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','unique_name'], false);
         $result = SysMenu::create($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
@@ -92,7 +92,7 @@ class MenuController extends BaseAdminController
      */
     public function update(Request $request)
     {
-        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','id'], false);
+        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','id','unique_name'], false);
         $result = SysMenu::where('id', $data['id'])
                 ->update($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
@@ -128,15 +128,15 @@ class MenuController extends BaseAdminController
      * sortUpdate
      * @return bool $resulr
      */
-    protected function sortUpdate($order){
+    protected function sortUpdate($order, $pid = 0){
         foreach($order as $k => $sort){
             $id = $sort['id'];
             $dbsort = SysMenu::find($id);
-            if($k != $dbsort->order){
-                SysMenu::where('id', $id)->update(['order' => $k]);
+            if($k != $dbsort->order || $pid != $dbsort->pid){
+                SysMenu::where('id', $id)->update(['order' => $k, 'parent_id' => $pid]);
             }
             if(isset($sort['children'])){
-                $this->sortUpdate($sort['children']);
+                $this->sortUpdate($sort['children'], $id);
             }
         }
         return true;
@@ -165,5 +165,52 @@ class MenuController extends BaseAdminController
             }
         }
         return $menuList;
+    }
+
+    /*
+    * 获取菜单数据
+    */
+    public function getMenuList()
+    {
+        //判断缓存是否存在
+        if (session()->has(config('admin.cache.menuList'))) {
+            $menu = session(config('admin.cache.menuList'));
+        }else{
+            $menu = self::AllMenus();
+            // session([config('admin.cache.menuList') => $menu]);//无效
+        }
+        return $this->initMenuList($menu);
+    }
+
+    //菜单列表视图
+    public function initMenuList($menus){
+        if ($menus){
+            $item = '';
+            foreach ($menus as $v){
+                $item .= $this->getNetableItem($v);
+            }
+            return $item;
+        }
+        return '暂无菜单';
+    }
+
+    //返回菜单 HTML代码
+    public function  getNetableItem($data){
+        if (isset($data['child'])){
+            return $this->getHandleList($data);
+        }
+        return '<li><a href="'.$data['uri'].'"><i class="'.$data['icon'].'"></i><span>'.$data['title'].'</span></a></li>';
+    }
+
+    //判断是否有子集
+    public function getHandleList($data){
+        $handle = '<li class="treeview"><a href="'.$data['uri'].'"><i class="'.$data['icon'].'"></i><span>'.$data['title'].'</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu">';
+
+        foreach ($data['child'] as $v){
+            $handle .= $this->getNetableItem($v);
+        }
+        $handle .= '</ul></li>';
+
+        return $handle;
     }
 }

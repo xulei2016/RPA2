@@ -12,15 +12,18 @@ RPA.prototype = {
         this.bind.call(this);
     },
     config: {
-        'pjax': {
+        pjax: {
             container: '#pjax-container', //pjax 容器
             element: 'a:not(a[target="_blank"])', //pjax 监听对象
-            // obj: $('body .wrapper aside .sidebar'),
             obj: $(document),
             //load model element
             model: $('#Modal .modal-content .modal-body'),
         },
-        'NProgress-parent': '#pjax-container', //nprogress 父级作用元素
+        NProgressParent: '#pjax-container', //nprogress 父级作用元素
+        sidebar: {
+            obj:$('body .wrapper aside .sidebar'),
+            activeBar:'/admin'
+        },
     },
     bind: function() {
         var _this = this;
@@ -43,6 +46,12 @@ RPA.prototype = {
         //异步请求csrf头
         $.ajaxSetup({
             headers: { 'X-CSRF-TOKEN': LA.token }
+        });
+
+        //侧边栏点击事件
+        _this.config.sidebar.obj.on('click','.sidebar-menu a',function(e){
+            _this.config.sidebar.activeBar = $(this).attr('href');
+            _this.initPage();
         });
     },
     screenOperation: {
@@ -145,9 +154,9 @@ RPA.prototype = {
         }
     },
     initPage: function() {
-        selectedMenu = 'admin/admin';
-        //整页刷新时，菜单显示
-        var selector = $('.sidebar-menu').find('a[href="/' + selectedMenu + '"]');
+        selectedMenu = RPA.config.sidebar.activeBar;
+        //菜单显示
+        var selector = $('.sidebar-menu').find('a[href="' + selectedMenu + '"]');
         selector.parent().addClass('active');
         selector.parents('ul.treeview-menu').css('display', 'block');
         selector.parents('li.treeview').addClass('menu-open');

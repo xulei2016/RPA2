@@ -4,7 +4,7 @@
         </div>
         <!-- /.box-header -->
         <!-- form start -->
-        <form class="form-horizontal" id="form" onsubmit="add($(this));return false;">
+        <form class="form-horizontal" id="form">
 
 
             <ul id="tree" class="ztree"></ul>
@@ -12,9 +12,7 @@
 
             <!-- /.box-body -->
             <div class="box-footer">
-                <button type="reset" class="btn btn-warning" id="form-reset">重置</button>
-                <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
-                <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
+                <button type="button" class="btn btn-info pull-right" id="save">提交</button>
             </div>
             <!-- /.box-footer -->
         </form>
@@ -30,6 +28,7 @@
             */
             function init(){
                 bindEvent();
+                initPermission();
             }
 
             //绑定事件
@@ -41,16 +40,29 @@
                         radioClass: 'iradio_minimal-blue',
                     });
                 });
+
+                $('#modal #form #save').click(function(){
+                    add($(this));
+                });
             }
         
             //添加
-            function add(e){
-                RPA.ajaxSubmit(e, FormOptions);
+            function add(){
+                var treeObj = $.fn.zTree.getZTreeObj("tree");
+                var nodes = treeObj.getCheckedNodes(true);
+                $.post('/admin/sys_role/{{ $id }}/roleHasPermission', {data:nodes}, function(json){
+                    if(200 == json.code){
+                        toastr.success('操作成功！');
+                        $.pjax.reload('#pjax-container');
+                    }else{
+                        toastr.error(json.info);
+                    }
+                })
             }
 
             //提交信息的表单配置
             var FormOptions={
-                url:'/admin/role',
+                url:'/admin/sys_role',
                 success:successResponse,
                 error:RPA.errorReponse
             };
@@ -59,51 +71,58 @@
                 if(200 == json.code){
                     toastr.success('操作成功！');
                     $.pjax.reload('#pjax-container');
-                    var formContinue = $('#form-continue').is(':checked');
-                    !formContinue ? $('#modal').modal('hide') : $('#model #form-reset').click() ;
                 }else{
                     toastr.error(json.info);
                 }
             }
 
+            var zTreeObj;
+            // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
+            var setting = {
+                check: {
+                    enable: true,
+                    chkStyle: 'checkbox',
+                    chkboxType: {"Y": "ps", "N": "ps"},
+                },
+                view: {
+                    showIcon: false,
+                    dblClickExpand: false
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "pid",
+                        rootPId: 0
+                    }
+                },
+                callback: {
+                    onClick: function(e,id,o){
+                        var treeObj = $.fn.zTree.getZTreeObj('tree');
+                        var node = treeObj.getNodeByTId(o.tId);
+                        if (node.open) {
+                            treeObj.expandNode(node, false, false, true);
+                        }else{
+                            treeObj.expandNode(node, true, false, true);
+                        }
+                    },
+                },
+                
+            };
+
+            function initPermission(){
+                $.post('/admin/sys_role/{{ $id }}/getCheckPermission', {}, function(json){
+                    if(200 == json.code){
+                        var zNodes = json.data;
+                        zTreeObj = $.fn.zTree.init($("#tree"), setting, zNodes);
+                    }else{
+                        Swal('Oops...','权限获取失败！','error');
+                    }
+                });
+            }
+
+
             init();
         });
         
-        var zTreeObj;
-        // zTree 的参数配置，深入使用请参考 API 文档（setting 配置详解）
-        var setting = {
-            check: {
-                enable: true,
-                chkStyle: 'checkbox',
-                chkboxType: {"Y": "ps", "N": "ps"},
-            },
-            view: {
-                showIcon: false,
-                dblClickExpand: false
-            },
-            callback: {
-                onClick: function(e,id,o){
-                    var treeObj = $.fn.zTree.getZTreeObj('treeDemo');
-                    var node = treeObj.getNodeByTId(o.tId);
-                    if (node.open) {
-                        treeObj.expandNode(node, false, false, true);
-                    }else{
-                        treeObj.expandNode(node, true, false, true);
-                    }
-                },
-            }
-        };
-        
-        // zTree 的数据属性，深入使用请参考 API 文档（zTreeNode 节点数据详解）
-        var zNodes = [
-            {name:"test1", open:true, children:[
-                {name:"test1_1"}, {name:"test1_2"}
-            ]},
-            {name:"test2", open:true, children:[
-                {name:"test2_1"}, {name:"test2_2"}
-            ]}
-        ];
-        $(document).ready(function(){
-            zTreeObj = $.fn.zTree.init($("#tree"), setting, zNodes);
-        });
   </script>

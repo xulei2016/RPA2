@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
-use App\Models\Admin\Base\SysRole;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use App\Http\Controllers\Base\BaseAdminController;
+use Excel;
 
 /**
  * ROLE 角色管理
@@ -52,7 +54,7 @@ class RoleController extends BaseAdminController
     public function store(Request $request)
     {
         $data = $this->get_params($request, ['name','guard_name','type','desc'], false);
-        $result = SysRole::create($data);
+        $result = Role::create($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -76,7 +78,7 @@ class RoleController extends BaseAdminController
      */
     public function edit($id)
     {
-        $info = SysRole::where('id', $id)->first();
+        $info = Role::where('id', $id)->first();
         return view('admin.base.role.edit', ['info' => $info]);
     }
 
@@ -90,7 +92,7 @@ class RoleController extends BaseAdminController
     public function update(Request $request)
     {
         $data = $this->get_params($request, ['name','guard_name','type','desc','id'], false);
-        $result = SysRole::where('id', $data['id'])
+        $result = Role::where('id', $data['id'])
                 ->update($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
         return $this->ajax_return(200, '恭喜你，操作成功！');
@@ -104,7 +106,7 @@ class RoleController extends BaseAdminController
      */
     public function destroy($id)
     {
-        $result = SysRole::destroy($id);
+        $result = Role::destroy($id);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -116,7 +118,7 @@ class RoleController extends BaseAdminController
         $rows = $request->rows;
         $param = $this->get_params($request, ['name', 'type']);
         $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
-        $result = SysRole::where($conditions)
+        $result = Role::where($conditions)
                 ->paginate($rows);
         return $result;
     }
@@ -124,8 +126,68 @@ class RoleController extends BaseAdminController
     /**
      * getPermission
      */
-    public function getPermission(Request $request){
-        $roles = SysRole::all();
-        return view('admin.base.role.permission', ['roles' => $roles]);
+    public function getPermission(Request $request, $id){
+        $roles = Role::all();
+        return view('admin.base.role.permission', ['roles' => $roles, 'id' => $id]);
+    }
+
+    /**
+     * getCheckPermission
+     */
+    public function getCheckPermission(Request $request, $id){
+        $roles = Permission::where('status','1')->get(['id','pid','name as desc','desc as name'])->toArray();
+        $role = Role::find($id);
+        foreach($roles as &$v){
+            if($role->hasPermissionTo($v['desc'])){
+                $v['open'] = true;
+                $v['checked'] = true;
+            }
+        }
+        return $this->ajax_return('200', '查询成功！', $roles);
+    }
+
+    /**
+     * roleHasPermission
+     */
+    public function roleHasPermission(Request $request, $id){
+        $data = $request->all();
+        $permissions = [];
+        $role = Role::find($id);
+        $roleReponsitory = Permission::all('name');
+        foreach($roleReponsitory as $roles){
+            $role->revokePermissionTo($roles->name);
+        }
+        if(isset($data['data'])){
+            foreach($data['data'] as $permission){
+                array_push($permissions, $permission['desc']);
+            }
+            $role->givePermissionTo($permissions);
+        }
+        return $this->ajax_return('200', '操作成功！');
+    }
+    
+    /**
+     * export
+     */
+    public function export(Request $request){
+        $param = $this->get_params($request, ['name', 'type', 'id']);
+        $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
+
+        if(isset($param['id'])){
+            $data = Role::where($conditions)->whereIn('id', explode(',',$param['id']))->get()->toArray();
+        }else{
+            $data = Role::where($conditions)->get()->toArray();
+        }
+        
+        $cellData = [];
+        $cellData[] = array_keys($data[0]);
+        foreach($data as $k => $info){
+            array_push($cellData, array_values($info));
+        }
+        Excel::create('角色表',function($excel) use ($cellData){
+            $excel->sheet('信息库', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xls');
     }
 }

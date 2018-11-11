@@ -18,8 +18,13 @@ class CreatePermissionTables extends Migration
 
         Schema::create($tableNames['permissions'], function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('guard_name');
+            $table->integer('sort')->default('5'); 
+            $table->integer('pid'); 
+            $table->integer('table')->default('1'); 
+            $table->tinyInteger('status')->default('1'); 
+            $table->string('desc', 50); 
             $table->timestamps();
         });
 

@@ -31,7 +31,7 @@ $(function(){
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/role/export?"+$url;
+            location.href="/admin/sys_role/export?"+$url;
         });
 
         //导出全部
@@ -39,7 +39,7 @@ $(function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/role/export?"+$url+'&id='+ids;
+            location.href="/admin/sys_role/export?"+$url+'&id='+ids;
         });
     }
 
@@ -59,7 +59,7 @@ $(function(){
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/role/'+id,
+                        url: '/admin/sys_role/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
@@ -89,7 +89,7 @@ $(function(){
      */
     function changeType(id,type){
         $.ajax({
-            url:'/admin/role/changeType',
+            url:'/admin/sys_role/changeType',
             data:{id:id,type:type},
             type:'post',
             dataType:'json',
@@ -132,7 +132,7 @@ $(function(){
         }
 
         var param = {
-            url: '/admin/role/list',
+            url: '/admin/sys_role/list',
             columns: [{
                     checkbox: true
                 }, {
@@ -184,8 +184,8 @@ $(function(){
                         var id = value;
                         var result = "";
                         if(1 != id){
-                            result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/role/"+id+"/getPermission' title='权限分配'>权限管理</span></a>";
-                            result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/role/"+id+"/edit' title='编辑'>编辑</a>";
+                            result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/getPermission' title='权限分配'>权限管理</span></a>";
+                            result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/edit' title='编辑'>编辑</a>";
                             result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'>删除</span></a>";
                         }
 

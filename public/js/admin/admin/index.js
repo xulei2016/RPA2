@@ -49,7 +49,7 @@ $(function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/admin/export?"+$url+'&id='+ids;
+            location.href="/admin/sys_admin/export?"+$url+'&id='+ids;
         });
     }
 
@@ -69,7 +69,7 @@ $(function(){
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/admin/'+id,
+                        url: '/admin/sys_admin/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
@@ -99,7 +99,7 @@ $(function(){
      */
     function changeType(id,type){
         $.ajax({
-            url:'/admin/admin/changeType',
+            url:'/admin/sys_admin/changeType',
             data:{id:id,type:type},
             type:'post',
             dataType:'json',
@@ -142,7 +142,7 @@ $(function(){
         }
 
         var param = {
-            url: '/admin/admin/list',
+            url: '/admin/sys_admin/list',
             columns: [{
                     checkbox: true
                 }, {
@@ -217,7 +217,7 @@ $(function(){
                         var id = value;
                         var result = "";
                         result += "<a href='javascript:;' class='btn btn-xs btn-info' id='changeType' title='查看'><span class='glyphicon glyphicon-search'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/admin/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_admin/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;

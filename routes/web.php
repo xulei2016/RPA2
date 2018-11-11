@@ -48,25 +48,29 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::post('/dashboard', 'SysController@get_index');
 
             //管理员
-            Route::get('/admin/export', 'AdminController@export');
-            Route::get('/admin/list', 'AdminController@pagenation');
-            Route::post('/admin/admin/changeType', 'AdminController@changeType');
-            Route::post('/admin/edit', 'AdminController@update');
-            Route::resource('/admin', 'AdminController');
+            Route::get('/sys_admin/export', 'AdminController@export');
+            Route::get('/sys_admin/list', 'AdminController@pagenation');
+            Route::post('/sys_admin/admin/changeType', 'AdminController@changeType');
+            Route::post('/sys_admin/edit', 'AdminController@update');
+            Route::resource('/sys_admin', 'AdminController');
 
             //菜单
-            Route::resource('/menu', 'MenuController');
-            Route::post('/menu/edit', 'MenuController@update');//可优化掉
-            Route::post('/menu/order', 'MenuController@orderUpdate');
-
+            Route::resource('/sys_menu', 'MenuController');
+            Route::post('/sys_menu/edit', 'MenuController@update');//可优化掉
+            Route::post('/sys_menu/order', 'MenuController@orderUpdate');
+            
             //角色
-            Route::get('/role/list', 'RoleController@pagenation');
-            Route::get('/role/{id}/getPermission', 'RoleController@getPermission');
-            Route::resource('/role', 'RoleController');
+            Route::get('/sys_role/export', 'RoleController@export');
+            Route::get('/sys_role/list', 'RoleController@pagenation');
+            Route::get('/sys_role/{id}/getPermission', 'RoleController@getPermission');
+            Route::post('/sys_role/{id}/getCheckPermission', 'RoleController@getCheckPermission');
+            Route::post('/sys_role/{id}/roleHasPermission', 'RoleController@roleHasPermission');
+            Route::resource('/sys_role', 'RoleController');
 
             //权限模型
-            Route::post('/permission/getTree', 'PermissionController@getTree');
-            Route::resource('/permission', 'PermissionController');
+            Route::post('/sys_permission/getTree', 'PermissionController@getTree');
+            Route::post('/sys_permission/order', 'PermissionController@orderUpdate');
+            Route::resource('/sys_permission', 'PermissionController');
         });
     });
 });

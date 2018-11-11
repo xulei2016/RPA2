@@ -4,7 +4,7 @@
     </div>
     <!-- /.box-header -->
     <!-- form start -->
-    <form class="form-horizontal" id="form" onsubmit="add($(this));return false;">
+    <form class="form-horizontal" id="form">
         <div class="box-body">
             <div class="form-group">
                 <label for="name" class="col-sm-2 control-label">名称</label>
@@ -23,17 +23,6 @@
                 <div class="col-sm-10">
                     <select name="pid" id="select2-menu" class="form-control pid" id="select2-menu">
                         <option value="">顶级权限</option>
-                        {{-- @foreach($menuList as $menus)
-                        @if(empty($menus['child']))
-                        <option value ="{{ $menus['id'] }}">{{ $menus['title'] }}</option>
-                        @else
-                        <option value ="{{ $menus['id'] }}">{{ $menus['title'] }}
-                            @foreach($menus['child'] as $menu)
-                                <option value="{{ $menu['id'] }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $menu['title'] }}</option>
-                            @endforeach
-                        </option>
-                        @endif
-                        @endforeach --}}
                     </select>
                 </div>
             </div>
@@ -63,80 +52,94 @@
         <div class="box-footer">
             <input type="hidden" name="table" value="1" id="table">
             <button type="reset" class="btn btn-warning" id="form-reset">重置</button>
-            <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
+            <button type="button" class="btn btn-info pull-right" id="save">提交</button>
             <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
         </div>
         <!-- /.box-footer -->
     </form>
 </div>
 <script>
-    //iCheck for checkbox and radio inputs
-    $('input.minimal').iCheck({
-      checkboxClass: 'icheckbox_minimal-blue',
-      radioClass: 'iradio_minimal-blue'
-    });
-
-    $("#select2-menu").select2({
-        "allowClear":true,
-        "placeholder":"父级菜单",
-    });
-
-    $.post('/admin/permission/getTree', {}, function(json){
-        console.log(json);
-        if(200 == json.code){
-            html = initTree(json.data);
-            $('#select2-menu').append(html);
-        }else{
-            Swal(json.info, '', 'error');
+    $(function(){
+        //初始化
+        function init(){
+            bindEvent();
         }
-    });
 
-    function initTree(data){
-        var num = data.length;
-        let html = '';
-        let space = '&nbsp;&nbsp;';
-        for(let i = 0;i < num; i++){
-            let json = data[i];
-            html += "<option value ="+json.id+">"+ moreString(json['table']) + json.name +"</option>"
-            if(json.hasOwnProperty('child')){
-                html += initTree(json.child);
+        //绑定事件
+        function bindEvent(){
+            //iCheck for checkbox and radio inputs
+            $('input.minimal').iCheck({
+            checkboxClass: 'icheckbox_minimal-blue',
+            radioClass: 'iradio_minimal-blue'
+            });
+
+            $("#select2-menu").select2({
+                "allowClear":true,
+                "placeholder":"父级菜单",
+            });
+
+            $('#modal #form #save').click(function(){
+                add($(this));
+            });
+
+            $.post('/admin/sys_permission/getTree', {}, function(json){
+                if(200 == json.code){
+                    html = initTree(json.data);
+                    $('#select2-menu').append(html);
+                }else{
+                    Swal(json.info, '', 'error');
+                }
+            });
+        }
+
+        function initTree(data){
+            var num = data.length;
+            let html = '';
+            for(let i = 0;i < num; i++){
+                let json = data[i];
+                html += "<option value ="+json.id+" table="+json.table+">"+ moreString(json['table']) + json.desc +"</option>"
+                if(json.hasOwnProperty('child')){
+                    html += initTree(json.child);
+                }
             }
+            return html;
         }
-        return html;
-    }
 
-    function moreString(n){
-        let html = '&nbsp;';
-        let i = 0;
-        while(i < n){
-            i++;
-            html += html;
+        function moreString(n){
+            let html = '&nbsp;&nbsp;';
+            let i = 0;
+            while(i < n){
+                i++;
+                html += html;
+            }
+            return html;
         }
-        return html;
-    }
 
-    //添加
-    function add(e){
-        let table = $('#modal #select2-menu:selected').attr('table');
-        $('#modal #table').val(table+1);
-        RPA.ajaxSubmit(e, FormOptions);
-    }
-    
-    //提交信息的表单配置
-    var FormOptions={
-        url:'/admin/permission',
-        success:successResponse,
-        error:RPA.errorReponse
-    };
-
-    var successResponse = function(json, xml){
-        if(200 == json.code){
-            toastr.success('操作成功！');
-            var formContinue = $('#form-continue').is(':checked');
-            !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
-            $.pjax.reload('#pjax-container');
-        }else{
-            toastr.error(json.info);
+        //添加
+        function add(e){
+            let table = $('#modal #select2-menu option:selected').attr('table');
+            $('#modal #table').val(table);
+            RPA.ajaxSubmit(e.parents('#form'), FormOptions);
         }
-    }
+        
+        //提交信息的表单配置
+        var FormOptions={
+            url:'/admin/sys_permission',
+            success:function(json, xml){
+                console.log(json);
+                if(200 == json.code){
+                    toastr.success('操作成功！');
+                    var formContinue = $('#form-continue').is(':checked');
+                    !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
+                    $.pjax.reload('#pjax-container');
+                }else{
+                    toastr.error(json.info);
+                }
+            },
+            error:RPA.errorReponse
+        };
+
+        init();
+    });
+
 </script>

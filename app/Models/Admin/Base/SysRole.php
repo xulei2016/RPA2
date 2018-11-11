@@ -16,4 +16,12 @@ class SysRole extends Model
     //黑名单，白名单
     // protected $fillable = ['name'];
     protected $guarded = [];
+
+    /**
+     * 获取全部权限
+     */
+    public function permissions()
+    {
+         return $this->hasMany('App\Models\Admin\Base\sysRoleHasPermission','role_id','id');
+    }
 }

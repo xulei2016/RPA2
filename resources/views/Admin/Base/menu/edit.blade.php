@@ -4,7 +4,7 @@
     </div>
     <!-- /.box-header -->
     <!-- form start -->
-    <form class="form-horizontal" id="form" onsubmit="add($(this));return false;">
+    <form class="form-horizontal" id="form">
         <div class="box-body">
             <div class="form-group">
                 <label for="parent_id" class="col-sm-2 control-label">父级菜单</label>
@@ -31,6 +31,12 @@
                 </div>
             </div>
             <div class="form-group">
+                <label for="unique_name" class="col-sm-2 control-label">权限键值</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="unique_name" id="unique_name" value="{{ $menuInfo->unique_name }}" placeholder="unique_name" required>
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="uri" class="col-sm-2 control-label">路径</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="uri" id="uri" value="{{ $menuInfo->uri }}" placeholder="输入路径" required>
@@ -45,26 +51,15 @@
             <div class="form-group">
                 <label for="order" class="col-sm-2 control-label">排序</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" value="5" name="order" id="order" value="{{ $menuInfo->order }}" placeholder="排序">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="role" class="col-sm-2 control-label">角色</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="role" id="role" placeholder="角色">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="permission" class="col-sm-2 control-label">权限</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" name="permission" id="permission" placeholder="权限">
+                    <input type="text" class="form-control" name="order" id="order" value="{{ $menuInfo->order }}" placeholder="排序">
                 </div>
             </div>
         </div>
         <!-- /.box-body -->
         <div class="box-footer">
+            {{ method_field('PATCH')}}
             <input type="text" class="hidden" name="id" id="id" value="{{ $menuInfo->id }}">
-            <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
+            <button type="button" class="btn btn-info pull-right" id="save">提交</button>
             <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续编辑</label></div>
         </div>
         <!-- /.box-footer -->
@@ -82,6 +77,10 @@
         "placeholder":"父级菜单",
     });
 
+    $('#modal #form #save').click(function(){
+        add($(this).parents('#form'));
+    });
+
     //添加
     function add(e){
         RPA.ajaxSubmit(e, FormOptions);
@@ -89,19 +88,18 @@
     
     //提交信息的表单配置
     var FormOptions={
-        url:'/admin/menu/edit',
-        success:successResponse,
+        url:'/admin/sys_menu/edit',
+        success:function(json, xml){
+            if(200 == json.code){
+                toastr.success('操作成功！');
+                $.pjax.reload('#pjax-container');
+                var formContinue = $('#form-continue').is(':checked');
+                !formContinue ? $('#modal').modal('hide') : '' ;
+                $.pjax.reload('#pjax-container');
+            }else{
+                toastr.error(json.info);
+            }
+        },
         error:RPA.errorReponse
     };
-
-    var successResponse = function(json, xml){
-        if(200 == json.code){
-            toastr.success('操作成功！');
-            $.pjax.reload('#pjax-container');
-            var formContinue = $('#form-continue').is(':checked');
-            !formContinue ? $('#modal').modal('hide') : '' ;
-        }else{
-            toastr.error(json.info);
-        }
-    }
 </script>
