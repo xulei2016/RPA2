@@ -12,27 +12,12 @@ use App\Http\Controllers\Base\BaseAdminController;
  */
 class SysController extends BaseAdminController
 {
-    
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * dashboard
      */
-    public function index(){
-        //管理员信息
-        // $admin = session('sys_admin');
-        // //通知列表
-        // $message = $this->getMessage();
-        // //系统信息
-        // $info = $this->sys_info();
-        // dd(auth()->guard('admin')->check(), auth()->guard('admin')->user());
+    public function index(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
         return view('admin.index.index');
     }
     

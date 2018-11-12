@@ -61,7 +61,7 @@
                 </div>
                 
                 <div class="btn-group">
-                    <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/menu/create" title="新增" onclick="operation($(this));">
+                    <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/sys_menu/create" title="新增" onclick="operation($(this));">
                         <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
                     </a>
                 </div>
@@ -77,7 +77,7 @@
                                     <i class="fa fa-bar-chart"></i>&nbsp;<strong>{{ $menus['title'] }}</strong>&nbsp;&nbsp;&nbsp;
                                     <a href="{{ $menus['uri'] }}" class="dd-nodrag">{{ $menus['uri'] }}</a>
                                     <span class="pull-right dd-nodrag">
-                                        <a url="/admin/menu/{{ $menus['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
+                                        <a url="/admin/sys_menu/{{ $menus['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
                                         <a href="javascript:void(0);" data-id="{{ $menus['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
                                     </span>
                                 </div>
@@ -89,7 +89,7 @@
                                                 <i class="fa fa-users"></i>&nbsp;<strong>{{ $menu['title'] }}</strong>&nbsp;&nbsp;&nbsp;
                                                 <a href="javascript:void(0);" class="dd-nodrag">{{ $menu['uri'] }}</a>
                                                 <span class="pull-right dd-nodrag">
-                                                    <a url="/admin/menu/{{ $menu['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
+                                                    <a url="/admin/sys_menu/{{ $menu['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
                                                     <a href="javascript:void(0);" data-id="{{ $menu['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
                                                 </span>
                                             </div>
@@ -124,7 +124,7 @@
                         return new Promise(function(resolve) {
                             $.ajax({
                                 method: 'post',
-                                url: '/admin/menu/' + id,
+                                url: '/admin/sys_menu/' + id,
                                 data: {
                                     _method:'delete',
                                     _token:LA.token,
@@ -156,7 +156,7 @@
             $('.tree-ntstable-save').click(function () {
                 var serialize = $('#tree-ntstable').nestable('serialize');
     
-                $.post('/admin/menu/order', {
+                $.post('/admin/sys_menu/order', {
                     _token: LA.token,
                     _order: JSON.stringify(serialize)
                 },

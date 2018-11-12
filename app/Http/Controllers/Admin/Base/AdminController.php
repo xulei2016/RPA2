@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Http\Controllers\Base\BaseAdminController;
 use Excel;
@@ -14,15 +15,6 @@ use Excel;
  */
 class AdminController extends BaseAdminController
 {
-    /** 
-     * Create a new controller instance. 
-     * 
-     * @return void 
-     */ 
-    public function __construct() 
-    { 
-        parent::__construct();
-    }
 
     // 
     public function index() 
@@ -50,17 +42,19 @@ class AdminController extends BaseAdminController
      * create
      */
     public function create(Request $request){
-        return view('admin.admin.add');
+        $roles = Role::where('id','!=','1')->get();
+        return view('admin.admin.add', ['roles' => $roles]);
     }
 
     /**
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email'], false);
+        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','role'], false);
+        dd($data);
         $data['password'] = bcrypt($data['password']);
         $result = SysAdmin::create($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "删除用户");
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加用户");
         return $this->ajax_return('200', '操作成功！');
     }
 

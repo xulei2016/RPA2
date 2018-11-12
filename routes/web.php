@@ -55,8 +55,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::resource('/sys_admin', 'AdminController');
 
             //菜单
+            Route::get('/sys_icon', 'MenuController@sys_icon');
             Route::resource('/sys_menu', 'MenuController');
-            Route::post('/sys_menu/edit', 'MenuController@update');//可优化掉
             Route::post('/sys_menu/order', 'MenuController@orderUpdate');
             
             //角色

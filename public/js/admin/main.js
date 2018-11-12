@@ -22,7 +22,7 @@ RPA.prototype = {
         NProgressParent: '#pjax-container', //nprogress 父级作用元素
         sidebar: {
             obj:$('body .wrapper aside .sidebar'),
-            activeBar:'/admin'
+            activeBar: sessionStorage.activeBar ? sessionStorage.activeBar : '/admin' ,
         },
     },
     bind: function() {
@@ -50,8 +50,12 @@ RPA.prototype = {
 
         //侧边栏点击事件
         _this.config.sidebar.obj.on('click','.sidebar-menu a',function(e){
-            _this.config.sidebar.activeBar = $(this).attr('href');
-            _this.initPage();
+            _this.config.sidebar.activeBar = sessionStorage.activeBar = $(this).attr('href');
+            if(!$(this).parents('li').hasClass('active')){
+                $(this).parents('li').siblings('.active').removeClass('active');
+                $(this).parents('li').addClass('active');
+                // _this.initPage();
+            }
         });
     },
     screenOperation: {
@@ -157,7 +161,7 @@ RPA.prototype = {
         selectedMenu = RPA.config.sidebar.activeBar;
         //菜单显示
         var selector = $('.sidebar-menu').find('a[href="' + selectedMenu + '"]');
-        selector.parent().addClass('active');
+        selector.parents('.treeview').addClass('active');
         selector.parents('ul.treeview-menu').css('display', 'block');
         selector.parents('li.treeview').addClass('menu-open');
     },

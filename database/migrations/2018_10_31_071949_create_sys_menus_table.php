@@ -17,6 +17,7 @@ class CreateSysMenusTable extends Migration
             $table->increments('id');
             $table->integer('parent_id')->default('0'); 
             $table->integer('order')->default('1'); 
+            $table->string('unique_name', 50)->unique(); 
             $table->string('title', 50); 
             $table->string('icon', 50);
             $table->string('uri', 50);

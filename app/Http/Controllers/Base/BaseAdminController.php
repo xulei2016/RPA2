@@ -17,56 +17,6 @@ use App\Http\Controllers\Base\BaseController;
  */
 class BaseAdminController extends BaseController
 {
-    //session变量
-    protected $sys_info;
-
-    //construct
-    public function __CONSTRUCT(){
-        // $this->base_memcache();
-    }
-
-    //------------------系统session管理-----------------
-
-    //系统session判断
-    public function base_memcache(){
-        if (!session()->has('sys_info')) {
-            //存入session
-            $sys_info = $this->get_menu();
-            session(['sys_info' => $sys_info]);
-        }
-        // $this->sys_info = session('sys_info');
-    }
-
-    //获取菜单
-    public function get_menu(){
-        $menus = SysMenu::where([['is_use','=', 1],['parent_id','=',0]])
-                        ->orderBy('order', 'asc')
-                        ->get()
-                        ->toArray();
-        $config = sysConfig::get()
-                        ->toArray();
-
-        foreach($menus as &$menu){
-            $childs = SysMenu::where([['is_use','=', 1],['parent_id','=',$menu['id']]])
-                    ->orderBy('order', 'asc')
-                    ->get();
-            if($childs){
-                $menu['child'][] = $childs;
-            }
-        }
-
-        $new = [];
-        //格式化处理
-        foreach($config as $k){
-            $new[$k['item_key']] = $k['item_value'];
-        }
-
-        return [
-            'top_menu' => $top_menu,
-            'config' => $new,
-            'menus' => $menus
-        ];
-    }
 
     /**
      * 地址分析
@@ -107,6 +57,45 @@ class BaseAdminController extends BaseController
             yield $param;
         }
     }
+        
+    /**
+     * session管理员信息
+     * @return bool 
+     */
+    private function authCacheInfo ($type = TRUE){
+        //更新登录信息
+        $admin_info = auth()->guard('admin')->user();
+        if(!$admin_info){
+            header('Location: /admin/logout');exit;
+        }
+        $id = (int) $admin_info->id;
+        $admin = new \App\Models\Admin\Admin\SysAdmin();
+        $info['lastIp'] = $this->getRealIp();
+        $info['lastTime'] = $this->getTime();
+        $info['isMobile'] = $this->isMobile()['isMobile'] ? 1 : 0 ;
+        $info['lastAgent'] = $_SERVER['HTTP_USER_AGENT'];
+        $info['lastAbbAgent'] = $this->isMobile()['userAgent'];
+        if($type)
+            $admin::where('id', $id)->update($info);
+        
+        //头像、权限信息
+        $headImg = $admin->find($id)->headImg;
+
+        //快捷获取管理员信息可从此处添加 $admin_info->***
+        $info['id'] = $id;
+        $info['role'] = $admin_info->role;
+        // $info['headImg'] = $headImg->thumb;
+        $info['name'] = $admin_info->name;
+        $info['realName'] = $admin_info->realName;
+        $info['email'] = $admin_info->email;
+        $info['theme'] = $admin_info->theme ? $admin_info->theme : 'lightseagreen' ;
+        $info['lastTime'] = $admin_info->lastTime;
+        $info['lastIp'] = $admin_info->lastIp;
+        $info['isMobile'] = $admin_info->isMobile;
+        $info['lastAgent'] = $admin_info->lastAgent;
+        session(['sys_admin' => $info]);
+        return true;
+    }
     
     //------------------日志管理-----------------
 
@@ -118,7 +107,6 @@ class BaseAdminController extends BaseController
 	 * @param string $desc 描述
      */
     public function log($controller, $action, $request, $desc) {
-        dd(auth());
         $user_id = 0;
         if(auth()->guard('admin')->check()) {
             $user_id = (int) auth()->guard('admin')->user()->id;
@@ -131,7 +119,7 @@ class BaseAdminController extends BaseController
 
         $log = new \App\Models\Admin\Base\SysLog();
         $log->setAttribute('ip', $request->ip());
-        // $log->setAttribute('controller', strrchr($controller, '\\'));
+        $log->setAttribute('controller', strrchr($controller, '\\'));
         $log->setAttribute('action', $action);
         $log->setAttribute('simple_desc', $desc);
         $log->setAttribute('user_id', $user_id);
@@ -140,7 +128,6 @@ class BaseAdminController extends BaseController
         $log->setAttribute('method', $request->method());
         $log->setAttribute('data', json_encode($request->all(), JSON_UNESCAPED_UNICODE));
         $log->setAttribute('agent', $admin['lastAbbAgent']);
-        $log->setAttribute('add_time', $this->getTime());
         $log->save();
     }
 }

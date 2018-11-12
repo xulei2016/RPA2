@@ -17,10 +17,8 @@
     <link rel="stylesheet" href="{{URL::asset('/include/font-awesome/css/font-awesome.min.css')}}">
     <!-- Ionicons -->
     <link rel="stylesheet" href="{{URL::asset('/include/Ionicons/css/ionicons.min.css')}}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{{URL::asset('/css/admin/common/AdminLTE.min.css')}}">
     <!-- AdminLTE Skins. Choose a skin from the css/skins
-       folder instead of downloading all of them to reduce the load. -->
+        folder instead of downloading all of them to reduce the load. -->
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/skins/_all-skins.min.css')}}">
     <!-- Toastr -->
     <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.min.css')}}">
@@ -38,6 +36,8 @@
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}">
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{URL::asset('/css/admin/common/AdminLTE.min.css')}}">
 
     <!-- app.css -->
     <link rel="stylesheet" href="{{URL::asset('/css/admin/app.css')}}">

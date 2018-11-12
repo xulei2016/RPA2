@@ -97,7 +97,7 @@
         
         //提交信息的表单配置
         var FormOptions={
-            url:'/admin/menu',
+            url:'/admin/sys_menu',
             success:function(json, xml){
                 if(200 == json.code){
                     toastr.success('操作成功！');

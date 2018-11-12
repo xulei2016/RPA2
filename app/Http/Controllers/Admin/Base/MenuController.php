@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\SysMenu;
+use Spatie\Permission\Models\Role;
+use App\Models\Admin\Admin\SysAdmin;
+use Spatie\Permission\Models\Permission;
 use App\Http\Controllers\Base\BaseAdminController;
 
 /**
@@ -13,15 +16,6 @@ use App\Http\Controllers\Base\BaseAdminController;
  */
 class MenuController extends BaseAdminController
 {
-    /** 
-     * Create a new controller instance. 
-     * 
-     * @return void 
-     */ 
-    public function __construct() 
-    { 
-        parent::__construct();
-    }
 
     /**
      * Display a listing of the resource.
@@ -177,7 +171,7 @@ class MenuController extends BaseAdminController
             $menu = session(config('admin.cache.menuList'));
         }else{
             $menu = self::AllMenus();
-            // session([config('admin.cache.menuList') => $menu]);//无效
+            session([config('admin.cache.menuList') => $menu]);
         }
         return $this->initMenuList($menu);
     }
@@ -187,6 +181,14 @@ class MenuController extends BaseAdminController
         if ($menus){
             $item = '';
             foreach ($menus as $v){
+                //权限判断
+                $user = auth()->guard('admin')->user();
+                // if(!$user->hasRole('superAdministrator')){
+                //     if($user->hasRole($v['unique_name'])){
+
+                //     }
+                //     continue;
+                // }
                 $item .= $this->getNetableItem($v);
             }
             return $item;
@@ -199,12 +201,12 @@ class MenuController extends BaseAdminController
         if (isset($data['child'])){
             return $this->getHandleList($data);
         }
-        return '<li><a href="'.$data['uri'].'"><i class="'.$data['icon'].'"></i><span>'.$data['title'].'</span></a></li>';
+        return '<li><a href="'.$data['uri'].'"><i class="fa '.$data['icon'].'"></i><span>'.$data['title'].'</span></a></li>';
     }
 
     //判断是否有子集
     public function getHandleList($data){
-        $handle = '<li class="treeview"><a href="'.$data['uri'].'"><i class="'.$data['icon'].'"></i><span>'.$data['title'].'</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu">';
+        $handle = '<li class="treeview"><a href="'.$data['uri'].'"><i class="fa '.$data['icon'].'"></i><span>'.$data['title'].'</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu">';
 
         foreach ($data['child'] as $v){
             $handle .= $this->getNetableItem($v);
@@ -212,5 +214,10 @@ class MenuController extends BaseAdminController
         $handle .= '</ul></li>';
 
         return $handle;
+    }
+
+    //icon list
+    public function sys_icon(){
+        return view('admin.base.menu.iconList');
     }
 }

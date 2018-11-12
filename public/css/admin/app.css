@@ -2,6 +2,42 @@
 * rpa projects
 * inner-content main style
 */
+/* iconfont */
+::-webkit-scrollbar{
+    display:none;
+}
+@font-face {
+    font-family: 'iconfont';
+    src: url('../iconfont/iconfont.eot');
+    src: url('../iconfont/iconfont.eot?#iefix') format('embedded-opentype'),
+    url('../iconfont/iconfont.woff') format('woff'),
+    url('../iconfont/iconfont.ttf') format('truetype'),
+    url('../iconfont/iconfont.svg#iconfont') format('svg');
+}
+.iconfont{
+    font-family:"iconfont" !important;
+    /* font-size:14px; */
+    font-style:normal;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-stroke-width: 0.2px;
+    -moz-osx-font-smoothing: grayscale;
+}
+.iconfont.success{
+    color: #29e075;
+}
+.iconfont.falil{
+    color: #f0e226;
+}
+.iconfont.normal{
+    color: #53baff;
+}
+.iconfont.danger{
+    color: #db2222;
+}
+.iconfont.confirm{
+    color: #b8d845;
+}
+
 .must-tag {
     color: #c00;
     font-weight: bold;
@@ -60,4 +96,8 @@ body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments 
     text-align: center;
     position: absolute;
     left: 10px;
+}
+
+.treeview-menu>li>a{
+    padding: 10px 5px 10px 15px !important;
 }

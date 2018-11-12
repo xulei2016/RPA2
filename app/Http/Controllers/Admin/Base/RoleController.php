@@ -15,15 +15,6 @@ use Excel;
  */
 class RoleController extends BaseAdminController
 {
-    /** 
-     * Create a new controller instance. 
-     * 
-     * @return void 
-     */ 
-    public function __construct() 
-    { 
-        parent::__construct();
-    }
     
     /**
      * Display a listing of the resource.
