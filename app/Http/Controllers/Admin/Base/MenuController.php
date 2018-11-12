@@ -182,12 +182,12 @@ class MenuController extends BaseAdminController
             $item = '';
             foreach ($menus as $v){
                 //权限判断
-                $user = auth()->guard('admin')->user();
+                $id = auth()->guard('admin')->user()->id;
+                $user = SysAdmin::find($id);
                 // if(!$user->hasRole('superAdministrator')){
-                //     if($user->hasRole($v['unique_name'])){
-
+                //     if(!$user->hasPermissionTo($v['unique_name'])){
+                //         continue;
                 //     }
-                //     continue;
                 // }
                 $item .= $this->getNetableItem($v);
             }

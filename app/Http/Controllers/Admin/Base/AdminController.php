@@ -19,6 +19,10 @@ class AdminController extends BaseAdminController
     // 
     public function index() 
     { 
+        $user = SysAdmin::find(1);
+        if(!$user->hasRole(['superAdministrator'])){
+                dd(1);
+        }
         $admin = SysAdmin::all();
         return view('admin.admin.index');
     } 
@@ -35,7 +39,9 @@ class AdminController extends BaseAdminController
      */
     public function edit(Request $request, $id){
         $info = SysAdmin::where('id', $id)->first();
-        return view('admin.admin.edit', ['info' => $info]);
+        $roles = Role::where('id','!=','0')->get();
+        $info['roles'] = explode(',', $info['roles']);
+        return view('admin.admin.edit', ['info' => $info, 'roles' => $roles]);
     }
 
     /**
@@ -50,10 +56,15 @@ class AdminController extends BaseAdminController
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','role'], false);
-        dd($data);
+        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roles'], false);
+        $roles = $data['roles'];
+        $data['roles'] = implode(',', $data['roles']);
         $data['password'] = bcrypt($data['password']);
         $result = SysAdmin::create($data);
+
+        //分配角色
+        $user = SysAdmin::find($result->id)->syncRoles($roles);
+
         $this->log(__CLASS__, __FUNCTION__, $request, "添加用户");
         return $this->ajax_return('200', '操作成功！');
     }
@@ -79,6 +90,10 @@ class AdminController extends BaseAdminController
      */
     public function destroy(Request $request, $ids){
         $ids = explode(',', $ids);
+        if(in_array(1, $ids)){
+            return $this->ajax_return('500', '操作失败！包含保护项！！');
+        }
+        
         $result = SysAdmin::destroy($ids);
         // $this->log(__CLASS__, __FUNCTION__, $request, "删除用户");
         return $this->ajax_return('200', '操作成功！');

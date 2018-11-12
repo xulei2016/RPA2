@@ -11,9 +11,7 @@
                     <span class="sr-only">Toggle Dropdown</span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="javascript:void(0)" id="deleteAll">删除选中</a></li>
                     <li><a href="javascript:void(0)" id="exportAll">导出全部</a></li>
-                    <li><a href="javascript:void(0)" id="export">导出选中</a></li>
                 </ul>
             </div>
             <a class="btn btn-default btn-sm" data-toggle="collapse" data-target="#search-group" href="javascript:void(0)">

@@ -94,24 +94,6 @@ $(function(){
         });
     }
 
-    /**
-     * 切换状态
-     */
-    function changeType(id,type){
-        $.ajax({
-            url:'/admin/sys_admin/changeType',
-            data:{id:id,type:type},
-            type:'post',
-            dataType:'json',
-        }).then(function(json){
-            if(200 == json.code){
-                render(true,currentPage,pageSize);
-            }
-        },function(e){
-            responseTip(1,'操作失败！',1500);
-        });
-    }
-
     //get searchGroup
     function getSearchGroup(){
         //特殊格式的条件处理
@@ -144,8 +126,6 @@ $(function(){
         var param = {
             url: '/admin/sys_admin/list',
             columns: [{
-                    checkbox: true
-                }, {
                     field: 'name',
                     title: '姓名',
                     align: 'center',
@@ -169,6 +149,19 @@ $(function(){
                     align: 'center',
                     valign: 'middle'
                 }, {
+                    field: 'roles',
+                    title: '角色',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function(res){
+                        if(res) res = res.split(',');
+                        let html = '';
+                        for(let v of res){
+                            html += ' <small class="label bg-blue">'+v+'</small> ';
+                        }
+                        return html;
+                    }
+                }, {
                     field: 'email',
                     title: '邮箱',
                     align: 'center',
@@ -179,7 +172,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(res){
-                        return (1 == res) ? '<span class="text-success">启用</span>' : '<span class="text-danger">禁用</span>' ;
+                        return (1 == res) ? '<small class="label bg-green">启用</small>' : '<small class="label bg-red">禁用</small>' ;
                     }
                 }, {
                     field: 'lastIp',
@@ -206,17 +199,12 @@ $(function(){
                         "click #deleteOne":function (e, value, row, index){
                             var id = row.id;
                             Delete(id);
-                        },
-                        "click #changeType":function (e, value, row, index){
-                            var id = row.id;
-                            var type = row.type;
-                            changeType(id,type);
-                        },
+                        }
                     },
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += "<a href='javascript:;' class='btn btn-xs btn-info' id='changeType' title='查看'><span class='glyphicon glyphicon-search'></span></a>";
+                        if(1 == id)return result;
                         result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_admin/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 

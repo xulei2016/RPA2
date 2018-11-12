@@ -13,6 +13,20 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
+                    <div class="col-sm-10">
+                        <select name="roles[]" id="select2-menu" class="form-control parent_id select2" multiple required>
+                            @foreach($roles as $role)
+                                @if(in_array($role['name'], $info->roles))
+                                    <option value ="{{ $role['name'] }}" selected>{{ $role['name'] }}</option>
+                                @else
+                                    <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="realName" class="col-sm-2 control-label"><span class="must-tag">*</span>真实姓名</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="realName" id="realName" value="{{ $info->realName }}" placeholder="真实姓名" required>
@@ -81,6 +95,11 @@
                 radioClass: 'iradio_minimal-blue',
             });
         });
+
+        $("#select2-menu").select2({
+            "allowClear":true,
+            "placeholder":"角色选择",
+        });
     
         //添加
         function add(e){
@@ -102,7 +121,7 @@
         
         //提交信息的表单配置
         var FormOptions={
-            url:'/admin/admin/'+id,
+            url:'/admin/sys_admin/'+id,
             success:function(json, xml){
                 if(200 == json.code){
                     toastr.success('操作成功！');

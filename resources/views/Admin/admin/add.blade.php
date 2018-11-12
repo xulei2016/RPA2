@@ -15,7 +15,7 @@
                 <div class="form-group">
                     <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
                     <div class="col-sm-10">
-                        <select name="parent_id" id="select2-menu" class="form-control parent_id select2" multiple required>
+                        <select name="roles[]" id="select2-menu" class="form-control parent_id select2" multiple required>
                             @foreach($roles as $role)
                             <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
                             @endforeach
@@ -75,7 +75,6 @@
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <input type="hidden" name="role" value="" id="role">
                 <button type="reset" class="btn btn-warning" id="form-reset">重置</button>
                 <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
                 <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
@@ -99,7 +98,6 @@
     
         //添加
         function add(e){
-            $('#role').val($('#select2-menu').val());
             //密码一致性判断
             var pwd = $('#modal input#password').val();
             var repwd = $('#modal input#rePWD').val();

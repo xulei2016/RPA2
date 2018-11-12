@@ -177,7 +177,7 @@
                                 个人配置</a>
                         </div>
                         <div class="pull-right">
-                            <a href="/admin/index/logout" class="btn btn-danger"><i class="fa fa-sign-out"></i>
+                            <a href="/admin/logout" class="btn btn-danger"><i class="fa fa-sign-out"></i>
                                 注销</a>
                         </div>
                     </li>
