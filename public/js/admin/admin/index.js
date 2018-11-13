@@ -149,7 +149,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'roles',
+                    field: 'roleLists',
                     title: '角色',
                     align: 'center',
                     valign: 'middle',

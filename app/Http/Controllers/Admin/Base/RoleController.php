@@ -129,7 +129,10 @@ class RoleController extends BaseAdminController
      * getCheckPermission
      */
     public function getCheckPermission(Request $request, $id){
-        $roles = Permission::where('status','1')->get(['id','pid','name as desc','desc as name'])->toArray();
+        $roles = Permission::where('status','1')
+                ->orderBy('sort','asc')
+                ->get(['id','pid','name as desc','desc as name'])
+                ->toArray();
         $role = Role::find($id);
         foreach($roles as &$v){
             if($role->hasPermissionTo($v['desc'])){
@@ -152,8 +155,9 @@ class RoleController extends BaseAdminController
             $role->revokePermissionTo($roles->name);
         }
         if(isset($data['data'])){
-            foreach($data['data'] as $permission){
-                array_push($permissions, $permission['desc']);
+            $data = explode(',', trim($data['data'],','));
+            foreach($data as $permission){
+                array_push($permissions, $permission);
             }
             $role->givePermissionTo($permissions);
         }

@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Http\Controllers\Base\BaseAdminController;
 use Excel;
+
+use App\user;
 
 /**
  * AdminController
@@ -19,10 +22,6 @@ class AdminController extends BaseAdminController
     // 
     public function index() 
     { 
-        $user = SysAdmin::find(1);
-        if(!$user->hasRole(['superAdministrator'])){
-                dd(1);
-        }
         $admin = SysAdmin::all();
         return view('admin.admin.index');
     } 
@@ -39,7 +38,7 @@ class AdminController extends BaseAdminController
      */
     public function edit(Request $request, $id){
         $info = SysAdmin::where('id', $id)->first();
-        $roles = Role::where('id','!=','0')->get();
+        $roles = Role::where('id','!=','1')->get();
         $info['roles'] = explode(',', $info['roles']);
         return view('admin.admin.edit', ['info' => $info, 'roles' => $roles]);
     }
@@ -56,13 +55,13 @@ class AdminController extends BaseAdminController
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roles'], false);
-        $roles = $data['roles'];
-        $data['roles'] = implode(',', $data['roles']);
+        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists'], false);
+        $roles = $data['roleLists'];
+        $data['roleLists'] = implode(',', $data['roleLists']);
         $data['password'] = bcrypt($data['password']);
         $result = SysAdmin::create($data);
 
-        //分配角色
+        //同步角色
         $user = SysAdmin::find($result->id)->syncRoles($roles);
 
         $this->log(__CLASS__, __FUNCTION__, $request, "添加用户");
@@ -73,15 +72,20 @@ class AdminController extends BaseAdminController
      * update
      */
     public function update(Request $request){
-        $data = $this->get_params($request, ['id','name','type','sex','phone','realName','desc','password','email']);
+        $data = $this->get_params($request, ['id','name','type','sex','phone','realName','desc','password','email','roleLists']);
+        $roles = $data['roleLists'];
         if(null == $data['password'] || '' == $data['password']){
             unset($data['password']);
         }else{
             $data['password'] = bcrypt($data['password']);
         }
-        $result = SysAdmin::where('id', $data['id'])
-                ->update($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "删除用户");
+        $data['roleLists'] = implode(',', $data['roleLists']);
+        $result = SysAdmin::where('id', $data['id'])->update($data);
+
+        //同步角色
+        $user = SysAdmin::find($data['id'])->syncRoles($roles);
+
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新用户");
         return $this->ajax_return('200', '操作成功！');
     }
 

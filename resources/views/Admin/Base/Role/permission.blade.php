@@ -50,9 +50,14 @@
             function add(){
                 var treeObj = $.fn.zTree.getZTreeObj("tree");
                 var nodes = treeObj.getCheckedNodes(true);
-                $.post('/admin/sys_role/{{ $id }}/roleHasPermission', {data:nodes}, function(json){
+                v="";
+                for(var i=0;i<nodes.length;i++){
+                    v+=nodes[i].desc + ",";
+                }
+                $.post('/admin/sys_role/{{ $id }}/roleHasPermission', {data:v}, function(json){
                     if(200 == json.code){
                         toastr.success('操作成功！');
+                        $('#modal').modal('hide');
                         $.pjax.reload('#pjax-container');
                     }else{
                         toastr.error(json.info);

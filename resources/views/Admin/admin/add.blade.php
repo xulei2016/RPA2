@@ -15,7 +15,7 @@
                 <div class="form-group">
                     <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
                     <div class="col-sm-10">
-                        <select name="roles[]" id="select2-menu" class="form-control parent_id select2" multiple required>
+                        <select name="roleLists[]" id="select2-menu" class="form-control parent_id select2" multiple required>
                             @foreach($roles as $role)
                             <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
                             @endforeach

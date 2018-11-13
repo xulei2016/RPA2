@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Base;
 
-use App\Models\Admin\Base\SysPermission;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 
@@ -22,7 +22,7 @@ class PermissionController extends BaseAdminController
      */
     public function index()
     {
-        $top_list = SysPermission::where('table','=',1)->orderBy('sort','asc')->get();
+        $top_list = Permission::where('table','=',1)->orderBy('sort','asc')->get();
         $lists = $this->get_group_menu($top_list);
         $lists = $this->initTree($lists);
         return view('admin.base.permission.index', ['lists' => $lists]);
@@ -50,7 +50,7 @@ class PermissionController extends BaseAdminController
     {
         $data = $this->get_params($request, ['pid','name','guard_name','status','sort','desc','table'], false);
         $data['table'] = isset($data['table']) ? $data['table']+1 : 1 ;
-        $result = SysPermission::create($data);
+        $result = Permission::create($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -76,7 +76,7 @@ class PermissionController extends BaseAdminController
      */
     public function edit(Request $request, $id)
     {
-        $info = SysPermission::where('id', $id)->first();
+        $info = Permission::where('id', $id)->first();
         return view('admin.base.permission.edit', ['info' => $info]);
     }
 
@@ -92,7 +92,7 @@ class PermissionController extends BaseAdminController
     {
         $data = $this->get_params($request, ['id','pid','name','guard_name','status','sort','desc','table'], false);
         $data['table'] = isset($data['table']) ? $data['table']+1 : 1 ;
-        $result = SysPermission::where('id', $data['id'])->update($data);
+        $result = Permission::where('id', $data['id'])->update($data);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -106,7 +106,7 @@ class PermissionController extends BaseAdminController
      */
     public function destroy($id)
     {
-        $result = SysPermission::destroy($id);
+        $result = Permission::destroy($id);
         return $this->ajax_return(200, '操作成功！');
     }
         
@@ -130,9 +130,9 @@ class PermissionController extends BaseAdminController
         $table += 1;
         foreach($order as $k => $sort){
             $id = $sort['id'];
-            $dbsort = SysPermission::find($id);
+            $dbsort = Permission::find($id);
             if($k != $dbsort->sort || $table != $dbsort->table || $pid != $dbsort->pid){
-                SysPermission::where('id', $id)->update(['sort' => $k, 'table' => $table, 'pid' => $pid]);
+                Permission::where('id', $id)->update(['sort' => $k, 'table' => $table, 'pid' => $pid]);
             }
             if(isset($sort['children'])){
                 $this->sortUpdate($sort['children'], $table, $id);
@@ -145,7 +145,7 @@ class PermissionController extends BaseAdminController
      * getTree
      */
     public function getTree(){
-        $top_list = SysPermission::where('table','=',1)->orderBy('sort','asc')->get();
+        $top_list = Permission::where('table','=',1)->orderBy('sort','asc')->get();
         $lists = $this->get_group_menu($top_list);
         return $this->ajax_return('200', '查询成功！', $lists);
     }
@@ -155,7 +155,7 @@ class PermissionController extends BaseAdminController
      */
     private function get_group_menu($menus){
         foreach($menus as $menu){
-            $result = SysPermission::where('pid','=',$menu['id'])->orderBy('sort','asc')->get();
+            $result = Permission::where('pid','=',$menu['id'])->orderBy('sort','asc')->get();
             if(!$result->isEmpty()){
                 $result = $this->get_group_menu($result);
                 // array_splice($menus, 1, 0, $result);

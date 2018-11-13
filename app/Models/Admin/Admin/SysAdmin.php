@@ -2,10 +2,8 @@
 
 namespace App\Models\Admin\Admin;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable; 
 use Illuminate\Foundation\Auth\User as Authenticatable; 
-
 use Spatie\Permission\Traits\HasRoles;
 
 class SysAdmin extends Authenticatable 
