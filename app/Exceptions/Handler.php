@@ -48,6 +48,18 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
+            if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
+                $info = [
+                    'code' => '500',
+                    'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
+                    'data' => []
+                ];
+                return response()->json($info);
+            } else {
+                header('Location: /admin/403');exit;
+            }
+        }
         if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
             $info = [
                 'code' => '500',

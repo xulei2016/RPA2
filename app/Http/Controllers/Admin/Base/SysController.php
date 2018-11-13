@@ -12,7 +12,6 @@ use App\Http\Controllers\Base\BaseAdminController;
  */
 class SysController extends BaseAdminController
 {
-
     /**
      * dashboard
      */
@@ -148,5 +147,48 @@ class SysController extends BaseAdminController
         // exec("wmic LOGICALDISK get name,Description,filesystem,size,freespace",$info['disk']);
 
         return $info;
+    }
+
+    
+    /**
+     * 400
+     */
+    public function error400(Request $request){
+        return view('errors.400');
+    }
+    
+    /**
+     * 401
+     */
+    public function error401(Request $request){
+        return view('errors.401');
+    }
+    
+    /**
+     * 402
+     */
+    public function error402(Request $request){
+        return view('errors.402');
+    }
+    
+    /**
+     * 403
+     */
+    public function error403(Request $request){
+        return view('errors.403');
+    }
+    
+    /**
+     * 404
+     */
+    public function error404(Request $request){
+        return view('errors.404');
+    }
+    
+    /**
+     * 500
+     */
+    public function error500(Request $request){
+        return view('errors.500');
     }
 }

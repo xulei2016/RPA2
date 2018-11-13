@@ -17,6 +17,8 @@ use App\Http\Controllers\Base\BaseController;
  */
 class BaseAdminController extends BaseController
 {
+    public function __CONSTRUCT(){
+    }
 
     /**
      * 地址分析

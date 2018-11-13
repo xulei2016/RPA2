@@ -33,6 +33,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin\Base'], function(){
     Route::post('/login', 'LoginController@login');
     Route::any('/logout', 'LoginController@logout')->name('logout');
 
+    Route::any('/400', 'SysController@error400')->name('400');
+    Route::any('/401', 'SysController@error401')->name('401');
+    Route::any('/402', 'SysController@error402')->name('402');
+    Route::any('/403', function(){
+        return view('errors.403');
+    });
+    Route::any('/404', function(){
+        return view('errors.404');
+    });
+    // Route::any('/403', 'SysController@error403')->name('403');
+    // Route::any('/404', 'SysController@error404')->name('404');
+    Route::any('/500', 'SysController@error500')->name('500');
 });
 
 // 后台路由管理
@@ -44,15 +56,24 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             // 首页
             Route::get('/', 'SysController@index');
             Route::get('/index', 'SysController@index')->name('index');
-            Route::post('/index', 'SysController@index')->name('index');
+            Route::post('/index', 'SysController@index');
             Route::post('/dashboard', 'SysController@get_index');
 
             //管理员
-            Route::get('/sys_admin/export', 'AdminController@export');
-            Route::get('/sys_admin/list', 'AdminController@pagenation');
-            Route::post('/sys_admin/admin/changeType', 'AdminController@changeType');
-            Route::post('/sys_admin/edit', 'AdminController@update');
-            Route::resource('/sys_admin', 'AdminController');
+            Route::group(['middleware' => ['permission:sys_admin']], function () {
+                Route::get('/sys_admin/export', 'AdminController@export')->middleware('permission:sys_admin_export');
+                Route::get('/sys_admin/list', 'AdminController@pagenation');
+                Route::post('/sys_admin/edit', 'AdminController@update')->middleware('permission:sys_admin_edit');
+
+                Route::get('/sys_admin', 'AdminController@index');
+                Route::get('/sys_admin/create', 'AdminController@create')->middleware('permission:sys_admin_adds');
+                Route::post('/sys_admin', 'AdminController@store')->middleware('permission:sys_admin_add');
+                Route::get('/sys_admin/{$id}', 'AdminController@show');
+                Route::get('/sys_admin/{$id}/edit', 'AdminController@edit')->middleware('permission:sys_admin_edit');
+                Route::PATCH('/sys_admin/{$id}', 'AdminController@update')->middleware('permission:sys_admin_edit');
+                Route::delete('/sys_admin/{$id}', 'AdminController@delete')->middleware('permission:sys_admin_delete');
+                // Route::resource('/sys_admin', 'AdminController');
+            });
 
             //菜单
             Route::get('/sys_icon', 'MenuController@sys_icon');

@@ -51,14 +51,18 @@ return [
     |--------------------------------------------------------------------------
     | cache configue
     |--------------------------------------------------------------------------
-    |
-    | The logo of all admin pages when the sidebar menu is collapsed. You can
-    | also set it as an image by using a `img` tag, eg
-    | '<img src="http://logo-url" alt="Admin logo">'.
-    |
     */
     'cache' => [
         'menuList' => 'menuList',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | cache configue
+    |--------------------------------------------------------------------------
+    */
+    'superAdmin' => [
+        'name' => 'superAdministrator',
     ],
 
     /*

@@ -123,9 +123,24 @@ $(function(){
             return temp;
         }
 
+        function stateFormatter(value, row, index) {
+            if (row.id == 1)
+                return {
+                    disabled : true,//设置是否可用
+                    checked : false//设置选中
+                };
+            return value;
+        }
+
         var param = {
             url: '/admin/sys_admin/list',
             columns: [{
+                    field: "check", 
+                    title: "",
+                    align: "center", 
+                    checkbox: true,
+                    formatter:stateFormatter,
+                }, {
                     field: 'name',
                     title: '姓名',
                     align: 'center',

@@ -19,10 +19,13 @@ use App\user;
 class AdminController extends BaseAdminController
 {
 
+    public function __CONSTRUCT(){
+        parent::__construct();
+    }
+
     // 
     public function index() 
     { 
-        $admin = SysAdmin::all();
         return view('admin.admin.index');
     } 
 

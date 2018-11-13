@@ -6,14 +6,14 @@
   }
 </style>
 <div class="error-page">
-    <h2 class="headline text-yellow"> 404</h2>
+    <h2 class="headline text-yellow"> 403</h2>
 
     <div class="error-content">
-      <h3><i class="fa fa-warning text-yellow"></i> 槽糕! 页面找不到啦.</h3>
+      <h3><i class="fa fa-warning text-yellow"></i> 槽糕! 您没有访问权限哦.</h3>
 
       <p>
-        您正在访问的页面不存在.
-        你可以 <a href="/admin">返回首页</a>.
+        您没有访问权限.
+        你可以 <b>联系管理员授权处理</b>.
       </p>
 
       <form class="search-form">
