@@ -82,7 +82,7 @@ class LoginController extends BaseAdminController
         if(auth()->Guard('admin')->check()){
             auth()->Guard('admin')->logout();
         }
-        $request->session()->invalidate();
+        $request->session()->flush();
         return redirect('/');
     }
     

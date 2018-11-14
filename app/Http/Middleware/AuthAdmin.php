@@ -22,6 +22,33 @@ class AuthAdmin
             return redirect('admin/login');
         }
 
+        //缓存当前路由
+        $pathInfo = explode('/', $request->path());
+        $permission = end($pathInfo);
+        if(session('menuList') && $route = self::cacheKeepRoute(session('menuList'), $permission)){
+            session(['keepMenu' => $route]);
+        }else{
+            $request->session()->forget('keepMenu');
+        }
+
         return $next($request);
+    }
+
+    /**
+     * cacheKeepRoute
+     */
+    public function cacheKeepRoute($routeList, $permission){
+        $route = '';
+        foreach($routeList as $list){
+            if($list['unique_name'] == $permission){
+                return $route = $list;
+            }
+            if(isset($list['child'])){
+                if($route = self::cacheKeepRoute($list['child'], $permission)){
+                    return $route;
+                }
+            }
+        }
+        return $route;
     }
 }

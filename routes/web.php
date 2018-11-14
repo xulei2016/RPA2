@@ -47,10 +47,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin\Base'], function(){
     Route::any('/500', 'SysController@error500')->name('500');
 });
 
+
 // 后台路由管理
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
     Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
-
+        
         //Base
         Route::group(['namespace' => 'Base'], function(){
             // 首页
@@ -63,16 +64,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['middleware' => ['permission:sys_admin']], function () {
                 Route::get('/sys_admin/export', 'AdminController@export')->middleware('permission:sys_admin_export');
                 Route::get('/sys_admin/list', 'AdminController@pagenation');
-                Route::post('/sys_admin/edit', 'AdminController@update')->middleware('permission:sys_admin_edit');
-
                 Route::get('/sys_admin', 'AdminController@index');
-                Route::get('/sys_admin/create', 'AdminController@create')->middleware('permission:sys_admin_adds');
+                Route::get('/sys_admin/{id}', 'AdminController@show');
+                Route::get('/sys_admin/create', 'AdminController@create')->middleware('permission:sys_admin_add');
                 Route::post('/sys_admin', 'AdminController@store')->middleware('permission:sys_admin_add');
-                Route::get('/sys_admin/{$id}', 'AdminController@show');
-                Route::get('/sys_admin/{$id}/edit', 'AdminController@edit')->middleware('permission:sys_admin_edit');
-                Route::PATCH('/sys_admin/{$id}', 'AdminController@update')->middleware('permission:sys_admin_edit');
-                Route::delete('/sys_admin/{$id}', 'AdminController@delete')->middleware('permission:sys_admin_delete');
-                // Route::resource('/sys_admin', 'AdminController');
+                Route::get('/sys_admin/{id}/edit', 'AdminController@edit')->middleware('permission:sys_admin_edit');
+                Route::PATCH('/sys_admin/{id}', 'AdminController@update')->middleware('permission:sys_admin_edit');
+                Route::delete('/sys_admin/{id}', 'AdminController@delete')->middleware('permission:sys_admin_delete');
+            });
+            
+            //个人中心
+            Route::group(['middleware' => ['permission:sys_user_center']], function () {
+                Route::get('/sys_user_center', 'AdminController@userCenter');
             });
 
             //菜单
@@ -92,6 +95,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::post('/sys_permission/getTree', 'PermissionController@getTree');
             Route::post('/sys_permission/order', 'PermissionController@orderUpdate');
             Route::resource('/sys_permission', 'PermissionController');
+
+            //系统设置
+            Route::get('sys_system_configure', 'SysController@setting')->middleware('permission:sys_system_configure');
         });
     });
 });

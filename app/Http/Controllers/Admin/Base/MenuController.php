@@ -167,7 +167,7 @@ class MenuController extends BaseAdminController
     public function getMenuList()
     {
         //判断缓存是否存在
-        if (session()->has(config('admin.cache.menuList'))) {
+        if (!session()->has(config('admin.cache.menuList'))) {
             $menu = session(config('admin.cache.menuList'));
         }else{
             $menu = self::AllMenus();

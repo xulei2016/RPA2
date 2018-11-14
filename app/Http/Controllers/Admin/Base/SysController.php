@@ -149,6 +149,24 @@ class SysController extends BaseAdminController
         return $info;
     }
 
+    /**
+     * 清除缓存
+     */
+    public function clearCache(){
+        if($this->del_cache('sys_info') && $this->del_cache('sys_admin')){
+            // $this->authCacheInfo(false);
+            return $this->ajax_return(200, '缓存清除成功！');
+        }else{
+            return $this->ajax_return(500, '缓存清除失败！请联系管理员处理');
+        };
+    }
+
+    /**
+     * 系统设置
+     */
+    public function setting(){
+        return view('admin.Base.system.index');
+    }
     
     /**
      * 400
@@ -191,4 +209,6 @@ class SysController extends BaseAdminController
     public function error500(Request $request){
         return view('errors.500');
     }
+
+
 }

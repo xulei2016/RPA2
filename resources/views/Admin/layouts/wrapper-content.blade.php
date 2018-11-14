@@ -7,15 +7,26 @@
         
     <!-- Content Header (Page header) -->
     <section class="content-header">
-            <h1>
-                仪表盘
-                <small>控制单元</small>
-            </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
-                <li class="active">仪表盘</li>
-            </ol>
-        </section>
+        <h1>
+            @if(session('keepMenu'))
+                {{ session('keepMenu')['title'] }}
+                <small>{{ session('keepMenu')['unique_name'] }}</small>
+            @else
+                首页
+                <small>仪表盘</small>
+            @endif
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="/admin"><i class="fa fa-dashboard"></i> 首页</a></li>
+            <li class="active">
+                @if(session('keepMenu'))
+                    {{ session('keepMenu')['title'] }}
+                @else
+                    仪表盘
+                @endif
+            </li>
+        </ol>
+    </section>
     
         <section class="content">
 

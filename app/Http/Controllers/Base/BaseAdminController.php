@@ -18,6 +18,7 @@ use App\Http\Controllers\Base\BaseController;
 class BaseAdminController extends BaseController
 {
     public function __CONSTRUCT(){
+        
     }
 
     /**
@@ -85,7 +86,7 @@ class BaseAdminController extends BaseController
 
         //快捷获取管理员信息可从此处添加 $admin_info->***
         $info['id'] = $id;
-        $info['role'] = $admin_info->role;
+        $info['roleLists'] = $admin_info->roleLists;
         // $info['headImg'] = $headImg->thumb;
         $info['name'] = $admin_info->name;
         $info['realName'] = $admin_info->realName;

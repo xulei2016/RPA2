@@ -19,10 +19,6 @@ use App\user;
 class AdminController extends BaseAdminController
 {
 
-    public function __CONSTRUCT(){
-        parent::__construct();
-    }
-
     // 
     public function index() 
     { 
@@ -151,5 +147,13 @@ class AdminController extends BaseAdminController
                 $sheet->rows($cellData);
             });
         })->export('xls');
+    }
+
+    ////////////////////////////////////////////////////////////个人中心///////////////////////////////////////////////
+    /**
+     * 个人中心
+     */
+    public function userCenter(){
+        return view('admin.base.admin.index');
     }
 }

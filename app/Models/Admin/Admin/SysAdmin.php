@@ -19,7 +19,7 @@ class SysAdmin extends Authenticatable
      * @var array 
      */ 
     protected $fillable = [ 
-        'name', 'email', 'password', 'desc', 'sex', 'phone', 'realName','roles'
+        'name', 'email', 'password', 'desc', 'sex', 'phone', 'realName','roleLosts'
     ]; 
  
     /** 

@@ -130,11 +130,24 @@ $(function(){
             }
             return temp;
         }
+        
+        function stateFormatter(value, row, index) {
+            if (row.id == 1)
+                return {
+                    disabled : true,//设置是否可用
+                    checked : false//设置选中
+                };
+            return value;
+        }
 
         var param = {
             url: '/admin/sys_role/list',
             columns: [{
-                    checkbox: true
+                    field: "check", 
+                    title: "",
+                    align: "center", 
+                    checkbox: true,
+                    formatter:stateFormatter,
                 }, {
                     field: 'name',
                     title: '名称',
@@ -173,21 +186,16 @@ $(function(){
                         "click #deleteOne":function (e, value, row, index){
                             var id = row.id;
                             Delete(id);
-                        },
-                        "click #changeType":function (e, value, row, index){
-                            var id = row.id;
-                            var type = row.type;
-                            changeType(id,type);
-                        },
+                        }
                     },
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        if(1 != id){
+                        // if(1 != id){
                             result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/getPermission' title='权限分配'>权限管理</span></a>";
                             result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/edit' title='编辑'>编辑</a>";
                             result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'>删除</span></a>";
-                        }
+                        // }
 
                         return result;
                     }

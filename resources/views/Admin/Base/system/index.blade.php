@@ -4,66 +4,11 @@
 
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#settings" data-toggle="tab" aria-expanded="true">信息设置</a></li>
-        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">基础设置</a></li>
-        <li class=""><a href="#activity" data-toggle="tab" aria-expanded="false">安全设置</a></li>
+        <li class="active"><a href="#settings" data-toggle="tab" aria-expanded="true">系统设置</a></li>
+        <li class=""><a href="#activity" data-toggle="tab" aria-expanded="false">Activity</a></li>
+        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">Timeline</a></li>
     </ul>
     <div class="tab-content">
-      <div class="tab-pane active" id="settings">
-        <form class="form-horizontal">
-            <div class="form-group">
-            <label for="inputName" class="col-sm-2 control-label">Name</label>
-
-            <div class="col-sm-10">
-                <input type="email" class="form-control" id="inputName" placeholder="Name">
-            </div>
-            </div>
-            <div class="form-group">
-            <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-
-            <div class="col-sm-10">
-                <input type="email" class="form-control" id="inputEmail" placeholder="Email">
-            </div>
-            </div>
-            <div class="form-group">
-            <label for="inputName" class="col-sm-2 control-label">Name</label>
-
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="inputName" placeholder="Name">
-            </div>
-            </div>
-            <div class="form-group">
-            <label for="inputExperience" class="col-sm-2 control-label">Experience</label>
-
-            <div class="col-sm-10">
-                <textarea class="form-control" id="inputExperience" placeholder="Experience"></textarea>
-            </div>
-            </div>
-            <div class="form-group">
-            <label for="inputSkills" class="col-sm-2 control-label">Skills</label>
-
-            <div class="col-sm-10">
-                <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
-            </div>
-            </div>
-            <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <div class="checkbox">
-                <label>
-                    <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-                </label>
-                </div>
-            </div>
-            </div>
-            <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-danger">Submit</button>
-            </div>
-            </div>
-        </form>
-      </div>
-        <!-- /.tab-pane -->
-    
       <div class="tab-pane" id="activity">
         <!-- Post -->
         <div class="post">
@@ -275,6 +220,60 @@
       </div>
       <!-- /.tab-pane -->
 
+      <div class="tab-pane active" id="settings">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label for="inputName" class="col-sm-2 control-label">Name</label>
+
+            <div class="col-sm-10">
+              <input type="email" class="form-control" id="inputName" placeholder="Name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+
+            <div class="col-sm-10">
+              <input type="email" class="form-control" id="inputEmail" placeholder="Email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputName" class="col-sm-2 control-label">Name</label>
+
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputName" placeholder="Name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputExperience" class="col-sm-2 control-label">Experience</label>
+
+            <div class="col-sm-10">
+              <textarea class="form-control" id="inputExperience" placeholder="Experience"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="inputSkills" class="col-sm-2 control-label">Skills</label>
+
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="inputSkills" placeholder="Skills">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-danger">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- /.tab-pane -->
     </div>
     <!-- /.tab-content -->
   </div>
