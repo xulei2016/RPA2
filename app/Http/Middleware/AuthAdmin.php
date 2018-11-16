@@ -40,7 +40,7 @@ class AuthAdmin
     public function cacheKeepRoute($routeList, $permission){
         $route = '';
         foreach($routeList as $list){
-            if($list['unique_name'] == $permission){
+            if($list['uri'] == $permission){
                 return $route = $list;
             }
             if(isset($list['child'])){

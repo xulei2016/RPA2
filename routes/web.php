@@ -74,8 +74,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             });
             
             //个人中心
-            Route::group(['middleware' => ['permission:sys_user_center']], function () {
-                Route::get('/sys_user_center', 'AdminController@userCenter');
+            Route::group(['middleware' => ['permission:sys_profile']], function () {
+                Route::get('/sys_profile', 'AdminController@userCenter');
             });
 
             //菜单

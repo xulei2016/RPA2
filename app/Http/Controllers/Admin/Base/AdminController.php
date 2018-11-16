@@ -154,6 +154,7 @@ class AdminController extends BaseAdminController
      * 个人中心
      */
     public function userCenter(){
-        return view('admin.base.admin.index');
+        $info = auth()->guard()->user();
+        return view('admin.base.admin.index', ['info' => $info]);
     }
 }
