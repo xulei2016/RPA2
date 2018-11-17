@@ -55,7 +55,7 @@
   <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
         <li class="active"><a href="#settings" data-toggle="tab" aria-expanded="true">基础设置</a></li>
-        <li class=""><a href="#activity" data-toggle="tab" aria-expanded="false">修改密码</a></li>
+        <li class=""><a href="#changePWD" data-toggle="tab" aria-expanded="false">修改密码</a></li>
         <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">安全设置</a></li>
         <li class=""><a href="#another" data-toggle="tab" aria-expanded="false">其他</a></li>
     </ul>
@@ -80,7 +80,14 @@
             <div class="form-group">
               <label for="inputName" class="col-sm-2 control-label">姓名</label>
               <div class="col-sm-10">
-                  <input type="email" class="form-control" name="realName" value="{{ $info->realName }}" id="inputName" placeholder="Name">
+                  <input type="email" class="form-control" name="realName" value="{{ $info->realName }}" id="inputName" placeholder="真实姓名">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="phone" class="col-sm-2 control-label">手机号</label>
+              <div class="col-sm-10">
+                  <input type="email" class="form-control" name="phone" value="{{ $info->phone }}" id="phone" placeholder="手机号码">
               </div>
             </div>
 
@@ -100,14 +107,14 @@
             
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                  <button type="submit" class="btn btn-danger">提交</button>
+                  <button type="button" class="btn btn-danger submit settings">提交</button>
               </div>
             </div>
         </form>
       </div>
         <!-- /.tab-pane -->
     
-      <div class="tab-pane" id="activity">
+      <div class="tab-pane" id="changePWD">
           <form class="form-horizontal">
   
               <div class="form-group">
@@ -133,7 +140,7 @@
               
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-danger">提交</button>
+                    <button type="button" class="btn btn-danger submit changePWD">提交</button>
                 </div>
               </div>
           </form>
@@ -154,4 +161,7 @@
     <!-- /.tab-content -->
   </div>
 </div>
+
+<script src="{{URL::asset('/js/admin/base/admin/index.js')}}"></script>
+
 @endsection

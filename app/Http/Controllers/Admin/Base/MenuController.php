@@ -220,4 +220,5 @@ class MenuController extends BaseAdminController
     public function sys_icon(){
         return view('admin.base.menu.iconList');
     }
+
 }
