@@ -89,7 +89,7 @@ class MenuController extends BaseAdminController
         $data = $this->get_params($request, ['parent_id','title','uri','icon','order','id','unique_name'], false);
         $result = SysMenu::where('id', $data['id'])
                 ->update($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
         return $this->ajax_return(200, '恭喜你，操作成功！');
     }
 
@@ -102,7 +102,7 @@ class MenuController extends BaseAdminController
     public function destroy($id)
     {
         $result = SysMenu::destroy($id);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }
 
@@ -171,7 +171,6 @@ class MenuController extends BaseAdminController
             $menu = self::AllMenus();
         }else{
             $menu = session(config('admin.cache.menuList'));
-            dd(1);
             session([config('admin.cache.menuList') => $menu]);
         }
         return $this->initMenuList($menu);

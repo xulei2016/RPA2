@@ -6,17 +6,21 @@
     <!-- Profile Image -->
     <div class="box box-primary">
       <div class="box-header with-border">
-        <h3 class="box-title">About Me</h3>
+        <h3 class="box-title">关于我</h3>
       </div>
 
       <div class="box-body box-profile">
-        <img class="profile-user-img img-responsive img-circle" src="{{ $info->head_img }}" alt="User profile picture">
+        <div class="profile-avatar-container">
+            <img class="profile-user-img img-responsive img-circle plupload" src="{{ URL::asset($info->head_img) }}" alt="User profile picture"  initialized="true">
+            <div class="profile-avatar-text img-circle">点击编辑</div>
+            <button id="plupload-avatar" class="plupload" data-input-id="c-avatar" initialized="true" style="/* z-index: 1; */"><i class="fa fa-upload"></i> 上传</button>
+        </div>
         <h3 class="profile-username text-center">{{ $info->name }}</h3>
         <p class="text-muted text-center">{{ $info->roleLists }}</p>
         
         <hr>
 
-        <strong><i class="fa fa-book margin-r-5"></i> Education</strong>
+        <strong><i class="fa fa-book margin-r-5"></i> </strong>
 
         <p class="text-muted">
           B.S. in Computer Science from the University of Tennessee at Knoxville
@@ -24,7 +28,7 @@
 
         <hr>
 
-        <strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
+        <strong><i class="fa fa-map-marker margin-r-5"></i> 位置</strong>
 
         <p class="text-muted">Malibu, California</p>
 
@@ -64,13 +68,6 @@
         <form class="form-horizontal">
 
             <div class="form-group">
-              <label class="col-sm-2 control-label">头像</label>
-              <div class="col-sm-10">
-                  <img class="img-responsive img-circle" src="{{ $info->head_img }}" alt="用户头像" width="50px">
-              </div>
-            </div>
-
-            <div class="form-group">
               <label class="col-sm-2 control-label">账户名</label>
               <div class="col-sm-10">
                   <input type="text" class="form-control" value="{{ $info->name }}" disabled>
@@ -107,7 +104,8 @@
             
             <div class="form-group">
               <div class="col-sm-offset-2 col-sm-10">
-                  <button type="button" class="btn btn-danger submit settings">提交</button>
+                  <input type="hidden" name="type" value="settings">
+                  <button type="button" class="btn btn-danger submit">提交</button>
               </div>
             </div>
         </form>
@@ -140,7 +138,8 @@
               
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="button" class="btn btn-danger submit changePWD">提交</button>
+                    <input type="hidden" name="type" value="changePWD">
+                    <button type="button" class="btn btn-danger submit">提交</button>
                 </div>
               </div>
           </form>

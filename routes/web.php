@@ -76,6 +76,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             //个人中心
             Route::group(['middleware' => ['permission:sys_profile']], function () {
                 Route::get('/sys_profile', 'AdminController@userCenter');
+                Route::post('/sys_profile', 'AdminController@updateUser');
+                Route::post('/sys_profile_head_img', 'AdminController@updateUser');
             });
 
             //菜单
@@ -98,6 +100,21 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
 
             //系统设置
             Route::get('sys_system_configure', 'SysController@setting')->middleware('permission:sys_system_configure');
+
+            //操作日志
+            Route::group(['middleware' => ['permission:sys_logs']], function () {
+                Route::get('/sys_logs/list', 'logController@pagenation');
+                Route::get('/sys_logs/export', 'logController@export')->middleware('permission:sys_logs_export');
+                Route::get('/sys_logs', 'logController@index');
+                Route::get('/sys_logs/{id}/edit', 'logController@show')->middleware('permission:sys_logs_view');
+                Route::delete('/sys_logs/{id}', 'logController@destroy')->middleware('permission:sys_logs_delete');
+            });
         });
     });
+
+    //异常路由跳转
+    // Route::get('/{any}', function(){
+    //     return view('errors.404');
+    // });
+
 });

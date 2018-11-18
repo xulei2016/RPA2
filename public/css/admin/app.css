@@ -101,3 +101,39 @@ body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments 
 .treeview-menu>li>a{
     padding: 10px 5px 10px 15px !important;
 }
+
+/*个人中心图片上传效果*/
+#pjax-container section.content .profile-avatar-container{
+    position: relative;
+    width: 100px;
+    margin: 0 auto;
+}
+#pjax-container section.content .profile-avatar-container .profile-avatar-text {
+    display: none;
+}
+#pjax-container section.content .profile-avatar-container:hover .profile-avatar-text {
+    display: block;
+    position: absolute;
+    height: 100px;
+    width: 100px;
+    background: #444;
+    opacity: .6;
+    color: #fff;
+    top: 0;
+    left: 0;
+    line-height: 100px;
+    text-align: center;
+}
+#pjax-container section.content .profile-avatar-container button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    opacity: 0;
+}
+#pjax-container section.content .profile-avatar-container .profile-user-img {
+    width: 100px;
+    height: 100px;
+}
+/*个人中心头像结束*/

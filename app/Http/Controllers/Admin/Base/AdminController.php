@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Base;
 
+use Hash;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -157,4 +158,138 @@ class AdminController extends BaseAdminController
         $info = auth()->guard()->user();
         return view('admin.base.admin.index', ['info' => $info]);
     }
+
+    /**
+     * 信息修改
+     */
+    public function updateUser(Request $request){
+        //表单类型
+        switch($request->type){
+            case 'settings':
+                return self::changeInfo($request);
+                break;
+            case 'changePWD':
+                return self::changePWD($request);
+                break;
+            case 'file':
+                return self::changeHeadImg($request);
+                break;
+            default:
+                return $this->ajax_return('500', '网络异常，请检查后尝试！！');
+                break;
+        }
+    } 
+
+    /**
+     * 修改密码
+     */
+    private function changePWD(Request $request){
+        $data = $this->get_params($request, ['oriPWD', 'password', 'rePWD']);
+
+        //原始密码检测
+        if(self::check_ori_pwd($data['oriPWD'])){
+            //两次密码检测
+            if($data['password'] != $data['rePWD']){
+                return [ 'code' => '500', 'info' => '两次填写的密码不一致！！！'];
+            }
+            //密码强度检测
+            $result = self::check_pwd($data['password']);
+            if(isset($result['code'])){
+                return $result;
+            };
+
+            //修改密码
+            // $this->log(__CLASS__, __FUNCTION__, $request, "更新 密码 信息");
+            SysAdmin::where('id', auth()->guard('admin')->user()->id)->update(['password'=>bcrypt($data['password'])]);
+            return [ 'code' => '200', 'info' => '修改成功！！'];
+        }else{
+            return [ 'code' => '500', 'info' => '原始密码错误！！！'];
+        }
+    }
+
+    /**
+     * 个人信息修改
+     */
+    private function changeInfo(Request $request){
+        $data = $this->get_params($request, ['realName', 'phone', 'email', 'desc']);
+
+        //修改密码
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 个人信息 信息");
+        SysAdmin::where('id', auth()->guard('admin')->user()->id)->update($data);
+        return [ 'code' => '200', 'info' => '修改成功！！'];
+    }
+
+    /**
+     * 修改头像
+     */
+    private function changeHeadImg(Request $request){
+        //显示的属性更多
+        $fileCharater = $request->file('file');
+
+        if ($fileCharater->isValid()) { //括号里面的是必须加的哦
+            //如果括号里面的不加上的话，下面的方法也无法调用的
+
+            $ext = $fileCharater->extension();
+            $store_result = $fileCharater->store('/images/admin/headImg');
+        }
+        //修改个人信息
+        $id = auth()->guard('admin')->user()->id;
+
+        $head_img = auth()->guard('admin')->user()->head_img;
+
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 个人头像 信息");
+        $result = SysAdmin::where('id', $id)->update(['head_img' => $store_result]);
+
+        //删除原图
+        $this->unlinkImg('/'.$head_img);
+
+        return [ 'code' => '200', 'info' => '上传成功！！'];
+    }
+    
+    /**
+     * 检查原密码
+     */
+    private function check_ori_pwd($pwd){
+        $user = auth()->guard('admin')->user();
+        if (Hash::check($pwd,$user->password)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 密码强度验证
+     * 不包含当前用户名
+     * 不小于8位
+     * 数字/字母/大小写字母/特殊字符
+     */
+    private function check_pwd($str){
+        $score = 0;
+        $array = [
+            "/[0-9]+/",
+            "/[a-z]+/",
+            "/[A-Z]+/",
+            "/[_|\-|+|=|*|!|@|#|$|%|^|&|(|)]+/"
+        ];
+        if(strlen($str) < 8){
+			return ['code' => 500, 'info' => '密码长度至少8位。'];
+        }
+        $user = auth()->guard('admin')->user();
+        $pwd = $user->pwd;
+        if (Hash::check($pwd,$str)) {
+            return ['code' => 500, 'info' => '请勿与原始密码一致。'];
+        }
+        if(substr_count($str,$user->name)){
+            return ['code' => 500, 'info' => '请勿包含当前用户名'];
+        }
+        foreach($array as $key){
+            if(preg_match($key,$str)){
+                $score ++;
+            }
+        }
+        if($score < 3){
+            return ['code' => 500, 'info' => '密码强度不足，请确认至少需要数字、字母、字母大写小、特殊字符中的三个及以上组合。'];
+        }
+        return true;
+	}
 }

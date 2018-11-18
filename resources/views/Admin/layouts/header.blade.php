@@ -143,13 +143,13 @@
               <!-- User Account -->
               <li class="dropdown user user-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="http://www.fastadmin.com/uploads/20181028/d25a6cc85d301d3573a94d6d96a747f6.gif" class="user-image" alt="User Image">
-                  <span class="hidden-xs">Alexander Pierce</span>
+                  <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" class="user-image" alt="User Image">
+                  <span class="hidden-xs">{{ session('sys_admin')['name'] }}</span>
                 </a>
                 <ul class="dropdown-menu">
                   <!-- User image -->
                   <li class="user-header">
-                    <img src="http://www.fastadmin.com/uploads/20181028/d25a6cc85d301d3573a94d6d96a747f6.gif" class="img-circle" alt="User Image">
+                    <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" class="img-circle" alt="User Image">
     
                     <p>
                       victor
@@ -173,7 +173,7 @@
                     <!-- Menu Footer-->
                     <li class="user-footer">
                         <div class="pull-left">
-                            <a href="general/profile" class="btn btn-primary addtabsit"><i class="fa fa-user"></i>
+                            <a href="/admin/sys_profile" class="btn btn-primary addtabsit"><i class="fa fa-user"></i>
                                 个人配置</a>
                         </div>
                         <div class="pull-right">

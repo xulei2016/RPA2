@@ -39,6 +39,7 @@ class AuthAdmin
      */
     public function cacheKeepRoute($routeList, $permission){
         $route = '';
+        
         foreach($routeList as $list){
             if($list['uri'] == $permission){
                 return $route = $list;

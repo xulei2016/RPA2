@@ -40,6 +40,8 @@
 <script src="{{URL::asset('/include/jquery-form/jquery.form.js')}}"></script>
 <!-- iCheck -->
 <script src="{{URL::asset('/include/iCheck/iCheck.min.js')}}"></script>
+<!-- plugupload -->
+<script src="{{URL::asset('/include/plupload/js/plupload.full.min.js')}}"></script>
 <!-- fix ie -->
 <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js"></script>
 <!-- AdminLTE for demo purposes -->

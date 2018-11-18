@@ -80,14 +80,11 @@ class BaseAdminController extends BaseController
         $info['lastAbbAgent'] = $this->isMobile()['userAgent'];
         if($type)
             $admin::where('id', $id)->update($info);
-        
-        //头像、权限信息
-        $headImg = $admin->find($id)->headImg;
 
         //快捷获取管理员信息可从此处添加 $admin_info->***
         $info['id'] = $id;
         $info['roleLists'] = $admin_info->roleLists;
-        // $info['headImg'] = $headImg->thumb;
+        $info['headImg'] = $admin_info->head_img;
         $info['name'] = $admin_info->name;
         $info['realName'] = $admin_info->realName;
         $info['email'] = $admin_info->email;
