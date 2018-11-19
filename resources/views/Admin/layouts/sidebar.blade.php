@@ -23,8 +23,6 @@
 
               {!! $menus->getMenuList() !!}
 
-              <li><a href="https://adminlte.io/docs"><i class="fa fa-book"></i> <span>Documentation</span></a></li>
-
               <li class="header" data-rel="external">其他</li>
               <li data-rel="external"><a href="https://doc.fastadmin.net" target="_blank"><i class="fa fa-list text-red"></i> <span>BUG提交</span></a></li>
               <li data-rel="external"><a href="https://forum.fastadmin.net" target="_blank"><i class="fa fa-comment text-yellow"></i> <span>改进意见</span></a></li>
