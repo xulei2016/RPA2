@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="panel">
+    <div class="panel box box-primary">
 
         @component('admin.widgets.toolbar')
             @slot('listsOperation')

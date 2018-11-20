@@ -2,9 +2,17 @@
 
 @section('content')
 
-    <div class="panel">
+    <div class="panel box box-primary">
 
         @component('admin.widgets.toolbar')
+            @slot('listsOperation')
+                @if(auth()->guard('admin')->user()->can('sys_logs_export'))
+                    <li><a href="javascript:void(0)" id="exportAll">导出全部</a></li>
+                    <li><a href="javascript:void(0)" id="export">导出选中</a></li>
+                @endcan
+            @endslot
+            @slot('operation')
+            @endslot
         @endcomponent
 
         @component('admin.widgets.search-group')

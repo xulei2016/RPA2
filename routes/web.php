@@ -86,7 +86,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::post('/sys_menu/order', 'MenuController@orderUpdate');
             
             //角色
-            Route::get('/sys_role/export', 'RoleController@export');
+            Route::get('/sys_role/export', 'RoleController@export')->middleware('permission:sys_role_export');;
             Route::get('/sys_role/list', 'RoleController@pagenation');
             Route::get('/sys_role/{id}/getPermission', 'RoleController@getPermission');
             Route::post('/sys_role/{id}/getCheckPermission', 'RoleController@getCheckPermission');
@@ -108,6 +108,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/sys_logs', 'logController@index');
                 Route::get('/sys_logs/{id}/edit', 'logController@show')->middleware('permission:sys_logs_view');
                 Route::delete('/sys_logs/{id}', 'logController@destroy')->middleware('permission:sys_logs_delete');
+            });
+
+            //邮件
+            Route::group(['middleware' => ['permission:sys_sms']], function () {
+                Route::resource('/sys_sms', 'MailController');
             });
         });
     });

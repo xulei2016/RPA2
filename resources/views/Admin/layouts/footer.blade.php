@@ -42,6 +42,8 @@
 <script src="{{URL::asset('/include/iCheck/iCheck.min.js')}}"></script>
 <!-- plugupload -->
 <script src="{{URL::asset('/include/plupload/js/plupload.full.min.js')}}"></script>
+<!-- CKEDITOR -->
+<script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
 <!-- fix ie -->
 <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js"></script>
 <!-- AdminLTE for demo purposes -->

@@ -52,7 +52,7 @@ class LogController extends BaseAdminController
         $data = $this->get_params($request, ['account','role','type']);
         $conditions = $this->getPagingList($data, ['account'=>'like', 'role'=>'=', 'type'=>'=']);
         $order = $request->sort ?? 'id';
-        $sort = $request->sortOrder;
+        $sort = $request->sortOrder ?? 'desc';
         $result = SysLog::where($conditions)
                 ->orderBy($order, $sort)
                 ->paginate($rows);
