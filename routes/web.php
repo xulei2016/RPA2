@@ -111,8 +111,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             });
 
             //邮件
-            Route::group(['middleware' => ['permission:sys_sms']], function () {
-                Route::resource('/sys_sms', 'MailController');
+            Route::group(['middleware' => ['permission:sys_mail']], function () {
+                Route::resource('/sys_mail', 'MailController');
             });
         });
     });
