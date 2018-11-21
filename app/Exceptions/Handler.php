@@ -49,20 +49,39 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
-            if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
-                $info = [
-                    'code' => '500',
-                    'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
-                    'data' => []
-                ];
-                return response()->json($info);
-            } else {
-                header('Location: /admin/403');exit;
-            }
+            return self::render403($request);
+        }else{
+            return self::renderErrors($request, $exception);
         }
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     * 
+     * UnauthorizedException 406 response
+     */
+    public function render403($request)
+    {
         if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
             $info = [
-                'code' => '500',
+                'code' => '403',
+                'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
+                'data' => []
+            ];
+            return response()->json($info);
+        } else {
+            header('Location: /admin/403.extend');exit;
+        }
+    }
+
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function renderErrors($request, Exception $exception)
+    {
+        if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
+            $info = [
+                'code' => $exception->getCode(),
                 'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
                 'data' => []
             ];

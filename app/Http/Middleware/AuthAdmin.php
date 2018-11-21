@@ -41,7 +41,7 @@ class AuthAdmin
         $route = '';
         
         foreach($routeList as $list){
-            if($list['uri'] == $permission){
+            if(trim(strrchr($list['uri'], '/'),'/') == $permission){
                 return $route = $list;
             }
             if(isset($list['child'])){

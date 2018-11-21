@@ -167,11 +167,11 @@ class MenuController extends BaseAdminController
     public function getMenuList()
     {
         //判断缓存是否存在, 是否调试模式
-        if (config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
+        if (!config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
             $menu = self::AllMenus();
+            session([config('admin.cache.menuList') => $menu]);
         }else{
             $menu = session(config('admin.cache.menuList'));
-            session([config('admin.cache.menuList') => $menu]);
         }
         return $this->initMenuList($menu);
     }

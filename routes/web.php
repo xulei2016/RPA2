@@ -46,8 +46,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin\Base'], function(){
     Route::any('/403', function(){
         return view('errors.403');
     });
+    Route::any('/403.extend', function(){
+        return view('errors.403_extend');
+    });
     Route::any('/404', function(){
         return view('errors.404');
+    });
+    Route::any('/404.extend', function(){
+        return view('errors.404_extend');
     });
     // Route::any('/403', 'SysController@error403')->name('403');
     // Route::any('/404', 'SysController@error404')->name('404');
@@ -77,7 +83,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('/sys_admin', 'AdminController@store')->middleware('permission:sys_admin_add');
                 Route::get('/sys_admin/{id}/edit', 'AdminController@edit')->middleware('permission:sys_admin_edit');
                 Route::PATCH('/sys_admin/{id}', 'AdminController@update')->middleware('permission:sys_admin_edit');
-                Route::delete('/sys_admin/{id}', 'AdminController@delete')->middleware('permission:sys_admin_delete');
+                Route::delete('/sys_admin/{id}', 'AdminController@destroy')->middleware('permission:sys_admin_delete');
             });
             
             //个人中心

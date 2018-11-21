@@ -16,6 +16,7 @@ class CreateSysLogsTable extends Migration
         Schema::create('sys_logs', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id'); 
+            $table->string('controller', 50); 
             $table->string('account', 30); 
             $table->string('action', 30); 
             $table->string('agent'); 
@@ -24,7 +25,7 @@ class CreateSysLogsTable extends Migration
             $table->string('method', 20); 
             $table->string('path', 50); 
             $table->text('data'); 
-            $table->timestamp('created_at'); 
+            $table->timestamps(); 
         });
     }
 
