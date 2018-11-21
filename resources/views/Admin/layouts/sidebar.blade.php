@@ -24,9 +24,9 @@
               {!! $menus->getMenuList() !!}
 
               <li class="header" data-rel="external">其他</li>
-              <li data-rel="external"><a href="https://doc.fastadmin.net" target="_blank"><i class="fa fa-list text-red"></i> <span>BUG提交</span></a></li>
-              <li data-rel="external"><a href="https://forum.fastadmin.net" target="_blank"><i class="fa fa-comment text-yellow"></i> <span>改进意见</span></a></li>
-              <li data-rel="external"><a href="https://jq.qq.com/?_wv=1027&amp;k=487PNBb" target="_blank"><i class="fa fa-qq text-aqua"></i> <span>QQ交流群</span></a></li>
+              <li data-rel="external"><a href="/Bugs"><i class="fa fa-list text-red"></i> <span>BUG提交</span></a></li>
+              <li data-rel="external"><a href="/Improvement"><i class="fa fa-comment text-yellow"></i> <span>改进意见</span></a></li>
+              <li data-rel="external"><a href="https://jq.qq.com/?_wv=1027&k=5PO47UO" target="_blank"><i class="fa fa-qq text-aqua"></i> <span>QQ交流群</span></a></li>
 
           </ul>
       </section>

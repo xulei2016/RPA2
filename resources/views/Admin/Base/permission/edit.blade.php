@@ -51,6 +51,7 @@
         <!-- /.box-body -->
         <div class="box-footer">
             {{ method_field('PATCH')}}
+            <input type="hidden" name="table" value="{{ $info->table }}" id="table">
             <input type="text" class="hidden" name="id" id="id" value="{{ $info->id }}">
             <button type="button" class="btn btn-info pull-right" id="save" onclick="add($(this))">提交</button>
             <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续编辑</label></div>

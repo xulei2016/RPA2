@@ -20,11 +20,12 @@ class PermissionController extends BaseAdminController
      * @param  \App\permission  $permission
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $top_list = Permission::where('table','=',1)->orderBy('sort','asc')->get();
         $lists = $this->get_group_menu($top_list);
         $lists = $this->initTree($lists);
+        $this->log(__CLASS__, __FUNCTION__, $request, "查看权限菜单");
         return view('admin.base.permission.index', ['lists' => $lists]);
     }
 
@@ -34,8 +35,9 @@ class PermissionController extends BaseAdminController
      * @param  \App\permission  $permission
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加权限菜单页");
         return view('admin.base.permission.add');
     }
 
@@ -51,7 +53,7 @@ class PermissionController extends BaseAdminController
         $data = $this->get_params($request, ['pid','name','guard_name','status','sort','desc','table'], false);
         $data['table'] = isset($data['table']) ? $data['table']+1 : 1 ;
         $result = Permission::create($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加权限菜单");
         return $this->ajax_return(200, '操作成功！');
     }
 
@@ -77,6 +79,7 @@ class PermissionController extends BaseAdminController
     public function edit(Request $request, $id)
     {
         $info = Permission::where('id', $id)->first();
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改权限菜单页");
         return view('admin.base.permission.edit', ['info' => $info]);
     }
 
@@ -93,7 +96,7 @@ class PermissionController extends BaseAdminController
         $data = $this->get_params($request, ['id','pid','name','guard_name','status','sort','desc','table'], false);
         $data['table'] = isset($data['table']) ? $data['table']+1 : 1 ;
         $result = Permission::where('id', $data['id'])->update($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新权限菜单");
         return $this->ajax_return(200, '操作成功！');
     }
 
@@ -104,9 +107,10 @@ class PermissionController extends BaseAdminController
      * @param  \DummyFullModelClass  $DummyModelVariable
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $result = Permission::destroy($id);
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除权限菜单");
         return $this->ajax_return(200, '操作成功！');
     }
         
@@ -117,6 +121,7 @@ class PermissionController extends BaseAdminController
     public function orderUpdate(Request $request){
         $order = $request->_order;
         $order = json_decode($order,true);
+        $this->log(__CLASS__, __FUNCTION__, $request, "排序权限菜单");
         if($this->sortUpdate($order)){
             return $this->ajax_return(200, '操作成功！');
         }

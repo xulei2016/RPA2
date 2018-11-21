@@ -26,6 +26,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+//Bugs
+Route::resource('/Bugs', 'Admin\Base\BugsController');
+
+//Inprovement
+Route::resource('/Improvement', 'Admin\Base\ImprovementController');
+
+
 //admin user login or logout operation 
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin\Base'], function(){
 
@@ -114,6 +121,16 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['middleware' => ['permission:sys_mail']], function () {
                 Route::resource('/sys_mail', 'MailController');
             });
+        });
+
+        //RPA PROJECTS
+        Route::group(['namespace' => 'Rpa'], function(){
+            //rpa 主任务列表
+            Route::group(['middleware' => ['permission:rpa_center']], function () {
+                Route::get('/rpa_center/list', 'RpaController@pagenation');
+                Route::resource('/rpa_center', 'RpaController');
+            });
+
         });
     });
 
