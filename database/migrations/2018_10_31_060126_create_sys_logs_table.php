@@ -23,7 +23,7 @@ class CreateSysLogsTable extends Migration
             $table->string('ip', 20); 
             $table->string('simple_desc', 50); 
             $table->string('method', 20); 
-            $table->string('path', 50); 
+            $table->text('path'); 
             $table->text('data'); 
             $table->timestamps(); 
         });

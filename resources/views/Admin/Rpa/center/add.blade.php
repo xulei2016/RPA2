@@ -2,59 +2,40 @@
     @slot('formContent')
 
         <div class="form-group">
-            <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
+            <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>任务名称</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="name" id="name" placeholder="名称" required>
+                <input type="text" class="form-control" name="name" id="name" placeholder="任务名称" required>
             </div>
         </div>
         <div class="form-group">
-            <label for="realName" class="col-sm-2 control-label"><span class="must-tag">*</span>真实姓名</label>
+            <label for="filepath" class="col-sm-2 control-label"><span class="must-tag">*</span>路径</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="realName" id="realName" placeholder="真实姓名" required>
+                <input type="text" class="form-control" name="filepath" id="filepath" placeholder="资源路径" required>
             </div>
         </div>
         <div class="form-group">
-            <label for="password" class="col-sm-2 control-label"><span class="must-tag">*</span>密码</label>
+            <label for="failtimes" class="col-sm-2 control-label">失败尝试次数</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control" name="password" id="password" placeholder="密码" required>
+                <input type="text" class="form-control" name="failtimes" id="failtimes" placeholder="失败尝试次数">
             </div>
         </div>
         <div class="form-group">
-            <label for="rePWD" class="col-sm-2 control-label"><span class="must-tag">*</span>确认密码</label>
+            <label for="timeout" class="col-sm-2 control-label">任务超时时长</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control" name="rePWD" id="rePWD" placeholder="确认密码" required>
+                <input type="text" class="form-control" name="timeout" id="timeout" placeholder="任务超时时长">
             </div>
         </div>
         <div class="form-group">
-            <label for="sex" class="col-sm-2 control-label">性别</label>
+            <label for="isfp" class="col-sm-2 control-label">是否暂用资源</label>
             <div class="col-sm-10">
-                <label><input type="radio" class="form-control minimal" name="sex" value="1" checked>男</label>
-                <label><input type="radio" class="form-control minimal" name="sex" value="0">女</label>
+                <label><input type="radio" class="form-control minimal icheck" name="isfp" value="1" checked>是</label>
+                <label><input type="radio" class="form-control minimal icheck" name="isfp" value="0">否</label>
             </div>
         </div>
         <div class="form-group">
-            <label for="phone" class="col-sm-2 control-label">联系电话</label>
+            <label for="bewrite" class="col-sm-2 control-label"><span class="must-tag">*</span>任务描述</label>
             <div class="col-sm-10">
-                <input type="phone" class="form-control" name="phone" id="phone" placeholder="联系电话">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="email" class="col-sm-2 control-label">Email</label>
-            <div class="col-sm-10">
-                <input type="email" class="form-control" name="email" sid="email" placeholder="Email">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="type" class="col-sm-2 control-label">状态</label>
-            <div class="col-sm-10">
-                <label><input type="radio" class="form-control minimal" name="type" value="1" checked>启用</label>
-                <label><input type="radio" class="form-control minimal" name="type" value="0">禁用</label>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="desc" class="col-sm-2 control-label">描述</label>
-            <div class="col-sm-10">
-                <textarea type="text" class="form-control" name="desc" id="desc" placeholder="描述"></textarea>
+                <textarea type="text" class="form-control" name="bewrite" id="bewrite" placeholder="任务描述" required></textarea>
             </div>
         </div>
 

@@ -39,6 +39,7 @@ class LogController extends BaseAdminController
      */
     public function destroy(Request $request, $ids)
     {
+        $ids = explode(',', $ids);
         $result = SysLog::destroy($ids);
         $this->log(__CLASS__, __FUNCTION__, $request, "删除日志");
         return $this->ajax_return('200', '操作成功！');

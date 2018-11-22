@@ -42,16 +42,9 @@ class RpaController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists'], false);
-        $roles = $data['roleLists'];
-        $data['roleLists'] = implode(',', $data['roleLists']);
-        $data['password'] = bcrypt($data['password']);
-        $result = SysAdmin::create($data);
-
-        //同步角色
-        $user = SysAdmin::find($result->id)->syncRoles($roles);
-
-        $this->log(__CLASS__, __FUNCTION__, $request, "添加用户");
+        $data = $this->get_params($request, ['name','filepath','failtimes','timeout','isfp','bewrite'], false);
+        $result = rpa_maintenance::create($data);
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加 任务");
         return $this->ajax_return('200', '操作成功！');
     }
 
@@ -95,9 +88,11 @@ class RpaController extends BaseAdminController
      * @param  \App\models\admin\rpa\rpa_maintenance  $rpa_maintenance
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, rpa_maintenance $rpa_maintenance)
+    public function destroy(Request $request, $ids)
     {
-        //
+        $result = rpa_maintenance::destroy($ids);
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除权限菜单");
+        return $this->ajax_return(200, '操作成功！');
     }
 
     /**

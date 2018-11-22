@@ -13,7 +13,7 @@
         <div class="box-footer">
             <button type="button" class="btn btn-warning" id="form-reset" onclick="RPA.form.reset($(this).parents('form'))">重置</button>
             <button type="submit" class="btn btn-info pull-right" id="save">提交</button>
-            <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
+            <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal icheck">继续添加</label></div>
         </div>
         <!-- /.box-footer -->
     </form>

@@ -95,11 +95,12 @@ class RoleController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($ids)
     {
-        if(1 == $id){
+        if(1 == $ids){
             return $this->ajax_return('500', '操作失败！包含保护项！！');
         }
+        $ids = explode(',', $ids);
         $result = Role::destroy($id);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');

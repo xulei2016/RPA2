@@ -260,8 +260,9 @@ RPA.prototype = {
     form: {
         reset: function(e, callback){
             //重置复选框
-            let formContinue = $('#modal #form-continue');
-            formContinue.iCheck('uncheck');
+            let formContinue = $('#modal input.icheck').each(function(e){
+                $(this).iCheck('uncheck');
+            });
             $(e)[0].reset();//重置表单，必须放下面
         },
         response: function(callback){
