@@ -256,7 +256,26 @@ RPA.prototype = {
         return $.map($(table).bootstrapTable('getSelections'), function (row) {
             return row.id
         });
-    }
+    },
+    form: {
+        reset: function(e, callback){
+            //重置复选框
+            let formContinue = $('#modal #form-continue');
+            formContinue.iCheck('uncheck');
+            $(e)[0].reset();//重置表单，必须放下面
+        },
+        response: function(callback){
+            toastr.success('操作成功！');
+            $.pjax.reload('#pjax-container');
+            let formContinue = $('#modal #form-continue');
+            if(formContinue.is(':checked')){
+                RPA.form.reset('#modal #form');
+            }else{
+                $('#modal').modal('hide');
+            }
+            callback();
+        }
+    },
     /////////////////////////////////////////////////////////bootstrap table end//////////////////////////////////////////////////////////
 }
 
