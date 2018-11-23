@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Admin\Admin\SysAdmin;
+use App\Models\Admin\Admin\SysAdminGroup;
 use App\Http\Controllers\Base\BaseAdminController;
 use Excel;
 
@@ -47,15 +48,17 @@ class AdminController extends BaseAdminController
      * create
      */
     public function create(Request $request){
+        //客户分组
+        $groupList = SysAdminGroup::all();
         $roles = Role::where('id','!=','1')->get();
-        return view('admin.admin.add', ['roles' => $roles]);
+        return view('admin.admin.add', ['roles' => $roles, 'groupList' => $groupList]);
     }
 
     /**
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists'], false);
+        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists','groupID'], false);
         $roles = $data['roleLists'];
         $data['roleLists'] = implode(',', $data['roleLists']);
         $data['password'] = bcrypt($data['password']);

@@ -90,6 +90,7 @@ class RpaController extends BaseAdminController
      */
     public function destroy(Request $request, $ids)
     {
+        $ids = explode(',', $ids);
         $result = rpa_maintenance::destroy($ids);
         $this->log(__CLASS__, __FUNCTION__, $request, "删除权限菜单");
         return $this->ajax_return(200, '操作成功！');

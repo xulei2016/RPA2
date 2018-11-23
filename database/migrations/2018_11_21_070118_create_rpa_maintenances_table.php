@@ -20,7 +20,7 @@ class CreateRpaMaintenancesTable extends Migration
             $table->string('filepath', 100);
             $table->integer('failtimes');
             $table->integer('timeout');
-            $table->tinyInteger('isfp')->default(0)->nullable();;
+            $table->tinyInteger('isfp')->default(0)->nullable();
             $table->text('emailreceiver');
             $table->string('PhoneNum');
             $table->string('messageSet', 50);
