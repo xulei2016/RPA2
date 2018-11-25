@@ -287,6 +287,11 @@ var operation = (e) => {
     RPA.pjaxOperation.modelLoad(e);
 }
 
+// Echo.channel('orders')
+//     .listen('OrderShipped', (e) => {
+//         console.log(e.order.name);
+//     });
+
 //自定义函数处理queryParams的批量增加
 $.fn.serializeJsonObject = function () {
     var json = {};

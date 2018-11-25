@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="panel box box-primary">
-
+        <div class="box-body">
             @component('admin.widgets.toolbar')
                 @slot('listsOperation')
                     @if(auth()->guard('admin')->user()->can('sys_role_export'))
@@ -33,7 +33,8 @@
                     </div>
                 @endslot
             @endcomponent
-        <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
+            <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
+        </div>
     </div>
 
 <script src="{{URL::asset('/js/admin/base/role/index.js')}}"></script>

@@ -125,6 +125,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
 
             //邮件
             Route::group(['middleware' => ['permission:sys_mail']], function () {
+                Route::get('/sys_mail/list', 'MailController@pagenation');
+                Route::get('/sys_mail/export', 'MailController@export');
                 Route::resource('/sys_mail', 'MailController');
             });
         });
