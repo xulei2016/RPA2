@@ -60,6 +60,11 @@ body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments 
     position: relative;
 }
 
+/* fixed adminlte box body */
+.box-body{
+    padding: 0 10px;
+}
+
 /** 将初始的checkbox的样式改变 */
 #tb_departments .bella-checkbox input[type="checkbox"] {
     opacity: 0; /*将初始的checkbox隐藏起来*/
@@ -136,4 +141,5 @@ body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments 
     width: 100px;
     height: 100px;
 }
+
 /*个人中心头像结束*/

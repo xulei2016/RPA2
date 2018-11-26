@@ -3,44 +3,88 @@
 @section('content')
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="box box-info">
-            <div class="box-header">
-                <h3 class="box-title">编辑邮件</h3>
+    <div class="col-md-3">
+        <a href="javascript:void(0)" url="/admin/sys_admin/create" title="新增" onclick="operation($(this));" class="btn btn-primary btn-block margin-bottom">发邮件</a>
+
+        <div class="box box-solid">
+            <div class="box-header with-border">
+            <h3 class="box-title">Folders</h3>
+
+            <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
             </div>
-            <div class="box-body pad">
-                <form>
-                    <div class="form-group">
-                        <input class="form-control to" name="to" placeholder="发送人:" required>
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control cc" name="cc" placeholder="抄送:">
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control project" name="project" placeholder="主题:" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="editor" name="editor" rows="10" cols="80" placeholder="写点什么吧."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <div class="btn btn-default btn-file">
-                            <i class="fa fa-paperclip"></i> 附件
-                            <input type="file" name="attachment">
+            </div>
+            <div class="box-body no-padding">
+            <ul class="nav nav-pills nav-stacked">
+                <li class=""><a href="#"><i class="fa fa-inbox"></i> 收件箱<span class="label label-primary pull-right">12</span></a></li>
+                <li><a href="#"><i class="fa fa-envelope-o"></i> 发件箱</a></li>
+                <li><a href="#"><i class="fa fa-file-text-o"></i> 草稿箱</a></li>
+                <li><a href="#"><i class="fa fa-filter"></i> 垃圾箱 <span class="label label-warning pull-right">65</span></a>
+                </li>
+                <li><a href="#"><i class="fa fa-trash-o"></i> 回收箱</a></li>
+            </ul>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /. box -->
+        <div class="box box-solid">
+            <div class="box-header with-border">
+            <h3 class="box-title">Labels</h3>
+
+            <div class="box-tools">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+            </div>
+            <div class="box-body no-padding">
+            <ul class="nav nav-pills nav-stacked">
+                <li><a href="#"><i class="fa fa-circle-o text-red"></i> Important</a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-yellow"></i> Promotions</a></li>
+                <li><a href="#"><i class="fa fa-circle-o text-light-blue"></i> Social</a></li>
+            </ul>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <div class="col-md-9">
+
+        <div class="panel box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">收件箱</h3>
+            </div>
+            <div class="box-body">
+                @component('admin.widgets.toolbar')
+                    @slot('listsOperation')
+                        <li><a href="javascript:void(0)" id="deleteAll">删除全部</a></li>
+                        @if(auth()->guard('admin')->user()->can('sys_logs_export'))
+                            <li><a href="javascript:void(0)" id="exportAll">导出全部</a></li>
+                            <li><a href="javascript:void(0)" id="export">导出选中</a></li>
+                        @endcan
+                    @endslot
+                    @slot('operation')
+
+                    @endslot
+                @endcomponent
+        
+                @component('admin.widgets.search-group')
+                    @slot('searchContent')
+                    <label class="control-label col-sm-1" for="title">主题</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" id="title">
                         </div>
-                        <p class="help-block">最大. 32MB</p>
-                    </div>
-                </form>
-            </div>
-            <div class="box-footer">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-default draft"><i class="fa fa-pencil"></i> 草稿</button>
-                    <button type="submit" class="btn btn-primary submit"><i class="fa fa-envelope-o"></i> 发送</button>
-                </div>
-                <button type="reset" class="btn btn-default reset"><i class="fa fa-times"></i> 放弃</button>
+                    @endslot
+                @endcomponent
+        
+                    
+                <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
             </div>
         </div>
     </div>
 </div>
+
+<script src="{{URL::asset('/js/admin/base/mail/index.js')}}"></script>
 <script>
     $(function () {
         //初始化
