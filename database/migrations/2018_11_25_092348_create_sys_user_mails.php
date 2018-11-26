@@ -17,6 +17,7 @@ class CreateSysUserMails extends Migration
             $table->increments('mid');
             $table->integer('uid')->nullable();
             $table->tinyInteger('is_read')->default(0);
+            $table->tinyInteger('type');
             $table->string('read_time');
         });
     }
