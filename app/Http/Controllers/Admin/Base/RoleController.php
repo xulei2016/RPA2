@@ -101,7 +101,7 @@ class RoleController extends BaseAdminController
             return $this->ajax_return('500', '操作失败！包含保护项！！');
         }
         $ids = explode(',', $ids);
-        $result = Role::destroy($id);
+        $result = Role::destroy($ids);
         // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
         return $this->ajax_return(200, '操作成功！');
     }

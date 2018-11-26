@@ -1,11 +1,5 @@
-<div class="box box-info">
-    <div class="box-header with-border">
-        <h3 class="box-title">添加操作</h3>
-    </div>
-    <!-- /.box-header -->
-    <!-- form start -->
-    <form class="form-horizontal" id="form">
-        <div class="box-body">
+@component('admin.widgets.editForm')
+    @slot('formContent')
             <div class="form-group">
                 <label for="name" class="col-sm-2 control-label">名称</label>
                 <div class="col-sm-10">
@@ -43,21 +37,13 @@
             <div class="form-group">
                 <label for="status" class="col-sm-2 control-label">状态</label>
                 <div class="col-sm-10">
-                    <label><input type="radio" class="minimal" name="status" value="1" checked>启用</label>
-                    <label><input type="radio" class="minimal" name="status" value="0">禁用</label>
+                    <label><input type="radio" class="minimal icheck" name="status" value="1" checked>启用</label>
+                    <label><input type="radio" class="minimal icheck" name="status" value="0">禁用</label>
                 </div>
             </div>
-        </div>
-        <!-- /.box-body -->
-        <div class="box-footer">
             <input type="hidden" name="table" value="1" id="table">
-            <button type="reset" class="btn btn-warning" id="form-reset">重置</button>
-            <button type="button" class="btn btn-info pull-right" id="save">提交</button>
-            <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续添加</label></div>
-        </div>
-        <!-- /.box-footer -->
-    </form>
-</div>
+    @endslot
+@endcomponent
 <script>
     $(function(){
         //初始化
@@ -67,19 +53,10 @@
 
         //绑定事件
         function bindEvent(){
-            //iCheck for checkbox and radio inputs
-            $('input.minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue'
-            });
 
             $("#select2-menu").select2({
                 "allowClear":true,
                 "placeholder":"父级菜单",
-            });
-
-            $('#modal #form #save').click(function(){
-                add($(this));
             });
 
             $.post('/admin/sys_permission/getTree', {}, function(json){
@@ -128,10 +105,7 @@
             success:function(json, xml){
                 console.log(json);
                 if(200 == json.code){
-                    toastr.success('操作成功！');
-                    var formContinue = $('#form-continue').is(':checked');
-                    !formContinue ? $('#modal').modal('hide') : $('#form-reset').click();
-                    $.pjax.reload('#pjax-container');
+                    RPA.form.response();
                 }else{
                     toastr.error(json.info);
                 }
