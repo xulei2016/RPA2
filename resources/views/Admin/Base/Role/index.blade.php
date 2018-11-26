@@ -14,6 +14,9 @@
                     @endcan
                 @endslot
                 @slot('operation')
+                    <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/sys_role/create" title="新增" onclick="operation($(this));">
+                        <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
+                    </a>
                 @endslot
             @endcomponent
 
