@@ -127,7 +127,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['middleware' => ['permission:sys_mail']], function () {
                 Route::get('/sys_mail/list', 'MailController@pagenation');
                 Route::get('/sys_mail/export', 'MailController@export');
-                Route::resource('/sys_mail', 'MailController');
+                Route::get('/sys_mail/create', 'MailController@create')->middleware('permission:sys_mail_create');
+                Route::resource('/sys_mail', 'MailController',['except' => ['create']]);
             });
         });
 

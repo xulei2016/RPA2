@@ -60,7 +60,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="#settings" data-toggle="tab" aria-expanded="true">基础设置</a></li>
         <li class=""><a href="#changePWD" data-toggle="tab" aria-expanded="false">修改密码</a></li>
-        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">安全设置</a></li>
+        <li class=""><a href="#rpasetting" data-toggle="tab" aria-expanded="false">RPA设置</a></li>
         <li class=""><a href="#another" data-toggle="tab" aria-expanded="false">其他</a></li>
     </ul>
     <div class="tab-content">
@@ -146,8 +146,36 @@
       </div>
       <!-- /.tab-pane -->
 
-      <div class="tab-pane" id="timeline">
-          <div class="text-center">正在开发中。。。</div>
+      <div class="tab-pane" id="rpasetting">
+          <form class="form-horizontal">
+              <div class="form-group">
+                <label for="acceptInfo" class="col-sm-2 control-label">是否接收RPA消息</label>
+                <div class="col-sm-10">
+                    <input type="acceptInfo" class="form-control" name="acceptInfo" id="acceptInfo" placeholder="是否接受RPA消息" required>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="type" class="col-sm-2 control-label">接收消息类型</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" name="type" id="type" placeholder="新密码" required>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="rePWD" class="col-sm-2 control-label">确认新密码</label>
+                <div class="col-sm-10">
+                    <input type="rePWD" class="form-control" name="rePWD" id="rePWD" placeholder="确认新密码" required>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="hidden" name="type" value="changePWD">
+                    <button type="button" class="btn btn-danger submit">提交</button>
+                </div>
+              </div>
+          </form>
       </div>
 
       <!-- /.tab-pane -->
