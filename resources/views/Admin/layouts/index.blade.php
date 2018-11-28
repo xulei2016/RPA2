@@ -11,8 +11,6 @@
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap/dist/css/bootstrap.min.css')}}">
     <!-- Bootstrap-table -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-table/bootstrap-table.css')}}">
-    <!-- Date Picker -->
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css')}}">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{URL::asset('/include/font-awesome/css/font-awesome.min.css')}}">
     <!-- Ionicons -->
@@ -26,14 +24,16 @@
     <link rel="stylesheet" href="{{URL::asset('/include/iCheck/minimal/blue.css')}}">
     <!-- nprogress -->
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
-    <!-- Morris chart -->
-    <link rel="stylesheet" href="{{URL::asset('/include/morris.js/morris.css')}}">
     <!-- sweetalert2 -->
     <link rel="stylesheet" href="{{URL::asset('/include/sweetalert2/sweetalert2.min.css')}}">
     <!-- select2 -->
     <link rel="stylesheet" href="{{URL::asset('/include/select2/dist/css/select2.min.css')}}">
+    <!-- laydate -->
+    <link rel="stylesheet" href="{{URL::asset('/include/laydate/theme/default/laydate.css')}}">
+    <!-- switch -->
+    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css')}}">
     <!-- Daterange picker -->
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}">
+    {{-- <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}"> --}}
     <!-- bootstrap wysihtml5 - text editor -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
     <!-- Theme style -->

@@ -39,9 +39,10 @@ class AdminController extends BaseAdminController
      */
     public function edit(Request $request, $id){
         $info = SysAdmin::where('id', $id)->first();
+        $groupList = SysAdminGroup::all();
         $roles = Role::where('id','!=','1')->get();
-        $info['roles'] = explode(',', $info['roles']);
-        return view('admin.admin.edit', ['info' => $info, 'roles' => $roles]);
+        $info['roleLists'] = explode(',', $info['roleLists']);
+        return view('admin.admin.edit', ['info' => $info, 'roles' => $roles, 'groupList' => $groupList]);
     }
 
     /**
@@ -75,7 +76,7 @@ class AdminController extends BaseAdminController
      * update
      */
     public function update(Request $request){
-        $data = $this->get_params($request, ['id','name','type','sex','phone','realName','desc','password','email','roleLists']);
+        $data = $this->get_params($request, ['id','name','type','sex','phone','realName','desc','password','email','roleLists','groupID']);
         $roles = $data['roleLists'];
         if(null == $data['password'] || '' == $data['password']){
             unset($data['password']);
@@ -123,6 +124,8 @@ class AdminController extends BaseAdminController
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder;
         $result = SysAdmin::where($conditions)
+                ->leftJoin('sys_admin_groups', 'sys_admins.groupID', '=', 'sys_admin_groups.id')
+                ->select(['sys_admins.*', 'sys_admin_groups.group'])
                 ->orderBy($order, $sort)
                 ->paginate($rows);
         return $result;
@@ -171,6 +174,9 @@ class AdminController extends BaseAdminController
             case 'settings':
                 return self::changeInfo($request);
                 break;
+            case 'rpasetting':
+                return self::rpasetting($request);
+                break;
             case 'changePWD':
                 return self::changePWD($request);
                 break;
@@ -178,10 +184,40 @@ class AdminController extends BaseAdminController
                 return self::changeHeadImg($request);
                 break;
             default:
-                return $this->ajax_return('500', '网络异常，请检查后尝试！！');
+                return $this->ajax_return('500', '操作失败，未匹配到操作类型！！');
                 break;
         }
     } 
+
+    /**
+     * rpasetting
+     */
+    private function rpasetting(Request $request){
+        $data = $this->get_params($request, ['accept_mes_info', 'accept_mes_type']);
+
+        $user = session('sys_admin');
+        if(isset($data['accept_mes_info'])){
+            if(1 == $data['accept_mes_type']){
+                if(!$user['phone']){
+                    $error_info = '请先完善手机号！'; 
+                }
+            }elseif(2 == $data['accept_mes_type']){
+                if(!$user['email']){
+                    $error_info = '请先完善邮箱！'; 
+                }
+            }elseif(3 == $data['accept_mes_type']){
+                if(!$user['email'] || !$user['phone']){
+                    $error_info = '请先完善邮箱和手机号！'; 
+                }
+            }
+            if(isset($error_info)){
+                return [ 'code' => '500', 'info' => $error_info];
+            }
+        }
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 rpa 设置");
+        SysAdmin::where('id', $user['id'])->update($data);
+        return [ 'code' => '200', 'info' => '设置成功！！'];
+    }
 
     /**
      * 修改密码
@@ -202,7 +238,7 @@ class AdminController extends BaseAdminController
             };
 
             //修改密码
-            // $this->log(__CLASS__, __FUNCTION__, $request, "更新 密码 信息");
+            $this->log(__CLASS__, __FUNCTION__, $request, "更新 密码 信息");
             SysAdmin::where('id', auth()->guard('admin')->user()->id)->update(['password'=>bcrypt($data['password'])]);
             return [ 'code' => '200', 'info' => '修改成功！！'];
         }else{

@@ -149,29 +149,28 @@
       <div class="tab-pane" id="rpasetting">
           <form class="form-horizontal">
               <div class="form-group">
-                <label for="acceptInfo" class="col-sm-2 control-label">是否接收RPA消息</label>
+                <label for="accept_mes_info" class="col-sm-2 control-label">是否接收RPA消息</label>
                 <div class="col-sm-10">
-                    <input type="acceptInfo" class="form-control" name="acceptInfo" id="acceptInfo" placeholder="是否接受RPA消息" required>
+                    <div class="switch">
+                        <input type="checkbox" name="accept_mes_info" id="accept_mes_info" value="1" @if($info->accept_mes_info) checked @endif/>
+                    </div>
                 </div>
               </div>
   
               <div class="form-group">
-                <label for="type" class="col-sm-2 control-label">接收消息类型</label>
+                <label for="accept_mes_type" class="col-sm-2 control-label">接收消息类型</label>
                 <div class="col-sm-10">
-                    <input type="password" class="form-control" name="type" id="type" placeholder="新密码" required>
-                </div>
-              </div>
-  
-              <div class="form-group">
-                <label for="rePWD" class="col-sm-2 control-label">确认新密码</label>
-                <div class="col-sm-10">
-                    <input type="rePWD" class="form-control" name="rePWD" id="rePWD" placeholder="确认新密码" required>
+                    <select name="accept_mes_type" id="accept_mes_type" class="form-control">
+                      <option value="1" @if(1 == $info->accept_mes_type) selected @endif>短信</option>
+                      <option value="2" @if(2 == $info->accept_mes_type) selected @endif>邮件</option>
+                      <option value="3" @if(3 == $info->accept_mes_type) selected @endif>短信和邮件</option>
+                    </select>
                 </div>
               </div>
               
               <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <input type="hidden" name="type" value="changePWD">
+                    <input type="hidden" name="type" value="rpasetting">
                     <button type="button" class="btn btn-danger submit">提交</button>
                 </div>
               </div>

@@ -14,19 +14,6 @@ $(function(){
      * 绑定事件
      */
     function bindEvent(){
-        //根据条件查询信息
-        $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
-        });
-
-        //enter键盘事件
-        $("#pjax-container #search-group #formSearch input").keydown(function(event){
-            event = event ? event: window.event;
-            if(event.keyCode == 13){
-                $('#tb_departments').bootstrapTable('refresh');
-            }
-        });
-
         //批量删除
         $("#pjax-container section.content #toolbar #deleteAll").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
@@ -35,21 +22,6 @@ $(function(){
         	}else{
                 Delete(ids);
             }
-        });
-
-        //导出全部
-        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
-            var condition = getSearchGroup();
-            $url = urlEncode(condition);
-            location.href="/admin/admin/export?"+$url;
-        });
-
-        //导出全部
-        $("#pjax-container section.content #toolbar #export").on('click', function(){
-            var ids = RPA.getIdSelections('#tb_departments');
-            var condition = getSearchGroup();
-            $url = urlEncode(condition);
-            location.href="/admin/sys_admin/export?"+$url+'&id='+ids;
         });
     }
 
@@ -69,7 +41,7 @@ $(function(){
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/sys_admin/'+id,
+                        url: '/admin/rpa_news/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
@@ -94,16 +66,6 @@ $(function(){
         });
     }
 
-    //get searchGroup
-    function getSearchGroup(){
-        //特殊格式的条件处理
-        var temp = {
-            name : $("#pjax-container #search-group #name").val(),
-            type : $("#pjax-container #search-group #type").val()
-        }
-        return temp;
-    }
-
     //分页参数
     function pageNation(oTable){
         oTable.queryParams = function (params) {
@@ -114,97 +76,54 @@ $(function(){
             temp["page"] = (params.offset / params.limit) + 1;  //页码
             temp["sort"] = params.sort;                         //排序列名
             temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
-
-            //特殊格式的条件处理
-            let obj = getSearchGroup();
-            for(let i in obj){
-                temp[i] = obj[i];
-            }
-            return temp;
-        }
-
-        function stateFormatter(value, row, index) {
-            if (row.id == 1)
-                return {
-                    disabled : true,//设置是否可用
-                    checked : false//设置选中
-                };
-            return value;
         }
 
         var param = {
-            url: '/admin/sys_admin/list',
+            url: '/admin/rpa_news/list',
             columns: [{
-                    field: "check", 
-                    title: "",
-                    align: "center", 
                     checkbox: true,
-                    formatter:stateFormatter,
+                }, {
+                    field: 'id',
+                    title: 'ID',
+                    align: 'center',
+                    valign: 'middle'
                 }, {
                     field: 'name',
-                    title: '姓名',
+                    title: '任务名称',
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'realName',
-                    title: '真实姓名',
+                    field: 'description',
+                    title: '任务描述',
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'sex',
-                    title: '性别',
-                    formatter: function(res){
-                        return (res == 1) ? '男' : ((res == 0) ? '女' : '未知') ;
-                    },
-                    align: 'center',
-                    valign: 'middle'
-                }, {
-                    field: 'phone',
-                    title: '电话',
-                    align: 'center',
-                    valign: 'middle'
-                }, {
-                    field: 'group',
-                    title: '分组',
+                    field: 'week',
+                    title: '日期',
                     align: 'center',
                     valign: 'middle',
-                    formatter: function(res){
-                        let html = ' <small class="label bg-blue">'+res+'</small> ';
-                        return html;
+                    formatter: function(value, row, index){
+                        return row.date ? row.date : get_week(row.week);
                     }
                 }, {
-                    field: 'roleLists',
-                    title: '角色',
+                    field: 'date',
+                    title: '类型',
                     align: 'center',
                     valign: 'middle',
-                    formatter: function(res){
-                        if(res) res = res.split(',');
-                        let html = '';
-                        for(let v of res){
-                            html += ' <small class="label bg-blue">'+v+'</small> ';
-                        }
-                        return html;
+                    formatter: function(value, row, index){
+                        return row.date ? '<span class="text-primary">一次性任务</span>' : '<span class="text-success">循环执行</span>' ;
                     }
                 }, {
-                    field: 'email',
-                    title: '邮箱',
+                    field: 'time',
+                    title: '执行时间',
                     align: 'center',
                     valign: 'middle'
-                }, {
-                    field: 'type',
-                    title: '状态',
-                    align: 'center',
-                    valign: 'middle',
-                    formatter: function(res){
-                        return (1 == res) ? '<small class="label bg-green">启用</small>' : '<small class="label bg-red">禁用</small>' ;
-                    }
                 }, {
                     field: 'created_at',
                     title: '创建时间',
                     align: 'center',
                     valign: 'middle',
-                    sortable: true,
-                },{
+                }, {
                     field: 'id',
                     title: '操作',
                     align: 'center',
@@ -219,7 +138,8 @@ $(function(){
                         var id = value;
                         var result = "";
                         if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_admin/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"' title='查看参数'><span class='glyphicon glyphicon-search'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;
@@ -229,6 +149,38 @@ $(function(){
 
         //初始化表格
         oTable.Init('#tb_departments', param);
+    }
+    
+    //get_week
+    function get_week(week){
+        let s = '每周';
+        let w = week.split(',');
+        for(let i = 0;i<w.length;i++){
+            switch(w[i]){
+                case "0":
+                    s = s+'日,';
+                    break;
+                case "1":
+                    s = s+'一,';
+                    break;
+                case "2":
+                    s = s+'二,';
+                    break;
+                case "3":
+                    s = s+'三,';
+                    break;
+                case "4":
+                    s = s+'四,';
+                    break;
+                case "5":
+                    s = s+'五,';
+                    break;
+                case "6":
+                    s = s+'六,';
+                    break;
+            }
+        }
+        return s;
     }
 
     init();

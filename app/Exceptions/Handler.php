@@ -81,7 +81,7 @@ class Handler extends ExceptionHandler
     {
         if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
             $info = [
-                'code' => $exception->getCode(),
+                'code' => '500',
                 'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
                 'data' => []
             ];
