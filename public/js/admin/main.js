@@ -40,7 +40,7 @@ RPA.prototype = {
         //toastr configure
         toastr.options = _this.toastOptions;
 
-        //moprogress
+        // //moprogress
         NProgress.configure({ parent: '#pjax-container' });
 
         //异步请求csrf头
