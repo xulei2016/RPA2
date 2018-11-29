@@ -42,7 +42,7 @@
         <div class="form-group">
             <label for="notice_type" class="col-sm-2 control-label">消息通知</label>
             <div class="col-sm-10">
-                <select name="notice_type" class="form-control" id="notice_type" onchange="mesNotice(this);">
+                <select name="notice_type" class="form-control" id="notice_type">
                     <option value="0" selected>不通知</option>
                     <option value="1">个人</option>
                     <option value="2">分组</option>
@@ -62,9 +62,12 @@
 
 <script>
 $(function(){
-    var b = 'sdf45sd4g56df56g44fd6g6af';
     $('#modal form .switch input#isfp').bootstrapSwitch({onText:"是", offText:"否"});
     $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
+
+    $('#modal form select#notice_type').on('change', function(){
+        mesNotice($(this));
+    });
 
     //消息通知方式
     function mesNotice(e){
@@ -100,23 +103,23 @@ $(function(){
             swal('Oops...', '获取资源数据失败！', 'error');
         });
     }
-
-    //添加
-    function add(e){
-        RPA.ajaxSubmit(e, FormOptions);
-    }
-    
-    //提交信息的表单配置
-    var FormOptions={
-        url:'/admin/rpa_center',
-        success:function(json, xml){
-            if(200 == json.code){
-                RPA.form.response();
-            }else{
-                toastr.error(json.info);
-            }
-        },
-        error:RPA.errorReponse
-    };
 });
+
+//添加
+function add(e){
+    RPA.ajaxSubmit(e, FormOptions);
+}
+
+//提交信息的表单配置
+var FormOptions={
+    url:'/admin/rpa_center',
+    success:function(json, xml){
+        if(200 == json.code){
+            RPA.form.response();
+        }else{
+            toastr.error(json.info);
+        }
+    },
+    error:RPA.errorReponse
+};
 </script>

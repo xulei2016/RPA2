@@ -119,7 +119,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/sys_logs/list', 'logController@pagenation');
                 Route::get('/sys_logs/export', 'logController@export')->middleware('permission:sys_logs_export');
                 Route::get('/sys_logs', 'logController@index');
-                Route::get('/sys_logs/{id}/edit', 'logController@show')->middleware('permission:sys_logs_view');
+                Route::get('/sys_logs/{id}', 'logController@show')->middleware('permission:sys_logs_view');
                 Route::delete('/sys_logs/{id}', 'logController@destroy')->middleware('permission:sys_logs_delete');
             });
 

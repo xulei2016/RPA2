@@ -5,7 +5,7 @@
     <!-- /.box-header -->
     <div class="box-body">
         <pre style="white-space: normal;">
-            {{ $info->data }}
+                {{ $info->jsondata }}
         </pre>
     </div>
 </div>

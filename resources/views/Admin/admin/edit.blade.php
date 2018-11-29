@@ -85,7 +85,9 @@
                 <textarea type="text" class="form-control" name="desc" id="desc" placeholder="描述">{{ $info->desc }}</textarea>
             </div>
         </div>
+        {{ method_field('PATCH')}}
         <input type="hidden" name="id" value="{{ $info->id }}">
+        
     @endslot
 @endcomponent
     <script>

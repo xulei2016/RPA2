@@ -187,7 +187,7 @@ $(function(){
                         var id = value;
                         var result = "";
                         if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-success' onclick=\"operation($(this));\" url='/admin/sys_logs/"+id+"/edit' title='查看参数'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-success' onclick=\"operation($(this));\" url='/admin/sys_logs/"+id+"' title='查看参数'><span class='glyphicon glyphicon-search'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;
