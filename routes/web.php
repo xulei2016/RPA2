@@ -25,6 +25,10 @@
 Route::get('/', function () {
     return view('welcome');
 });
+//excel
+Route::get('/excel','Admin\ExcelController@index');
+Route::post('/upload','Admin\ExcelController@upload');
+
 
 //Bugs
 Route::resource('/Bugs', 'Admin\Base\BugsController');
