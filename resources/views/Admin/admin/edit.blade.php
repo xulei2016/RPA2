@@ -7,11 +7,11 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
+            <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>角色选择</label>
             <div class="col-sm-10">
                 <select name="roleLists[]" id="select2-menu" class="form-control parent_id select2" multiple required>
                     @foreach($roles as $role)
-                        @if(in_array($role['name'], $info->roles))
+                        @if(in_array($role['name'], $info->roleLists))
                             <option value ="{{ $role['name'] }}" selected>{{ $role['name'] }}</option>
                         @else
                             <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
@@ -24,6 +24,21 @@
             <label for="realName" class="col-sm-2 control-label"><span class="must-tag">*</span>真实姓名</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="realName" id="realName" value="{{ $info->realName }}" placeholder="真实姓名" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="groupID" class="col-sm-2 control-label"><span class="must-tag">*</span>选择分组</label>
+            <div class="col-sm-10">
+                <select class="form-control" name="groupID" id="groupID" required>
+                    <option value="">请选择</option>
+                    @foreach($groupList as $group)
+                        @if($info->groupID == $group->id)
+                        <option value="{{ $group->id }}" selected>{{ $group->group }}</option>
+                        @else
+                        <option value="{{ $group->id }}">{{ $group->group }}</option>
+                        @endif
+                    @endforeach
+                </select>
             </div>
         </div>
         <div class="form-group">
@@ -70,7 +85,9 @@
                 <textarea type="text" class="form-control" name="desc" id="desc" placeholder="描述">{{ $info->desc }}</textarea>
             </div>
         </div>
+        {{ method_field('PATCH')}}
         <input type="hidden" name="id" value="{{ $info->id }}">
+        
     @endslot
 @endcomponent
     <script>

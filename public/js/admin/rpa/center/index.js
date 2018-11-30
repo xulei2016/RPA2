@@ -106,15 +106,6 @@ $(function(){
             temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
         }
 
-        function stateFormatter(value, row, index) {
-            if (row.id == 1)
-                return {
-                    disabled : true,//设置是否可用
-                    checked : false//设置选中
-                };
-            return value;
-        }
-
         var param = {
             url: '/admin/rpa_center/list',
             columns: [{

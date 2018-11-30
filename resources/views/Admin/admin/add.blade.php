@@ -49,8 +49,9 @@
         <div class="form-group">
             <label for="sex" class="col-sm-2 control-label">性别</label>
             <div class="col-sm-10">
-                <label><input type="radio" class="form-control minimal icheck" name="sex" value="1" checked>男</label>
-                <label><input type="radio" class="form-control minimal icheck" name="sex" value="0">女</label>
+                <div class="switch">
+                    <input type="checkbox" name="sex" id="sex" value="1" checked />
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -68,8 +69,9 @@
         <div class="form-group">
             <label for="type" class="col-sm-2 control-label">状态</label>
             <div class="col-sm-10">
-                <label><input type="radio" class="form-control minimal icheck" name="type" value="1" checked>启用</label>
-                <label><input type="radio" class="form-control minimal icheck" name="type" value="0">禁用</label>
+                <div class="switch">
+                    <input type="checkbox" name="type" id="type" value="1" checked />
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -87,6 +89,9 @@
             "allowClear":true,
             "placeholder":"角色选择",
         });
+
+        $('#modal form .switch input#sex').bootstrapSwitch({onText:"男", offText:"女"});
+        $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
     
         //添加
         function add(e){

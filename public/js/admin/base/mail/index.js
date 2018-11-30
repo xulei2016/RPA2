@@ -37,6 +37,16 @@ $(function(){
             }
         });
 
+        //侧边栏点击事件
+        $('#pjax-container section.content .mail-box ul li').on('click', function(){
+            let _this = $(this);
+            if(!_this.hasClass('active')){
+                _this.siblings('.active').removeClass('active');
+                _this.addClass('active');
+            }
+            $('#tb_departments').bootstrapTable('refresh');
+        });
+
         //导出全部
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
@@ -99,7 +109,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             name : $("#pjax-container #search-group #name").val(),
-            type : $("#pjax-container #search-group #type").val()
+            type : $("#pjax-container section.content .mail-box ul li.active").attr('data-value')
         }
         return temp;
     }
@@ -123,15 +133,6 @@ $(function(){
             return temp;
         }
 
-        function stateFormatter(value, row, index) {
-            if (row.id == 1)
-                return {
-                    disabled : true,//设置是否可用
-                    checked : false//设置选中
-                };
-            return value;
-        }
-
         var param = {
             url: '/admin/sys_mail/list',
             columns: [{
@@ -147,14 +148,6 @@ $(function(){
                 }, {
                     field: 'type',
                     title: '消息类型',
-                    align: 'center',
-                    valign: 'middle',
-                    formatter: function(res){
-                        return '<small class="label bg-primary">'+res+'</small>';
-                    }
-                }, {
-                    field: 'mode',
-                    title: '发送类型',
                     align: 'center',
                     valign: 'middle',
                     formatter: function(res){

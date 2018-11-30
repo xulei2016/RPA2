@@ -153,23 +153,29 @@ class BaseController extends Controller
     /**
      * 批接收方法
      * @param $data string 
-     * @param $params string 
+     * @param $params string || array [param val, default val]
      * @param $type int 是否允许为空 
-     * @param $default bool 默认值 
      * @return array $result
      */
-    public function get_params($request ,$params = [], $type = TRUE, $default = null){
+    public static function get_params($request ,$params = [], $type = TRUE){
         $data = [];
         if(!empty($params)){
-            if($type){
-                foreach($params as $val){
-                    $data[$val] = $request->$val;
-                }
-            }else{
-                foreach($params as $val){
-                    if('' != $request->$val && null != $request->$val){
+            foreach($params as $val){
+                if(is_array($val)){
+                    $v = $val[0];
+                    if('' != $request->$v && null != $request->$v){
+                        $data[$val[0]] = $request->$v;
+                    }else{
+                        $data[$val[0]] = $val[1];
+                    }
+                }else{
+                    if($type){
                         $data[$val] = $request->$val;
-                    };
+                    }else{
+                        if('' != $request->$val && null != $request->$val){
+                            $data[$val] = $request->$val;
+                        };
+                    }
                 }
             }
         }
@@ -296,6 +302,27 @@ class BaseController extends Controller
             }
         }
         return 'idontknow';
+    }
+
+    /**
+     * 分割时间
+     * @param string start_time
+     * @param string end_time
+     * @param int mins
+     * @return json
+     */
+    public static function slice_time($data = []){
+        if(count($data) < 3 || intval($data['mins']) < 0){
+            throw new \Exception('参数错误！！');
+        }
+        $timeList = [];
+        $mins = $data['mins'];
+        $new_time = $data['start_time'];
+        while(strtotime($new_time) <= strtotime($data['end_time'])){
+            $timeList[] = $new_time;
+            $new_time = date('H:i:s', strtotime('+'.$mins.' minute', strtotime($new_time)));
+        }
+        return implode(',', $timeList);
     }
 
     /**

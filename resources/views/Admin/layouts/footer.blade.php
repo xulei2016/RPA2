@@ -13,21 +13,15 @@
 <!-- Bootstrap-table -->
 <script src="{{URL::asset('/include/bootstrap-table/bootstrap-table.min.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap-table/local/bootstrap-table-zh-CN.js')}}"></script>
-<!-- Sparkline -->
-<script src="{{URL::asset('/include/jquery-sparkline/dist/jquery.sparkline.min.js')}}"></script>
-<!-- jQuery Knob Chart -->
-<script src="{{URL::asset('/include/jquery-knob/dist/jquery.knob.min.js')}}"></script>
 <!-- daterangepicker -->
-<script src="{{URL::asset('/include/moment/min/moment.min.js')}}"></script>
-<script src="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
-<!-- datepicker -->
-<script src="{{URL::asset('/include/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js')}}"></script>
+{{-- <script src="{{URL::asset('/include/moment/min/moment.min.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.js')}}"></script> --}}
+<!-- switch -->
+<script src="{{URL::asset('/include/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
 <!-- Bootstrap WYSIHTML5 -->
 <script src="{{URL::asset('include/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script>
 <!-- Slimscroll -->
 <script src="{{URL::asset('/include/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
-<!-- FastClick -->
-<script src="{{URL::asset('/include/fastclick/lib/fastclick.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{URL::asset('/js/admin/common/adminlte.min.js')}}"></script>
 <!-- toastr -->
@@ -44,6 +38,11 @@
 <script src="{{URL::asset('/include/plupload/js/plupload.full.min.js')}}"></script>
 <!-- CKEDITOR -->
 <script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
+<!-- laydate -->
+<script src="{{URL::asset('/include/laydate/laydate.js')}}"></script>
+<!-- validate -->
+<script src="{{URL::asset('/include/jquery-validate/jquery.validate.min.js')}}"></script>
+<script src="{{URL::asset('/include/jquery-validate/localization/messages_zh.min.js')}}"></script>
 <!-- fix ie -->
 <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js"></script>
 <!-- AdminLTE for demo purposes -->

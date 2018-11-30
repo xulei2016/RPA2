@@ -10,6 +10,8 @@ $(function(){
      * 绑定事件
      */
     function bindEvent(){
+        $('#pjax-container form .switch input').bootstrapSwitch({onText:"是", offText:"否"});
+
         //基本信息提交
         $('#pjax-container form button.submit').click(function(){
             if('changePWD' == $(this).prev().val()){
@@ -38,7 +40,6 @@ $(function(){
                 $.pjax.reload('#pjax-container');
             }else{
                 swal('哎呦……',json.info,'warning');
-                // toastr.error(json.info);
             }
         },
         error:RPA.errorReponse

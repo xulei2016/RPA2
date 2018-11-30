@@ -35,7 +35,7 @@ class MailController extends BaseAdminController
      */
     public function create()
     {
-        //
+        return view('admin.base.mail.send');
     }
 
     /**
@@ -105,11 +105,11 @@ class MailController extends BaseAdminController
         $order = $request->sort ?? 'mid';
         $sort = $request->sortOrder;
         $result = SysUserMail::where($conditions)
-                ->join('sys_mail_outboxs', 'sys_user_mails.uid', '=', 'sys_mail_outboxs.id')
+                ->join('sys_mail_outboxs', 'sys_user_mails.mid', '=', 'sys_mail_outboxs.id')
                 ->leftJoin('sys_mail_types', 'sys_mail_outboxs.tid', '=', 'sys_mail_types.id')
                 ->leftJoin('sys_mail_modes', 'sys_mail_outboxs.mid', '=', 'sys_mail_modes.id')
                 ->select(['sys_mail_outboxs.*', 'sys_user_mails.is_read', 'sys_mail_types.desc as type', 'sys_mail_modes.desc as mode'])
-                ->orderBy('sys_user_mails.is_read', 'desc')
+                ->orderBy('sys_user_mails.is_read', 'asc')
                 ->orderBy($order, $sort)
                 ->paginate($rows);
         return $result;
@@ -154,17 +154,18 @@ class MailController extends BaseAdminController
     }
 
     /**
-     * 邮件情况 统计
+     * 未读邮件情况 统计
      */
     private function mailStatistics(){
         //1、收件箱 2、发件箱 3、草稿箱 4、回收箱 5、垃圾箱
-        $typeLists = ['outbox' => 1,'sentBox' => 2,'drafts' => 3,'junk' => 4,'trash' => 5];
-        $v = [];
-        foreach($typeLists as $k => $type){
-            $count = SysUserMail::where('type', $type)->count();
-            $v[$k][] = $count;
+        $typeLists = self::mailTypeList();
+
+        $uid = [auth()->guard()->user()->id];
+        foreach($typeLists as &$type){
+            $count = SysUserMail::where([['type','=', $type['id']],['is_read','=', 0],['uid', '=', $uid]])->count();
+            $type['count'] = $count;
         }
-        return $v;
+        return $typeLists;
     }
 
     /**
@@ -173,5 +174,43 @@ class MailController extends BaseAdminController
     public function allMailTypes(){
         $all = SysMailType::all();
         return $all;
+    }
+
+    /**
+     * 邮箱类型列表
+     */
+    private function mailTypeList(){
+        return [
+            [
+                'id' => 1,
+                'name' => 'outbox',
+                'desc' => '收件箱',
+                'icon' => 'fa-inbox'
+            ],
+            [
+                'id' => 2,
+                'name' => 'sentBox',
+                'desc' => '发件箱',
+                'icon' => 'fa-envelope-o'
+            ],
+            [
+                'id' => 3,
+                'name' => 'drafts',
+                'desc' => '草稿箱',
+                'icon' => 'fa-file-text-o'
+            ],
+            [
+                'id' => 4,
+                'name' => 'junk',
+                'desc' => '垃圾箱',
+                'icon' => 'fa-filter'
+            ],
+            [
+                'id' => 5,
+                'name' => 'trash',
+                'desc' => '回收箱',
+                'icon' => 'fa-trash-o'
+            ]
+        ];
     }
 }

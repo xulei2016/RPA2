@@ -123,7 +123,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/sys_logs/list', 'logController@pagenation');
                 Route::get('/sys_logs/export', 'logController@export')->middleware('permission:sys_logs_export');
                 Route::get('/sys_logs', 'logController@index');
-                Route::get('/sys_logs/{id}/edit', 'logController@show')->middleware('permission:sys_logs_view');
+                Route::get('/sys_logs/{id}', 'logController@show')->middleware('permission:sys_logs_view');
                 Route::delete('/sys_logs/{id}', 'logController@destroy')->middleware('permission:sys_logs_delete');
             });
 
@@ -131,7 +131,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['middleware' => ['permission:sys_mail']], function () {
                 Route::get('/sys_mail/list', 'MailController@pagenation');
                 Route::get('/sys_mail/export', 'MailController@export');
-                Route::resource('/sys_mail', 'MailController');
+                Route::get('/sys_mail/create', 'MailController@create')->middleware('permission:sys_mail_create');
+                Route::resource('/sys_mail', 'MailController', ['except' => ['create']]);
             });
         });
 
@@ -140,7 +141,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             //rpa 主任务列表
             Route::group(['middleware' => ['permission:rpa_center']], function () {
                 Route::get('/rpa_center/list', 'RpaController@pagenation');
+                Route::post('/rpa_center/getAccepter', 'RpaController@getAccepter');
                 Route::resource('/rpa_center', 'RpaController');
+            });
+            //朝闻天下
+            Route::group(['middleware' => ['permission:rpa_news']], function () {
+                Route::get('/rpa_news/list', 'NewsController@pagenation');
+                Route::resource('/rpa_news', 'NewsController');
             });
 
         });

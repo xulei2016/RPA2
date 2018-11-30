@@ -60,7 +60,7 @@
     <ul class="nav nav-tabs">
         <li class="active"><a href="#settings" data-toggle="tab" aria-expanded="true">基础设置</a></li>
         <li class=""><a href="#changePWD" data-toggle="tab" aria-expanded="false">修改密码</a></li>
-        <li class=""><a href="#timeline" data-toggle="tab" aria-expanded="false">安全设置</a></li>
+        <li class=""><a href="#rpasetting" data-toggle="tab" aria-expanded="false">RPA设置</a></li>
         <li class=""><a href="#another" data-toggle="tab" aria-expanded="false">其他</a></li>
     </ul>
     <div class="tab-content">
@@ -146,8 +146,35 @@
       </div>
       <!-- /.tab-pane -->
 
-      <div class="tab-pane" id="timeline">
-          <div class="text-center">正在开发中。。。</div>
+      <div class="tab-pane" id="rpasetting">
+          <form class="form-horizontal">
+              <div class="form-group">
+                <label for="accept_mes_info" class="col-sm-2 control-label">是否接收RPA消息</label>
+                <div class="col-sm-10">
+                    <div class="switch">
+                        <input type="checkbox" name="accept_mes_info" id="accept_mes_info" value="1" @if($info->accept_mes_info) checked @endif/>
+                    </div>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label for="accept_mes_type" class="col-sm-2 control-label">接收消息类型</label>
+                <div class="col-sm-10">
+                    <select name="accept_mes_type" id="accept_mes_type" class="form-control">
+                      <option value="1" @if(1 == $info->accept_mes_type) selected @endif>短信</option>
+                      <option value="2" @if(2 == $info->accept_mes_type) selected @endif>邮件</option>
+                      <option value="3" @if(3 == $info->accept_mes_type) selected @endif>短信和邮件</option>
+                    </select>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="hidden" name="type" value="rpasetting">
+                    <button type="button" class="btn btn-danger submit">提交</button>
+                </div>
+              </div>
+          </form>
       </div>
 
       <!-- /.tab-pane -->

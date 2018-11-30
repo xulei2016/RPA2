@@ -78,20 +78,21 @@ class BaseAdminController extends BaseController
         $info['isMobile'] = $this->isMobile()['isMobile'] ? 1 : 0 ;
         $info['lastAgent'] = $_SERVER['HTTP_USER_AGENT'];
         $info['lastAbbAgent'] = $this->isMobile()['userAgent'];
-        if($type)
-            $admin::where('id', $id)->update($info);
+        // if($type)
+            // $admin::where('id', $id)->update($info);
 
         //快捷获取管理员信息可从此处添加 $admin_info->***
         $info['id'] = $id;
         $info['roleLists'] = $admin_info->roleLists;
         $info['headImg'] = $admin_info->head_img;
         $info['name'] = $admin_info->name;
+        $info['phone'] = $admin_info->phone;
         $info['realName'] = $admin_info->realName;
         $info['email'] = $admin_info->email;
         $info['theme'] = $admin_info->theme ? $admin_info->theme : 'lightseagreen' ;
         $info['lastTime'] = $admin_info->lastTime;
         $info['lastIp'] = $admin_info->lastIp;
-        $info['isMobile'] = $admin_info->isMobile;
+        // $info['isMobile'] = $admin_info->isMobile;
         $info['lastAgent'] = $admin_info->lastAgent;
         session(['sys_admin' => $info]);
         return true;

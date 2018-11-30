@@ -3,8 +3,8 @@
 @section('content')
 
 <div class="row">
-    <div class="col-md-3">
-        <a href="javascript:void(0)" url="/admin/sys_admin/create" title="新增" onclick="operation($(this));" class="btn btn-primary btn-block margin-bottom">发邮件</a>
+    <div class="mail-box col-md-3">
+        <a href="/admin/sys_mail/create" title="新增" class="btn btn-primary btn-block margin-bottom">发邮件</a>
 
         <div class="box box-solid">
             <div class="box-header with-border">
@@ -17,12 +17,13 @@
             </div>
             <div class="box-body no-padding">
             <ul class="nav nav-pills nav-stacked">
-                <li class=""><a href="#"><i class="fa fa-inbox"></i> 收件箱<span class="label label-primary pull-right">12</span></a></li>
-                <li><a href="#"><i class="fa fa-envelope-o"></i> 发件箱</a></li>
-                <li><a href="#"><i class="fa fa-file-text-o"></i> 草稿箱</a></li>
-                <li><a href="#"><i class="fa fa-filter"></i> 垃圾箱 <span class="label label-warning pull-right">65</span></a>
-                </li>
-                <li><a href="#"><i class="fa fa-trash-o"></i> 回收箱</a></li>
+                @foreach($global as $mail)
+                    <li class=" @if ($loop->first) active @endif" data-value="{{ $mail['id'] }}"><a href="#"><i class="fa {{ $mail['icon'] }}"></i> {{ $mail['name'] }}
+                    @if($mail['count'])
+                    <span class="label label-primary pull-right">{{ $mail['count'] }}</span>
+                    @endif
+                    </a></li>
+                @endforeach
             </ul>
             </div>
             <!-- /.box-body -->

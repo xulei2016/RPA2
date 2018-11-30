@@ -11,7 +11,7 @@ class rpa_maintenance extends Model
      *
      * @var string
      */
-    public $timestamps = false;
+    public $timestamps = true;
 
     //黑名单，白名单
     // protected $fillable = ['name'];

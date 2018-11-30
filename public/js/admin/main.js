@@ -40,7 +40,7 @@ RPA.prototype = {
         //toastr configure
         toastr.options = _this.toastOptions;
 
-        //moprogress
+        // //moprogress
         NProgress.configure({ parent: '#pjax-container' });
 
         //异步请求csrf头
@@ -165,26 +165,53 @@ RPA.prototype = {
         selector.parents('ul.treeview-menu').css('display', 'block');
         selector.parents('li.treeview').addClass('menu-open');
     },
-    ajaxSubmit: function(e, FormOptions) {
-        e.ajaxSubmit($.extend(true, {}, this.formOptions, FormOptions));
-    },
-    formValidation: function(arr, $form, options) {
-        for (var i = 0; i < arr.length; i++) {
-            //去除前后空格
-            if (arr[i].type != 'file') {
-                arr[i].value = $.trim(arr[i].value)+'0000000';
+
+    ///////////////////////////////////////////////////////// form start///////////////////////////////////////////////////////////
+
+    form: {
+        reset: function(e, callback){
+            //重置复选框
+            let formContinue = $('#modal input.icheck').each(function(e){
+                $(this).iCheck('uncheck');
+            });
+            $(e)[0].reset();//重置表单，必须放下面
+        },
+        response: function(callback){
+            toastr.success('操作成功！');
+            $.pjax.reload('#pjax-container');
+            let formContinue = $('#modal #form-continue');
+            if(formContinue.is(':checked')){
+                RPA.form.reset('#modal #form');
+            }else{
+                $('#modal').modal('hide');
             }
-        }
-    },
-    formOptions: {
-        beforeSubmit: this.formValidation,
-        type: 'post',
-        dataType: 'json',
-        clearForm: false, // clear all form fields after successful submit
-        resetForm: false,
-    },
-    errorResponse: function errorResponse(XMLHttpRequest, textStatus, errorThrown) {
-        toastr.success('网络异常，请求失败！');
+            callback ? callback() : '' ;
+        },
+        ajaxSubmit: function(e, FormOptions) {
+            e.ajaxSubmit($.extend(true, {}, {beforeSubmit: this.formValidation,type: 'post',dataType: 'json',clearForm: false, resetForm: false}, FormOptions));
+        },
+        // formOptions: {
+        //     beforeSubmit: this.formValidation,
+        //     type: 'post',
+        //     dataType: 'json',
+        //     clearForm: false, // clear all form fields after successful submit
+        //     resetForm: false,
+        // },
+        formValidation: function(arr, $form, options) {
+            // 如果JQuery.Validate检测不通过则返回false
+            if (!$form.valid()) {
+                return false;
+            }
+            for (var i = 0; i < arr.length; i++) {
+                //去除前后空格
+                if (arr[i].type != 'file') {
+                    arr[i].value = $.trim(arr[i].value);
+                }
+            }
+        },
+        errorResponse: function errorResponse(XMLHttpRequest, textStatus, errorThrown) {
+            toastr.success('网络异常，请求失败！');
+        },
     },
 
     /////////////////////////////////////////////////////////bootstrap table start///////////////////////////////////////////////////////////
@@ -257,26 +284,6 @@ RPA.prototype = {
             return row.id
         });
     },
-    form: {
-        reset: function(e, callback){
-            //重置复选框
-            let formContinue = $('#modal input.icheck').each(function(e){
-                $(this).iCheck('uncheck');
-            });
-            $(e)[0].reset();//重置表单，必须放下面
-        },
-        response: function(callback){
-            toastr.success('操作成功！');
-            $.pjax.reload('#pjax-container');
-            let formContinue = $('#modal #form-continue');
-            if(formContinue.is(':checked')){
-                RPA.form.reset('#modal #form');
-            }else{
-                $('#modal').modal('hide');
-            }
-            callback();
-        }
-    },
     /////////////////////////////////////////////////////////bootstrap table end//////////////////////////////////////////////////////////
 }
 
@@ -331,3 +338,15 @@ var urlEncode = function (param, key, encode) {
     return paramStr;  
     // return paramStr.slice(1);  
   }; 
+
+//datetime
+function getFormatDate() {
+    var nowDate = new Date();
+    var year = nowDate.getFullYear();
+    var month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
+    var date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
+    var hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
+    var minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
+    var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
+    return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
+}

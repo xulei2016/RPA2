@@ -164,6 +164,15 @@ $(function(){
                     align: 'center',
                     valign: 'middle'
                 }, {
+                    field: 'group',
+                    title: '分组',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function(res){
+                        let html = ' <small class="label bg-blue">'+res+'</small> ';
+                        return html;
+                    }
+                }, {
                     field: 'roleLists',
                     title: '角色',
                     align: 'center',
@@ -189,16 +198,6 @@ $(function(){
                     formatter: function(res){
                         return (1 == res) ? '<small class="label bg-green">启用</small>' : '<small class="label bg-red">禁用</small>' ;
                     }
-                }, {
-                    field: 'lastIp',
-                    title: '最后登录ip',
-                    align: 'center',
-                    valign: 'middle',
-                }, {
-                    field: 'lastTime',
-                    title: '最后活跃时间',
-                    align: 'center',
-                    valign: 'middle'
                 }, {
                     field: 'created_at',
                     title: '创建时间',
