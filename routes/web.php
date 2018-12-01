@@ -71,6 +71,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/', 'SysController@index');
             Route::get('/index', 'SysController@index')->name('index');
             Route::post('/index', 'SysController@index');
+            Route::post('/clearCache', 'SysController@clearCache');
             Route::post('/dashboard', 'SysController@get_index');
 
             //管理员

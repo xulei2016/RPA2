@@ -153,8 +153,8 @@ class SysController extends BaseAdminController
      * 清除缓存
      */
     public function clearCache(){
-        if($this->del_cache('sys_info') && $this->del_cache('sys_admin')){
-            // $this->authCacheInfo(false);
+        if($this->del_cache('menuList') && $this->del_cache('sys_admin')){
+            $this->authCacheInfo(false);
             return $this->ajax_return(200, '缓存清除成功！');
         }else{
             return $this->ajax_return(500, '缓存清除失败！请联系管理员处理');

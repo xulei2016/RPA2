@@ -5,7 +5,7 @@
         </h3>
     </div>
 
-    <form class="form-horizontal" id="form" onsubmit="add($(this));return false;">
+    <form class="form-horizontal" id="form" onsubmit="return false;">
         <div class="box-body">
                 {{ $formContent }}
         </div>

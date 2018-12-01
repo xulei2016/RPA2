@@ -186,6 +186,11 @@ RPA.prototype = {
     errorResponse: function errorResponse(XMLHttpRequest, textStatus, errorThrown) {
         toastr.success('网络异常，请求失败！');
     },
+    clearCache: function(){
+        $.post('/admin/clearCache', function(json){
+            200 == json.code ? toastr.success('清除成功！') : toastr.error('网络异常，请求失败！');
+        });
+    },
 
     /////////////////////////////////////////////////////////bootstrap table start///////////////////////////////////////////////////////////
     TableInit: function () {
@@ -257,6 +262,7 @@ RPA.prototype = {
             return row.id
         });
     },
+    /////////////////////////////////////////////////////////bootstrap table end///////////////////////////////////////////////////////////
     form: {
         reset: function(e, callback){
             //重置复选框
@@ -277,7 +283,6 @@ RPA.prototype = {
             callback ? callback() : '' ;
         }
     },
-    /////////////////////////////////////////////////////////bootstrap table end//////////////////////////////////////////////////////////
 }
 
 var RPA = RPA.prototype;

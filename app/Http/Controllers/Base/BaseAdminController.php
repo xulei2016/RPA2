@@ -65,7 +65,7 @@ class BaseAdminController extends BaseController
      * session管理员信息
      * @return bool 
      */
-    private function authCacheInfo ($type = TRUE){
+    protected function authCacheInfo ($type = TRUE){
         //更新登录信息
         $admin_info = auth()->guard('admin')->user();
         if(!$admin_info){
