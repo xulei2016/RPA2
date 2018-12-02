@@ -25,6 +25,10 @@
 Route::get('/', function () {
     return view('welcome');
 });
+//excel
+Route::get('/excel','Admin\ExcelController@index');
+Route::post('/upload','Admin\ExcelController@upload');
+
 
 //Bugs
 Route::resource('/Bugs', 'Admin\Base\BugsController');
@@ -120,7 +124,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/sys_logs/list', 'logController@pagenation');
                 Route::get('/sys_logs/export', 'logController@export')->middleware('permission:sys_logs_export');
                 Route::get('/sys_logs', 'logController@index');
-                Route::get('/sys_logs/{id}/edit', 'logController@show')->middleware('permission:sys_logs_view');
+                Route::get('/sys_logs/{id}', 'logController@show')->middleware('permission:sys_logs_view');
                 Route::delete('/sys_logs/{id}', 'logController@destroy')->middleware('permission:sys_logs_delete');
             });
 
@@ -145,6 +149,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['middleware' => ['permission:rpa_news']], function () {
                 Route::get('/rpa_news/list', 'NewsController@pagenation');
                 Route::resource('/rpa_news', 'NewsController');
+            });
+            //棉花仓单
+            Route::group(['middleware' => ['permission:rpa_botton']], function () {
+                Route::get('/rpa_botton/list', 'BottonController@pagenation');
+                Route::get('/rpa_botton/importExcel', 'BottonController@showExcel');
+                Route::post('/rpa_botton/importExcel', 'BottonController@importExcel');
+                Route::resource('/rpa_botton', 'BottonController');
             });
 
         });

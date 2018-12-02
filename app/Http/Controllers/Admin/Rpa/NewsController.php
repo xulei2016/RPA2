@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Rpa;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Rpa\rpa_releasetasks;
+use App\Http\Controllers\admin\rpa\ImmedtaskController;
 use App\Http\Controllers\Base\BaseAdminController;
 
 /**
@@ -12,6 +13,17 @@ use App\Http\Controllers\Base\BaseAdminController;
  */
 class NewsController extends BaseAdminController
 {
+    //task name
+    private $task_name;
+
+    /**
+     * __CONSTRUCT
+     */
+    public function __CONSTRUCT()
+    {
+        $this->task_name = 'zwtx';
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,7 +53,16 @@ class NewsController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        //
+        $data = $this->get_params($request, ['week','date','description','time','jsondata','start_time','end_time','mins',['implement_type', 0]]);
+        $data['name'] = $this->task_name;
+        $data['week'] = isset($data['week']) ? implode(',',$data['week']) :'';
+        $data['time'] = $data['time'] ? $data['time'] : $this::slice_time($data) ;
+        //创建任务
+        $tid = rpa_releasetasks::create($data);
+        //发布任务
+        $this->immedtask();
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加 朝闻天下 任务");
+        return $this->ajax_return(200, '操作成功！');
     }
 
     /**
@@ -63,9 +84,13 @@ class NewsController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        //
+        $info = rpa_releasetasks::find($id);
+        $info['week'] = isset($info['week']) ? explode(',',$info['week']) :'';
+        $info['data'] = isset($info['jsondata']) ? json_decode($info['jsondata'], false) :'';
+        $this->log(__CLASS__, __FUNCTION__, $request, "查看 朝闻天下 参数");
+        return view('admin.rpa.news.edit', ['info' => $info]);
     }
 
     /**
@@ -77,7 +102,16 @@ class NewsController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $this->get_params($request, ['week','date','description','time','jsondata','start_time','end_time','mins',['implement_type', 0]], false);
+        $data['name'] = $this->task_name;
+        $data['week'] = isset($data['week']) ? implode(',',$data['week']) :'';
+        $data['time'] = $data['time'] ? $data['time'] : $this::slice_time($data) ;
+        //更新任务
+        $tid = rpa_releasetasks::where('id',$id)->update($data);
+        //发布任务
+        $this->immedtask();
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 朝闻天下 任务");
+        return $this->ajax_return(200, '操作成功！');
     }
 
     /**
@@ -102,5 +136,13 @@ class NewsController extends BaseAdminController
         $conditions = [['name','=','zwtx']];
         $result = rpa_releasetasks::where($conditions)->paginate($rows);
         return $result;
+    }
+
+    /**
+     * immedtask
+     */
+    public function immedtask(){
+        $immedtask = new ImmedtaskController;
+        $immedtask->create();
     }
 }

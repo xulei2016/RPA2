@@ -51,27 +51,7 @@
     </div>
 
 @endslot
+@slot('formScript')
+    <script src="{{URL::asset('/js/admin/base/menu/add.js')}}"></script>
+@endslot
 @endcomponent
-<script>
-    $("#select2-menu").select2({
-        "allowClear":true,
-        "placeholder":"父级菜单",
-    });
-    //添加
-    function add(e){
-        RPA.ajaxSubmit(e, FormOptions);
-    }
-
-    //提交信息的表单配置
-    var FormOptions={
-        url:'/admin/sys_menu',
-        success:function(json, xml){
-            if(200 == json.code){
-                RPA.form.response();
-            }else{
-                toastr.error(json.info);
-            }
-        },
-        error:RPA.errorReponse
-    };
-</script>

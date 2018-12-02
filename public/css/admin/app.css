@@ -142,4 +142,7 @@ body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments 
     height: 100px;
 }
 
-/*个人中心头像结束*/
+/*form valid*/
+.error{
+    color: #ad0000;
+}

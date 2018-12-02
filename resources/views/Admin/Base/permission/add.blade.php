@@ -1,5 +1,6 @@
-@component('admin.widgets.editForm')
+@component('admin.widgets.addForm')
     @slot('formContent')
+
             <div class="form-group">
                 <label for="name" class="col-sm-2 control-label">名称</label>
                 <div class="col-sm-10">
@@ -15,7 +16,7 @@
             <div class="form-group">
                 <label for="guard_name" class="col-sm-2 control-label">权限树</label>
                 <div class="col-sm-10">
-                    <select name="pid" id="select2-menu" class="form-control pid" id="select2-menu">
+                    <select name="pid" class="form-control pid" id="select2_menu">
                         <option value="">顶级权限</option>
                     </select>
                 </div>
@@ -42,78 +43,9 @@
                 </div>
             </div>
             <input type="hidden" name="table" value="1" id="table">
+            
+    @endslot
+    @slot('formScript')
+        <script src="{{URL::asset('/js/admin/base/permission/add.js')}}"></script>
     @endslot
 @endcomponent
-<script>
-    $(function(){
-        //初始化
-        function init(){
-            bindEvent();
-        }
-
-        //绑定事件
-        function bindEvent(){
-
-            $("#select2-menu").select2({
-                "allowClear":true,
-                "placeholder":"父级菜单",
-            });
-
-            $.post('/admin/sys_permission/getTree', {}, function(json){
-                if(200 == json.code){
-                    html = initTree(json.data);
-                    $('#select2-menu').append(html);
-                }else{
-                    Swal(json.info, '', 'error');
-                }
-            });
-        }
-
-        function initTree(data){
-            var num = data.length;
-            let html = '';
-            for(let i = 0;i < num; i++){
-                let json = data[i];
-                html += "<option value ="+json.id+" table="+json.table+">"+ moreString(json['table']) + json.desc +"</option>"
-                if(json.hasOwnProperty('child')){
-                    html += initTree(json.child);
-                }
-            }
-            return html;
-        }
-
-        function moreString(n){
-            let html = '&nbsp;&nbsp;';
-            let i = 0;
-            while(i < n){
-                i++;
-                html += html;
-            }
-            return html;
-        }
-
-        //添加
-        function add(e){
-            let table = $('#modal #select2-menu option:selected').attr('table');
-            $('#modal #table').val(table);
-            RPA.ajaxSubmit(e.parents('#form'), FormOptions);
-        }
-        
-        //提交信息的表单配置
-        var FormOptions={
-            url:'/admin/sys_permission',
-            success:function(json, xml){
-                console.log(json);
-                if(200 == json.code){
-                    RPA.form.response();
-                }else{
-                    toastr.error(json.info);
-                }
-            },
-            error:RPA.errorReponse
-        };
-
-        init();
-    });
-
-</script>

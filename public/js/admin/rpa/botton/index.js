@@ -41,15 +41,15 @@ $(function(){
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/rpa_center/export?"+$url;
+            location.href="/admin/rpa_botton/export?"+$url;
         });
 
-        //导出全部
+        //导出全选
         $("#pjax-container section.content #toolbar #export").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/rpa_center/export?"+$url+'&id='+ids;
+            location.href="/admin/rpa_botton/export?"+$url+'&id='+ids;
         });
     }
 
@@ -69,7 +69,7 @@ $(function(){
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/rpa_center/'+id,
+                        url: '/admin/rpa_botton/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
@@ -107,7 +107,7 @@ $(function(){
         }
 
         var param = {
-            url: '/admin/rpa_center/list',
+            url: '/admin/rpa_botton/list',
             columns: [{
                     checkbox: true,
                 }, {
@@ -158,7 +158,7 @@ $(function(){
                         var id = value;
                         var result = "";
                         if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_center/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_botton/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;
