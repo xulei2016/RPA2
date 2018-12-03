@@ -213,6 +213,11 @@ RPA.prototype = {
             toastr.success('网络异常，请求失败！');
         },
     },
+    clearCache: function(){
+        $.post('/admin/clearCache', function(json){
+            200 == json.code ? toastr.success('清除成功！') : toastr.error('网络异常，请求失败！');
+        });
+    },
 
     /////////////////////////////////////////////////////////bootstrap table start///////////////////////////////////////////////////////////
     TableInit: function () {

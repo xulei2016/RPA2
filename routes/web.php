@@ -25,6 +25,10 @@
 Route::get('/', function () {
     return view('welcome');
 });
+//excel
+Route::get('/excel','Admin\ExcelController@index');
+Route::post('/upload','Admin\ExcelController@upload');
+
 
 //Bugs
 Route::resource('/Bugs', 'Admin\Base\BugsController');
@@ -71,6 +75,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/', 'SysController@index');
             Route::get('/index', 'SysController@index')->name('index');
             Route::post('/index', 'SysController@index');
+            Route::post('/clearCache', 'SysController@clearCache');
             Route::post('/dashboard', 'SysController@get_index');
 
             //管理员
@@ -144,6 +149,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['middleware' => ['permission:rpa_news']], function () {
                 Route::get('/rpa_news/list', 'NewsController@pagenation');
                 Route::resource('/rpa_news', 'NewsController');
+            });
+            //棉花仓单
+            Route::group(['middleware' => ['permission:rpa_botton']], function () {
+                Route::get('/rpa_botton/list', 'BottonController@pagenation');
+                Route::get('/rpa_botton/importExcel', 'BottonController@showExcel');
+                Route::post('/rpa_botton/importExcel', 'BottonController@importExcel');
+                Route::resource('/rpa_botton', 'BottonController');
             });
 
         });

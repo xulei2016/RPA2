@@ -160,13 +160,13 @@
                   <li class="user-body">
                         <div class="row">
                             <div class="col-xs-4 text-center">
-                                <a href="https://www.fastadmin.net" target="_blank">FastAdmin</a>
+                                <a href="#" target="_blank">#</a>
                             </div>
                             <div class="col-xs-4 text-center">
-                                <a href="https://forum.fastadmin.net" target="_blank">交流社区</a>
+                                <a href="#" target="_blank">#</a>
                             </div>
                             <div class="col-xs-4 text-center">
-                                <a href="https://doc.fastadmin.net" target="_blank">官方文档</a>
+                                <a href="javascript:void(0);" onclick="RPA.clearCache();" target="_blank">清除缓存</a>
                             </div>
                         </div>
                     </li>
