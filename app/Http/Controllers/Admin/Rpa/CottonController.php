@@ -6,10 +6,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 
 /**
- * BottonController
+ * CottonController
  * @author hsu lay
  */
-class BottonController extends BaseAdminController
+class CottonController extends BaseAdminController
 {
     //task name
     private $task_name;
@@ -19,7 +19,7 @@ class BottonController extends BaseAdminController
      */
     public function __CONSTRUCT()
     {
-        $this->task_name = 'bottonExcel';
+        $this->task_name = 'cottonExcel';
     }
 
     /**
@@ -29,7 +29,7 @@ class BottonController extends BaseAdminController
      */
     public function index()
     {
-        return view('admin.rpa.botton.index');
+        return view('admin.rpa.cotton.index');
     }
 
     /**
@@ -103,7 +103,7 @@ class BottonController extends BaseAdminController
      */
     public function showExcel(Request $request)
     {
-        return view('admin.rpa.botton.importExcel');
+        return view('admin.rpa.cotton.importExcel');
     }
 
     /**

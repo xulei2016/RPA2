@@ -133,7 +133,7 @@
         function uploadFile(file){
             $.ajax({
                 method: 'post',
-                url: '/admin/rpa_botton/importExcel',
+                url: '/admin/rpa_cotton/importExcel',
                 data: {
                     _token:LA.token,
                     file:file

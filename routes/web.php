@@ -151,11 +151,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::resource('/rpa_news', 'NewsController');
             });
             //棉花仓单
-            Route::group(['middleware' => ['permission:rpa_botton']], function () {
-                Route::get('/rpa_botton/list', 'BottonController@pagenation');
-                Route::get('/rpa_botton/importExcel', 'BottonController@showExcel');
-                Route::post('/rpa_botton/importExcel', 'BottonController@importExcel');
-                Route::resource('/rpa_botton', 'BottonController');
+            Route::group(['middleware' => ['permission:rpa_cotton']], function () {
+                Route::get('/rpa_cotton/list', 'CottonController@pagenation');
+                Route::get('/rpa_cotton/importExcel', 'CottonController@showExcel');
+                Route::post('/rpa_cotton/importExcel', 'CottonController@importExcel');
+                Route::resource('/rpa_cotton', 'CottonController');
             });
 
         });
