@@ -20,31 +20,31 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="title" class="col-sm-2 control-label">名称</label>
+        <label for="title" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="title" id="title" placeholder="名称" required>
+            <input type="text" class="form-control" name="title" id="title" placeholder="名称">
         </div>
     </div>
     <div class="form-group">
-        <label for="unique_name" class="col-sm-2 control-label">权限键值</label>
+        <label for="unique_name" class="col-sm-2 control-label"><span class="must-tag">*</span>权限键值</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="unique_name" id="unique_name" placeholder="unique_name" required>
+            <input type="text" class="form-control" name="unique_name" id="unique_name" placeholder="unique_name">
         </div>
     </div>
     <div class="form-group">
-        <label for="uri" class="col-sm-2 control-label">路径</label>
+        <label for="uri" class="col-sm-2 control-label"><span class="must-tag">*</span>路径</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="uri" id="uri" placeholder="输入路径" required>
+            <input type="text" class="form-control" name="uri" id="uri" placeholder="输入路径">
         </div>
     </div>
     <div class="form-group">
-        <label for="icon" class="col-sm-2 control-label">图标</label>
+        <label for="icon" class="col-sm-2 control-label"><span class="must-tag">*</span>图标</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" name="icon" id="icon" placeholder="图标">
         </div>
     </div>
     <div class="form-group">
-        <label for="order" class="col-sm-2 control-label">排序</label>
+        <label for="order" class="col-sm-2 control-label"><span class="must-tag">*</span>排序</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" value="5" name="order" id="order" placeholder="排序">
         </div>

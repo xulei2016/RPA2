@@ -38,8 +38,9 @@
             <div class="form-group">
                 <label for="status" class="col-sm-2 control-label">状态</label>
                 <div class="col-sm-10">
-                    <label><input type="radio" class="minimal icheck" name="status" value="1" checked>启用</label>
-                    <label><input type="radio" class="minimal icheck" name="status" value="0">禁用</label>
+                    <div class="switch">
+                        <input type="checkbox" name="status" id="status" value="1" checked />
+                    </div>
                 </div>
             </div>
             <input type="hidden" name="table" value="1" id="table">

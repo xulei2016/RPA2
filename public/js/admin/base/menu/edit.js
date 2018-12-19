@@ -28,10 +28,10 @@ $(function(){
     function add(e){
         RPA.form.ajaxSubmit(e, FormOptions);
     }
-
     //提交信息的表单配置
+    var id = $('#modal #id').val();
     var FormOptions={
-        url:'/admin/sys_menu',
+        url:'/admin/sys_menu/'+id,
         success:function(json, xml){
             if(200 == json.code){
                 RPA.form.response();
@@ -41,7 +41,7 @@ $(function(){
         },
         error:RPA.form.errorReponse
     };
-    
+
     //表单验证信息
     var validateInfo ={
         rules:{

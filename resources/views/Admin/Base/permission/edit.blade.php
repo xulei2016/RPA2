@@ -37,77 +37,15 @@
                 <div class="form-group">
                     <label for="status" class="col-sm-2 control-label">状态</label>
                     <div class="col-sm-10">
-                        <label><input type="radio" class="minimal" name="status" value="1" @if(1 == $info->status) checked @endif>启用</label>
-                        <label><input type="radio" class="minimal" name="status" value="0" @if(0 == $info->status) checked @endif>禁用</label>
+                        <div class="switch">
+                            <input type="checkbox" name="status" id="status" value="1" @if(1 == $info->status) checked @endif />
+                        </div>
                     </div>
                 </div>
                 <input type="hidden" name="table" value="{{ $info->table }}" id="table">
                 <input type="text" class="hidden" name="id" id="id" value="{{ $info->id }}">
 @endslot
+@slot('formScript')
+<script src="{{URL::asset('/js/admin/base/permission/edit.js')}}"></script>
+@endslot
 @endcomponent
-<script>
-
-
-    $("#select2-menu").select2({
-        "allowClear":true,
-        "placeholder":"父级菜单",
-    });
-    
-    $.post('/admin/sys_permission/getTree', {}, function(json){
-        if(200 == json.code){
-            let pid = "{{ $info->pid }}";
-            let id = "{{ $info->id }}";
-            html = initTree(json.data, pid, id);
-            $('#select2-menu').append(html);
-        }else{
-            Swal(json.info, '', 'error');
-        }
-    });
-
-    function initTree(data, pid, id){
-        var num = data.length;
-        let html = '';
-        for(let i = 0;i < num; i++){
-            let json = data[i];
-            let selected = (json.id == id) ? 'disabled' : ((json.id == pid) ? 'selected' : '' );
-            html += "<option value ="+json.id+" table="+json.table+" "+selected+">"+ moreString(json['table']) + json.desc +"</option>"
-            if(json.hasOwnProperty('child')){
-                html += initTree(json.child, pid, id);
-            }
-        }
-        return html;
-    }
-
-    function moreString(n){
-        let html = '&nbsp;&nbsp;';
-        let i = 0;
-        while(i < n){
-            i++;
-            html += html;
-        }
-        return html;
-    }
-
-    //添加
-    function add(e){
-        let table = $('#modal #select2-menu option:selected').attr('table');
-        $('#modal #table').val(table);
-        RPA.ajaxSubmit(e.parents('#form'), FormOptions);
-    }
-    
-    var id = "{{ $info->id }}";
-
-    //提交信息的表单配置
-    var FormOptions={
-        url:'/admin/sys_permission/'+id,
-        success:function(json, xml){
-            if(200 == json.code){
-                RPA.form.response();
-            }else{
-                toastr.error(json.info);
-            }
-        },
-        error:RPA.errorReponse
-    };
-
-</script>

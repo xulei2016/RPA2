@@ -62,10 +62,11 @@ $(function(){
         $('#modal #table').val(table);
         RPA.form.ajaxSubmit(e, FormOptions);
     }
-    
+
+    var id = $('#modal #id').val();
     //提交信息的表单配置
     var FormOptions={
-        url:'/admin/sys_permission',
+        url:'/admin/sys_permission/'+id,
         success:function(json, xml){
             if(200 == json.code){
                 RPA.form.response();
