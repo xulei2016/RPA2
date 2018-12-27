@@ -128,7 +128,7 @@ class RpaController extends BaseAdminController
      * getAccepter
      */
     public function getAccepter(Request $request, $send_info_type = ''){
-        $param = $send_info_type ? $send_info_type : $request->param ;
+        $param = ($send_info_type !== '') ? $send_info_type : $request->param ;
         $result = [];
         if($param){
             switch($param){
@@ -143,7 +143,7 @@ class RpaController extends BaseAdminController
                     break;
             }
         }
-        if($send_info_type){
+        if($send_info_type !== ''){
             return $result;
         }
         return $this->ajax_return('200', '操作成功！', $result);

@@ -49,7 +49,7 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
-            return self::render403($request);
+            return self::render403($request, $exception);
         }else{
             return self::renderErrors($request, $exception);
         }
@@ -60,7 +60,7 @@ class Handler extends ExceptionHandler
      * 
      * UnauthorizedException 406 response
      */
-    public function render403($request)
+    public function render403($request, Exception $exception)
     {
         if (($request->ajax() || $request->wantsJson()) && 'GET' != $request->method()) {
             $info = [
