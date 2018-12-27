@@ -94,7 +94,10 @@
                 renderExcelList(files);
 
                 //文件解析
-                analysis(files);
+                for(let v in files){
+                    $res = analysis(files[v]);
+                    console.log($res);
+                }
 
                 //就绪
                 getReady();
@@ -150,7 +153,32 @@
         }
 
         //解析
-        function analysis(files){
+        function analysis(excel){
+            let obj;
+            var reader = new FileReader();
+            reader.readAsBinaryString(excel);
+            reader.onload = function (ev) {
+                if (reader.result) reader.content = reader.result;
+                
+                let data = reader.content;
+                let workbook = XLSX.read(data, { type: 'binary' });
+                let worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                
+                //先要check一下这个表格是不是我们的特定格式表格
+                if ((worksheet["A1"].w == "郑商所棉花交割入库预报表") &&(worksheet["M10"].w == "是否为保税仓单：") &&(worksheet["O2"].w == "代码：")) {
+                    obj = [getValue(worksheet), getPackage(worksheet)];
+                    // total_excel.push(obj);
+                    // console.log(total_excel);
+                    
+                    // $info = '成功解析Excel <b>'+total_excel.length+'</b> 份。'
+                    // report($info, true);
+                }
+            }
+            return obj;
+        }
+        
+        //解析
+        function analysis2(files){
             for(let excel of files){
                 analysisNum += 1;
                 let reader = new FileReader();
