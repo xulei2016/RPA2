@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Rpa;
 
+use App\Models\Admin\Rpa\rpa_immedtasks;
 use Illuminate\Http\Request;
 use App\Models\Admin\Rpa\rpa_releasetasks;
 use App\Http\Controllers\admin\rpa\ImmedtaskController;
@@ -144,5 +145,26 @@ class NewsController extends BaseAdminController
     public function immedtask(){
         $immedtask = new ImmedtaskController;
         $immedtask->create();
+    }
+
+    /***********************************立即任务*********************************************/
+    public function immedtasks(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "立即发布 朝闻天下 页");
+        $jsondata = "";
+        if($request->id){
+            $res = rpa_releasetasks::find($request->id);
+            $jsondata = json_decode($res->jsondata,true);
+//
+        }
+        return view('admin/rpa/News/add_immed',['jsondata'=>$jsondata]);
+    }
+    //立即发布任务
+    public function insertImmedtasks(Request $request){
+        $task = $this->get_params($request, ['description','jsondata']);
+        $task['name'] = 'zwtx';
+        $data = ['name'=>$task['name'],'jsondata'=>$task['jsondata'],'description'=>$task['description']];
+        $this->log(__CLASS__, __FUNCTION__, $request, "立即发布 {$task['name']} 任务");
+        rpa_immedtasks::create($data);
+        return $this->ajax_return(200, '操作成功！');
     }
 }

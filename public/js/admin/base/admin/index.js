@@ -28,7 +28,7 @@ $(function(){
 
     //添加
     function add(e){
-        RPA.ajaxSubmit(e, FormOptions);
+        RPA.form.ajaxSubmit(e, FormOptions);
     }
     
     //提交信息的表单配置
@@ -42,7 +42,7 @@ $(function(){
                 swal('哎呦……',json.info,'warning');
             }
         },
-        error:RPA.errorReponse
+        error:RPA.form.errorReponse
     };
 
     	

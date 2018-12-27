@@ -38,9 +38,11 @@ class ImmedtaskController extends BaseAdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($data)
     {
-        $data = ['name'=>'taskdistribution','jsondata'=>'{"name":"zwtx"}'];
+        if(!$data){
+            $data = ['name'=>'taskdistribution','jsondata'=>'{"name":"zwtx"}'];
+        }
         return rpa_immedtasks::create($data);
     }
 

@@ -148,6 +148,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             //朝闻天下
             Route::group(['middleware' => ['permission:rpa_news']], function () {
                 Route::get('/rpa_news/list', 'NewsController@pagenation');
+                Route::get('/rpa_news/immedtasks/{id?}', 'NewsController@immedtasks');
+                Route::post('/rpa_news/insertImmedtasks', 'NewsController@insertImmedtasks');
                 Route::resource('/rpa_news', 'NewsController');
             });
             //棉花仓单
