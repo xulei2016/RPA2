@@ -103,7 +103,8 @@ $(function(){
             temp["total"] = params.total;                        //页面大小
             temp["page"] = (params.offset / params.limit) + 1;  //页码
             temp["sort"] = params.sort;                         //排序列名
-            temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
+            temp["sortOrder"] = params.order;                   //排位命令（desc，asc）
+            return temp;
         }
 
         var param = {

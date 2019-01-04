@@ -139,8 +139,19 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
 
         //RPA PROJECTS
         Route::group(['namespace' => 'Rpa'], function(){
-            //rpa 主任务列表
+            //rpa 任务管理中心
             Route::group(['middleware' => ['permission:rpa_center']], function () {
+                //任务队列
+                Route::get('/rpa_center/queue','RpaController@queue');
+                Route::get('/rpa_center/editQueue/{id}','RpaController@editQueue');
+                Route::post('/rpa_center/updateQueue','RpaController@updateQueue');
+                Route::post('/rpa_center/deleteQueue','RpaController@deleteQueue');
+                Route::get('/rpa_center/rpa_queueList', 'RpaController@queuePagination');
+                //任务总览
+                Route::get('/rpa_center/taskList','RpaController@taskList');
+                Route::post('/rpa_center/immedtask','RpaController@immedtasks');
+                Route::get('/rpa_center/rpa_taskList', 'RpaController@taskPagination');
+                //任务管理中心
                 Route::get('/rpa_center/list', 'RpaController@pagenation');
                 Route::post('/rpa_center/getAccepter', 'RpaController@getAccepter');
                 Route::resource('/rpa_center', 'RpaController');
@@ -151,6 +162,76 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/rpa_news/immedtasks/{id?}', 'NewsController@immedtasks');
                 Route::post('/rpa_news/insertImmedtasks', 'NewsController@insertImmedtasks');
                 Route::resource('/rpa_news', 'NewsController');
+            });
+            //失信查询
+            Route::group(['middleware' => ['permission:rpa_discredit']], function () {
+                Route::get('/rpa_discredit/list', 'discreditController@pagenation');
+                Route::get('/rpa_discredit/immedtasks/{id?}', 'discreditController@immedtasks');
+                Route::post('/rpa_discredit/insertImmedtasks', 'discreditController@insertImmedtasks');
+                Route::resource('/rpa_discredit', 'discreditController');
+            });
+            //投资者密码
+            Route::group(['middleware' => ['permission:rpa_investorPWD']], function () {
+                Route::get('/rpa_investorPWD/list', 'investorPWDController@pagenation');
+                Route::get('/rpa_investorPWD/immedtasks/{id?}', 'investorPWDController@immedtasks');
+                Route::post('/rpa_investorPWD/insertImmedtasks', 'investorPWDController@insertImmedtasks');
+                Route::resource('/rpa_investorPWD', 'investorPWDController');
+            });
+            //客户分组
+            Route::group(['middleware' => ['permission:rpa_customerGrouping']], function () {
+                Route::get('/rpa_customerGrouping/list', 'customerGroupingController@pagenation');
+                Route::get('/rpa_customerGrouping/immedtasks/{id?}', 'customerGroupingController@immedtasks');
+                Route::post('/rpa_customerGrouping/insertImmedtasks', 'customerGroupingController@insertImmedtasks');
+                Route::resource('/rpa_customerGrouping', 'customerGroupingController');
+            });
+            //居间人影像
+            Route::group(['middleware' => ['permission:rpa_jjr_image']], function () {
+                Route::get('/rpa_jjr_image/list', 'JJRImageController@pagenation');
+                Route::get('/rpa_jjr_image/immedtasks/{id?}', 'JJRImageController@immedtasks');
+                Route::post('/rpa_jjr_image/insertImmedtasks', 'JJRImageController@insertImmedtasks');
+                Route::resource('/rpa_jjr_image', 'JJRImageController');
+            });
+            //居间人回访分配
+            Route::group(['middleware' => ['permission:rpa_jjr_distribution']], function () {
+                Route::get('/rpa_jjr_distribution/list', 'JJRVisController@pagenation');
+                Route::get('/rpa_jjr_distribution/immedtasks/{id?}', 'JJRVisController@immedtasks');
+                Route::post('/rpa_jjr_distribution/insertImmedtasks', 'JJRVisController@insertImmedtasks');
+                Route::resource('/rpa_jjr_distribution', 'JJRVisController');
+            });
+            //问卷录入
+            Route::group(['middleware' => ['permission:rpa_questionnaire']], function () {
+                Route::get('/rpa_questionnaire/list', 'QuestionnaireController@pagenation');
+                Route::get('/rpa_questionnaire/immedtasks/{id?}', 'QuestionnaireController@immedtasks');
+                Route::post('/rpa_questionnaire/insertImmedtasks', 'QuestionnaireController@insertImmedtasks');
+                Route::resource('/rpa_questionnaire', 'QuestionnaireController');
+            });
+            //客户开户视频收集
+            Route::group(['middleware' => ['permission:rpa_rtc_collect']], function () {
+                Route::get('/rpa_rtc_collect/list', 'RTCController@pagenation');
+                Route::get('/rpa_rtc_collect/immedtasks/{id?}', 'RTCController@immedtasks');
+                Route::post('/rpa_rtc_collect/insertImmedtasks', 'RTCController@insertImmedtasks');
+                Route::resource('/rpa_rtc_collect', 'RTCController');
+            });
+            //FTP新增视频提醒
+            Route::group(['middleware' => ['permission:rpa_NewVideoHints']], function () {
+                Route::get('/rpa_NewVideoHints/list', 'NewVideoHintsController@pagenation');
+                Route::get('/rpa_NewVideoHints/immedtasks/{id?}', 'NewVideoHintsController@immedtasks');
+                Route::post('/rpa_NewVideoHints/insertImmedtasks', 'NewVideoHintsController@insertImmedtasks');
+                Route::resource('/rpa_NewVideoHints', 'NewVideoHintsController');
+            });
+            //官网手续费
+            Route::group(['middleware' => ['permission:rpa_SettlementFee']], function () {
+                Route::get('/rpa_SettlementFee/list', 'SettlementFeeController@pagenation');
+                Route::get('/rpa_SettlementFee/immedtasks/{id?}', 'SettlementFeeController@immedtasks');
+                Route::post('/rpa_SettlementFee/insertImmedtasks', 'SettlementFeeController@insertImmedtasks');
+                Route::resource('/rpa_SettlementFee', 'SettlementFeeController');
+            });
+            //客户资金查询任务
+            Route::group(['middleware' => ['permission:rpa_oabreminding']], function () {
+                Route::get('/rpa_oabreminding/list', 'OabremindingController@pagenation');
+                Route::get('/rpa_oabreminding/immedtasks/{id?}', 'OabremindingController@immedtasks');
+                Route::post('/rpa_oabreminding/insertImmedtasks', 'OabremindingController@insertImmedtasks');
+                Route::resource('/rpa_oabreminding', 'OabremindingController');
             });
             //棉花仓单
             Route::group(['middleware' => ['permission:rpa_cotton']], function () {

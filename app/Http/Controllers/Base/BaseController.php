@@ -312,7 +312,7 @@ class BaseController extends Controller
      * @return json
      */
     public static function slice_time($data = []){
-        if(count($data) < 3 || intval($data['mins']) < 0){
+        if(count($data) < 3 || intval($data['mins']) <= 0){
             throw new \Exception('参数错误！！');
         }
         $timeList = [];
