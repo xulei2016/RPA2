@@ -1,6 +1,6 @@
 <!-- Scripts -->
 <script src="{{URL::asset('/include/jquery-pjax/JQuery.pjax.js')}}"></script>
-<script src="{{URL::asset('/include/nprogress/nprogress.js')}}"></script>
+{{--<script src="{{URL::asset('/include/nprogress/nprogress.js')}}"></script>--}}
 
 <!-- jQuery UI 1.11.4 -->
 <script src="{{URL::asset('/include/jquery-ui/jquery-ui.min.js')}}"></script>
@@ -14,8 +14,8 @@
 <script src="{{URL::asset('/include/bootstrap-table/bootstrap-table.min.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap-table/local/bootstrap-table-zh-CN.js')}}"></script>
 <!-- daterangepicker -->
-{{-- <script src="{{URL::asset('/include/moment/min/moment.min.js')}}"></script>
-<script src="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.js')}}"></script> --}}
+ <script src="{{URL::asset('/include/moment/min/moment.min.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.js')}}"></script>
 <!-- switch -->
 <script src="{{URL::asset('/include/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
 <!-- Bootstrap WYSIHTML5 -->

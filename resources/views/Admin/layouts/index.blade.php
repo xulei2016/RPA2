@@ -57,6 +57,10 @@
 
 <body class="hold-transition skin-blue fixed sidebar-mini">
     <div class="wrapper">
+        <script>
+            function LA() {}
+            LA.token = '{{ csrf_token() }}';
+        </script>
 
         {{-- header --}} 
         @include('admin.layouts.header') 
@@ -70,10 +74,6 @@
         {{-- model --}} 
         @include('admin.layouts.model')
 
-        <script>
-            function LA() {}
-            LA.token = '{{ csrf_token() }}';
-        </script>
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">

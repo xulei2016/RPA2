@@ -137,7 +137,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             });
         });
 
-        //RPA PROJECTS
+        //RPA 任务中心
         Route::group(['namespace' => 'Rpa'], function(){
             //rpa 任务管理中心
             Route::group(['middleware' => ['permission:rpa_center']], function () {
@@ -233,14 +233,59 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('/rpa_oabreminding/insertImmedtasks', 'OabremindingController@insertImmedtasks');
                 Route::resource('/rpa_oabreminding', 'OabremindingController');
             });
-            //棉花仓单
-            Route::group(['middleware' => ['permission:rpa_cotton']], function () {
-                Route::get('/rpa_cotton/list', 'CottonController@pagenation');
-                Route::get('/rpa_cotton/importExcel', 'CottonController@showExcel');
-                Route::post('/rpa_cotton/importExcel', 'CottonController@importExcel');
-                Route::resource('/rpa_cotton', 'CottonController');
-            });
+            //rpa任务运行日志
+            Route::get('/rpa_logs/log','StatisticsController@pagination');
+            Route::get('/rpa_logs/show/{id}','StatisticsController@show');
+            Route::get('/rpa_logs','StatisticsController@rpa_log');
+            //数据统计
+            Route::post('/rpa_statistics/getData','StatisticsController@getData');
+            Route::get('/rpa_statistics','StatisticsController@index');
 
+        });
+        //RPA 功能中心
+        Route::group(['namespace' => 'Func'],function(){
+            //居间人回访
+            Route::post('/rpa_jjr_records/typeChange', 'JJRVisFuncController@typeChange');
+            Route::get('/rpa_jjr_records/rpa_list', 'JJRVisFuncController@JJRpagination');
+            Route::get('/rpa_jjr_records', 'JJRVisFuncController@index');
+
+            //开户云回访
+            Route::post('/rpa_cloud_distribution/typeChange', 'ReviewtableController@typeChange');
+            Route::get('/rpa_cloud_distribution/rpa_list', 'ReviewtableController@JJRpagination');
+            Route::get('/rpa_cloud_distribution', 'ReviewtableController@index');
+
+            //客户资金查询
+            //客户
+            Route::get('/rpa_customer_funds_search', 'OabremindingFuncController@oabIndex');
+            Route::get('/rpa_customer_funds_search/add','OabremindingFuncController@oabAdd');
+            Route::post('/rpa_customer_funds_search/insert','OabremindingFuncController@oabInsert');
+            Route::post('/rpa_customer_funds_search/delete','OabremindingFuncController@oabDelete');
+            Route::post('/rpa_customer_funds_search/typeChange', 'OabremindingFuncController@oabTypeChange');
+            Route::get('/rpa_customer_funds_search/rpa_list', 'OabremindingFuncController@oabPagination');
+            //品种
+            Route::get('/rpa_customer_funds_search/varietyset','OabremindingFuncController@varietyList');
+            Route::get('/rpa_customer_funds_search/varietyadd','OabremindingFuncController@varietyAdd');
+            Route::get('/rpa_customer_funds_search/varietyedit/{id}','OabremindingFuncController@varietyEdit');
+            Route::post('/rpa_customer_funds_search/varietyinsert','OabremindingFuncController@varietyInsert');
+            Route::post('/rpa_customer_funds_search/varietyupdate','OabremindingFuncController@varietyUpdate');
+            Route::post('/rpa_customer_funds_search/varietydelete','OabremindingFuncController@varietyDelete');
+            Route::get('/rpa_customer_funds_search/varietyList','OabremindingFuncController@varietyPagination');
+
+            //棉花仓单
+            Route::get('/rpa_cotton','CottonController@index');
+            Route::get('/rpa_cotton/rpa_list', 'CottonController@pagination');
+            Route::get('/rpa_cotton/add', 'CottonController@add');
+            Route::post('/rpa_cotton/adddata', 'CottonController@adddata');
+            Route::post('/rpa_cotton/isanalysis', 'CottonController@isanalysis');
+            Route::post('/rpa_cotton/checkdata', 'CottonController@checkdata');
+            Route::any('/rpa_cotton/download/{id?}', 'CottonController@download');
+            Route::post('/rpa_cotton/delete', 'CottonController@delete');
+            Route::get('/rpa_cotton/detail/{id}', 'CottonController@detail');
+            Route::post('/rpa_cotton/save', 'CottonController@save');
+            Route::post('/rpa_cotton/changePack', 'CottonController@changePack');
+            Route::post('/rpa_cotton/immedtask', 'CottonController@immedtask');
+            Route::get('/rpa_cotton/official', 'CottonController@official');
+            Route::post('/rpa_cotton/official_detail/{id}', 'CottonController@official_detail');
         });
     });
 

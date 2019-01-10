@@ -18,7 +18,7 @@
 
             @component('admin.widgets.search-group')
                 @slot('searchContent')
-                <label class="control-label col-sm-1" for="name">账号</label>
+                    <label class="control-label col-sm-1" for="name">账号</label>
                     <div class="col-sm-2">
                         <input type="text" class="form-control" id="name">
                     </div>

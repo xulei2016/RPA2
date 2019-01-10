@@ -1,4 +1,5 @@
 $(function(){
+    let selectInfo = [];
     /*
      * 初始化
      */
@@ -14,10 +15,6 @@ $(function(){
      * 绑定事件
      */
     function bindEvent(){
-        //根据条件查询信息
-        $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
-        });
 
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
@@ -26,30 +23,14 @@ $(function(){
                 $('#tb_departments').bootstrapTable('refresh');
             }
         });
-
         //批量删除
         $("#pjax-container section.content #toolbar #deleteAll").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
             if("" == ids){
                 swal('提示','你还没有选择需要操作的行！！！','warning');
-        	}else{
+            }else{
                 Delete(ids);
             }
-        });
-
-        //导出全部
-        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
-            var condition = getSearchGroup();
-            $url = urlEncode(condition);
-            location.href="/admin/rpa_botton/export?"+$url;
-        });
-
-        //导出全选
-        $("#pjax-container section.content #toolbar #export").on('click', function(){
-            var ids = RPA.getIdSelections('#tb_departments');
-            var condition = getSearchGroup();
-            $url = urlEncode(condition);
-            location.href="/admin/rpa_botton/export?"+$url+'&id='+ids;
         });
     }
 
@@ -69,10 +50,8 @@ $(function(){
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/rpa_botton/'+id,
+                        url: '/admin/rpa_customer_funds_search/varietydelete',
                         data: {
-                            _method:'delete',
-                            _token:LA.token,
                             id:id
                         },
                         success: function (json) {
@@ -94,6 +73,21 @@ $(function(){
         });
     }
 
+    /**
+     * 获取模糊参数
+     */
+    function getSearchGroup(){
+        //特殊格式的条件处理
+        var temp = {
+            customer : $("#pjax-container #search-group #customer").val(),
+            tid : $("#pjax-container #search-group #tid").val(),
+            state : $("#pjax-container #search-group #state").val(),
+            from_created_at : $("#pjax-container #search-group #startTime").val(),
+            to_created_at : $("#pjax-container #search-group #endTime").val()
+        };
+        return temp;
+    }
+
     //分页参数
     function pageNation(oTable){
         oTable.queryParams = function (params) {
@@ -103,46 +97,36 @@ $(function(){
             temp["total"] = params.total;                        //页面大小
             temp["page"] = (params.offset / params.limit) + 1;  //页码
             temp["sort"] = params.sort;                         //排序列名
-            temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
+            temp["sortOrder"] = params.order;                   //排位命令（desc，asc）
+            //特殊格式的条件处理
+            let obj = getSearchGroup();
+            for(let i in obj){
+                temp[i] = obj[i];
+            }
+            return temp;
         }
 
+
+
         var param = {
-            url: '/admin/rpa_botton/list',
+            url: '/admin/rpa_customer_funds_search/varietyList',
             columns: [{
                     checkbox: true,
                 }, {
                     field: 'name',
-                    title: '任务名称',
+                    title: '投资类型',
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'bewrite',
-                    title: '任务描述',
+                    field: 'exfund',
+                    title: '最低资金余额',
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'filepath',
-                    title: '任务路径',
+                    field: 'desc',
+                    title: '描述',
                     align: 'center',
                     valign: 'middle'
-                }, {
-                    field: 'isfp',
-                    title: '是否占用资源',
-                    align: 'center',
-                    valign: 'middle',
-                    formatter: function(values){
-                        return values ? '<small class="label bg-red">是</small>' : '<small class="label bg-primary">否</small>';
-                    }
-                }, {
-                    field: 'failtimes',
-                    title: '失败次数限制',
-                    align: 'center',
-                    valign: 'middle'
-                }, {
-                    field: 'timeout',
-                    title: '超时限制',
-                    align: 'center',
-                    valign: 'middle',
                 }, {
                     field: 'id',
                     title: '操作',
@@ -157,8 +141,7 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_botton/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_funds_search/varietyedit/"+id+"'  title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;
