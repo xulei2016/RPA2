@@ -90,7 +90,16 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::PATCH('/sys_admin/{id}', 'AdminController@update')->middleware('permission:sys_admin_edit');
                 Route::delete('/sys_admin/{id}', 'AdminController@destroy')->middleware('permission:sys_admin_delete');
             });
-            
+            //通知
+            Route::get('/sys_message_list', 'MessageController@index');
+            Route::get('/sys_message_list/view/{nid}', 'MessageController@view');
+            Route::get('/sys_message_send', 'MessageController@sendMessage');
+            Route::post('/sys_message_list/send', 'MessageController@send');
+            Route::get('/sys_message_list/message_list', 'MessageController@pagination');
+            //历史通知
+            Route::get('/sys_message_history', 'MessageController@history_list');
+            Route::get('/sys_message_history/view/{id}', 'MessageController@view');
+            Route::get('/sys_message_history/message_list', 'MessageController@history_pagination');
             //个人中心
             Route::group(['middleware' => ['permission:sys_profile']], function () {
                 Route::get('/sys_profile', 'AdminController@userCenter');
@@ -245,47 +254,56 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
         //RPA 功能中心
         Route::group(['namespace' => 'Func'],function(){
             //居间人回访
-            Route::post('/rpa_jjr_records/typeChange', 'JJRVisFuncController@typeChange');
-            Route::get('/rpa_jjr_records/rpa_list', 'JJRVisFuncController@JJRpagination');
-            Route::get('/rpa_jjr_records', 'JJRVisFuncController@index');
+            Route::group(['middleware' => ['permission:rpa_jjr_records']], function () {
+                Route::post('/rpa_jjr_records/typeChange', 'JJRVisFuncController@typeChange');
+                Route::get('/rpa_jjr_records/rpa_list', 'JJRVisFuncController@JJRpagination');
+                Route::get('/rpa_jjr_records', 'JJRVisFuncController@index');
+            });
 
             //开户云回访
-            Route::post('/rpa_cloud_distribution/typeChange', 'ReviewtableController@typeChange');
-            Route::get('/rpa_cloud_distribution/rpa_list', 'ReviewtableController@JJRpagination');
-            Route::get('/rpa_cloud_distribution', 'ReviewtableController@index');
+            Route::group(['middleware' => ['permission:rpa_cloud_distribution']], function () {
+                Route::post('/rpa_cloud_distribution/typeChange', 'ReviewtableController@typeChange');
+                Route::get('/rpa_cloud_distribution/rpa_list', 'ReviewtableController@JJRpagination');
+                Route::get('/rpa_cloud_distribution', 'ReviewtableController@index');
+            });
 
             //客户资金查询
-            //客户
-            Route::get('/rpa_customer_funds_search', 'OabremindingFuncController@oabIndex');
-            Route::get('/rpa_customer_funds_search/add','OabremindingFuncController@oabAdd');
-            Route::post('/rpa_customer_funds_search/insert','OabremindingFuncController@oabInsert');
-            Route::post('/rpa_customer_funds_search/delete','OabremindingFuncController@oabDelete');
-            Route::post('/rpa_customer_funds_search/typeChange', 'OabremindingFuncController@oabTypeChange');
-            Route::get('/rpa_customer_funds_search/rpa_list', 'OabremindingFuncController@oabPagination');
-            //品种
-            Route::get('/rpa_customer_funds_search/varietyset','OabremindingFuncController@varietyList');
-            Route::get('/rpa_customer_funds_search/varietyadd','OabremindingFuncController@varietyAdd');
-            Route::get('/rpa_customer_funds_search/varietyedit/{id}','OabremindingFuncController@varietyEdit');
-            Route::post('/rpa_customer_funds_search/varietyinsert','OabremindingFuncController@varietyInsert');
-            Route::post('/rpa_customer_funds_search/varietyupdate','OabremindingFuncController@varietyUpdate');
-            Route::post('/rpa_customer_funds_search/varietydelete','OabremindingFuncController@varietyDelete');
-            Route::get('/rpa_customer_funds_search/varietyList','OabremindingFuncController@varietyPagination');
+            Route::group(['middleware' => ['permission:rpa_customer_funds_search']], function () {
+                //客户
+                Route::get('/rpa_customer_funds_search', 'OabremindingFuncController@oabIndex');
+                Route::get('/rpa_customer_funds_search/add','OabremindingFuncController@oabAdd');
+                Route::post('/rpa_customer_funds_search/insert','OabremindingFuncController@oabInsert');
+                Route::post('/rpa_customer_funds_search/delete','OabremindingFuncController@oabDelete');
+                Route::post('/rpa_customer_funds_search/typeChange', 'OabremindingFuncController@oabTypeChange');
+                Route::get('/rpa_customer_funds_search/rpa_list', 'OabremindingFuncController@oabPagination');
+                //品种
+                Route::get('/rpa_customer_funds_search/varietyset','OabremindingFuncController@varietyList');
+                Route::get('/rpa_customer_funds_search/varietyadd','OabremindingFuncController@varietyAdd');
+                Route::get('/rpa_customer_funds_search/varietyedit/{id}','OabremindingFuncController@varietyEdit');
+                Route::post('/rpa_customer_funds_search/varietyinsert','OabremindingFuncController@varietyInsert');
+                Route::post('/rpa_customer_funds_search/varietyupdate','OabremindingFuncController@varietyUpdate');
+                Route::post('/rpa_customer_funds_search/varietydelete','OabremindingFuncController@varietyDelete');
+                Route::get('/rpa_customer_funds_search/varietyList','OabremindingFuncController@varietyPagination');
+            });
 
             //棉花仓单
-            Route::get('/rpa_cotton','CottonController@index');
-            Route::get('/rpa_cotton/rpa_list', 'CottonController@pagination');
-            Route::get('/rpa_cotton/add', 'CottonController@add');
-            Route::post('/rpa_cotton/adddata', 'CottonController@adddata');
-            Route::post('/rpa_cotton/isanalysis', 'CottonController@isanalysis');
-            Route::post('/rpa_cotton/checkdata', 'CottonController@checkdata');
-            Route::any('/rpa_cotton/download/{id?}', 'CottonController@download');
-            Route::post('/rpa_cotton/delete', 'CottonController@delete');
-            Route::get('/rpa_cotton/detail/{id}', 'CottonController@detail');
-            Route::post('/rpa_cotton/save', 'CottonController@save');
-            Route::post('/rpa_cotton/changePack', 'CottonController@changePack');
-            Route::post('/rpa_cotton/immedtask', 'CottonController@immedtask');
-            Route::get('/rpa_cotton/official', 'CottonController@official');
-            Route::post('/rpa_cotton/official_detail/{id}', 'CottonController@official_detail');
+            Route::group(['middleware' => ['permission:rpa_cotton']], function () {
+                Route::get('/rpa_cotton','CottonController@index');
+                Route::get('/rpa_cotton/rpa_list', 'CottonController@pagination');
+                Route::get('/rpa_cotton/add', 'CottonController@add');
+                Route::post('/rpa_cotton/adddata', 'CottonController@adddata');
+                Route::post('/rpa_cotton/isanalysis', 'CottonController@isanalysis');
+                Route::post('/rpa_cotton/checkdata', 'CottonController@checkdata');
+                Route::any('/rpa_cotton/download/{id?}', 'CottonController@download');
+                Route::post('/rpa_cotton/delete', 'CottonController@delete');
+                Route::get('/rpa_cotton/detail/{id}', 'CottonController@detail');
+                Route::post('/rpa_cotton/save', 'CottonController@save');
+                Route::post('/rpa_cotton/changePack', 'CottonController@changePack');
+                Route::post('/rpa_cotton/immedtask', 'CottonController@immedtask');
+                Route::get('/rpa_cotton/official', 'CottonController@official');
+                Route::post('/rpa_cotton/official_detail/{id}', 'CottonController@official_detail');
+            });
+
         });
     });
 

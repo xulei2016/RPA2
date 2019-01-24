@@ -146,3 +146,45 @@ body .wrapper .content-wrapper section.content .bootstrap-table #tb_departments 
 .error{
     color: #ad0000;
 }
+
+/******消息提示框*******/
+.notify-wrap{
+    width:220px;
+    border:1px solid #ccc;
+    height:150px;
+    position:fixed;
+    right:0;
+    bottom:0;
+    display:none;
+    background:rgba(255,255,255,0.8);
+}
+.notify-wrap .notify-title{
+    line-height:25px;
+    border-bottom:1px solid #e4e0e0;
+    padding:4px 8px 0px 8px;
+}
+.notify-wrap .notify-title .notify-off{
+    float:right;
+    text-align:center;
+    display:inline-block;
+    width:25px;
+    cursor:pointer;
+}
+.notify-wrap .notify-title .notify-off i{
+    font-size:14px;
+}
+.notify-wrap .notify-content{
+    padding:4px 8px 0px 8px;
+    height:86px;
+    text-indent:2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+}
+.notify-wrap .notify-bottom{
+    float:right;
+    padding:4px 8px 0 0;
+    line-height:30px;
+}

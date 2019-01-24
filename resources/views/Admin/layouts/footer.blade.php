@@ -1,6 +1,6 @@
 <!-- Scripts -->
 <script src="{{URL::asset('/include/jquery-pjax/JQuery.pjax.js')}}"></script>
-{{--<script src="{{URL::asset('/include/nprogress/nprogress.js')}}"></script>--}}
+<script src="{{URL::asset('/include/nprogress/nprogress.js')}}"></script>
 
 <!-- jQuery UI 1.11.4 -->
 <script src="{{URL::asset('/include/jquery-ui/jquery-ui.min.js')}}"></script>

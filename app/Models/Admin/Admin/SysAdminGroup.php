@@ -16,4 +16,9 @@ class SysAdminGroup extends Model
     //黑名单，白名单
     // protected $fillable = ['name'];
     protected $guarded = [];
+
+    public function users()
+    {
+        return $this->hasMany(SysAdmin::class,"groupID");
+    }
 }
