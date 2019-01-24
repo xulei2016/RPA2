@@ -98,7 +98,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/sys_message_list/message_list', 'MessageController@pagination');
             //历史通知
             Route::get('/sys_message_history', 'MessageController@history_list');
-            Route::get('/sys_message_history/view/{id}', 'MessageController@view');
+            Route::get('/sys_message_history/view/{id}', 'MessageController@history_view');
             Route::get('/sys_message_history/message_list', 'MessageController@history_pagination');
             //个人中心
             Route::group(['middleware' => ['permission:sys_profile']], function () {

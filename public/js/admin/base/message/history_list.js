@@ -208,7 +208,7 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' id='deleteOne' title='查看'>查看</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/sys_message_history/view/"+id+"' title='查看'>查看</a>";
 
                         return result;
                     }
