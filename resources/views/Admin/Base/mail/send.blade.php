@@ -9,12 +9,31 @@
                 <h3 class="box-title">编辑邮件</h3>
             </div>
             <div class="box-body pad">
-                <form>
+                <form enctype="multipart/form-data">
                     <div class="form-group">
-                        <input class="form-control to" name="to" placeholder="发送人:" required>
+                        <div class="form-group">
+                            <label for="mode">
+                                <select name="mode" id="mode" class="form-control">
+                                    @foreach($object as $v)
+                                        <option value="{{$v->id}}">{{$v->desc}}</option>
+                                    @endforeach
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group hidden accepter">
+                        <label for="content">
+                            <div class="accepter-content"></div>
+                        </label>
                     </div>
                     <div class="form-group">
-                        <input class="form-control cc" name="cc" placeholder="抄送:">
+                        <label for="type">
+                            <select name="type" id="type" class="form-control">
+                                @foreach($types as $type)
+                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                        </label>
                     </div>
                     <div class="form-group">
                         <input class="form-control project" name="project" placeholder="主题:" required>
@@ -24,10 +43,10 @@
                     </div>
                     <div class="form-group">
                         <div class="btn btn-default btn-file">
-                            <i class="fa fa-paperclip"></i> 附件
-                            <input type="file" name="attachment">
+                            <i class="fa fa-paperclip"></i> <span>上传附件</span>
+                            <input type="file" id="attachment" name="attachment">
                         </div>
-                        <p class="help-block">最大. 32MB</p>
+                        <p class="help-block">最大. 10MB</p>
                     </div>
                 </form>
             </div>
@@ -41,55 +60,6 @@
         </div>
     </div>
 </div>
-<script>
-    $(function () {
-        //初始化
-        function init(){
-            bindEvent();
-            CKEDITOR.replace('editor');
-        }
-
-        //绑定事件
-        function bindEvent(){
-            //发送事件
-            $('#pjax-container section.content button.submit').click(function(){
-                var to = $('#pjax-container section.content form input.to').val();
-                var project = $('#pjax-container section.content form input.project').val();
-                if(!to || !project){
-                    return swal('Oops...', '请完善发送信息！！', 'warning');
-                }
-                add($('#pjax-container section.content form'));
-            });
-            //草稿事件
-            $('#pjax-container section.content button.draft').click(function(){
-
-            });
-            //重置事件
-            $('#pjax-container section.content button.reset').click(function(){
-                $('#pjax-container section.content form')[0].reset();
-            });
-        }
-            
-        //添加
-        function add(e){
-            RPA.ajaxSubmit(e, FormOptions);
-        }
-        
-        //提交信息的表单配置
-        var FormOptions={
-            url:'/admin/sys_mail',
-            success:function(json, xml){
-                if(200 == json.code){
-                    toastr.success('操作成功！');
-                }else{
-                    toastr.error(json.info);
-                }
-            },
-            error:RPA.errorReponse
-        };
-
-        init();
-    })
-</script>
+<script src="{{URL::asset('/js/admin/base/mail/send.js')}}"></script>
 
 @endsection

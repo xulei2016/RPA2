@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers\admin\base;
 
+use App\models\admin\base\SysMail;
 use App\Mail\MdEmail;
+use App\Models\Admin\Admin\SysAdmin;
+use App\Models\Admin\Admin\SysAdminGroup;
 use App\Models\Admin\Base\SysMailType;
 use App\Models\Admin\Base\SysMailMode;
+use App\Models\Admin\Base\SysMessageObjects;
+use App\Models\Admin\Base\SysMessageTypes;
+use App\Models\Admin\Base\SysRole;
 use App\Models\Admin\Base\SysUserMail;
 use App\Models\Admin\Base\SysMailOutbox;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Base\BaseAdminController;
 
@@ -33,9 +40,14 @@ class MailController extends BaseAdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.base.mail.send');
+        //发送类型
+        $types = SysMessageTypes::all();
+        //发送对象
+        $object = SysMessageObjects::orderBy('id','desc')->get();
+        $this->log(__CLASS__, __FUNCTION__, $request, "发布邮件 页面");
+        return view('admin.base.mail.send', ['types' => $types, 'object' => $object]);
     }
 
     /**
@@ -44,20 +56,98 @@ class MailController extends BaseAdminController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function send(Request $request)
     {
-        //
+        $this->log(__CLASS__, __FUNCTION__, $request, "发送 邮件");
+        $data = [
+            'title' => $request->project,
+            'content' => $request->editor,
+            'tid' => $request->type
+        ];
+        // 获取发送邮件的用户和id
+        $admin = $this->getAdmin($request->mode,$request->user);
+        $sysAdminIds = $admin['sysAdminIds'];
+        $sysAdmin = $admin['sysAdmin'];
+
+        //如果存在附件
+        if($request->file('attachment')){
+            $allow_ext = [
+                'RAR','zip','pdf','xls','txt','doc','gif','jpg','png','jpeg'
+            ];
+            $data['file_path'] = $this->uploadFile($request->file('attachment'),'mail',$allow_ext);
+
+            if(!$data['file_path']){
+                return $this->ajax_return('500', '附件类型不允许发送!!！');
+            }
+        }
+
+        $sysmail = SysMail::create($data);
+        if($sysmail){
+            // 给自己添加发件记录
+            $data = [
+                'mid' => $sysmail->id,
+                'uid' => Auth::user()->id,
+                'type' => 2
+            ];
+            SysUserMail::create($data);
+
+            $sysmail->admins()->attach($sysAdminIds);
+            Mail::to($sysAdmin)->send(new MdEmail($sysmail));
+            return $this->ajax_return('200', '操作成功！');
+        }else{
+            return $sysmail;
+        }
     }
 
+    public function draft(Request $request)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "草稿 邮件");
+        $data = [
+            'title' => $request->project,
+            'content' => $request->editor,
+            'tid' => $request->type
+        ];
+
+        //如果存在附件
+        if($request->file('attachment')){
+            $allow_ext = [
+                'RAR','zip','pdf','xls','txt','doc','gif','jpg','png','jpeg'
+            ];
+            $data['file_path'] = $this->uploadFile($request->file('attachment'),'mail',$allow_ext);
+
+            if(!$data['file_path']){
+                return $this->ajax_return('500', '附件类型不允许发送!!！');
+            }
+        }
+
+        $sysmail = SysMail::create($data);
+        if($sysmail) {
+            // 给自己添加草稿记录
+            $data = [
+                'mid' => $sysmail->id,
+                'uid' => Auth::user()->id,
+                'type' => 3
+            ];
+            SysUserMail::create($data);
+            return $this->ajax_return('200', '操作成功！');
+        }else{
+            return $sysmail;
+        }
+    }
     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(SysMail $sysMail)
     {
-        //
+        //设置已读
+        $uid = Auth::user()->id;
+        $mid = $sysMail->id;
+        SysUserMail::where([['uid','=',$uid],['mid','=',$mid]])->update(['read_at'=>self::getTime()]);
+
+        return view('admin.base.mail.show', ['sysMail' => $sysMail]);
     }
 
     /**
@@ -66,9 +156,13 @@ class MailController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(SysMail $sysMail)
     {
-        //
+        //发送类型
+        $types = SysMessageTypes::all();
+        //发送对象
+        $object = SysMessageObjects::orderBy('id','desc')->get();
+        return view('admin.base.mail.edit',['types' => $types,'object' => $object,'sysMail' => $sysMail]);
     }
 
     /**
@@ -78,9 +172,45 @@ class MailController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function reSend(Request $request)
     {
-        //
+        $this->log(__CLASS__, __FUNCTION__, $request, "重新发送 邮件");
+        $id = $request->id;
+        $data = [
+            'title' => $request->project,
+            'content' => $request->editor,
+            'tid' => $request->type
+        ];
+        // 获取发送邮件的用户和id
+        $admin = $this->getAdmin($request->mode,$request->user);
+        $sysAdminIds = $admin['sysAdminIds'];
+        $sysAdmin = $admin['sysAdmin'];
+
+        //如果存在附件
+        $sysmail = SysMail::find($id);
+        if($request->file('attachment') && $request->attachment != $sysmail->file_path){
+            $allow_ext = [
+                'RAR','zip','pdf','xls','txt','doc','gif','jpg','png','jpeg'
+            ];
+            $data['file_path'] = $this->uploadFile($request->file('attachment'),'mail',$allow_ext);
+
+            if(!$data['file_path']){
+                return $this->ajax_return('500', '附件类型不允许发送!!！');
+            }
+        }
+
+        $sysmail = $sysmail->update($data);
+        if($sysmail){
+            $sysmail = SysMail::find($id);
+            // 将草稿箱改为发件箱
+            SysUserMail::where([['uid','=',Auth::user()->id],['mid','=',$sysmail->id]])->update(['type' => 2]);
+
+            $sysmail->admins()->attach($sysAdminIds);
+            Mail::to($sysAdmin)->send(new MdEmail($sysmail));
+            return $this->ajax_return('200', '操作成功！');
+        }else{
+            return $sysmail;
+        }
     }
 
     /**
@@ -91,7 +221,9 @@ class MailController extends BaseAdminController
      */
     public function destroy($id)
     {
-        //
+        $uid = Auth::user()->id;
+        SysUserMail::where([['uid','=',$uid],['mid','=',$id]])->update(['type'=>4]);
+        return $this->ajax_return('200', '操作成功！');
     }
     
     /**
@@ -100,18 +232,11 @@ class MailController extends BaseAdminController
     public function pagenation(Request $request){
         $rows = $request->rows;
         $data = $this->get_params($request, ['title','type']);
-        $data['uid'] = [auth()->guard()->user()->id];
-        $conditions = $this->getPagingList($data, ['title'=>'like', 'uid'=>'=', 'type'=>'=']);
+        $data['uid'] = Auth::user()->id;
+        $conditions = $this->getPagingList($data, ['uid'=>'=', 'type'=>'=']);
         $order = $request->sort ?? 'mid';
         $sort = $request->sortOrder;
-        $result = SysUserMail::where($conditions)
-                ->join('sys_mail_outboxs', 'sys_user_mails.mid', '=', 'sys_mail_outboxs.id')
-                ->leftJoin('sys_mail_types', 'sys_mail_outboxs.tid', '=', 'sys_mail_types.id')
-                ->leftJoin('sys_mail_modes', 'sys_mail_outboxs.mid', '=', 'sys_mail_modes.id')
-                ->select(['sys_mail_outboxs.*', 'sys_user_mails.is_read', 'sys_mail_types.desc as type', 'sys_mail_modes.desc as mode'])
-                ->orderBy('sys_user_mails.is_read', 'asc')
-                ->orderBy($order, $sort)
-                ->paginate($rows);
+        $result = SysUserMail::where($conditions)->orderBy($order,$sort)->with('mails')->paginate($rows);
         return $result;
     }
 
@@ -139,41 +264,19 @@ class MailController extends BaseAdminController
             });
         })->export('xls');
     }
-
-    /**
-     * Send mail
-     * @param array data 
-     * @return rersponse
-     */
-    public function send(Request $request){
-        //发送邮件邮件
-        Mail::to($request->to)
-            ->cc($request->cc)
-            ->send(new MdEmail($order));
-        Mail::to('fatlay@foxmail.com')->send(new MdEmail($request));
-    }
-
     /**
      * 未读邮件情况 统计
      */
     private function mailStatistics(){
-        //1、收件箱 2、发件箱 3、草稿箱 4、回收箱 5、垃圾箱
+        //1、收件箱 2、发件箱 3、草稿箱 4、回收箱
         $typeLists = self::mailTypeList();
 
-        $uid = [auth()->guard()->user()->id];
+        $uid = Auth::user()->id;
         foreach($typeLists as &$type){
-            $count = SysUserMail::where([['type','=', $type['id']],['is_read','=', 0],['uid', '=', $uid]])->count();
+            $count = SysUserMail::where([['type','=', $type['id']],['read_at','=', ''],['uid', '=', $uid]])->count();
             $type['count'] = $count;
         }
         return $typeLists;
-    }
-
-    /**
-     * 邮件类型
-     */
-    public function allMailTypes(){
-        $all = SysMailType::all();
-        return $all;
     }
 
     /**
@@ -201,16 +304,52 @@ class MailController extends BaseAdminController
             ],
             [
                 'id' => 4,
-                'name' => 'junk',
-                'desc' => '垃圾箱',
-                'icon' => 'fa-filter'
-            ],
-            [
-                'id' => 5,
                 'name' => 'trash',
                 'desc' => '回收箱',
                 'icon' => 'fa-trash-o'
             ]
+        ];
+    }
+// 获取发送邮件的用户和id
+    public function getAdmin($mode,$user)
+    {
+        $sysAdminIds = [];
+        $sysAdmin = [];
+        if(4 == $mode){
+            $sysAdmins = SysAdmin::where("type",1)->get();
+            foreach($sysAdmins as $admin){
+                $sysAdminIds[] = $admin->id;
+                $sysAdmin[] = $admin;
+            }
+        }else if(3 == $mode){
+            $role_ids = $user;
+            $roles = SysRole::whereIn('id',$role_ids)->get();
+            foreach($roles as $role){
+                foreach($role->users->where("type",1) as $admin){
+                    $sysAdminIds[] = $admin->id;
+                    $sysAdmin[] = $admin;
+                }
+            }
+        }else if(2 == $mode){
+            $group_ids = $user;
+            $groups = SysAdminGroup::whereIn('id',$group_ids)->get();
+            foreach($groups as $group){
+                foreach($group->users->where("type",1) as $admin){
+                    $sysAdminIds[] = $admin->id;
+                    $sysAdmin[] = $admin;
+                }
+            }
+        }else if(1 == $mode){
+            $admin_ids = $user;
+            $sysAdmins = SysAdmin::whereIn('id',$admin_ids)->get();
+            foreach($sysAdmins as $admin){
+                $sysAdminIds[] = $admin->id;
+                $sysAdmin[] = $admin;
+            }
+        }
+        return [
+            'sysAdminIds'=>$sysAdminIds,
+            'sysAdmin' => $sysAdmin
         ];
     }
 }

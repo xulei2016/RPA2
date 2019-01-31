@@ -2,7 +2,8 @@
 
 namespace App\Models\Admin\Admin;
 
-use Illuminate\Notifications\Notifiable; 
+use App\models\admin\base\SysMail;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 

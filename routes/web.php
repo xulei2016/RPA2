@@ -142,7 +142,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/sys_mail/list', 'MailController@pagenation');
                 Route::get('/sys_mail/export', 'MailController@export');
                 Route::get('/sys_mail/create', 'MailController@create')->middleware('permission:sys_mail_create');
-                Route::resource('/sys_mail', 'MailController', ['except' => ['create']]);
+                Route::post('/sys_mail/send', 'MailController@send');
+                Route::post('/sys_mail/draft', 'MailController@draft');
+                Route::post('/sys_mail/reSend', 'MailController@reSend');
+                Route::resource('/sys_mail', 'MailController', ['except' => ['create','update']]);
             });
         });
 

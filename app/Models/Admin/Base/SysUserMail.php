@@ -20,6 +20,7 @@ class SysUserMail extends Model
      * 邮件
      */
     public function mails(){
-        return $this->hasMany('App\Models\Admin\Base\SysMailOutbox');
-    } 
+        return $this->hasOne(SysMail::class,'id','mid');
+    }
+
 }

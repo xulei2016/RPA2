@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Base;
 
 use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Base\SysMessage;
+use App\Models\Admin\Base\SysMessageObjects;
 use App\Models\Admin\Base\SysMessageTypes;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
@@ -22,8 +23,10 @@ class MessageController extends BaseAdminController
     public function sendMessage(Request $request){
         //公告类型列表
         $types = SysMessageTypes::all();
+        //发送对象
+        $object = SysMessageObjects::orderBy('id','desc')->get();
         $this->log(__CLASS__, __FUNCTION__, $request, "发布通告 页面");
-        return view('admin/Base/message/send', ['types' => $types]);
+        return view('admin/Base/message/send', ['types' => $types, 'object' => $object]);
     }
     //send
     public function send(Request $request){

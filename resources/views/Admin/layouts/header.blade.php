@@ -101,8 +101,11 @@
               <li class="dropdown notifications-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-bell-o"></i>
-                  <span class="label label-warning">{{ Auth::user()->notification_count}}</span>
+                  @if(Auth::user()->notification_count >0)
+                    <span class="label label-warning">{{ Auth::user()->notification_count}}</span>
+                  @endif
                 </a>
+                @if(Auth::user()->notification_count >0)
                 <ul class="dropdown-menu">
                   <li class="header">您有 {{ Auth::user()->notification_count}} 条新消息未读</li>
                   <li>
@@ -110,17 +113,14 @@
                     <ul class="menu">
                       @foreach(Auth::user()->unreadNotifications as $v)
                         @if($loop->index < 5)
-                          <li>
-                            <a href="">
-                              <i class="fa fa-users text-aqua"></i> {{$v->data['title']}}
-                            </a>
-                          </li>
+                          <li><a href="javascript:;" onclick="operation($(this));" url="/admin/sys_message_list/view/{{$v->id}}"><i class="fa fa-users text-aqua"></i> {{$v->data['title']}}</a></li>
                         @endif
                       @endforeach
                     </ul>
                   </li>
                   <li class="footer"><a href="#">查看全部</a></li>
                 </ul>
+                @endif
               </li>
 
               <!-- User Account -->

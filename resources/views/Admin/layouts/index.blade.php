@@ -289,7 +289,7 @@
             let html = "";
             html += '<div class="notify-wrap">'
                     + '<div class="notify-title">' + typeName + '<span class="notify-off"><i class="icon iconfont">&#xe6e6;</i></span></div>'
-                    + '<div class="notify-title"><a href="JavaScript:void(0);" url="/admin/sys_message_list/view/'+ notification.message_id +'" onclick="operation($(this));" title="查看站内信息">' + notification.title + '</a><div>'
+                    + '<div class="notify-title"><a href="JavaScript:void(0);" url="/admin/sys_message_list/view/'+ notification.id +'" onclick="operation($(this));" title="查看站内信息">' + notification.title + '</a><div>'
                     + '<div class="notify-content">' + notification.content + '</div>'
                     + '</div>';
 
