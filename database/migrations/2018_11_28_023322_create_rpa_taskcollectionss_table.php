@@ -19,9 +19,10 @@ class CreateRpaTaskcollectionssTable extends Migration
             $table->string('name'); 
             $table->string('bewrite'); 
             $table->string('filepath'); 
-            $table->integer('failtimes'); 
-            $table->string('failtimes', 20); 
-            $table->text('jsondata', 20); 
+            $table->integer('failtimes');
+            $table->string('state', 20);
+            $table->string('phoneNum', 20);
+            $table->text('jsondata', 20);
             $table->integer('tid'); 
             $table->text('content'); 
             $table->text('SMS'); 

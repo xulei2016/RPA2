@@ -65,7 +65,7 @@ class MailController extends BaseAdminController
             'tid' => $request->type
         ];
         // 获取发送邮件的用户和id
-        $admin = $this->getAdmin($request->mode,$request->user);
+        $admin = getAdmin($request->mode,$request->user);
         $sysAdminIds = $admin['sysAdminIds'];
         $sysAdmin = $admin['sysAdmin'];
 
@@ -182,7 +182,7 @@ class MailController extends BaseAdminController
             'tid' => $request->type
         ];
         // 获取发送邮件的用户和id
-        $admin = $this->getAdmin($request->mode,$request->user);
+        $admin = getAdmin($request->mode,$request->user);
         $sysAdminIds = $admin['sysAdminIds'];
         $sysAdmin = $admin['sysAdmin'];
 
@@ -219,8 +219,9 @@ class MailController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 邮件");
         $uid = Auth::user()->id;
         SysUserMail::where([['uid','=',$uid],['mid','=',$id]])->update(['type'=>4]);
         return $this->ajax_return('200', '操作成功！');
@@ -308,48 +309,6 @@ class MailController extends BaseAdminController
                 'desc' => '回收箱',
                 'icon' => 'fa-trash-o'
             ]
-        ];
-    }
-// 获取发送邮件的用户和id
-    public function getAdmin($mode,$user)
-    {
-        $sysAdminIds = [];
-        $sysAdmin = [];
-        if(4 == $mode){
-            $sysAdmins = SysAdmin::where("type",1)->get();
-            foreach($sysAdmins as $admin){
-                $sysAdminIds[] = $admin->id;
-                $sysAdmin[] = $admin;
-            }
-        }else if(3 == $mode){
-            $role_ids = $user;
-            $roles = SysRole::whereIn('id',$role_ids)->get();
-            foreach($roles as $role){
-                foreach($role->users->where("type",1) as $admin){
-                    $sysAdminIds[] = $admin->id;
-                    $sysAdmin[] = $admin;
-                }
-            }
-        }else if(2 == $mode){
-            $group_ids = $user;
-            $groups = SysAdminGroup::whereIn('id',$group_ids)->get();
-            foreach($groups as $group){
-                foreach($group->users->where("type",1) as $admin){
-                    $sysAdminIds[] = $admin->id;
-                    $sysAdmin[] = $admin;
-                }
-            }
-        }else if(1 == $mode){
-            $admin_ids = $user;
-            $sysAdmins = SysAdmin::whereIn('id',$admin_ids)->get();
-            foreach($sysAdmins as $admin){
-                $sysAdminIds[] = $admin->id;
-                $sysAdmin[] = $admin;
-            }
-        }
-        return [
-            'sysAdminIds'=>$sysAdminIds,
-            'sysAdmin' => $sysAdmin
         ];
     }
 }
