@@ -100,6 +100,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/sys_message_history', 'MessageController@history_list');
             Route::get('/sys_message_history/view/{id}', 'MessageController@history_view');
             Route::get('/sys_message_history/message_list', 'MessageController@history_pagination');
+            //短信中心
+            Route::get('/sys_sms', 'MessageController@sms_list');
+            Route::get('/sys_sms_list', 'MessageController@sms_pagination');
+
             //个人中心
             Route::group(['middleware' => ['permission:sys_profile']], function () {
                 Route::get('/sys_profile', 'AdminController@userCenter');
