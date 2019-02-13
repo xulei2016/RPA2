@@ -4,13 +4,13 @@
         <div class="form-group">
             <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="name" id="name" placeholder="名称" required>
+                <input type="text" class="form-control" name="name" id="name" placeholder="名称">
             </div>
         </div>
         <div class="form-group">
-            <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
+            <label for="select2-menu" class="col-sm-2 control-label"><span class="must-tag">*</span>角色</label>
             <div class="col-sm-10">
-                <select name="roleLists[]" id="select2-menu" class="form-control parent_id select2" multiple required>
+                <select name="roleLists[]" id="select2-menu" class="form-control parent_id select2" multiple>
                     @foreach($roles as $role)
                     <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
                     @endforeach
@@ -20,13 +20,13 @@
         <div class="form-group">
             <label for="realName" class="col-sm-2 control-label"><span class="must-tag">*</span>真实姓名</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="realName" id="realName" placeholder="真实姓名" required>
+                <input type="text" class="form-control" name="realName" id="realName" placeholder="真实姓名">
             </div>
         </div>
         <div class="form-group">
             <label for="groupID" class="col-sm-2 control-label"><span class="must-tag">*</span>选择分组</label>
             <div class="col-sm-10">
-                <select class="form-control" name="groupID" id="groupID" required>
+                <select class="form-control" name="groupID" id="groupID">
                     <option value="">请选择</option>
                     @foreach($groupList as $group)
                     <option value="{{ $group->id }}">{{ $group->group }}</option>
@@ -37,13 +37,13 @@
         <div class="form-group">
             <label for="password" class="col-sm-2 control-label"><span class="must-tag">*</span>密码</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control" name="password" id="password" placeholder="密码" required>
+                <input type="password" class="form-control" name="password" id="password" placeholder="密码">
             </div>
         </div>
         <div class="form-group">
             <label for="rePWD" class="col-sm-2 control-label"><span class="must-tag">*</span>确认密码</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control" name="rePWD" id="rePWD" placeholder="确认密码" required>
+                <input type="password" class="form-control" name="rePWD" id="rePWD" placeholder="确认密码">
             </div>
         </div>
         <div class="form-group">
@@ -82,43 +82,8 @@
         </div>
 
     @endslot
+
+    @slot('formScript')
+        <script src="{{URL::asset('/js/admin/admin/add.js')}}"></script>
+    @endslot
 @endcomponent
-
-    <script>
-        $("#select2-menu").select2({
-            "allowClear":true,
-            "placeholder":"角色选择",
-        });
-
-        $('#modal form .switch input#sex').bootstrapSwitch({onText:"男", offText:"女"});
-        $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
-    
-        //添加
-        function add(e){
-            //密码一致性判断
-            var pwd = $('#modal input#password').val();
-            var repwd = $('#modal input#rePWD').val();
-            if(pwd !== repwd){
-                swal({
-                    type: 'error',
-                    title: 'Oops...',
-                    text: '两次密码输入不一致',
-                });
-                return false;
-            }
-            RPA.ajaxSubmit(e, FormOptions);
-        }
-        
-        //提交信息的表单配置
-        var FormOptions={
-            url:'/admin/sys_admin',
-            success:function(json, xml){
-                if(200 == json.code){
-                    RPA.form.response();
-                }else{
-                    toastr.error(json.info);
-                }
-            },
-            error:RPA.errorReponse
-        };
-    </script>

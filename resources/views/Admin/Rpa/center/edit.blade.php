@@ -42,7 +42,7 @@
         <div class="form-group">
             <label for="notice_type" class="col-sm-2 control-label">消息通知</label>
             <div class="col-sm-10">
-                <select name="notice_type" class="form-control" id="notice_type" onchange="mesNotice(this);">
+                <select name="notice_type" class="form-control" id="notice_type">
                     <option value="0" @if(0 == $info->notice_type) selected @endif>不通知</option>
                     <option value="1" @if(1 == $info->notice_type) selected @endif>个人</option>
                     <option value="2" @if(2 == $info->notice_type) selected @endif>分组</option>
@@ -67,74 +67,9 @@
                 @endif
             </div>
         </div>
-        <input type="hidden" name="id" value="{{ $info->id }}">
-
+        <input type="hidden" name="id" id="id" value="{{ $info->id }}">
+    @endslot
+    @slot('formScript')
+    <script src="{{URL::asset('/js/admin/rpa/center/edit.js')}}"></script>
     @endslot
 @endcomponent
-
-<script>
-    initCheckBox();
-    
-    $('#modal form .switch input#isfp').bootstrapSwitch({onText:"是", offText:"否"});
-    $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
-
-    //消息通知方式
-    function mesNotice(e){
-        let val = $(e).val();
-        if(val && 4 != val){
-            showAccepter(val);
-        }else{
-            $(e).parents('div.form-group').next().addClass('hidden').find('.accepter-content').html('');
-        }
-    }
-
-    //查询通知人群
-    function showAccepter(val){
-        $.post('/admin/rpa_center/getAccepter',{param: val}, function(json){
-            if(200 == json.code){
-                let data = json.data;
-                let _html = '';
-                if(data.length > 0){
-                    for(let _item of data){
-                        _html += ' <label><input type="checkbox" name="noticeAccepter[]" value="'+ _item.id +'">'+_item.name+'</label> '
-                    }
-                }else{
-                    _html += '暂无数据！';
-                }
-                $('#modal form .accepter .accepter-content').html(_html);
-                $('#modal form .accepter').removeClass('hidden');
-                initCheckBox();
-                return;
-            }
-            swal('Oops...', '获取资源数据失败！', 'error');
-        });
-    }
-
-    //init checkbox
-    function initCheckBox(){
-        $('#modal .accepter input').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue',
-        });
-    }
-
-    //添加
-    function add(e){
-        RPA.ajaxSubmit(e, FormOptions);
-    }
-    
-    var id = "{{ $info->id }}";
-
-    //提交信息的表单配置
-    var FormOptions={
-        url:'/admin/rpa_center/'+id,
-        success:function(json, xml){
-            if(200 == json.code){
-                RPA.form.response();
-            }else{
-                toastr.error(json.info);
-            }
-        },
-        error:RPA.errorReponse
-    };
-</script>

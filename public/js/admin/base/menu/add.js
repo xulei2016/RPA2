@@ -45,18 +45,21 @@ $(function(){
     //表单验证信息
     var validateInfo ={
         rules:{
-            name:{//名称
+            title:{//名称
                 required:true
             },
-            web:{
+            unique_name:{
                 required:true
             },
-            num:{
+            uri:{
                 required:true
             },
-            bewrite:{
+            icon:{
                 required:true
             },
+            order:{
+                required:true
+            }
         },
         errorPlacement:function(error,element){
             element.parent().append(error);

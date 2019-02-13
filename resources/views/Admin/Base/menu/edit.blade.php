@@ -21,19 +21,19 @@
             <div class="form-group">
                 <label for="title" class="col-sm-2 control-label">名称</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="title" id="title" value="{{ $menuInfo->title }}" placeholder="名称" required>
+                    <input type="text" class="form-control" name="title" id="title" value="{{ $menuInfo->title }}" placeholder="名称">
                 </div>
             </div>
             <div class="form-group">
                 <label for="unique_name" class="col-sm-2 control-label">权限键值</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="unique_name" id="unique_name" value="{{ $menuInfo->unique_name }}" placeholder="unique_name" required>
+                    <input type="text" class="form-control" name="unique_name" id="unique_name" value="{{ $menuInfo->unique_name }}" placeholder="unique_name">
                 </div>
             </div>
             <div class="form-group">
                 <label for="uri" class="col-sm-2 control-label">路径</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="uri" id="uri" value="{{ $menuInfo->uri }}" placeholder="输入路径" required>
+                    <input type="text" class="form-control" name="uri" id="uri" value="{{ $menuInfo->uri }}" placeholder="输入路径">
                 </div>
             </div>
             <div class="form-group">
@@ -50,28 +50,7 @@
             </div>
             <input type="text" class="hidden" name="id" id="id" value="{{ $menuInfo->id }}">
 @endslot
+@slot('formScript')
+<script src="{{URL::asset('/js/admin/base/menu/edit.js')}}"></script>
+@endslot
 @endcomponent
-<script>
-    $("#select2-menu").select2({
-        "allowClear":true,
-        "placeholder":"父级菜单",
-    });
-
-    //添加
-    function add(e){
-        RPA.ajaxSubmit(e, FormOptions);
-    }
-    
-    //提交信息的表单配置
-    var FormOptions={
-        url:'/admin/sys_menu/edit',
-        success:function(json, xml){
-            if(200 == json.code){
-                RPA.form.response();
-            }else{
-                toastr.error(json.info);
-            }
-        },
-        error:RPA.errorReponse
-    };
-</script>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Rpa;
 
+use App\Models\Admin\Rpa\rpa_immedtasks;
 use Illuminate\Http\Request;
 use App\Models\Admin\Rpa\rpa_releasetasks;
 use App\Http\Controllers\admin\rpa\ImmedtaskController;
@@ -56,11 +57,12 @@ class NewsController extends BaseAdminController
         $data = $this->get_params($request, ['week','date','description','time','jsondata','start_time','end_time','mins',['implement_type', 0]]);
         $data['name'] = $this->task_name;
         $data['week'] = isset($data['week']) ? implode(',',$data['week']) :'';
-        $data['time'] = $data['time'] ? $data['time'] : $this::slice_time($data) ;
+        $time = $this->get_params($request, ['start_time','end_time','mins'],false);
+        $data['time'] = $data['time'] ?? $this::slice_time($time) ;
         //创建任务
         $tid = rpa_releasetasks::create($data);
         //发布任务
-        $this->immedtask();
+        $this->immedtask($data['name']);
         $this->log(__CLASS__, __FUNCTION__, $request, "添加 朝闻天下 任务");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -105,11 +107,13 @@ class NewsController extends BaseAdminController
         $data = $this->get_params($request, ['week','date','description','time','jsondata','start_time','end_time','mins',['implement_type', 0]], false);
         $data['name'] = $this->task_name;
         $data['week'] = isset($data['week']) ? implode(',',$data['week']) :'';
-        $data['time'] = $data['time'] ? $data['time'] : $this::slice_time($data) ;
+
+        $time = $this->get_params($request,['start_time','end_time','mins']);
+        $data['time'] = $data['time'] ?? $this::slice_time($time) ;
         //更新任务
         $tid = rpa_releasetasks::where('id',$id)->update($data);
         //发布任务
-        $this->immedtask();
+        $this->immedtask($data['name']);
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 朝闻天下 任务");
         return $this->ajax_return(200, '操作成功！');
     }
@@ -141,8 +145,33 @@ class NewsController extends BaseAdminController
     /**
      * immedtask
      */
-    public function immedtask(){
+    public function immedtask($name){
         $immedtask = new ImmedtaskController;
-        $immedtask->create();
+        $immedtask->create($name);
+    }
+
+    /***********************************立即任务*********************************************/
+    /**
+     * 立即任务
+     */
+    public function immedtasks(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "立即发布 朝闻天下 页");
+        $jsondata = "";
+        if($request->id){
+            $res = rpa_releasetasks::find($request->id);
+            $jsondata = json_decode($res->jsondata,true);
+        }
+        return view('admin/rpa/News/add_immed',['jsondata'=>$jsondata]);
+    }
+    /**
+     * 发布立即任务
+     */
+    public function insertImmedtasks(Request $request){
+        $task = $this->get_params($request, ['description','jsondata']);
+        $task['name'] = 'zwtx';
+        $data = ['name'=>$task['name'],'jsondata'=>$task['jsondata'],'description'=>$task['description']];
+        $this->log(__CLASS__, __FUNCTION__, $request, "立即发布 {$task['name']} 任务");
+        rpa_immedtasks::create($data);
+        return $this->ajax_return(200, '操作成功！');
     }
 }

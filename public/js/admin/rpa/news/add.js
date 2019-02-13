@@ -129,9 +129,6 @@ $(function(){
             num:{
                 required:true
             },
-            bewrite:{
-                required:true
-            },
         },
         errorPlacement:function(error,element){
             element.parent().append(error);

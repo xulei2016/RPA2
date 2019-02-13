@@ -19,6 +19,8 @@ $(function(){
             "placeholder":"父级菜单",
         });
 
+        $('#modal form .switch input#status').bootstrapSwitch({onText:"启用", offText:"禁用"});
+
         $.post('/admin/sys_permission/getTree', {}, function(json){
             if(200 == json.code){
                 html = initTree(json.data);
@@ -27,6 +29,8 @@ $(function(){
                 Swal(json.info, '', 'error');
             }
         });
+
+
     }
 
     function initTree(data){
@@ -81,7 +85,7 @@ $(function(){
             desc:{
                 required:true
             },
-            select2_menu:{
+            sort:{
                 required:true
             },
         },

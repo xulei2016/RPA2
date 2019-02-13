@@ -22,9 +22,10 @@ class MenuController extends BaseAdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $menuList = $this->AllMenus();
+        $this->log(__CLASS__, __FUNCTION__, $request, "菜单 列表页");
         return view('admin.base.menu.index', ['menuList' => $menuList]);
     }
 
@@ -47,9 +48,9 @@ class MenuController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','unique_name'], false);
+        $data = $this->get_params($request, [['parent_id',0],'title','uri','icon','order','unique_name']);
         $result = SysMenu::create($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加 菜单");
         return $this->ajax_return(200, '操作成功！');
     }
 
@@ -86,10 +87,10 @@ class MenuController extends BaseAdminController
      */
     public function update(Request $request)
     {
-        $data = $this->get_params($request, ['parent_id','title','uri','icon','order','id','unique_name'], false);
+        $data = $this->get_params($request, [['parent_id',0],'title','uri','icon','order','id','unique_name'], false);
         $result = SysMenu::where('id', $data['id'])
                 ->update($data);
-        $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 菜单");
         return $this->ajax_return(200, '恭喜你，操作成功！');
     }
 
@@ -99,10 +100,10 @@ class MenuController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $result = SysMenu::destroy($id);
-        $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 菜单");
         return $this->ajax_return(200, '操作成功！');
     }
 
@@ -122,7 +123,7 @@ class MenuController extends BaseAdminController
      * sortUpdate
      * @return bool $resulr
      */
-    protected function sortUpdate($order, $pid = 0){
+    private function sortUpdate($order, $pid = 0){
         foreach($order as $k => $sort){
             $id = $sort['id'];
             $dbsort = SysMenu::find($id);
@@ -140,7 +141,7 @@ class MenuController extends BaseAdminController
      * find all menus
      * @return array menuList
      */
-    protected function AllMenus(){
+    private function AllMenus(){
         $menuList = SysMenu::where('is_use', 1)
                     ->orderBy('order', 'asc')
                     ->get()

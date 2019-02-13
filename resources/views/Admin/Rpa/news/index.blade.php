@@ -10,7 +10,7 @@
                     <li><a href="javascript:void(0)" id="deleteAll">删除全部</a></li>
                 @endslot
                 @slot('operation')
-                    <a class="btn btn-warning btn-sm" url="/admin/rpa_news/immedtask" title="新增" onclick="operation($(this));">
+                    <a class="btn btn-warning btn-sm" url="/admin/rpa_news/immedtasks" title="新增" onclick="operation($(this));">
                         <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;立即任务</span>
                     </a>
                     <a class="btn btn-primary btn-sm" url="/admin/rpa_news/create" title="新增" onclick="operation($(this));">

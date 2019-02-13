@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
     {
         //mb4数据库字段长度限制
         Schema::defaultStringLength(191);
+        \App\Models\Admin\Base\SysMessage::observe(\App\Observers\SysMessageObserver::class);
     }
 
     /**
@@ -25,6 +26,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+
     }
 }

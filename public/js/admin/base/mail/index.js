@@ -30,6 +30,7 @@ $(function(){
         //批量删除
         $("#pjax-container section.content #toolbar #deleteAll").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
+            console.log(ids);
             if("" == ids){
                 swal('提示','你还没有选择需要操作的行！！！','warning');
         	}else{
@@ -54,7 +55,7 @@ $(function(){
             location.href="/admin/admin/export?"+$url;
         });
 
-        //导出全部
+        //导出选中
         $("#pjax-container section.content #toolbar #export").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
@@ -108,7 +109,7 @@ $(function(){
     function getSearchGroup(){
         //特殊格式的条件处理
         var temp = {
-            name : $("#pjax-container #search-group #name").val(),
+            title : $("#pjax-container #search-group #title").val(),
             type : $("#pjax-container section.content .mail-box ul li.active").attr('data-value')
         }
         return temp;
@@ -142,24 +143,33 @@ $(function(){
                     title: '主题',
                     align: 'center',
                     valign: 'middle',
-                    formatter: function(res){
-                        return res.length > 20 ? res.slice(0,20) : res ;
+                    formatter: function(value,row){
+                        let title = row.mails.title;
+                        return title.length > 20 ? title.slice(0,20) : title ;
                     }
                 }, {
                     field: 'type',
                     title: '消息类型',
                     align: 'center',
                     valign: 'middle',
-                    formatter: function(res){
-                        return '<small class="label bg-primary">'+res+'</small>';
+                    formatter: function(value,row){
+                        let type = "";
+                        if(row.mails.tid == 1){
+                            type = '<small class="label bg-primary">系统公告</small>';
+                        }else if(row.mails.tid == 2){
+                            type = '<small class="label bg-primary">RPA通知</small>';
+                        }else{
+                            type = '<small class="label bg-primary">管理员通知</small>';
+                        }
+                        return type;
                     }
                 }, {
-                    field: 'is_read',
+                    field: 'read_at',
                     title: '是否已读',
                     align: 'center',
                     valign: 'middle',
-                    formatter: function(res){
-                        return (1 == res) ? '<small class="label bg-green">已读</small>' : '<small class="label bg-red">未读</small>' ;
+                    formatter: function(value){
+                        return (value) ? '<small class="label bg-green">已读</small>' : '<small class="label bg-red">未读</small>' ;
                     }
                 }, {
                     field: 'created_at',
@@ -174,14 +184,17 @@ $(function(){
                     valign: 'middle',
                     events: {
                         "click #deleteOne":function (e, value, row, index){
-                            var id = row.id;
+                            var id = row.mid;
                             Delete(id);
                         }
                     },
                     formatter: function(value, row, index){
-                        var id = value;
+                        var id = row.mid;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"/edit' title='查看'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        if(row.type == 3){
+                            result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"/edit' title='重新发送'><i class='fa fa-envelope-o'></i></a>";
+                        }
+                        result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"' title='查看'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;

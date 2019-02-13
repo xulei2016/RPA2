@@ -75,7 +75,8 @@ $(function(){
             temp["total"] = params.total;                        //页面大小
             temp["page"] = (params.offset / params.limit) + 1;  //页码
             temp["sort"] = params.sort;                         //排序列名
-            temp["sortOrder"] = params.order;                   //排位命令（desc，asc） 
+            temp["sortOrder"] = params.order;                   //排位命令（desc，asc）
+            return temp;
         }
 
         var param = {
@@ -132,8 +133,9 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_news/immedtasks/"+id+"' title='添加立即任务'><span class='glyphicon glyphicon-plus'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"' title='查看参数'><span class='glyphicon glyphicon-search'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
                         result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
 
                         return result;

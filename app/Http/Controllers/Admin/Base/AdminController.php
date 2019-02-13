@@ -22,8 +22,9 @@ class AdminController extends BaseAdminController
 {
 
     // 
-    public function index() 
-    { 
+    public function index(Request $request)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "用户 列表页");
         return view('admin.admin.index');
     } 
 
@@ -59,7 +60,7 @@ class AdminController extends BaseAdminController
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists','groupID'], false);
+        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists','groupID']);
         $roles = $data['roleLists'];
         $data['roleLists'] = implode(',', $data['roleLists']);
         $data['password'] = bcrypt($data['password']);
@@ -68,7 +69,7 @@ class AdminController extends BaseAdminController
         //同步角色
         $user = SysAdmin::find($result->id)->syncRoles($roles);
 
-        $this->log(__CLASS__, __FUNCTION__, $request, "添加用户");
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加 用户");
         return $this->ajax_return('200', '操作成功！');
     }
 
@@ -89,7 +90,7 @@ class AdminController extends BaseAdminController
         //同步角色
         $user = SysAdmin::find($data['id'])->syncRoles($roles);
 
-        $this->log(__CLASS__, __FUNCTION__, $request, "更新用户");
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 用户");
         return $this->ajax_return('200', '操作成功！');
     }
 
@@ -103,7 +104,7 @@ class AdminController extends BaseAdminController
         }
         
         $result = SysAdmin::destroy($ids);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "删除用户");
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 用户");
         return $this->ajax_return('200', '操作成功！');
     }
 
@@ -111,6 +112,7 @@ class AdminController extends BaseAdminController
      * destroyAll
      */
     public function destroyAll(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除所有 用户");
         return view('admin.admin.index');
     }
 
@@ -160,8 +162,9 @@ class AdminController extends BaseAdminController
     /**
      * 个人中心
      */
-    public function userCenter(){
+    public function userCenter(Request $request){
         $info = auth()->guard()->user();
+        $this->log(__CLASS__, __FUNCTION__, $request, "个人中心");
         return view('admin.base.admin.index', ['info' => $info]);
     }
 

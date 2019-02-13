@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin\Rpa;
 use App\models\admin\rpa\rpa_maintenance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
+use App\Models\Admin\Rpa\rpa_timetasks;
+use App\Models\Admin\Rpa\rpa_releasetasks;
+use App\Models\Admin\Rpa\rpa_immedtasks;
 
 /**
  * RpaController
@@ -128,7 +131,7 @@ class RpaController extends BaseAdminController
      * getAccepter
      */
     public function getAccepter(Request $request, $send_info_type = ''){
-        $param = $send_info_type ? $send_info_type : $request->param ;
+        $param = ($send_info_type !== '') ? $send_info_type : $request->param ;
         $result = [];
         if($param){
             switch($param){
@@ -143,7 +146,7 @@ class RpaController extends BaseAdminController
                     break;
             }
         }
-        if($send_info_type){
+        if($send_info_type !== ''){
             return $result;
         }
         return $this->ajax_return('200', '操作成功！', $result);
@@ -168,5 +171,78 @@ class RpaController extends BaseAdminController
         $model = new \App\Models\Admin\Base\SysRole;
         $role = $model->where('type','=','1')->get(['id', 'desc as name']);
         return $role;
+    }
+    /***********************************************任务队列***************************************************/
+    //queue list
+    public function queue(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "查看 任务队列");
+        return view('admin/rpa/center/queue');
+    }
+    //RPA edit
+    public function editQueue(Request $request){
+        $id = $request->id;
+        $info = rpa_timetasks::find($id);
+        $info['data'] = json_decode($info['jsondata'],true);
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 队列 页面");
+        return view('admin/rpa/Center/editQueue',['info'=>$info]);
+    }
+    //RPA update
+    public function updateQueue(Request $request){
+        $data = $this->get_params($request, ['id','name','state','time','jsondata','tid']);
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 队列 信息");
+        $result = rpa_timetasks::where('id','=',$data['id'])->update($data);
+        return $this->ajax_return('200', '操作成功！', $result);
+    }
+
+    //delete
+    public function deleteQueue(Request $request){
+        $ids = $request->ids;
+        $ids = explode(',',$ids);
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 队列");
+        $result = rpa_timetasks::destroy($ids);
+        return $this->ajax_return('200', '操作成功！', $result);
+    }
+
+    //pagenation
+    public function queuePagination(Request $request){
+        $rows = $request->rows;
+        $data = $this->get_params($request, ['name','role','type']);
+        $conditions = $this->getPagingList($data, ['name'=>'like', 'role'=>'=', 'type'=>'=']);
+        $order = $request->sort ?? 'id';
+        $sort = $request->sortOrder;
+//        $sort = ['id','asc'];
+        $result = rpa_timetasks::where($conditions)
+            ->orderBy($order, $sort)
+            ->paginate($rows);
+        return $result;
+    }
+    /********************************发布任务一览*************************************************/
+    //task list
+    public function taskList(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "查看 发布任务 总览");
+        return view('admin/rpa/Center/taskList');
+    }
+
+    //pagenation
+    public function taskPagination(Request $request){
+        $rows = $request->rows;
+        $data = $this->get_params($request, ['name','role','type']);
+        $conditions = $this->getPagingList($data, ['name'=>'like', 'role'=>'=', 'type'=>'=']);
+        $order = $request->sort ?? 'id';
+        $sort = $request->sortOrder;
+        $result = rpa_releasetasks::where($conditions)
+            ->orderBy($order, $sort)
+            ->paginate($rows);
+        return $result;
+    }
+
+    //立即发布任务
+    public function immedtasks(Request $request){
+        $id = $request->id;
+        $task = rpa_releasetasks::find($id);
+        $data = ['name'=>$task['name'],'jsondata'=>$task['jsondata'],'tid'=>$task['id']];
+        $this->log(__CLASS__, __FUNCTION__, $request, "立即发布 {$task['name']}-{$task['id']} 任务");
+        $reslut = rpa_immedtasks::create($data);
+        return $this->ajax_return('200', '操作成功！',$reslut);
     }
 }

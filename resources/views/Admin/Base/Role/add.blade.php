@@ -4,7 +4,7 @@
                 <div class="form-group">
                     <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="name" id="name" placeholder="名称" required>
+                        <input type="text" class="form-control" name="name" id="name" placeholder="名称">
                     </div>
                 </div>
                 <div class="form-group">
@@ -18,8 +18,9 @@
                 <div class="form-group">
                     <label for="type" class="col-sm-2 control-label">状态</label>
                     <div class="col-sm-10">
-                        <label><input type="radio" class="form-control icheck minimal" name="type" value="1" checked>启用</label>
-                        <label><input type="radio" class="form-control icheck minimal" name="type" value="0">禁用</label>
+                        <div class="switch">
+                            <input type="checkbox" name="type" id="type" value="1" checked />
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -30,23 +31,7 @@
                 </div>
 
     @endslot
+    @slot('formScript')
+    <script src="{{URL::asset('/js/admin/base/role/add.js')}}"></script>
+    @endslot
 @endcomponent
-    <script>
-        //添加
-        function add(e){
-            RPA.ajaxSubmit(e, FormOptions);
-        }
-        
-        //提交信息的表单配置
-        var FormOptions={
-            url:'/admin/sys_role',
-            success:function(json, xml){
-                if(200 == json.code){
-                    RPA.form.response();
-                }else{
-                    toastr.error(json.info);
-                }
-            },
-            error:RPA.errorReponse
-        };
-    </script>

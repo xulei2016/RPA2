@@ -17,6 +17,7 @@ class SysController extends BaseAdminController
      */
     public function index(Request $request){
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
+
         return view('admin.index.index');
     }
     

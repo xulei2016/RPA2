@@ -18,7 +18,7 @@
             <div class="box-body no-padding">
             <ul class="nav nav-pills nav-stacked">
                 @foreach($global as $mail)
-                    <li class=" @if ($loop->first) active @endif" data-value="{{ $mail['id'] }}"><a href="#"><i class="fa {{ $mail['icon'] }}"></i> {{ $mail['name'] }}
+                    <li class=" @if ($loop->first) active @endif" data-value="{{ $mail['id'] }}"><a href="#"><i class="fa {{ $mail['icon'] }}"></i> {{ $mail['desc'] }}
                     @if($mail['count'])
                     <span class="label label-primary pull-right">{{ $mail['count'] }}</span>
                     @endif
@@ -68,17 +68,6 @@
 
                     @endslot
                 @endcomponent
-        
-                @component('admin.widgets.search-group')
-                    @slot('searchContent')
-                    <label class="control-label col-sm-1" for="title">主题</label>
-                        <div class="col-sm-6">
-                            <input type="text" class="form-control" id="title">
-                        </div>
-                    @endslot
-                @endcomponent
-        
-                    
                 <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
             </div>
         </div>
@@ -86,55 +75,5 @@
 </div>
 
 <script src="{{URL::asset('/js/admin/base/mail/index.js')}}"></script>
-<script>
-    $(function () {
-        //初始化
-        function init(){
-            bindEvent();
-            CKEDITOR.replace('editor');
-        }
-
-        //绑定事件
-        function bindEvent(){
-            //发送事件
-            $('#pjax-container section.content button.submit').click(function(){
-                var to = $('#pjax-container section.content form input.to').val();
-                var project = $('#pjax-container section.content form input.project').val();
-                if(!to || !project){
-                    return swal('Oops...', '请完善发送信息！！', 'warning');
-                }
-                add($('#pjax-container section.content form'));
-            });
-            //草稿事件
-            $('#pjax-container section.content button.draft').click(function(){
-
-            });
-            //重置事件
-            $('#pjax-container section.content button.reset').click(function(){
-                $('#pjax-container section.content form')[0].reset();
-            });
-        }
-            
-        //添加
-        function add(e){
-            RPA.ajaxSubmit(e, FormOptions);
-        }
-        
-        //提交信息的表单配置
-        var FormOptions={
-            url:'/admin/sys_mail',
-            success:function(json, xml){
-                if(200 == json.code){
-                    toastr.success('操作成功！');
-                }else{
-                    toastr.error(json.info);
-                }
-            },
-            error:RPA.errorReponse
-        };
-
-        init();
-    })
-</script>
 
 @endsection

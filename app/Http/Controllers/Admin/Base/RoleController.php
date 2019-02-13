@@ -21,8 +21,9 @@ class RoleController extends BaseAdminController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $this->log(__CLASS__, __FUNCTION__, $request, "角色 列表页");
         return view('admin.base.role.index');
     }
 
@@ -44,9 +45,9 @@ class RoleController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['name','guard_name','type','desc'], false);
+        $data = $this->get_params($request, ['name','guard_name','type','desc']);
         $result = Role::create($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+         $this->log(__CLASS__, __FUNCTION__, $request, "新增 角色");
         return $this->ajax_return(200, '操作成功！');
     }
 
@@ -82,10 +83,10 @@ class RoleController extends BaseAdminController
      */
     public function update(Request $request)
     {
-        $data = $this->get_params($request, ['name','guard_name','type','desc','id'], false);
+        $data = $this->get_params($request, ['name','guard_name',['type',0],'desc','id'], false);
         $result = Role::where('id', $data['id'])
                 ->update($data);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "更新菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 角色");
         return $this->ajax_return(200, '恭喜你，操作成功！');
     }
 
@@ -95,14 +96,14 @@ class RoleController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($ids)
+    public function destroy(Request $request, $ids)
     {
         if(1 == $ids){
             return $this->ajax_return('500', '操作失败！包含保护项！！');
         }
         $ids = explode(',', $ids);
         $result = Role::destroy($ids);
-        // $this->log(__CLASS__, __FUNCTION__, $request, "添加菜单");
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 角色");
         return $this->ajax_return(200, '操作成功！');
     }
 

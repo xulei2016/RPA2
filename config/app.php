@@ -183,6 +183,8 @@ return [
         Spatie\Permission\PermissionServiceProvider::class,
         //excel
         Maatwebsite\Excel\ExcelServiceProvider::class,
+        //passport
+        Laravel\Passport\PassportServiceProvider::class,
     ],
 
     /*
