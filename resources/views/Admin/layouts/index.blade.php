@@ -34,8 +34,6 @@
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css')}}">
     <!-- Daterange picker -->
     {{-- <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}"> --}}
-    <!-- bootstrap wysihtml5 - text editor -->
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/AdminLTE.min.css')}}">
 

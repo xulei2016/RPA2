@@ -41,6 +41,8 @@
         </div>
     </div>
 </div>
+<!-- CKEDITOR -->
+<script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
 <script>
     $(function () {
         //初始化

@@ -29,7 +29,6 @@
         var error = {};
         var worksheetIDValue = [];
         var worksheetIDPackage = [];
-        var analysisNum = 0;
         var excelList = [];
         var files = [];
         var excel = [   //excel参数表格定位
@@ -152,7 +151,6 @@
         //解析
         function analysis(files){
             for(let excel of files){
-                analysisNum += 1;
                 let reader = new FileReader();
                 reader.readAsBinaryString(excel);
                 reader.onload = function (ev) {
@@ -192,32 +190,34 @@
 
         //excel参数
         function getValue(worksheet){
-            // var a = '';
-            // var n = [];
+            let a = '';
+            let n = [];
             for(let v of excel){
                 try {
-                    // a = worksheet[v[1]].w ? worksheet[v[1]].w : errorReport(excel, v[0]) ;
-                    // n = [v[0], worksheet[v[1]].w ? worksheet[v[1]].w : errorReport(excel, v[0])];
-                    worksheetIDValue.push([v[0], worksheet[v[1]].w ? worksheet[v[1]].w : errorReport(excel, v[0])]);
+                    a = worksheet[v[1]].w ? worksheet[v[1]].w : errorReport(excel, v[0]) ;
+                    n.push({name:v[0], value: a});
                 } catch (e) {
                     report('表格'+analysisNum+',位置'+v[0]+'的参数出现错误，请检查后尝试!!!', false);
                     continue;
                 }
             }
+            worksheetIDValue.push(n);
             return worksheetIDValue;
         }
 
         //包数
         function getPackage(worksheet){
+            let n = [];
             for(let v of package){
                 try {
-                    var a = [worksheet[v[0]].w, worksheet[v[1]].w, worksheet[v[2]].w];
-                    worksheetIDPackage.push(a);
+                    let a = [worksheet[v[0]].w, worksheet[v[1]].w, worksheet[v[2]].w];
+                    n.push(a);
                 } catch (e) {
                     // report('表格'+analysisNum+',位置'+v[0]+'的参数出现错误，请检查确认!!!', false);
                     continue;
                 }
             }
+            worksheetIDPackage.push(n);
             return worksheetIDPackage;
         }
 
