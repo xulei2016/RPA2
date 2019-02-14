@@ -17,7 +17,7 @@ class CreateRpaReleasetasksTable extends Migration
             $table->increments('id');
             $table->string('name', 50)->nullable();
             $table->string('description', 150);
-            $table->date('description');
+            $table->timestamp('date');
             $table->string('week', 20);
             $table->text('time')->nullable();
             $table->text('jsondata');

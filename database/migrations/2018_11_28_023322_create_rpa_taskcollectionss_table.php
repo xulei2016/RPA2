@@ -20,7 +20,7 @@ class CreateRpaTaskcollectionssTable extends Migration
             $table->string('bewrite'); 
             $table->string('filepath'); 
             $table->integer('failtimes'); 
-            $table->string('failtimes', 20); 
+            $table->string('state', 20); 
             $table->text('jsondata', 20); 
             $table->integer('tid'); 
             $table->text('content'); 

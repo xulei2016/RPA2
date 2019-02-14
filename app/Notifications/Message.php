@@ -50,7 +50,6 @@ class Message extends Notification implements ShouldQueue
 
     public function toDatabase($notifiable)
     {
-
         // 存入数据库里的数据
         return [
             'message_id' => $this->data['id'],
