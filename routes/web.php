@@ -102,7 +102,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/sys_message_history/message_list', 'MessageController@history_pagination');
             //短信中心
             Route::get('/sys_sms', 'MessageController@sms_list');
-            Route::get('/sys_sms_list', 'MessageController@sms_pagination');
+            Route::get('/sys_sms/list', 'MessageController@sms_pagination');
 
             //个人中心
             Route::group(['middleware' => ['permission:sys_profile']], function () {
@@ -110,7 +110,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('/sys_profile', 'AdminController@updateUser');
                 Route::post('/sys_profile_head_img', 'AdminController@updateUser');
             });
-
+            //api插件
+            Route::get('/sys_api/list', 'ApiController@pagination');
+            Route::resource('/sys_api', 'ApiController');
             //菜单
             Route::get('/sys_icon', 'MenuController@sys_icon');
             Route::resource('/sys_menu', 'MenuController');
