@@ -35,8 +35,6 @@
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css')}}">
     <!-- Daterange picker -->
     {{-- <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-daterangepicker/daterangepicker.css')}}"> --}}
-    <!-- bootstrap wysihtml5 - text editor -->
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/AdminLTE.min.css')}}">
 
@@ -289,7 +287,7 @@
             let html = "";
             html += '<div class="notify-wrap">'
                     + '<div class="notify-title">' + typeName + '<span class="notify-off"><i class="icon iconfont">&#xe6e6;</i></span></div>'
-                    + '<div class="notify-title"><a href="JavaScript:void(0);" url="/admin/sys_message_list/view/'+ notification.message_id +'" onclick="operation($(this));" title="查看站内信息">' + notification.title + '</a><div>'
+                    + '<div class="notify-title"><a href="JavaScript:void(0);" url="/admin/sys_message_list/view/'+ notification.id +'" onclick="operation($(this));" title="查看站内信息">' + notification.title + '</a><div>'
                     + '<div class="notify-content">' + notification.content + '</div>'
                     + '</div>';
 

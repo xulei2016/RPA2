@@ -1,16 +1,11 @@
 <?php
 
-namespace App\models\admin\base;
+namespace App\Models\Admin\Base;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SysMailMode extends Model
+class SysApiIp extends Model
 {
-    /**
-     * 关联到模型的数据表
-     *
-     * @var string
-     */
     public $timestamps = true;
 
     //黑名单，白名单

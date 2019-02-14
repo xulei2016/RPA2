@@ -100,13 +100,19 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/sys_message_history', 'MessageController@history_list');
             Route::get('/sys_message_history/view/{id}', 'MessageController@history_view');
             Route::get('/sys_message_history/message_list', 'MessageController@history_pagination');
+            //短信中心
+            Route::get('/sys_sms', 'MessageController@sms_list');
+            Route::get('/sys_sms/list', 'MessageController@sms_pagination');
+
             //个人中心
             Route::group(['middleware' => ['permission:sys_profile']], function () {
                 Route::get('/sys_profile', 'AdminController@userCenter');
                 Route::post('/sys_profile', 'AdminController@updateUser');
                 Route::post('/sys_profile_head_img', 'AdminController@updateUser');
             });
-
+            //api插件
+            Route::get('/sys_api/list', 'ApiController@pagination');
+            Route::resource('/sys_api', 'ApiController');
             //菜单
             Route::get('/sys_icon', 'MenuController@sys_icon');
             Route::resource('/sys_menu', 'MenuController');
@@ -142,7 +148,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/sys_mail/list', 'MailController@pagenation');
                 Route::get('/sys_mail/export', 'MailController@export');
                 Route::get('/sys_mail/create', 'MailController@create')->middleware('permission:sys_mail_create');
-                Route::resource('/sys_mail', 'MailController', ['except' => ['create']]);
+                Route::post('/sys_mail/send', 'MailController@send');
+                Route::post('/sys_mail/draft', 'MailController@draft');
+                Route::post('/sys_mail/reSend', 'MailController@reSend');
+                Route::resource('/sys_mail', 'MailController', ['except' => ['create','update']]);
             });
         });
 

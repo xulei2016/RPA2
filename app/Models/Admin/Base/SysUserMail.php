@@ -3,6 +3,7 @@
 namespace App\models\admin\base;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class SysUserMail extends Model
 {
@@ -20,6 +21,19 @@ class SysUserMail extends Model
      * 邮件
      */
     public function mails(){
-        return $this->hasMany('App\Models\Admin\Base\SysMailOutbox');
-    } 
+        return $this->hasOne(SysMail::class,'id','mid');
+    }
+
+    //    未读邮件个数
+    public static function mailCount()
+    {
+        $id = Auth::user()->id;
+        return SysUserMail::where([['uid','=',$id],['read_at','=',''],['type','=','2']])->count();
+    }
+//    未读邮件列表
+    public static function mailList(){
+        $id = Auth::user()->id;
+        return SysUserMail::where([['uid','=',$id],['read_at','=',''],['type','=','2']])->with('mails')->get();
+    }
+
 }

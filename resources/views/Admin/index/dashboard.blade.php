@@ -98,7 +98,9 @@
                     </div>
                 </div>
             </div>
-            
+            <!-- bootstrap wysihtml5 - text editor -->
+            <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
+            <script src="{{URL::asset('include/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script>
             <script>
                 $(function () {
                     $("#pjax-container #compose-textarea").wysihtml5({

@@ -23,77 +23,29 @@
               <li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  <span class="label label-success">4</span>
+                  <span class="label label-success">{{ \App\models\admin\base\SysUserMail::mailCount() }}</span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li class="header">You have 5 messages</li>
+                  <li class="header">你有 {{ \App\models\admin\base\SysUserMail::mailCount() }} 条未读邮件</li>
                   <li>
-                    <!-- inner menu: contains the actual data -->
                     <ul class="menu">
-                      <li><!-- start message -->
-                        <a href="#">
+                    @foreach(\App\models\admin\base\SysUserMail::maillist() as $v)
+                      <li>
+                        <a onclick="operation($(this));" url='/admin/sys_mail/{{$v->mid}}'>
                           <div class="pull-left">
                             <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
                           </div>
                           <h4>
-                            Support Team
-                            <small><i class="fa fa-clock-o"></i> 5 mins</small>
+                            {{env('APP_NAME')}}
+                            <small><i class="fa fa-clock-o"></i>{{ \Carbon\Carbon::parse($v->mails->created_at)->diffForHumans()}}</small>
                           </h4>
-                          <p>Why not buy a new awesome theme?</p>
+                          <p>{{$v->mails->title}}</p>
                         </a>
                       </li>
-                      <!-- end message -->
-                      <li>
-                        <a href="#">
-                          <div class="pull-left">
-                            <img src="dist/img/user3-128x128.jpg" class="img-circle" alt="User Image">
-                          </div>
-                          <h4>
-                            AdminLTE Design Team
-                            <small><i class="fa fa-clock-o"></i> 2 hours</small>
-                          </h4>
-                          <p>Why not buy a new awesome theme?</p>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <div class="pull-left">
-                            <img src="dist/img/user4-128x128.jpg" class="img-circle" alt="User Image">
-                          </div>
-                          <h4>
-                            Developers
-                            <small><i class="fa fa-clock-o"></i> Today</small>
-                          </h4>
-                          <p>Why not buy a new awesome theme?</p>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <div class="pull-left">
-                            <img src="dist/img/user3-128x128.jpg" class="img-circle" alt="User Image">
-                          </div>
-                          <h4>
-                            Sales Department
-                            <small><i class="fa fa-clock-o"></i> Yesterday</small>
-                          </h4>
-                          <p>Why not buy a new awesome theme?</p>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <div class="pull-left">
-                            <img src="dist/img/user4-128x128.jpg" class="img-circle" alt="User Image">
-                          </div>
-                          <h4>
-                            Reviewers
-                            <small><i class="fa fa-clock-o"></i> 2 days</small>
-                          </h4>
-                          <p>Why not buy a new awesome theme?</p>
-                        </a>
-                      </li>
+                    @endforeach
                     </ul>
                   </li>
-                  <li class="footer"><a href="#">See All Messages</a></li>
+                  <li class="footer"><a href="#">查看所有邮件</a></li>
                 </ul>
               </li>
 
@@ -101,8 +53,11 @@
               <li class="dropdown notifications-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-bell-o"></i>
-                  <span class="label label-warning">{{ Auth::user()->notification_count}}</span>
+                  @if(Auth::user()->notification_count >0)
+                    <span class="label label-warning">{{ Auth::user()->notification_count}}</span>
+                  @endif
                 </a>
+                @if(Auth::user()->notification_count >0)
                 <ul class="dropdown-menu">
                   <li class="header">您有 {{ Auth::user()->notification_count}} 条新消息未读</li>
                   <li>
@@ -110,17 +65,14 @@
                     <ul class="menu">
                       @foreach(Auth::user()->unreadNotifications as $v)
                         @if($loop->index < 5)
-                          <li>
-                            <a href="">
-                              <i class="fa fa-users text-aqua"></i> {{$v->data['title']}}
-                            </a>
-                          </li>
+                          <li><a href="javascript:;" onclick="operation($(this));" url="/admin/sys_message_list/view/{{$v->id}}"><i class="fa fa-users text-aqua"></i> {{$v->data['title']}}</a></li>
                         @endif
                       @endforeach
                     </ul>
                   </li>
-                  <li class="footer"><a href="#">查看全部</a></li>
+                  <li class="footer"><a href="#">查看全部消息</a></li>
                 </ul>
+                @endif
               </li>
 
               <!-- User Account -->

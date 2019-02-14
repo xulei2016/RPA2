@@ -2,7 +2,7 @@
 
 namespace App\Models\Admin\Admin;
 
-use Illuminate\Notifications\Notifiable; 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -30,5 +30,4 @@ class SysAdmin extends Authenticatable
     protected $hidden = [ 
         'password', 'remember_token', 
     ];
-
 }

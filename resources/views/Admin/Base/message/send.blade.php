@@ -13,10 +13,9 @@
                         <div class="form-group">
                             <label for="mode">
                                 <select name="mode" id="mode" class="form-control">
-                                    <option value="4">全体</option>
-                                    <option value="3">角色</option>
-                                    <option value="2">分组</option>
-                                    <option value="1">个人</option>
+                                    @foreach($object as $v)
+                                        <option value="{{$v->id}}">{{$v->desc}}</option>
+                                    @endforeach
                                 </select>
                             </label>
                         </div>
