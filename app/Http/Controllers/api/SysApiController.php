@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Mail\MdEmail;
+use App\Models\Admin\Base\SysApiIp;
 use App\Models\Admin\Base\SysApiLog;
 use App\models\admin\base\SysMail;
 use App\Models\Admin\Base\SysMessage;
@@ -12,6 +13,7 @@ use App\Models\Admin\Rpa\rpa_taskcollections;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 
 class SysApiController extends Controller
@@ -25,6 +27,11 @@ class SysApiController extends Controller
      */
     public function zzy_sms(Request $request)
     {
+        //ip检测
+        $res = $this->check_ip("zzy_sms",$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
         $phone = $request->phone;
         $msg = iconv("utf-8","gb2312",$request->msg);
 
@@ -84,6 +91,11 @@ class SysApiController extends Controller
      */
     public function yx_sms(Request $request)
     {
+        //ip检测
+        $res = $this->check_ip("yx_sms",$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
         $phone = $request->phone;
         $msg = iconv("utf-8","gb2312",$request->msg);
 
@@ -150,6 +162,11 @@ class SysApiController extends Controller
      */
     public function mail(Request $request)
     {
+        //ip检测
+        $res = $this->check_ip("mail",$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
         $data = [
             'title' => $request->project,
             'content' => $request->editor,
@@ -185,6 +202,11 @@ class SysApiController extends Controller
      */
     public function message(Request $request)
     {
+        //ip检测
+        $res = $this->check_ip("message",$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
         $id = $request->id;
         $taskcollection = rpa_taskcollections::find($id);
         if($taskcollection){
@@ -222,5 +244,45 @@ class SysApiController extends Controller
             ];
         }
         return response()->json($data);
+    }
+
+
+    /****************************工具方法******************************************/
+    public function check_ip($api,$ip)
+    {
+        //获取黑白名单，先取缓存
+        if (!Cache::has($api)) {
+            $sysapiip = SysApiIp::where([['api','=',$api]])->first();
+            if(!$sysapiip){
+                $data = [
+                    'status' => 403,
+                    'msg' => "接口未注册"
+                ];
+                return $data;
+            }
+            Cache::add($api,$sysapiip,3600);
+        }else{
+            $sysapiip = Cache::get($api);
+        }
+        //判断
+        $black_list = array_keys($sysapiip->black_list ? json_decode($sysapiip->black_list,true) : []);
+        $white_list = array_keys($sysapiip->white_list ? json_decode($sysapiip->white_list,true) : []);
+        //有白名单存在，请求ip必须在白名单中
+        if($white_list && !in_array($ip,$white_list)){
+            $data = [
+                'status' => 450,
+                'msg' => "ip限制访问"
+            ];
+            return $data;
+        }
+        //有黑名单存在，请求ip必须不在黑名单中
+        if($black_list && in_array($ip,$black_list)){
+            $data = [
+                'status' => 450,
+                'msg' => "ip限制访问"
+            ];
+            return $data;
+        }
+        return true;
     }
 }
