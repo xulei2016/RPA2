@@ -60,6 +60,7 @@
         </div>
     </div>
 </div>
+<script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
 <script src="{{URL::asset('/js/admin/base/mail/send.js')}}"></script>
 
 @endsection
