@@ -6,6 +6,7 @@ use App\Http\Controllers\base\BaseAdminController;
 use App\Models\Admin\Base\SysApiip;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 class ApiController extends BaseAdminController
 {
@@ -26,8 +27,45 @@ class ApiController extends BaseAdminController
     //添加
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['api','url','method','desc','jsondata1','jsondata2']);
-
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加 api");
+        $data = $this->get_params($request, ['api','url','method','desc','black_list','white_list']);
+        SysApiip::create($data);
+        return $this->ajax_return(200, '操作成功！');
+    }
+    //修改页面
+    public function edit(Request $request, $id)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 api页面");
+        $sysApiip = SysApiip::find($id);
+        $sysApiip['black_list'] = isset($sysApiip['black_list']) ? json_decode($sysApiip['black_list'], false) :'';
+        $sysApiip['white_list'] = isset($sysApiip['white_list']) ? json_decode($sysApiip['white_list'], false) :'';
+        return view('admin.base.api.edit',['apiip' => $sysApiip]);
+    }
+    //更新
+    public function update(Request $request, $id)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "更新 api");
+        $data = $this->get_params($request, ['api','url','method','desc','black_list','white_list']);
+        SysApiip::where('id',$id)->update($data);
+        Cache::forget($data['api']);
+        return $this->ajax_return(200, '操作成功！');
+    }
+    //查看参数
+    public function show(Request $request, $id)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "查看 api参数");
+        $sysApiip = SysApiip::find($id);
+        $sysApiip['black_list'] = $sysApiip['black_list'] ? json_decode($sysApiip['black_list']) :'';
+        $sysApiip['white_list'] = $sysApiip['white_list'] ? json_decode($sysApiip['white_list']) :'';
+        return view('admin.base.api.show',['apiip' => $sysApiip]);
+    }
+    //删除
+    public function destroy(Request $request, $ids)
+    {
+        $ids = explode(',', $ids);
+        $result = SysApiip::destroy($ids);
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 api");
+        return $this->ajax_return(200, '操作成功！');
     }
     //分页
     public function pagination(Request $request){

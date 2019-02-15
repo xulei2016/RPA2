@@ -2,10 +2,7 @@
 
 namespace App\Observers;
 
-use App\Models\Admin\Admin\SysAdmin;
-use App\Models\Admin\Admin\SysAdminGroup;
 use App\Models\Admin\Base\SysMessage;
-use App\Models\Admin\Base\SysRole;
 use App\Notifications\Message;
 use Illuminate\Support\Facades\Notification;
 

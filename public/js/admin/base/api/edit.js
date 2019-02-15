@@ -65,10 +65,10 @@ $(function(){
         serializeForm();
         RPA.form.ajaxSubmit(e, FormOptions);
     }
-
+    var id = $('#modal form #id').val();
     //提交信息的表单配置
     var FormOptions={
-        url:'/admin/sys_api',
+        url:'/admin/sys_api/'+id,
         success:function(json, xml){
             if(200 == json.code){
                 RPA.form.response();
