@@ -131,37 +131,4 @@ class BaseAdminController extends BaseController
         $log->setAttribute('agent', $admin['lastAbbAgent']);
         $log->save();
     }
-
-    /**
-     * @param $file 文件
-     * @param $folder 文件夹
-     * @param $allowed_ext 允许上传类型
-     * @param bool $old_filename 是否用原文件名
-     */
-    public function uploadFile($file, $folder, $allowed_ext,$old_filename = true)
-    {
-        // 构建存储的文件夹规则，值如：uploads/mail/201709/21/
-        $folder_name = "uploads/$folder/" . date("Ym/d", time());
-
-        // 值如：f:/RPA2/public/uploads/mail/201709/21/
-        $upload_path = public_path() . '/' . $folder_name;
-
-        // 获取文件的后缀名，因图片从剪贴板里黏贴时后缀名为空，所以此处确保后缀一直存在
-        $extension = strtolower($file->getClientOriginalExtension()) ?: 'png';
-        if($old_filename){
-            $filename = time() . '_' . $file->getClientOriginalName();
-        }else{
-            // 值如：1493521050_7BVc9v9ujP.png
-            $filename = time() . '_' . str_random(10) . '.' . $extension;
-        }
-        // 如果上传的不是图片将终止操作
-        if ( ! in_array($extension, $allowed_ext)) {
-            return false;
-        }
-
-        // 将图片移动到我们的目标存储路径中
-        $file->move($upload_path, $filename);
-
-        return $upload_path."/".$filename;
-    }
 }

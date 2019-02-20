@@ -1,7 +1,3 @@
-@extends('admin.layouts.wrapper-content')
-
-@section('content')
-
 <div class="row">
     <div class="col-md-12">
         <div class="box box-info">
@@ -30,37 +26,34 @@
                         <label for="type">
                             <select name="type" id="type" class="form-control">
                                 @foreach($types as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    <option value="{{ $type->id }}" @if($type->id == $sysMail->tid) selected @endif>{{ $type->name }}</option>
                                 @endforeach
                             </select>
                         </label>
                     </div>
                     <div class="form-group">
-                        <input class="form-control project" name="project" placeholder="主题:" required>
+                        <input class="form-control project" name="project" placeholder="主题:" value="{{$sysMail->title}}">
                     </div>
                     <div class="form-group">
-                        <textarea id="editor" name="editor" rows="10" cols="80" placeholder="写点什么吧."></textarea>
+                        <textarea id="editor" name="editor" rows="10" cols="80" placeholder="写点什么吧.">{{$sysMail->content}}</textarea>
                     </div>
                     <div class="form-group">
                         <div class="btn btn-default btn-file">
-                            <i class="fa fa-paperclip"></i> <span>上传附件</span>
-                            <input type="file" id="attachment" name="attachment">
+                            <i class="fa fa-paperclip"></i> <span>@if($sysMail->file_path) {{basename($sysMail->file_path)}} @else上传附件 @endif</span>
+                            <input type="file" id="attachment" name="attachment" value="{{$sysMail->file_path}}">
                         </div>
                         <p class="help-block">最大. 10MB</p>
                     </div>
+                    <input type="hidden" name="id" value="{{$sysMail->id}}">
                 </form>
             </div>
             <div class="box-footer">
                 <div class="pull-right">
-                    <button type="button" class="btn btn-default draft"><i class="fa fa-pencil"></i> 草稿</button>
                     <button type="submit" class="btn btn-primary submit"><i class="fa fa-envelope-o"></i> 发送</button>
                 </div>
-                <button type="reset" class="btn btn-default reset"><i class="fa fa-times"></i> 放弃</button>
+                <button type="reset" class="btn btn-default reset"><i class="fa fa-times"></i> 重置</button>
             </div>
         </div>
     </div>
 </div>
-<script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
-<script src="{{URL::asset('/js/admin/base/mail/send.js')}}"></script>
-
-@endsection
+<script src="{{URL::asset('/js/admin/base/mail/edit.js')}}"></script>
