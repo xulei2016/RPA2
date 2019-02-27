@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Admin\Base;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\SysMenu;
-use Spatie\Permission\Models\Role;
-use App\Models\Admin\Admin\SysAdmin;
-use Spatie\Permission\Models\Permission;
 use App\Http\Controllers\Base\BaseAdminController;
 
 /**
@@ -206,7 +203,7 @@ class MenuController extends BaseAdminController
 
     //判断是否有子集
     public function getHandleList($data){
-        $handle = '<li class="treeview"><a href="'.$data['uri'].'"><i class="fa '.$data['icon'].'"></i><span>'.$data['title'].'</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu">';
+        $handle = '<li class="treeview"><a href="javascript:;"><i class="fa '.$data['icon'].'"></i><span>'.$data['title'].'</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu">';
 
         foreach ($data['child'] as $v){
             $handle .= $this->getNetableItem($v);

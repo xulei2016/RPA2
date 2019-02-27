@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -88,6 +89,18 @@ class Handler extends ExceptionHandler
             return response()->json($info);
         } else {
             return parent::render($request, $exception);
+        }
+    }
+
+    /**
+     * @param \Illuminate\Http\Request $request
+     * @param AuthenticationException $exception
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     */
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        if ($request) {
+            return response()->json(['code' => '401','message' => 'The token is invalid.']);
         }
     }
 }

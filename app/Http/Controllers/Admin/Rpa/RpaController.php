@@ -45,7 +45,7 @@ class RpaController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['name','filepath','failtimes','timeout','isfp','bewrite','notice_type','noticeAccepter'], false);
+        $data = $this->get_params($request, ['name','filepath','failtimes','timeout','PaS','isfp','bewrite','notice_type','noticeAccepter'], false);
         if(isset($data['noticeAccepter'])){
             $data['noticeAccepter'] = implode(',', $data['noticeAccepter']);
         }
@@ -89,7 +89,7 @@ class RpaController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        $data = $this->get_params($request, ['name','filepath','failtimes','timeout','isfp','bewrite','notice_type','noticeAccepter']);
+        $data = $this->get_params($request, ['name','filepath','failtimes','timeout','PaS','isfp','bewrite','notice_type','noticeAccepter']);
         if(isset($data['noticeAccepter'])){
             $data['noticeAccepter'] = implode(',', $data['noticeAccepter']);
         }

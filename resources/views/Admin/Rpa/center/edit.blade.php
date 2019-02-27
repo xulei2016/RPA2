@@ -26,6 +26,15 @@
             </div>
         </div>
         <div class="form-group">
+            <label for="PaS" class="col-sm-2 control-label">服务器</label>
+            <div class="col-sm-10">
+                <select name="PaS" class="form-control" id="PaS">
+                    <option value="主服务器" @if('主服务器' == $info->PaS) selected @endif>主服务器</option>
+                    <option value="从服务器" @if('从服务器' == $info->PaS) selected @endif>从服务器</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
             <label for="isfp" class="col-sm-2 control-label">是否暂用资源</label>
             <div class="col-sm-10">
                 <div class="switch">

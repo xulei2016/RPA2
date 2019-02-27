@@ -13,7 +13,6 @@ $(function(){
 
 
         $('#modal form .switch input#isfp').bootstrapSwitch({onText:"是", offText:"否"});
-        $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
     }
 
 

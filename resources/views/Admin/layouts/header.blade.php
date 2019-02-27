@@ -23,30 +23,34 @@
               <li class="dropdown messages-menu">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-envelope-o"></i>
-                  <span class="label label-success">{{ \App\models\admin\base\SysUserMail::mailCount() }}</span>
+                    @if( \App\models\admin\base\SysUserMail::mailCount() > 0)
+                        <span class="label label-success">{{ \App\models\admin\base\SysUserMail::mailCount() }}</span>
+                    @endif
                 </a>
-                <ul class="dropdown-menu">
-                  <li class="header">你有 {{ \App\models\admin\base\SysUserMail::mailCount() }} 条未读邮件</li>
-                  <li>
-                    <ul class="menu">
-                    @foreach(\App\models\admin\base\SysUserMail::maillist() as $v)
+                  @if( \App\models\admin\base\SysUserMail::mailCount() > 0)
+                    <ul class="dropdown-menu">
+                      <li class="header">你有 {{ \App\models\admin\base\SysUserMail::mailCount() }} 条未读邮件</li>
                       <li>
-                        <a onclick="operation($(this));" url='/admin/sys_mail/{{$v->mid}}'>
-                          <div class="pull-left">
-                            <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                          </div>
-                          <h4>
-                            {{env('APP_NAME')}}
-                            <small><i class="fa fa-clock-o"></i>{{ \Carbon\Carbon::parse($v->mails->created_at)->diffForHumans()}}</small>
-                          </h4>
-                          <p>{{$v->mails->title}}</p>
-                        </a>
+                        <ul class="menu">
+                        @foreach(\App\models\admin\base\SysUserMail::maillist() as $v)
+                          <li>
+                            <a onclick="operation($(this));" url='/admin/sys_mail/{{$v->mid}}'>
+                              <div class="pull-left">
+                                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                              </div>
+                              <h4>
+                                {{env('APP_NAME')}}
+                                <small><i class="fa fa-clock-o"></i>{{ \Carbon\Carbon::parse($v->mails->created_at)->diffForHumans()}}</small>
+                              </h4>
+                              <p>{{$v->mails->title}}</p>
+                            </a>
+                          </li>
+                        @endforeach
+                        </ul>
                       </li>
-                    @endforeach
+                      <li class="footer"><a href="#">查看所有邮件</a></li>
                     </ul>
-                  </li>
-                  <li class="footer"><a href="#">查看所有邮件</a></li>
-                </ul>
+                  @endif
               </li>
 
               <!-- Notifications -->

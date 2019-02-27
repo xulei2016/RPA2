@@ -37,7 +37,7 @@ class MessageController extends BaseAdminController
         if(isset($data['user'])){
             $data['user'] = implode(',', $data['user']);
         }
-        $data['add_time'] = $this->getTime();
+        $data['add_time1'] = $this->getTime();
         $res = SysMessage::create($data);
         if($res){
             return $this->ajax_return('200', '操作成功！');

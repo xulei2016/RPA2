@@ -17,6 +17,8 @@ Route::post('login', 'API\PassportController@login');
 Route::group(['namespace' => 'api'], function(){
     Route::middleware('auth:api')->post('/v1/zzy_sms', 'SysApiController@zzy_sms');
     Route::middleware('auth:api')->post('/v1/yx_sms', 'SysApiController@yx_sms');
+    Route::middleware('auth:api')->post('/v1/mail', 'SysApiController@mail');
+    Route::middleware('auth:api')->post('/v1/task_mail', 'SysApiController@task_mail');
     Route::middleware('auth:api')->post('/v1/message', 'SysApiController@message');
 });
 

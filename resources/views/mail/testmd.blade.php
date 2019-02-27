@@ -8,6 +8,4 @@
 {{--测试--}}
 {{--@endcomponent--}}
 
-Thanks,<br>
-{{ config('app.name') }}
 @endcomponent

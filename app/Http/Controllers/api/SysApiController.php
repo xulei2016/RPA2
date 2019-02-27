@@ -10,6 +10,7 @@ use App\Models\Admin\Base\SysMessage;
 use App\Models\Admin\Base\SysSmsLog;
 use App\Models\Admin\Rpa\rpa_maintenance;
 use App\Models\Admin\Rpa\rpa_taskcollections;
+use App\Models\Admin\Rpa\rpa_uploademail;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,7 +21,7 @@ class SysApiController extends Controller
 {
     /**
      * 中正云短信接口
-     * @param   [String]  $phone    手机号
+     * @param   [String]  $phone    手机号 多个手机号用“,”分割
      * @param   [String]  $msg      发送内容
      * @return  [Integer] $code     状态码
      * @return  [String]  $data     返回信息
@@ -82,6 +83,7 @@ class SysApiController extends Controller
 
         return response()->json(['code'=>$response->getStatusCode(),'data'=> $data]);
     }
+
     /**
      * 优信短信接口
      * @param   [String]  $phone    手机号
@@ -152,13 +154,12 @@ class SysApiController extends Controller
 
     /**
      * 邮件发送接口
-     * @param [string] project 标题
-     * @param [string] editor  内容
-     * @param [string] type    类型
-     * @param [string] mode    发送对象
-     * @param [string] user    发送对象id
-     * @return  [Integer] $status 状态码
-     * @return  [String]   $msg    状态信息
+     * @param [string] project          标题
+     * @param [string] editor           内容
+     * @param [string] type             类型
+     * @param [string] to               发送邮箱，多个用";"隔开
+     * @return  [Integer] $status       状态码
+     * @return  [String]   $msg         状态信息
      */
     public function mail(Request $request)
     {
@@ -172,15 +173,9 @@ class SysApiController extends Controller
             'content' => $request->editor,
             'tid' => $request->type
         ];
-
-        // 获取发送邮件的用户和id
-        $admin = getAdmin($request->mode,$request->user);
-        $sysAdminIds = $admin['sysAdminIds'];
-        $sysAdmin = $admin['sysAdmin'];
-
         $sysmail = SysMail::create($data);
-        $sysmail->admins()->attach($sysAdminIds);
-        Mail::to($sysAdmin)->send(new MdEmail($sysmail));
+        $to = explode(',',$request->to);
+        Mail::to($to)->send(new MdEmail($sysmail));
         if($sysmail){
             $data = [
                 'status' => 200,
@@ -194,6 +189,67 @@ class SysApiController extends Controller
         }
         return response()->json($data);
     }
+
+    /**
+     * 任务反馈邮件发送接口
+     * @param [string]     $id            rpa_uploademails表id
+     * @return  [Integer]  $status       状态码
+     * @return  [String]   $msg         状态信息
+     */
+    public function task_mail(Request $request)
+    {
+        //ip检测
+        $res = $this->check_ip("task_mail",$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
+        $id = $request->id;
+        $uploadmail = rpa_uploademail::find($id);
+        if($uploadmail){
+            if($uploadmail['content']){
+                $maintenance = rpa_maintenance::where([['name','=',$uploadmail['name']]])->first();
+                if($maintenance){
+                    $data = [
+                        'title' => $maintenance['bewrite']."任务运行反馈",
+                        'content' => $uploadmail['content'],
+                        'tid' => 2
+                    ];
+                    // 获取发送邮件的用户和id
+                    $admin = getAdmin($maintenance['notice_type'],$maintenance['noticeAccepter']);
+                    $sysAdminIds = $admin['sysAdminIds'];
+                    $sysAdmin = $admin['sysAdmin'];
+                    $sysmail = SysMail::create($data);
+                    $sysmail->admins()->attach($sysAdminIds);
+                    Mail::to($sysAdmin)->send(new MdEmail($sysmail));
+                    if($sysmail){
+                        $data = [
+                            'status' => 200,
+                            'msg' => "邮件发送成功！"
+                        ];
+                    }else{
+                        $data = [
+                            'status' => 500,
+                            'msg' => "邮件发送失败！"
+                        ];
+                    }
+                    return response()->json($data);
+
+                }else{
+                    $data = [
+                        'status' => 500,
+                        'msg' => "任务名称错误！"
+                    ];
+                }
+            }
+        }else{
+            $data = [
+                'status' => 500,
+                'msg' => "发送邮件数据查询失败！"
+            ];
+        }
+        return response()->json($data);
+    }
+
     /**
      * 消息通知接口
      * @param   [Integer]  $id     任务回收表id
@@ -235,6 +291,11 @@ class SysApiController extends Controller
                             'msg' => "通知发送失败！"
                         ];
                     }
+                }else{
+                    $data = [
+                        'status' => 500,
+                        'msg' => "任务名称错误！"
+                    ];
                 }
             }
         }else{
@@ -245,7 +306,6 @@ class SysApiController extends Controller
         }
         return response()->json($data);
     }
-
 
     /****************************工具方法******************************************/
     public function check_ip($api,$ip)
