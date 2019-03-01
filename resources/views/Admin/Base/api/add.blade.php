@@ -26,7 +26,14 @@
                 </select>
             </div>
         </div>
-
+        <div class="form-group">
+            <label for="state" class="col-sm-2 control-label">是否开启</label>
+            <div class="col-sm-10">
+                <div class="switch">
+                    <input type="checkbox" name="state" id="state" value="1" checked/>
+                </div>
+            </div>
+        </div>
         <div class="form-group">
             <label for="ip" class="col-sm-2 control-label"><span class="must-tag">*</span>黑名单</label>
             <div class="col-sm-10">
@@ -45,7 +52,6 @@
                 </div>
             </div>
         </div>
-
         <div class="form-group">
             <label for="ip" class="col-sm-2 control-label"><span class="must-tag">*</span>白名单</label>
             <div class="col-sm-10">
@@ -64,7 +70,6 @@
                 </div>
             </div>
         </div>
-
         <div class="form-group">
             <label for="desc" class="col-sm-2 control-label"><span class="must-tag">*</span>接口描述</label>
             <div class="col-sm-10">

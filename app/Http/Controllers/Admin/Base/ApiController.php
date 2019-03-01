@@ -28,7 +28,7 @@ class ApiController extends BaseAdminController
     public function store(Request $request)
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "添加 api");
-        $data = $this->get_params($request, ['api','url','method','desc','black_list','white_list']);
+        $data = $this->get_params($request, ['api','url','method','desc','state','black_list','white_list']);
         SysApiip::create($data);
         return $this->ajax_return(200, '操作成功！');
     }
@@ -45,7 +45,7 @@ class ApiController extends BaseAdminController
     public function update(Request $request, $id)
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "更新 api");
-        $data = $this->get_params($request, ['api','url','method','desc','black_list','white_list']);
+        $data = $this->get_params($request, ['api','url','method','desc','state','black_list','white_list']);
         SysApiip::where('id',$id)->update($data);
         Cache::forget($data['api']);
         return $this->ajax_return(200, '操作成功！');

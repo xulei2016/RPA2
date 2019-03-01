@@ -10,6 +10,8 @@ $(function(){
 
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
         $("#modal form").validate(validateInfo);
+
+
     }
     
     //事件绑定
@@ -18,6 +20,8 @@ $(function(){
         $('#modal form #save').click(function(){
             add($(this).parents('form'));
         });
+
+        $('#modal form .switch input#state').bootstrapSwitch({onText:"启用", offText:"禁用"});
 
         //添加黑名单
         $("#modal form .add_data").on('click',function(){

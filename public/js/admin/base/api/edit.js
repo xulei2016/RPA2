@@ -19,6 +19,8 @@ $(function(){
             add($(this).parents('form'));
         });
 
+        $('#modal form .switch input#state').bootstrapSwitch({onText:"启用", offText:"禁用"});
+
         //添加黑名单
         $("#modal form .add_data").on('click',function(){
             let _this = $(this);

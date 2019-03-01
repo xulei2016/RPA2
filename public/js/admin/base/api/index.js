@@ -147,6 +147,14 @@ $(function(){
                 align: 'center',
                 valign: 'middle',
             }, {
+                field: 'state',
+                title: '状态',
+                align: 'center',
+                valign: 'middle',
+                formatter: function(values){
+                    return values ? '<small class="label bg-primary">启用</small>' : '<small class="label bg-red">禁用</small>';
+                }
+            }, {
                 field: 'created_at',
                 title: '创建时间',
                 align: 'center',

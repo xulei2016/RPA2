@@ -19,6 +19,17 @@ use Illuminate\Support\Facades\Mail;
 
 class SysApiController extends Controller
 {
+    public function test()
+    {
+        //写日志
+        $sms = [
+            'api' => '中\正\云',
+            'phone' => 1011111,
+            'content' => 'CES',
+            'return' => 00,
+        ];
+        SysSmsLog::create($sms);
+    }
     /**
      * 中正云短信接口
      * @param   [String]  $phone    手机号 多个手机号用“,”分割
@@ -196,55 +207,102 @@ class SysApiController extends Controller
      * @return  [Integer]  $status       状态码
      * @return  [String]   $msg         状态信息
      */
-    public function task_mail(Request $request)
+    public function task_notice(Request $request)
     {
         //ip检测
-        $res = $this->check_ip("task_mail",$request->getClientIp());
+        $res = $this->check_ip("task_notice",$request->getClientIp());
         if($res !== true){
             return response()->json($res);
         }
         $id = $request->id;
         $uploadmail = rpa_uploademail::find($id);
         if($uploadmail){
-            if($uploadmail['content']){
-                $maintenance = rpa_maintenance::where([['name','=',$uploadmail['name']]])->first();
-                if($maintenance){
-                    $data = [
-                        'title' => $maintenance['bewrite']."任务运行反馈",
-                        'content' => $uploadmail['content'],
-                        'tid' => 2
-                    ];
-                    // 获取发送邮件的用户和id
+            $maintenance = rpa_maintenance::where([['name','=',$uploadmail['name']]])->first();
+            if($maintenance){
+                //任务设置不发送
+                if($maintenance['notice_type'] != 0){
                     $admin = getAdmin($maintenance['notice_type'],$maintenance['noticeAccepter']);
+                    // 获取通知的用户和id
                     $sysAdminIds = $admin['sysAdminIds'];
                     $sysAdmin = $admin['sysAdmin'];
-                    $sysmail = SysMail::create($data);
-                    $sysmail->admins()->attach($sysAdminIds);
-                    Mail::to($sysAdmin)->send(new MdEmail($sysmail));
-                    if($sysmail){
-                        $data = [
-                            'status' => 200,
-                            'msg' => "邮件发送成功！"
-                        ];
-                    }else{
-                        $data = [
-                            'status' => 500,
-                            'msg' => "邮件发送失败！"
-                        ];
+                    //取出所有要发送的手机号和邮箱
+                    $phones = [];
+                    $emails = [];
+                    foreach ($sysAdmin as $v){
+                        $phones[] = $v->phone;
+                        $emails[] = $v->email;
                     }
-                    return response()->json($data);
 
-                }else{
                     $data = [
-                        'status' => 500,
-                        'msg' => "任务名称错误！"
+                        'status' => 200,
+                        'emails' => $emails,
+                        'phones' => $phones
+                    ];
+                    //邮件内容为空不发送
+                    if(empty($uploadmail['content'])){
+                        rpa_uploademail::where('id',$id)->update(['state'=>'不发送']);
+                        $mail = "邮件不发送";
+                    }else{
+                        //发邮件
+                        $data1 = [
+                            'title' => $maintenance['bewrite']."任务运行反馈",
+                            'content' => $uploadmail['content'],
+                            'tid' => 2
+                        ];
+                        $sysmail = SysMail::create($data1);
+                        $sysmail->admins()->attach($sysAdminIds);
+                        Mail::to($sysAdmin)->send(new MdEmail($sysmail));
+                        if($sysmail){
+                            $mail = "邮件发送成功";
+                            rpa_uploademail::where('id',$id)->update(['state'=>'已发送']);
+                        }else{
+                            $mail = "邮件发送失败";
+                            rpa_uploademail::where('id',$id)->update(['state'=>'发送失败']);
+                        }
+                    }
+                    //短信内容为空不发送
+                    if(empty($uploadmail['SMS'])){
+                        $sms = "短信不发送";
+                    }else{
+                        $guzzle = new Client();
+                        $response = $guzzle->post('http://service.winic.org:8009/sys_port/gateway/index.asp',[
+                            'form_params' => [
+                                'id' => 'haqh',
+                                'pwd' => 'haqh9772rjgcb',
+                                'to' => implode(",",$phones),
+                                'content' => iconv("utf-8","gb2312",$uploadmail['SMS']),
+                            ],
+                        ]);
+                        $body = $response->getBody();
+                        $status = explode('/',(string)$body)[0];
+                        if($status == '000'){
+                            $sms = "短信发送成功";
+                        }else{
+                            $sms = "短信发送失败";
+                        }
+                    }
+                    $data['mail'] = $mail;
+                    $data['sms'] = $sms;
+                }else{
+                    rpa_uploademail::where('id',$id)->update(['state'=>'不发送']);
+                    $data = [
+                        'status' => 200,
+                        'mail' => '邮件不发送',
+                        'sms' => '短信不发送',
+                        'phones' => '',
+                        'emails' => ''
                     ];
                 }
+            }else{
+                $data = [
+                    'status' => 500,
+                    'msg' => "任务名称错误！"
+                ];
             }
         }else{
             $data = [
                 'status' => 500,
-                'msg' => "发送邮件数据查询失败！"
+                'msg' => "数据查询失败！"
             ];
         }
         return response()->json($data);
@@ -312,11 +370,11 @@ class SysApiController extends Controller
     {
         //获取黑白名单，先取缓存
         if (!Cache::has($api)) {
-            $sysapiip = SysApiIp::where([['api','=',$api]])->first();
+            $sysapiip = SysApiIp::where([['api','=',$api],['state','=',1]])->first();
             if(!$sysapiip){
                 $data = [
                     'status' => 403,
-                    'msg' => "接口未注册"
+                    'msg' => "接口未注册,或被禁用"
                 ];
                 return $data;
             }

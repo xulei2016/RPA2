@@ -100,7 +100,7 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request) {
-            return response()->json(['code' => '401','message' => 'The token is invalid.']);
+            return response()->json(['status' => '401','msg' => 'token失效']);
         }
     }
 }
