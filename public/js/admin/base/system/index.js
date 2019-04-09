@@ -1,0 +1,41 @@
+$(function(){
+    /*
+     * 初始化
+     */
+    function init(){
+        bindEvent();
+    }
+
+    /*
+     * 绑定事件
+     */
+    function bindEvent(){
+        $('#pjax-container form .switch input').bootstrapSwitch({onText:"是", offText:"否"});
+
+        //基本信息提交
+        $('#pjax-container form button.submit').click(function(){
+            add($(this).parents('form'));
+        });
+    }
+
+    //添加
+    function add(e){
+        RPA.form.ajaxSubmit(e, FormOptions);
+    }
+    
+    //提交信息的表单配置
+    var FormOptions={
+        url:'/admin/sys_config_update',
+        success:function(json, xml){
+            if(200 == json.code){
+                toastr.success('操作成功！');
+                $.pjax.reload('#pjax-container');
+            }else{
+                swal('哎呦……',json.info,'warning');
+            }
+        },
+        error:RPA.form.errorReponse
+    };
+	
+    init();
+});
