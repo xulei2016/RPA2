@@ -1,14 +1,10 @@
 @extends('admin.layouts.wrapper-content')
 
 @section('content')
-
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-info">
-                <div class="box-header">
-                    <h3 class="box-title">通知推送</h3>
-                </div>
-                <div class="box-body pad">
+            <div class="card card-primary card-outline">
+                <div class="card-body pad">
                     <form>
                         <div class="form-group">
                             <label for="mode">

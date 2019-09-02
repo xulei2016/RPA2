@@ -1,6 +1,7 @@
 $(function(){
     var type = false;
 
+    let modal = RPA.config.modal;
     /**
      * 页面初始化
      */
@@ -8,16 +9,16 @@ $(function(){
         bindEvent();
 
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
     
     //事件绑定
     function bindEvent(){
         //定义时间按钮事件
-        let jsondate = '#modal #jsondate';
+        let jsondate = modal+' #jsondate';
         laydate.render({elem: jsondate, type: 'date'});
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
     }
@@ -25,12 +26,12 @@ $(function(){
     //序列化
     function serializeForm(){
         let jsondata = {};
-        $('#modal form .target_web .row').each(function(){
+        $(modal+' form .target_web .row').each(function(){
             jsondata.user = $(this).find("input[name='jsonuser']").val().trim();
             jsondata.date = $(this).find("input[name='jsondate']").val().trim();
             jsondata.pwd = $(this).find("input[name='jsonpwd']").val().trim();
         });
-        $('#modal form #jsondata').val(JSON.stringify(jsondata));
+        $(modal+' form #jsondata').val(JSON.stringify(jsondata));
     }
     
     //添加

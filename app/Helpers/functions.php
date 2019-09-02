@@ -49,4 +49,107 @@ function getAdmin($mode,$user)
         'sysAdmin' => $sysAdmin
     ];
 }
+
+/**
+ * 中正云短信接口
+ * @param   [String]  $phone    手机号 多个手机号用“,”分割
+ * @param   [String]  $msg      发送内容
+ * @return  [Integer] $code     状态码
+ * @return  [String]  $data     返回信息
+ */
+function zzy_sms($phone,$msg)
+{
+    $msg = iconv("utf-8","gb2312",$msg);
+
+    $zzy = config('sms.ZZY');
+    $url = $zzy['url']['mult'];
+    $statuses = $zzy['status'];
+
+    $form_params = [
+        'id' => $zzy['account'],
+        'pwd' => $zzy['password'],
+        'to' => $phone,
+        'content' => $msg,
+    ];
+
+    $guzzle = new GuzzleHttp\Client();
+    $response = $guzzle->post($url, [
+        'form_params' => $form_params
+    ]);
+    $body = $response->getBody();
+
+    $status = explode('/',(string)$body)[0];
+
+    $data = [
+        'status' => $status,
+        'msg' => $statuses[$status]
+    ];
+
+    smsLog('中正云', $phone, iconv("gb2312","utf-8",$msg), $status);
+
+    return $data;
+}
+
+/**
+ * 优信短信接口
+ * @param   [String]  $phone    手机号
+ * @param   [String]  $msg      发送内容
+ * @return  [Integer] $code     状态码
+ * @return  [String]  $data     返回信息
+ */
+function yx_sms($phone,$msg)
+{
+    $msg = iconv("utf-8","gb2312",$msg);
+
+    $yx = config('sms.YX');
+    $url = $yx['url']['mult'];
+    $statuses = $yx['status'];
+
+    $form_params = [
+        'CorpID' => $yx['account'],
+        'Pwd' => $yx['password'],
+        "Mobile" => $phone,
+        "Content" => $msg,
+        "Cell" => '',
+        "SendTime" => ''
+    ];
+
+    $guzzle = new GuzzleHttp\Client();
+    $response = $guzzle->post($url, [
+        'form_params' => $form_params
+    ]);
+    $body = $response->getBody();
+    $body = (string)$body;
+
+    $data = [
+        'status' => $body,
+        'msg' => $statuses[$body]
+    ];
+
+    //短信日志
+    smsLog('优信', $phone, iconv("gb2312","utf-8",$msg), $body);
+
+    return $data;
+}
+
+/**
+ * 短信发送日志
+ * @Description 短信日志
+ * @param [string] $type
+ * @param [string] $phone
+ * @param [string] $content
+ * @param [string] $status
+ * @return void bool
+ */
+function smsLog($type, $phone, $content, $status){
+    $sms = [
+        'type' => $type,
+        'api' => 'sms',
+        'phone' => $phone,
+        'content' => $content,
+        'return' => $status,
+    ];
+    return App\Models\Admin\Base\SysSmsLog::create($sms);
+}
+
 ?>

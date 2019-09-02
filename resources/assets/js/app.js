@@ -5,7 +5,7 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-//require('./bootstrap');
+require('./bootstrap');
 
 //window.Vue = require('vue');
 
@@ -20,9 +20,3 @@
 //const app = new Vue({
 //    el: '#app'
 //});
-import Echo from "laravel-echo"
-
-window.Echo = new Echo({
-    broadcaster: 'socket.io',
-    host: window.location.hostname + ':6001'
-});

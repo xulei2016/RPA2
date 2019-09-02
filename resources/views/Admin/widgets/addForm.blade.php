@@ -1,23 +1,21 @@
-<div class="box box-info">
-    <div class="box-header with-border">
-        <h3 class="box-title">
-            {{ $title or '添加操作' }}
-        </h3>
-    </div>
-
-    <form class="form-horizontal" id="form">
-        <div class="box-body">
-                {{ $formContent }}
-        </div>
-        <!-- /.box-body -->
-        <div class="box-footer">
-            <button type="button" class="btn btn-warning" id="form-reset" onclick="RPA.form.reset($(this).parents('form'))">重置</button>
-            <button type="button" class="btn btn-info pull-right" id="save">提交</button>
-            <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal icheck">继续添加</label></div>
-        </div>
-        <!-- /.box-footer -->
-    </form>
+<div class="modal-header">
+    <h3 class="modal-title">
+        {{ $title or '添加操作' }}
+    </h3>
 </div>
+
+<form class="form-horizontal" id="form">
+    <div class="modal-body">
+            {{ $formContent }}
+    </div>
+    <!-- /.modal-body -->
+    <div class="modal-footer">
+        <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" id="form-continue" class="minimal icheck">继续添加</label></div>
+        <button type="button" class="btn btn-warning" id="form-reset" onclick="RPA.form.reset($(this).parents('form'))">重置</button>
+        <button type="button" class="btn btn-success pull-right" id="save">提交</button>
+    </div>
+    <!-- /.modal-footer -->
+</form>
 
 {{ $formScript }}
 

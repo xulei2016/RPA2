@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\Admin\Base\SysMenu;
 use App\Http\Controllers\Base\BaseAdminController;
 
+use App\Models\Admin\Admin\SysAdmin;
+use Spatie\Permission\Models\Role;
+
 /**
  * MenuController
  * @author lay
@@ -138,25 +141,28 @@ class MenuController extends BaseAdminController
      * find all menus
      * @return array menuList
      */
-    private function AllMenus(){
+    public function AllMenus(){
         $menuList = SysMenu::where('is_use', 1)
                     ->orderBy('order', 'asc')
                     ->get()
                     ->toArray();
 
         $data = [];
-        foreach($menuList as $key => &$menus){
-            if(0 != $menus['parent_id']){
-                $data[$menus['parent_id']][] = $menus;
-                unset($menuList[$key]);
+
+        $newMenuList = [];
+        foreach($menuList as $key => $menus){
+            $newMenuList[$menus['id']] = $menus;
+        }
+        unset($menuList);
+
+        foreach($newMenuList as $k => $menu){
+            if(isset($newMenuList[$menu['parent_id']])){
+                $newMenuList[$menu['parent_id']]['child'][] = &$newMenuList[$menu['id']];
+            }else{
+                $data[] = &$newMenuList[$menu['id']];
             }
         }
-        foreach($menuList as $key => &$menus){
-            if(!empty($data[$menus['id']])){
-                $menus['child'] = $data[$menus['id']];
-            }
-        }
-        return $menuList;
+        return $data;
     }
 
     /*
@@ -164,6 +170,7 @@ class MenuController extends BaseAdminController
     */
     public function getMenuList()
     {
+        // $user = auth()->guard('admin')->user()->syncRoles('superAdministrator');
         //判断缓存是否存在, 是否调试模式
         if (!config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
             $menu = self::AllMenus();
@@ -198,14 +205,21 @@ class MenuController extends BaseAdminController
         if (isset($data['child'])){
             return $this->getHandleList($data);
         }
-        return '<li><a href="'.$data['uri'].'"><i class="fa '.$data['icon'].'"></i><span>'.$data['title'].'</span></a></li>';
+        return '<li class="nav-item"><a href="'.$data['uri'].'" class="nav-link"><i class="nav-icon fa '.$data['icon'].'"></i><p>'.$data['title'].'</p></a></li>';
     }
 
     //判断是否有子集
     public function getHandleList($data){
-        $handle = '<li class="treeview"><a href="javascript:;"><i class="fa '.$data['icon'].'"></i><span>'.$data['title'].'</span><span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span></a><ul class="treeview-menu">';
+        $handle = '<li class="nav-item has-treeview"><a href="#" class="nav-link"><i class="nav-icon fa '.$data['icon'].'"></i><p>'.$data['title'].'<i class="fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview">';
 
         foreach ($data['child'] as $v){
+            //权限判断
+            $user = auth()->guard('admin')->user();
+            if(!$user->hasRole('superAdministrator')){
+                if(!$user->hasPermissionTo($v['unique_name'])){
+                    continue;
+                }
+            }
             $handle .= $this->getNetableItem($v);
         }
         $handle .= '</ul></li>';

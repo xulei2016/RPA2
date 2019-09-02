@@ -341,7 +341,6 @@ weak {
 
 .admin_login dd {
     margin: 5px 0;
-    height: 42px;
     overflow: hidden;
     position: relative;
     color: #fff;

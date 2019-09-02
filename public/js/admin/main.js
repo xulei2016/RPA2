@@ -12,16 +12,18 @@ RPA.prototype = {
         this.bind.call(this);
     },
     config: {
+        modal: '#modal-lg',
         pjax: {
             container: '#pjax-container', //pjax 容器
             element: 'a:not(a[target="_blank"])', //pjax 监听对象
             obj: $(document),
             //load model element
-            model: $('#Modal .modal-content .modal-body'),
+            model: $(this.modal+' .modal-content .modal-body'),
         },
-        NProgressParent: '#pjax-container', //nprogress 父级作用元素
+        NProgressParent: '#body', //nprogress 父级作用元素
+        adminPopup: $('.navbar .navbar-nav .admin-info-list,.navbar .navbar-nav .admin-message'),
         sidebar: {
-            obj:$('body .wrapper aside .sidebar'),
+            obj:$('body aside .sidebar'),
             activeBar: sessionStorage.activeBar ? sessionStorage.activeBar : '/admin' ,
         },
     },
@@ -32,7 +34,7 @@ RPA.prototype = {
         _this.pjaxOperation.init.call(this);
 
         //is or not scroll
-        var screen_operation_obj = $('body .wrapper .main-header .navbar .navbar-custom-menu a[data-toggle="fullscreen"]');
+        var screen_operation_obj = $('body .main-header.navbar a[data-toggle="fullscreen"]');
         screen_operation_obj.bind('click', function(e) {
             !_this.screenOperation.isFullscreenForNoScroll() ? _this.screenOperation.requestFullScreen() : _this.screenOperation.exitFull();
         });
@@ -48,13 +50,19 @@ RPA.prototype = {
             headers: { 'X-CSRF-TOKEN': LA.token }
         });
 
+        //快捷菜单
+        _this.config.adminPopup.mouseover(function () {
+            $(this).find('.popup').removeClass('hidden');
+        }).mouseout(function () {
+            $(this).find('.popup').addClass('hidden');
+        });
+
         //侧边栏点击事件
-        _this.config.sidebar.obj.on('click','.sidebar-menu a',function(e){
+        _this.config.sidebar.obj.on('click','.nav-item a.nav-link',function(e){
             _this.config.sidebar.activeBar = sessionStorage.activeBar = $(this).attr('href');
             if(!$(this).parents('li').hasClass('active')){
                 $(this).parents('li').siblings('.active').removeClass('active');
-                $(this).parents('li').addClass('active');
-                // _this.initPage();
+                // $(this).addClass('active');
             }
         });
     },
@@ -106,7 +114,7 @@ RPA.prototype = {
         "hideEasing": "linear", //消失时的动画缓冲方式
         "showMethod": "fadeIn", //显示时的动画方式
         "hideMethod": "fadeOut", //消失时的动画方式
-        "progressBar": true,
+        "progressBar": false,
     },
     pjaxOperation: {
         init: function() {
@@ -152,18 +160,19 @@ RPA.prototype = {
             });
         },
         modelLoad: function operation(_this) {
+            let e = RPA.config.modal;
             let url = _this.attr('url');
-            $('#modal .modal-content').text('').load(url);
-            $('#modal').modal('show');
+            $(e+' .modal-content').text('').load(url);
+            $(e).modal('show');
         }
     },
     initPage: function() {
         selectedMenu = RPA.config.sidebar.activeBar;
+        selectedMenu = selectedMenu  == '#' ? '/admin' : selectedMenu ;
         //菜单显示
-        var selector = $('.sidebar-menu').find('a[href="' + selectedMenu + '"]');
-        selector.parents('.treeview').addClass('active');
-        selector.parents('ul.treeview-menu').css('display', 'block');
-        selector.parents('li.treeview').addClass('menu-open');
+        var selector = $('.sidebar').find('a[href="' + selectedMenu + '"]');
+        // selector.addClass('active');
+        selector.parents('li.has-treeview').addClass('menu-open');
     },
 
     ///////////////////////////////////////////////////////// form start///////////////////////////////////////////////////////////
@@ -171,32 +180,22 @@ RPA.prototype = {
     form: {
         reset: function(e, callback){
             //重置复选框
-            let formContinue = $('#modal input.icheck').each(function(e){
+            let formContinue = $(RPA.config.modal+' input.icheck').each(function(e){
                 $(this).iCheck('uncheck');
             });
             $(e)[0].reset();//重置表单，必须放下面
         },
         response: function(callback){
+            let obj = RPA.config.modal;
             toastr.success('操作成功！');
-            $.pjax.reload('#pjax-container');
-            let formContinue = $('#modal #form-continue');
-            if(formContinue.is(':checked')){
-                RPA.form.reset('#modal #form');
-            }else{
-                $('#modal').modal('hide');
-            }
+            // $.pjax.reload('#pjax-container');
+            $('#tb_departments').bootstrapTable('refresh');
+            $(obj+' #form-continue').is(':checked') ? RPA.form.reset(obj+' #form') : $(obj).modal('hide');
             callback ? callback() : '' ;
         },
         ajaxSubmit: function(e, FormOptions) {
             e.ajaxSubmit($.extend(true, {}, {beforeSubmit: this.formValidation,type: 'post',dataType: 'json',clearForm: false, resetForm: false}, FormOptions));
         },
-        // formOptions: {
-        //     beforeSubmit: this.formValidation,
-        //     type: 'post',
-        //     dataType: 'json',
-        //     clearForm: false, // clear all form fields after successful submit
-        //     resetForm: false,
-        // },
         formValidation: function(arr, $form, options) {
             // 如果JQuery.Validate检测不通过则返回false
             if (!$form.valid()) {
@@ -234,7 +233,7 @@ RPA.prototype = {
                 sortable: true,                     //是否启用排序
                 silentSort: false,
                 sortStable: true,
-                sortOrder: "asc",                   //排序方式
+                sortOrder: "desc",                   //排序方式
                 queryParams: oTableInit.queryParams,//传递参数（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
                 pageNumber:1,                       //初始化加载第一页，默认第一页
@@ -289,6 +288,56 @@ RPA.prototype = {
             return row.id
         });
     },
+    Echo:{
+        init:function(model){
+            var _this = this;
+            //消息通知laravel-echo
+            Echo.private(model).notification(function(obj){
+                _this.content(obj);
+            });
+        },
+        content:function (obj){
+            let typeName = "";
+            if(obj.typeName == 1){
+                typeName = "系统公告";
+            }else if(obj.typeName == 2){
+                typeName = "RPA通知";
+            }else{
+                typeName = "管理员通知";
+            }
+            let html = "";
+            html += '<div class="notify-wrap">'
+                    + '<div class="notify-title">' + typeName + '<span class="notify-off"><i class="fa fa-envelope-o"></i></span></div>'
+                    + '<div class="notify-title"><a href="JavaScript:void(0);" url="/admin/sys_message_list/view/'+ obj.id +'" onclick="operation($(this));" title="查看站内信息">' + obj.title + '</a><div>'
+                    + '<div class="notify-content">' + obj.content + '</div>'
+                    + '</div>';
+        
+            $("body").append(html);
+
+            //播放消息提醒音乐
+            var au = document.createElement("audio");
+            au.preload = "auto";
+            au.src = "/common/voice/qipao.mp3";
+            au.play();
+
+            //更新右上角
+            if($("#notification_count span").length > 0){
+                var count = $("#notification_count span").text();
+                $('#notification_count span').text(1+parseInt(count));
+                var html1 = '<li><a href="javascript:;" onclick="operation($(this));readEvent($(this));" url="/admin/sys_message_list/view/'+obj.id+'"><i class="fa fa-users text-aqua"></i>'+obj.title+'</a></li>';
+                $("#notification_list").prepend(html1);
+            }else{
+                $("#notification_count").append('<span class="badge badge-warning navbar-badge">1</span>')
+                var html1 = '<ul class="menu" id="notification_list"><li><a href="javascript:;" onclick="operation($(this));readEvent($(this));" url="/admin/sys_message_list/view/'+obj.id+'"><i class="fa fa-users text-aqua"></i>'+obj.title+'</a></li></ul>'
+                $('.notifications-menu').html(html1);
+            }
+
+            $(".notify-wrap:last").slideDown(2000);
+            setTimeout(function(){
+                $(".notify-wrap:last").slideUp(2000);
+            },8000);
+        }
+    }
     /////////////////////////////////////////////////////////bootstrap table end//////////////////////////////////////////////////////////
 }
 
@@ -299,10 +348,10 @@ var operation = (e) => {
     RPA.pjaxOperation.modelLoad(e);
 }
 
-// Echo.channel('orders')
-//     .listen('OrderShipped', (e) => {
-//         console.log(e.order.name);
-//     });
+//socket
+if(socket.userId){
+    RPA.Echo.init('App.Models.Admin.Admin.SysAdmin.' + socket.userId);
+}
 
 //自定义函数处理queryParams的批量增加
 $.fn.serializeJsonObject = function () {

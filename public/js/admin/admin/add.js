@@ -1,12 +1,14 @@
 $(function(){
+    let modal = RPA.config.modal;
+
     function init(){
         bindEvent();
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
     function bindEvent(){
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
 
@@ -15,8 +17,8 @@ $(function(){
             "allowClear":true,
             "placeholder":"角色选择",
         });
-        $('#modal form .switch input#sex').bootstrapSwitch({onText:"男", offText:"女"});
-        $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
+        $(modal+' form .switch input#sex').bootstrapSwitch({onText:"男", offText:"女"});
+        $(modal+' form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
     }
     //添加
     function add(e){

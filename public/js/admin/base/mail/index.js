@@ -155,11 +155,11 @@ $(function(){
                     formatter: function(value,row){
                         let type = "";
                         if(row.mails.tid == 1){
-                            type = '<small class="label bg-primary">系统公告</small>';
+                            type = '<small class="x-tag x-tag-sm">系统公告</small>';
                         }else if(row.mails.tid == 2){
-                            type = '<small class="label bg-primary">RPA通知</small>';
+                            type = '<small class="x-tag x-tag-sm">RPA通知</small>';
                         }else{
-                            type = '<small class="label bg-primary">管理员通知</small>';
+                            type = '<small class="x-tag x-tag-sm">管理员通知</small>';
                         }
                         return type;
                     }
@@ -169,7 +169,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(value){
-                        return (value) ? '<small class="label bg-green">已读</small>' : '<small class="label bg-red">未读</small>' ;
+                        return (value) ? '<span class="x-tag x-tag-sm x-tag-success">已读</span>' : '<span class="x-tag x-tag-sm x-tag-danger">未读</span>' ;
                     }
                 }, {
                     field: 'created_at',
@@ -177,6 +177,10 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     sortable: true,
+                    formatter: function(value,row){
+                        let created_at = row.mails.created_at;
+                        return created_at;
+                    }
                 },{
                     field: 'id',
                     title: '操作',
@@ -192,10 +196,10 @@ $(function(){
                         var id = row.mid;
                         var result = "";
                         if(row.type == 3){
-                            result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"/edit' title='重新发送'><i class='fa fa-envelope-o'></i></a>";
+                            result += " <a href='javascript:;' class='btn btn-sm btn-warning' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"/edit' title='重新发送'>重新发送</a>";
                         }
-                        result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"' title='查看'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/sys_mail/"+id+"' title='查看'>查看</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;
                     }

@@ -107,7 +107,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(value, row, index){
-                        return row.date ? '<span class="text-primary">一次性任务</span>' : '<span class="text-success">循环执行</span>' ;
+                        return row.date ? '<span class="x-tag x-tag-sm">一次性任务</span>' : '<span class="x-tag x-tag--success x-tag-sm">循环任务</span>' ;
                     }
                 }, {
                     field: 'time',
@@ -133,10 +133,10 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_news/immedtasks/"+id+"' title='添加立即任务'><span class='glyphicon glyphicon-plus'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"' title='查看参数'><span class='glyphicon glyphicon-search'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-success' onclick=\"operation($(this));\" url='/admin/rpa_news/immedtasks/"+id+"' title='立即执行'>立即执行</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"' title='查看参数'>查看</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_news/"+id+"/edit' title='编辑'>修改</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;
                     }

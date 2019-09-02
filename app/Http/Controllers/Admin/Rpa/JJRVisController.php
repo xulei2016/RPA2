@@ -113,7 +113,7 @@ class JJRVisController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        $data = $this->get_params($request, ['week','date','description','time','jsondata','start_time','end_time','mins',['implement_type', 0]], false);
+        $data = $this->get_params($request, [['week',null],['date',null],'description','time','jsondata','start_time','end_time','mins',['implement_type', 0]], false);
         $data['name'] = $this->task_name;
         $data['week'] = isset($data['week']) ? implode(',',$data['week']) :'';
 
@@ -184,7 +184,7 @@ class JJRVisController extends BaseAdminController
         $task = $this->get_params($request, ['description','jsondata']);
         $task['name'] = 'MediatorVisit';
         $data = ['name'=>$task['name'],'jsondata'=>$task['jsondata'],'description'=>$task['description']];
-        $data['jsondata'] = json_encode(['namelist' => isset($data['jsondata']) ? implode(',',$data['jsondata']) :'']);
+        $data['jsondata'] = json_encode(['namelist' => isset($data['jsondata']) ? implode(',',$data['jsondata']) :''],JSON_UNESCAPED_UNICODE);
         $this->log(__CLASS__, __FUNCTION__, $request, "立即发布 {$task['name']} 任务");
         rpa_immedtasks::create($data);
         return $this->ajax_return(200, '操作成功！');

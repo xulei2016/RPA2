@@ -7,7 +7,7 @@ use App\Models\Admin\Func\rpa_capitalrefers;
 use App\Models\Admin\Func\rpa_oabremindings;
 use App\Models\Admin\Rpa\rpa_immedtasks;
 use Illuminate\Http\Request;
-
+use GuzzleHttp\Client;
 /**
  * JJRVisController
  * @author hsu lay
@@ -58,28 +58,18 @@ class OabremindingFuncController extends BaseAdminController{
 
     //pagenation
     public function oabPagination(Request $request){
-        $selectInfo = $this->get_params($request, ['customer','state','tid','from_created_at','to_created_at']);
-        $condition = [];
+        $selectInfo = $this->get_params($request, ['customer','state','tid','from_created_at','to_created_at','blancenum']);
+        $condition = $this->getPagingList($selectInfo, ['state'=>'=', 'blancenum'=>'=', 'tid'=>'=', 'from_created_at'=>'>=', 'to_created_at'=>'<=']);
         $customer = $selectInfo['customer'];
         if($customer && is_numeric( $customer )){
             array_push($condition,  array('khh', '=', $customer));
         }elseif(!empty( $customer )){
             array_push($condition,  array('name', '=', $customer));
         }
-        if($selectInfo['from_created_at']){
-            array_push($condition, ['created_at','>=',$selectInfo['from_created_at']]);
-        }
-        if($selectInfo['to_created_at']){
-            array_push($condition, ['created_at','<=',$selectInfo['to_created_at']]);
-        }
-        if(null != $selectInfo['state'] && 'undefined' != $selectInfo['state']){
-            array_push($condition, ['state','=',$selectInfo['state']]);
-        }
-        if(null != $selectInfo['tid'] && 'undefined' != $selectInfo['tid']){
-            array_push($condition, ['tid','=',$selectInfo['tid']]);
-        }
         $rows = $request->rows;
-        $data = rpa_oabremindings::where($condition)->paginate($rows);
+        $order = $request->sort ?? 'id';
+        $sort = $request->sortOrder ?? 'desc';
+        $data = rpa_oabremindings::where($condition)->orderBy($order,$sort)->paginate($rows);
         foreach($data as $v){
             $capital = rpa_capitalrefers::find($v['tid']);
             $v['capital_name'] = $capital['name'];
@@ -92,6 +82,29 @@ class OabremindingFuncController extends BaseAdminController{
     public function oabImmedtask($khh){
         $data = ['name'=>'OABReminding','jsondata'=>"{'khh':'$khh'}"];
         return rpa_immedtasks::create($data);
+    }
+
+    //查询客户
+    public function getCustomerName(Request $request){
+        $guzzle = new Client();
+        $response = $guzzle->post('www.localhost.com:9102/index.php',[
+            'form_params' => [
+                'type' => 'common',
+                'action' => 'getEveryBy',
+                'param' => [
+                    'table' => 'KHXX',
+                    'by' => [
+                        ['KHH','=',$request->khh]
+                    ],
+                    'columns' => ['KHXM']
+                ]
+            ],
+            'synchronous' => true,
+            'timeout' => 0,
+        ]);
+        $body = $response->getBody();
+        $result = json_decode((String)$body,true);
+        return $result;
     }
 
 

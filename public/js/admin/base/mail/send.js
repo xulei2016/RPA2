@@ -1,8 +1,8 @@
 $(function () {
     //初始化
     function init(){
-        bindEvent();
         CKEDITOR.replace('editor');
+        bindEvent();
     }
 
     //绑定事件

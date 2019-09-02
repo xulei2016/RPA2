@@ -92,9 +92,9 @@ class DiscreditController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        $data = $this->get_params($request, ['name','week','date','description','time','jsondata','start_time','end_time','mins',['implement_type', 0]], false);
-        $data['week'] = isset($data['week']) ? implode(',',$data['week']) :'';
 
+        $data = $this->get_params($request, ['name',['week',null],['date',null],'description','time','jsondata','start_time','end_time','mins',['implement_type', 0]], false);
+        $data['week'] = !empty($data['week']) ? implode(',',$data['week']) :'';
         $time = $this->get_params($request,['start_time','end_time','mins']);
         $data['time'] = $data['time'] ?? $this::slice_time($time);
         //更新任务

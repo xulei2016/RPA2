@@ -4,8 +4,9 @@ namespace App\Http\Controllers\base;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Models\Admin\Rpa\rpa_accesstoken;
 use Illuminate\Support\MessageBag;
+use GuzzleHttp\Client;
 
 class BaseController extends Controller
 {
@@ -38,7 +39,7 @@ class BaseController extends Controller
 
         $secure = $secure ?: (config('admin.https') || config('admin.secure'));
 
-        return url(admin_base_path($path), $parameters, $secure);
+        return url($this->admin_base_path($path), $parameters, $secure);
     }
     
     /**
@@ -81,7 +82,7 @@ class BaseController extends Controller
      */
     function admin_success($title, $message = '')
     {
-        admin_info($title, $message, 'success');
+        $this->admin_info($title, $message, 'success');
     }
     
 
@@ -93,7 +94,7 @@ class BaseController extends Controller
      */
     function admin_error($title, $message = '')
     {
-        admin_info($title, $message, 'error');
+        $this->admin_info($title, $message, 'error');
     }
     
 
@@ -105,7 +106,7 @@ class BaseController extends Controller
      */
     function admin_warning($title, $message = '')
     {
-        admin_info($title, $message, 'warning');
+        $this->admin_info($title, $message, 'warning');
     }
     
     
@@ -362,6 +363,7 @@ class BaseController extends Controller
 		foreach ($keyValueList as $key=>$operator){
             $value = $data[$key];
 			if(null != $value && '' != $value){
+                $value = (trim($operator) == 'like') ? "%$value%" : $value ;
                 $dateKey = $this->isDateArea($key);
 				if($dateKey){//判断是否时间段
 					array_push($conditionList,  array($dateKey, $operator, $value));
@@ -453,5 +455,76 @@ class BaseController extends Controller
         $file->move($upload_path, $filename);
 
         return $upload_path."/".$filename;
+    }
+
+    /**
+     * 从crm中间件获取数据
+     * 
+     */
+    public function getCrmData($post_data){
+        $guzzle = new Client();
+        $response = $guzzle->post('www.localhost.com:9102/index.php',[
+            'form_params' => $post_data,
+            'synchronous' => true,
+            'timeout' => 0,
+        ]);
+        $body = $response->getBody();
+        $result = json_decode((String)$body,true);
+        return $result;
+    }
+
+
+    /**
+     * 获取api接口的access_token
+     * @param $host
+     * @return mixed
+     */
+    public function access_token($host)
+    {
+//        查看数据库是否有该token
+        $accesstoken = rpa_accesstoken::where("username","=","web@example.com")->first();
+        if($accesstoken){
+            //是否过期
+            $time = $accesstoken['timeout'] - (time() - strtotime($accesstoken['updated_at']));
+//            判断是否过期
+            if($time > 0){
+                return $accesstoken['token'];
+            }else{
+                $data = $this->get_token($host);
+                rpa_accesstoken::where('id',$accesstoken['id'])->update($data);
+                return $data['token'];
+            }
+        }else{
+            $data = $this->get_token($host);
+            rpa_accesstoken::create($data);
+            return $data['token'];
+        }
+
+    }
+
+    public function get_token($host){
+        //获取token存入数据库
+        $url = $host."/oauth/token";
+        $guzzle = new Client(['verify'=>false]);
+        $response = $guzzle->post($url, [
+            'form_params' => [
+                'grant_type' => 'password',
+                'client_id' => 2,
+                'client_secret' => 'DuNMC6w9faxgeRx1g1eTC5N3lGvukbNiERAI7Jya',
+                'username' => 'web@example.com',
+                'password' => 'H@qh9772rpa,.',
+                'scope' => ''
+            ],
+        ]);
+        $body = $response->getBody();
+        $body = json_decode((string)$body,true);
+        $data = [
+            'token' => $body['token_type']." ".$body['access_token'],
+            'updated_at' => date("Y-m-d H:i:s",time()),
+            'timeout' => $body['expires_in'],
+            'refresh_token' => $body['refresh_token'],
+            'username' => 'web@example.com'
+        ];
+        return $data;
     }
 }

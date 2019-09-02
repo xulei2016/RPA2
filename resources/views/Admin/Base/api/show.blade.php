@@ -1,9 +1,9 @@
-<div class="box box-info">
-    <div class="box-header with-border">
-        <h3 class="box-title">查看操作</h3>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">查看操作</h3>
     </div>
-    <!-- /.box-header -->
-    <div class="box-body">
+    <!-- /.card-header -->
+    <div class="card-body">
         <div class="inner-section">
             <div id="content">
                 <table class="table table-striped table-hover table-bordered table-base">

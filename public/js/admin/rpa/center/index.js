@@ -132,7 +132,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(values){
-                        return values ? '<small class="label bg-red">是</small>' : '<small class="label bg-primary">否</small>';
+                        return values ? '<span class="x-tag x-tag-danger x-tag-sm">是</span>' : '<span class="x-tag x-tag-success x-tag-sm">否</span>';
                     }
                 }, {
                     field: 'failtimes',
@@ -159,8 +159,8 @@ $(function(){
                         var id = value;
                         var result = "";
                         if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/rpa_center/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_center/"+id+"/edit' title='编辑'>编辑</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;
                     }

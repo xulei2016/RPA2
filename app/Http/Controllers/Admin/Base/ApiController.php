@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use App\Http\Controllers\base\BaseAdminController;
-use App\Models\Admin\Base\SysApiip;
+use App\Models\Admin\Api\RpaApiIp;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 
 class ApiController extends BaseAdminController
@@ -29,14 +28,14 @@ class ApiController extends BaseAdminController
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "添加 api");
         $data = $this->get_params($request, ['api','url','method','desc','state','black_list','white_list']);
-        SysApiip::create($data);
+        RpaApiIp::create($data);
         return $this->ajax_return(200, '操作成功！');
     }
     //修改页面
     public function edit(Request $request, $id)
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "更新 api页面");
-        $sysApiip = SysApiip::find($id);
+        $sysApiip = RpaApiIp::find($id);
         $sysApiip['black_list'] = isset($sysApiip['black_list']) ? json_decode($sysApiip['black_list'], false) :'';
         $sysApiip['white_list'] = isset($sysApiip['white_list']) ? json_decode($sysApiip['white_list'], false) :'';
         return view('admin.base.api.edit',['apiip' => $sysApiip]);
@@ -46,7 +45,7 @@ class ApiController extends BaseAdminController
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "更新 api");
         $data = $this->get_params($request, ['api','url','method','desc','state','black_list','white_list']);
-        SysApiip::where('id',$id)->update($data);
+        RpaApiIp::where('id',$id)->update($data);
         Cache::forget($data['api']);
         return $this->ajax_return(200, '操作成功！');
     }
@@ -54,7 +53,7 @@ class ApiController extends BaseAdminController
     public function show(Request $request, $id)
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 api参数");
-        $sysApiip = SysApiip::find($id);
+        $sysApiip = RpaApiIp::find($id);
         $sysApiip['black_list'] = $sysApiip['black_list'] ? json_decode($sysApiip['black_list']) :'';
         $sysApiip['white_list'] = $sysApiip['white_list'] ? json_decode($sysApiip['white_list']) :'';
         return view('admin.base.api.show',['apiip' => $sysApiip]);
@@ -63,18 +62,18 @@ class ApiController extends BaseAdminController
     public function destroy(Request $request, $ids)
     {
         $ids = explode(',', $ids);
-        $result = SysApiip::destroy($ids);
+        $result = RpaApiIp::destroy($ids);
         $this->log(__CLASS__, __FUNCTION__, $request, "删除 api");
         return $this->ajax_return(200, '操作成功！');
     }
     //分页
     public function pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['api','from_created_at','to_created_at']);
-        $condition = $this->getPagingList($selectInfo, ['api'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
+        $selectInfo = $this->get_params($request, ['api','desc','from_created_at','to_created_at']);
+        $condition = $this->getPagingList($selectInfo, ['api'=>'like','desc'=>'like','from_created_at'=>'>=','to_created_at'=>'<=']);
         $rows = $request->rows;
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder ?? 'desc';
-        $result = SysApiip::where($condition)
+        $result = RpaApiIp::where($condition)
             ->orderBy($order, $sort)
             ->paginate($rows);
         return $result;

@@ -1,34 +1,29 @@
-<!-- Left side column. contains the logo and sidebar -->
-<aside class="main-sidebar">
-      <!-- sidebar: style can be found in sidebar.less -->
-      <section class="sidebar">
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+        <img src="{{URL::asset('/common/images/default_head.png')}}" alt="{!! config('admin.name') !!}" class="brand-image img-circle elevation-3"
+            style="opacity: .8">
+        <span class="brand-text font-weight-light">{!! config('admin.logo') !!}</span>
+    </a>
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                
+                {{-- <li class="nav-item">
+                    <a href="/admin" class="nav-link active"><i class="nav-icon fa fa-bars"></i><p>首页</p></a>
+                </li> --}}
 
-          <!-- search form -->
-          <form action="#" method="get" class="sidebar-form">
-              <div class="input-group">
-                  <input type="text" name="q" class="form-control" placeholder="Search...">
-                  <span class="input-group-btn">
-                      <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                      </button>
-                  </span>
-              </div>
-          </form>
+                @inject('menus','App\Http\Controllers\Admin\Base\MenuController')
 
-        <!-- /.search form -->
-        <!-- sidebar menu: : style can be found in sidebar.less -->
-          <ul class="sidebar-menu" data-widget="tree">
+                {!! $menus->getMenuList() !!}
 
-              {{-- @inject('menus','App\Models\Admin\Base\SysMenu') --}}
-              @inject('menus','App\Http\Controllers\Admin\Base\MenuController')
+                <li class="nav-header">其他</li>
+                <li class="nav-item"><a href="/admin/Bugs" class="nav-link"><i class="nav-icon fa fa-bug text-red"></i><p class="text">BUG提交</p></a></li>
+                <li class="nav-item"><a href="/admin/Improvement" class="nav-link"><i class="nav-icon fa fa-comment text-yellow"></i><p class="text">改进意见</p></a></li>
+                <li class="nav-item"><a href="https://jq.qq.com/?_wv=1027&k=5PO47UO" class="nav-link" target="_blank"><i class="nav-icon fa fa-qq text-aqua"></i><p class="text">QQ交流群</p></a></li>
 
-              {!! $menus->getMenuList() !!}
-
-              <li class="header" data-rel="external">其他</li>
-              <li data-rel="external"><a href="/Bugs"><i class="fa fa-list text-red"></i> <span>BUG提交</span></a></li>
-              <li data-rel="external"><a href="/Improvement"><i class="fa fa-comment text-yellow"></i> <span>改进意见</span></a></li>
-              <li data-rel="external"><a href="https://jq.qq.com/?_wv=1027&k=5PO47UO" target="_blank"><i class="fa fa-qq text-aqua"></i> <span>QQ交流群</span></a></li>
-
-          </ul>
-      </section>
-      <!-- /.sidebar -->
-  </aside>
+            </ul>
+        </nav>
+    </div>
+</aside>

@@ -1,13 +1,13 @@
 @component('admin.widgets.editForm')
 @slot('formContent')
 
-<div class="form-group">
+<div class="form-group row">
     <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>名称</label>
     <div class="col-sm-10">
         <input type="text" class="form-control" name="name" id="name" value="{{ $info->name }}" placeholder="名称" required>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
     <label for="guard_name" class="col-sm-2 control-label"><span class="must-tag">*</span>用户组</label>
     <div class="col-sm-10">
         <select name="guard_name" id="guard_name" class="form-control">
@@ -15,7 +15,7 @@
         </select>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
     <label for="type" class="col-sm-2 control-label">状态</label>
     <div class="col-sm-10">
         <div class="switch">
@@ -23,7 +23,7 @@
         </div>
     </div>
 </div>
-<div class="form-group">
+<div class="form-group row">
     <label for="desc" class="col-sm-2 control-label">描述</label>
     <div class="col-sm-10">
         <textarea type="text" class="form-control" name="desc" id="desc" placeholder="描述">{{ $info->desc }}</textarea>

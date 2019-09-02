@@ -96,6 +96,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             api : $("#pjax-container #search-group #api").val(),
+            desc : $("#pjax-container #search-group #desc").val(),
             from_created_at : $("#pjax-container #search-group #startTime").val(),
             to_created_at : $("#pjax-container #search-group #endTime").val()
         };
@@ -152,7 +153,7 @@ $(function(){
                 align: 'center',
                 valign: 'middle',
                 formatter: function(values){
-                    return values ? '<small class="label bg-primary">启用</small>' : '<small class="label bg-red">禁用</small>';
+                    return values ? '<span class="x-tag x-tag-sm x-tag-success">启用</span>' : '<span class="x-tag x-tag-sm x-tag-danger">禁用</span>';
                 }
             }, {
                 field: 'created_at',
@@ -162,7 +163,7 @@ $(function(){
                 sortable: true,
             }, {
                 field: 'updated_at',
-                title: '创建时间',
+                title: '更新时间',
                 align: 'center',
                 valign: 'middle',
                 sortable: true,
@@ -180,9 +181,9 @@ $(function(){
                 formatter: function(value, row, index){
                     var id = value;
                     var result = "";
-                    result += " <a href='javascript:;' class='btn btn-xs btn-success' onclick=\"operation($(this));\" url='/admin/sys_api/"+id+"' title='查看黑白名单'><span class='glyphicon glyphicon-search'></span></a>";
-                    result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/sys_api/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                    result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                    result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/sys_api/"+id+"' title='查看黑白名单'>查看</a>";
+                    result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/sys_api/"+id+"/edit' title='编辑'>编辑</a>";
+                    result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                     return result;
                 }

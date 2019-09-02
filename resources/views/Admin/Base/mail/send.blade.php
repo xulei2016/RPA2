@@ -4,11 +4,8 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="box box-info">
-            <div class="box-header">
-                <h3 class="box-title">编辑邮件</h3>
-            </div>
-            <div class="box-body pad">
+        <div class="card card-primary card-outline">
+            <div class="card-body pad">
                 <form enctype="multipart/form-data">
                     <div class="form-group">
                         <div class="form-group">

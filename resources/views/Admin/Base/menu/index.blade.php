@@ -38,71 +38,91 @@
     </style>
 
     {{-- content here --}}
-    <div class="col-md-12">
-        <div class="box">
-        
-            <div class="box-header">
-        
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="expand" title="展开">
-                        <i class="fa fa-plus-square-o"></i>&nbsp;展开
-                    </a>
-                    <a class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="collapse" title="收起">
-                        <i class="fa fa-minus-square-o"></i>&nbsp;收起
-                    </a>
-                </div>
-        
-                <div class="btn-group">
-                    <a class="btn btn-info btn-sm tree-ntstable-save" title="保存"><i class="fa fa-save"></i><span class="hidden-xs">&nbsp;保存</span></a>
-                </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary card-outline">
                 
-                <div class="btn-group">
-                    <a class="btn btn-warning btn-sm tree-ntstable-refresh" title="刷新"><i class="fa fa-refresh"></i><span class="hidden-xs">&nbsp;刷新</span></a>
-                </div>
+                    <div class="card-header">
                 
-                <div class="btn-group">
-                    <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/sys_menu/create" title="新增" onclick="operation($(this));">
-                        <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
-                    </a>
+                        <div class="btn-group">
+                            <button class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="expand" title="展开">
+                                <i class="fa fa-plus-square-o"></i>&nbsp;展开
+                            </button>
+                            <button class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="collapse" title="收起">
+                                <i class="fa fa-minus-square-o"></i>&nbsp;收起
+                            </button>
+                        </div>
+                
+                        <div class="btn-group">
+                            <button class="btn btn-info btn-sm tree-ntstable-save" title="保存"><i class="fa fa-save"></i><span class="hidden-xs">&nbsp;保存</span></button>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button class="btn btn-warning btn-sm tree-ntstable-refresh" title="刷新"><i class="fa fa-refresh"></i><span class="hidden-xs">&nbsp;刷新</span></button>
+                        </div>
+                        
+                        <div class="btn-group">
+                            <a class="btn btn-success btn-sm tree-ntstable-add" url="/admin/sys_menu/create" title="新增" onclick="operation($(this));">
+                                <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
+                            </a>
+                        </div>
+                
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive no-padding">
+                        <div class="dd" id="tree-ntstable">
+                            <ol class="dd-list">
+                                @foreach($menuList as $menus)
+                                    <li class="dd-item" data-id="{{ $menus['id'] }}">
+                                        <div class="dd-handle">
+                                            <i class="fa fa-bar-chart"></i>&nbsp;<strong>{{ $menus['title'] }}</strong>&nbsp;&nbsp;&nbsp;
+                                            <a href="{{ $menus['uri'] }}" class="dd-nodrag">{{ $menus['uri'] }}</a>
+                                            <span class="pull-right dd-nodrag">
+                                                <a url="/admin/sys_menu/{{ $menus['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
+                                                <a href="javascript:void(0);" data-id="{{ $menus['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
+                                            </span>
+                                        </div>
+                                        @if(!empty($menus['child']))
+                                            <ol class="dd-list">
+                                            @foreach($menus['child'] as $menu)
+                                                <li class="dd-item" data-id="{{ $menu['id'] }}">
+                                                    <div class="dd-handle">
+                                                        <i class="fa fa-users"></i>&nbsp;<strong>{{ $menu['title'] }}</strong>&nbsp;&nbsp;&nbsp;
+                                                        <a href="javascript:void(0);" class="dd-nodrag">{{ $menu['uri'] }}</a>
+                                                        <span class="pull-right dd-nodrag">
+                                                            <a url="/admin/sys_menu/{{ $menu['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
+                                                            <a href="javascript:void(0);" data-id="{{ $menu['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
+                                                        </span>
+                                                    </div>
+                                                </li>
+                                                @if(!empty($menu['child']))
+                                                    <ol class="dd-list">
+                                                    @foreach($menu['child'] as $menu1)
+                                                        <li class="dd-item" data-id="{{ $menu1['id'] }}">
+                                                            <div class="dd-handle">
+                                                                <i class="fa fa-users"></i>&nbsp;<strong>{{ $menu1['title'] }}</strong>&nbsp;&nbsp;&nbsp;
+                                                                <a href="javascript:void(0);" class="dd-nodrag">{{ $menu1['uri'] }}</a>
+                                                                <span class="pull-right dd-nodrag">
+                                                                    <a url="/admin/sys_menu/{{ $menu1['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
+                                                                    <a href="javascript:void(0);" data-id="{{ $menu1['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
+                                                                </span>
+                                                            </div>
+                                                        </li>
+                                                    @endforeach
+                                                    </ol>
+                                                @endif
+                                            @endforeach
+                                            </ol>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ol>
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
                 </div>
-        
             </div>
-            <!-- /.box-header -->
-            <div class="box-body table-responsive no-padding">
-                <div class="dd" id="tree-ntstable">
-                    <ol class="dd-list">
-                        @foreach($menuList as $menus)
-                            <li class="dd-item" data-id="{{ $menus['id'] }}">
-                                <div class="dd-handle">
-                                    <i class="fa fa-bar-chart"></i>&nbsp;<strong>{{ $menus['title'] }}</strong>&nbsp;&nbsp;&nbsp;
-                                    <a href="{{ $menus['uri'] }}" class="dd-nodrag">{{ $menus['uri'] }}</a>
-                                    <span class="pull-right dd-nodrag">
-                                        <a url="/admin/sys_menu/{{ $menus['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
-                                        <a href="javascript:void(0);" data-id="{{ $menus['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                                    </span>
-                                </div>
-                                @if(!empty($menus['child']))
-                                    <ol class="dd-list">
-                                    @foreach($menus['child'] as $menu)
-                                        <li class="dd-item" data-id="{{ $menu['id'] }}">
-                                            <div class="dd-handle">
-                                                <i class="fa fa-users"></i>&nbsp;<strong>{{ $menu['title'] }}</strong>&nbsp;&nbsp;&nbsp;
-                                                <a href="javascript:void(0);" class="dd-nodrag">{{ $menu['uri'] }}</a>
-                                                <span class="pull-right dd-nodrag">
-                                                    <a url="/admin/sys_menu/{{ $menu['id'] }}/edit" onclick="operation($(this));"><i class="fa fa-edit"></i></a>
-                                                    <a href="javascript:void(0);" data-id="{{ $menu['id'] }}" class="tree_branch_delete"><i class="fa fa-trash"></i></a>
-                                                </span>
-                                            </div>
-                                        </li>
-                                    @endforeach
-                                    </ol>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ol>
-                </div>
-            </div>
-            <!-- /.box-body -->
         </div>
     </div>
     <script src="{{URL::asset('/include/nestable/jquery.nestable.js')}}"></script>

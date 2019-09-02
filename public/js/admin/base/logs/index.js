@@ -186,9 +186,9 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-success' onclick=\"operation($(this));\" url='/admin/sys_logs/"+id+"' title='查看参数'><span class='glyphicon glyphicon-search'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        // if(1 == id)return result;
+                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/sys_logs/"+id+"' title='查看参数'>查看</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;
                     }

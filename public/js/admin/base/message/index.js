@@ -180,11 +180,11 @@ $(function(){
                     formatter: function(value, row, index){
                         let res = "";
                         if(1 == value.typeName){
-                            res = '<span class="text-primary">系统公告</span>';
+                            res = '<span class="x-tag x-tag-sm">系统公告</span>';
                         }else if(2 == value.typeName){
-                            res = '<span class="text-primary">RPA通知</span>';
+                            res = '<span class="x-tag x-tag-sm">RPA通知</span>';
                         }else{
-                            res = '<span class="text-primary">管理员通知</span>'
+                            res = '<span class="x-tag x-tag-sm">管理员通知</span>';
                         }
                         return res;
                     }
@@ -196,9 +196,9 @@ $(function(){
                     formatter: function(value, row, index){
                         let res = "";
                         if(value){
-                            res = '<span class="text-success">已读</span>';
+                            res = '<span class="x-tag x-tag-sm x-tag-success">已读</span>';
                         }else{
-                            res = '<span class="text-danger">未读</span>'
+                            res = '<span class="x-tag x-tag-sm x-tag-danger">未读</span>';
                         }
                         return res;
                     }

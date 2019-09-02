@@ -121,7 +121,7 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' id='immedtask' title='立即运行'>立即运行</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-success' id='immedtask' title='立即运行'>立即运行</a>";
 
                         return result;
                     }

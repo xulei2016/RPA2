@@ -37,7 +37,7 @@ class MessageController extends BaseAdminController
         if(isset($data['user'])){
             $data['user'] = implode(',', $data['user']);
         }
-        $data['add_time1'] = $this->getTime();
+        $data['add_time'] = $this->getTime();
         $res = SysMessage::create($data);
         if($res){
             return $this->ajax_return('200', '操作成功！');
@@ -100,8 +100,8 @@ class MessageController extends BaseAdminController
         return view('admin/Base/message/sms_list');
     }
     public function sms_pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['api','phone','from_created_at','to_created_at']);
-        $condition = $this->getPagingList($selectInfo, ['api'=>'=','phone'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
+        $selectInfo = $this->get_params($request, ['type','phone','from_created_at','to_created_at']);
+        $condition = $this->getPagingList($selectInfo, ['type'=>'=','phone'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
         $rows = $request->rows;
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder ?? 'desc';

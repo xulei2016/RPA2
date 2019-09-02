@@ -89,7 +89,7 @@
                         <input class="form-control" placeholder="主题:" required>
                     </div>
                     <div class="form-group">
-                        <textarea id="compose-textarea" class="form-control"  placeholder="写点什么吧"></textarea>
+                        <textarea id="editor" class="form-control"  placeholder="写点什么吧"></textarea>
                     </div>
                 </div>
                 <div class="box-footer">
@@ -98,15 +98,6 @@
                     </div>
                 </div>
             </div>
-            <!-- bootstrap wysihtml5 - text editor -->
-            <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css')}}">
-            <script src="{{URL::asset('include/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js')}}"></script>
-            <script>
-                $(function () {
-                    $("#pjax-container #compose-textarea").wysihtml5({
-                    });
-                });
-            </script>
         </div>
         <!-- /.row (main row) -->
     </section>

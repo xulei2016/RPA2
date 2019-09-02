@@ -1,20 +1,14 @@
-<div class="box box-info">
-        <div class="box-header with-border">
-            <h3 class="box-title">添加操作</h3>
+    <div class="card-body">
+        <div class="card-header with-border">
+            <h3 class="card-title">权限管理</h3>
         </div>
-        <!-- /.box-header -->
-        <!-- form start -->
         <form class="form-horizontal" id="form">
-
 
             <ul id="tree" class="ztree"></ul>
 
-
-            <!-- /.box-body -->
             <div class="box-footer">
-                <button type="button" class="btn btn-info pull-right" id="save">提交</button>
+                <button type="button" class="btn btn-primary pull-right" id="save">提交</button>
             </div>
-            <!-- /.box-footer -->
         </form>
     </div>
     <link rel="stylesheet" href="{{URL::asset('/include/zTree_v3/css/zTreeStyle/zTreeStyle.css')}}" type="text/css">
@@ -23,6 +17,8 @@
     <script type="text/javascript" src="{{URL::asset('/include/zTree_v3/js/jquery.ztree.exhide.min.js')}}"></script>
     <script>
         $(function(){
+            let modal = RPA.config.modal;
+            
             /*
             * 初始化
             */
@@ -35,13 +31,13 @@
             function bindEvent(){
                 //iCheck for checkbox and radio inputs
                 $(document).ready(function(){
-                    $('#modal input.minimal').iCheck({
+                    $(modal+' input.minimal').iCheck({
                         checkboxClass: 'icheckbox_minimal-blue',
                         radioClass: 'iradio_minimal-blue',
                     });
                 });
 
-                $('#modal #form #save').click(function(){
+                $(modal+' #form #save').click(function(){
                     add($(this));
                 });
             }
@@ -57,7 +53,7 @@
                 $.post('/admin/sys_role/{{ $id }}/roleHasPermission', {data:v}, function(json){
                     if(200 == json.code){
                         toastr.success('操作成功！');
-                        $('#modal').modal('hide');
+                        $(modal+'').modal('hide');
                         $.pjax.reload('#pjax-container');
                     }else{
                         toastr.error(json.info);

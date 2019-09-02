@@ -41,45 +41,6 @@ $(function(){
     }
 
     /**
-     * 删除单条记录
-     */
-    function change_type(id){
-        Swal({
-            title: "确认回访?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "确认",
-            showLoaderOnConfirm: true,
-            cancelButtonText: "取消",
-            preConfirm: function() {
-                return new Promise(function(resolve, reject) {
-                    $.ajax({
-                        method: 'post',
-                        url: '/admin/rpa_jjr_records/typeChange',
-                        data: {
-                            id:id
-                        },
-                        success: function (json) {
-                            if(200 == json.code){
-                                $.pjax.reload('#pjax-container');
-                                resolve(json);
-                            }else{
-                                reject(json.info);
-                            }
-                        }
-                    });
-                });
-            }
-        }).then(function(json) {
-            var json = json.value;
-            Swal(json.info, '', 'success');
-        },function(dismiss){
-            Swal(dismiss, '', 'error');
-        });
-    }
-
-    /**
      * 获取模糊参数
      */
     function getSearchGroup(){
@@ -90,8 +51,8 @@ $(function(){
             customer : $("#pjax-container #search-group #customer").val(),
             revisit : $("#pjax-container #search-group #name").val(),
             status : $("#pjax-container #search-group #status").val(),
-            from_completed_date : $("#pjax-container #search-group #startTime").val(),
-            to_completed_date : $("#pjax-container #search-group #endTime").val()
+            from_updatetime : $("#pjax-container #search-group #startTime").val(),
+            to_updatetime : $("#pjax-container #search-group #endTime").val()
         };
         return temp;
     }
@@ -139,7 +100,8 @@ $(function(){
                     field: 'deptname',
                     title: '部门',
                     align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                    sortable: true,
                 }, {
                     field: 'manager_name',
                     title: '经理',
@@ -155,12 +117,15 @@ $(function(){
                     title: '状态',
                     align: 'center',
                     valign: 'middle',
+                    sortable: true,
                     formatter: function(value, row, index){
                         let res = "";
                         if(1 == value){
-                            res = '<span class="text-primary">已完成</span>';
+                            res = '<span class="x-tag x-tag-sm">已完成</span>';
+                        }else if(0 == value){
+                            res = '<span class="x-tag x-tag-sm x-tag-info">未回访</span>';
                         }else{
-                            res = '<span class="text-danger">未回访</span>'
+                            res = '<span class="x-tag x-tag-sm x-tag-danger">回访失败</span>';
                         }
                         return res;
                     }
@@ -178,35 +143,34 @@ $(function(){
                     field: 'revisit',
                     title: '回访人',
                     align: 'center',
-                    valign: 'middle'
-                },{
-                    field: 'open_date',
-                    title: '开户时间',
-                    align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                    sortable: true,
                 },{
                     field: 'updatetime',
+                    title: '分配时间',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                },{
+                    field: 'review_date',
                     title: '回访时间',
                     align: 'center',
                     valign: 'middle',
+                    sortable: true,
                 }, {
                     field: 'id',
                     title: '操作',
                     align: 'center',
                     valign: 'middle',
-                    events: {
-                        "click #change_type":function (e, value, row, index){
-                            var id = row.id;
-                            change_type(id);
-                        }
-                    },
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
                         if(row.status == 0){
-                            result += '<a class="btn btn-primary btn-sm param" href="javascript:void(0);" id="change_type">回访</a>';
+                            result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/rpa_jjr_records/edit/"+id+"' title='回访'>回访</a><br/>";
+                        }else if(row.status == 1){
+                            // result += '<a class="btn btn-success btn-sm" href="javascript:void(0);" disabled>已完成</a>';
                         }else{
-                            result += '<a class="btn btn-success btn-sm" href="javascript:void(0);" disabled>已完成</a>';
+                            result += " <a href='javascript:;' class='btn btn-sm btn-danger' onclick=\"operation($(this));\" url='/admin/rpa_jjr_records/edit/"+id+"' title='回访'>"+row.reason+"</a><br/>";
                         }
                         return result;
                     }

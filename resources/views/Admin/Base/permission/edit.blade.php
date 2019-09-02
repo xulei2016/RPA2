@@ -1,26 +1,26 @@
 @component('admin.widgets.editForm')
 @slot('formContent')
-                <div class="form-group">
+                <div class="form-group row">
                     <label for="name" class="col-sm-2 control-label">名称</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="name" id="name" value="{{ $info->name }}" placeholder="请使用英文名称" required>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label for="desc" class="col-sm-2 control-label">简述</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="desc" id="desc" value="{{ $info->desc }}" placeholder="简述" required>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label for="guard_name" class="col-sm-2 control-label">权限树</label>
                     <div class="col-sm-10">
-                        <select name="pid" id="select2-menu" class="form-control pid" id="select2-menu">
-                            <option value="">顶级权限</option>
+                        <select name="pid" class="form-control pid" id="select2_menu">
+                            <option value="{{ $info->pid }}">父级菜单</option>
                         </select>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label for="guard_name" class="col-sm-2 control-label">所属分组</label>
                     <div class="col-sm-10">
                         <select name="guard_name" class="form-control" id="guard_name">
@@ -28,13 +28,13 @@
                         </select>
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label for="sort" class="col-sm-2 control-label">排序</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="sort" value="{{ $info->sort }}" id="sort" placeholder="排序">
                     </div>
                 </div>
-                <div class="form-group">
+                <div class="form-group row">
                     <label for="status" class="col-sm-2 control-label">状态</label>
                     <div class="col-sm-10">
                         <div class="switch">

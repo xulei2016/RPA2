@@ -3,11 +3,12 @@ $(function(){
      * 初始化
      */
     function init(){
-        bindEvent();
 
         //1.初始化Table
         var oTable = new RPA.TableInit();
         pageNation(oTable);
+        
+        bindEvent();
     }
 
     /*
@@ -41,10 +42,10 @@ $(function(){
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/admin/export?"+$url;
+            location.href="/admin/sys_admin/export?"+$url;
         });
 
-        //导出全部
+        //导出选中
         $("#pjax-container section.content #toolbar #export").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
@@ -99,7 +100,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             name : $("#pjax-container #search-group #name").val(),
-            type : $("#pjax-container #search-group #type").val()
+            realName : $("#pjax-container #search-group #realName").val()
         }
         return temp;
     }
@@ -154,7 +155,7 @@ $(function(){
                     field: 'sex',
                     title: '性别',
                     formatter: function(res){
-                        return (res == 1) ? '男' : ((res == 0) ? '女' : '未知') ;
+                        return (res == 1) ? '男' : ((res == 2) ? '女' : '未知') ;
                     },
                     align: 'center',
                     valign: 'middle'
@@ -169,7 +170,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(res){
-                        let html = ' <small class="label bg-blue">'+res+'</small> ';
+                        let html = ' <small class="x-tag x-tag-sm">'+res+'</small> ';
                         return html;
                     }
                 }, {
@@ -181,7 +182,7 @@ $(function(){
                         if(res) res = res.split(',');
                         let html = '';
                         for(let v of res){
-                            html += ' <small class="label bg-blue">'+v+'</small> ';
+                            html += ' <small class="x-tag x-tag-sm">'+v+'</small> ';
                         }
                         return html;
                     }
@@ -196,7 +197,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(res){
-                        return (1 == res) ? '<small class="label bg-green">启用</small>' : '<small class="label bg-red">禁用</small>' ;
+                        return (1 == res) ? '<small class="x-tag x-tag-success x-tag-sm">启用</small>' : '<small class="x-tag x-tag-danger x-tag-sm">禁用</small>' ;
                     }
                 }, {
                     field: 'created_at',
@@ -219,8 +220,8 @@ $(function(){
                         var id = value;
                         var result = "";
                         if(1 == id)return result;
-                        result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_admin/"+id+"/edit' title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/sys_admin/"+id+"/edit' title='编辑'>编辑</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;
                     }

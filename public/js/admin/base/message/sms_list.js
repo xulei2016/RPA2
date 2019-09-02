@@ -48,7 +48,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             phone : $("#pjax-container #search-group #phone").val(),
-            api : $("#pjax-container #search-group #api").val(),
+            type : $("#pjax-container #search-group #type").val(),
             from_created_at : $("#pjax-container #search-group #startTime").val(),
             to_created_at : $("#pjax-container #search-group #endTime").val()
         };
@@ -80,7 +80,7 @@ $(function(){
             columns: [{
                     checkbox: true,
                 }, {
-                    field: 'api',
+                    field: 'type',
                     title: '短信平台',
                     align: 'center',
                     valign: 'middle'
@@ -103,7 +103,8 @@ $(function(){
                     field: 'created_at',
                     title: '发送时间',
                     align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                    sortable: true
                 }],
             }
 

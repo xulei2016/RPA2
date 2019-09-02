@@ -1,22 +1,23 @@
 $(function(){
+    let modal = RPA.config.modal;
+
     function init(){
         bindEvent();
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
     initCheckBox();
     function bindEvent(){
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
 
-
-        $('#modal form .switch input#isfp').bootstrapSwitch({onText:"是", offText:"否"});
-        $('#modal form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
+        $(modal+' form .switch input#isfp').bootstrapSwitch({onText:"是", offText:"否"});
+        $(modal+' form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
     }
 
-    $('#modal form select#notice_type').on('change', function(){
+    $(modal+' form select#notice_type').on('change', function(){
         mesNotice($(this));
     });
     //消息通知方式
@@ -42,8 +43,8 @@ $(function(){
                 }else{
                     _html += '暂无数据！';
                 }
-                $('#modal form .accepter .accepter-content').html(_html);
-                $('#modal form .accepter').removeClass('hidden');
+                $(modal+' form .accepter .accepter-content').html(_html);
+                $(modal+' form .accepter').removeClass('hidden');
                 initCheckBox();
                 return;
             }
@@ -53,7 +54,7 @@ $(function(){
 
     //init checkbox
     function initCheckBox(){
-        $('#modal .accepter input').iCheck({
+        $(modal+' .accepter input').iCheck({
             checkboxClass: 'icheckbox_minimal-blue',
             radioClass: 'iradio_minimal-blue',
         });
@@ -64,7 +65,7 @@ $(function(){
         RPA.form.ajaxSubmit(e, FormOptions);
     }
 
-    var id = $('#modal #id').val();
+    var id = $(modal+' #id').val();
     //提交信息的表单配置
     var FormOptions={
         url:'/admin/rpa_center/'+id,

@@ -141,8 +141,8 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_funds_search/varietyedit/"+id+"'  title='编辑'><span class='glyphicon glyphicon-pencil'></span></a>";
-                        result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'><span class='glyphicon glyphicon-remove'></span></a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_funds_search/varietyedit/"+id+"'  title='编辑'>编辑</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;
                     }

@@ -176,11 +176,11 @@ $(function(){
                     formatter: function(value, row, index){
                         let res = "";
                         if(1 == value){
-                            res = '<span class="text-success">系统公告</span>';
+                            res = '<span class="x-tag x-tag-sm x-tag-success">系统公告</span>';
                         }else if(2 == value){
-                            res = '<span class="text-success">RPA通知</span>';
+                            res = '<span class="x-tag x-tag-sm">RPA通知</span>';
                         }else{
-                            res = '<span class="text-danger">管理员通知</span>'
+                            res = '<span class="x-tag x-tag-sm x-tag-warning">管理员通知</span>';
                         }
                         return res;
                     }

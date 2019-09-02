@@ -39,41 +39,43 @@
 
     {{-- content here --}}
     <div class="col-md-12">
-        <div class="box">
-        
-            <div class="box-header">
-        
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="expand" title="展开">
-                        <i class="fa fa-plus-square-o"></i>&nbsp;展开
-                    </a>
-                    <a class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="collapse" title="收起">
-                        <i class="fa fa-minus-square-o"></i>&nbsp;收起
-                    </a>
+        <div class="card card-primary card-outline">
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="btn-group">
+                        <a class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="expand" title="展开">
+                            <i class="fa fa-plus-square-o"></i>&nbsp;展开
+                        </a>
+                        <a class="btn btn-primary btn-sm tree-ntstable-tree-tools" data-action="collapse" title="收起">
+                            <i class="fa fa-minus-square-o"></i>&nbsp;收起
+                        </a>
+                    </div>
+
+                    <div class="btn-group">
+                        <a class="btn btn-info btn-sm tree-ntstable-save" title="保存"><i class="fa fa-save"></i><span class="hidden-xs">&nbsp;保存</span></a>
+                    </div>
+
+                    <div class="btn-group">
+                        <a class="btn btn-warning btn-sm tree-ntstable-refresh" title="刷新"><i class="fa fa-refresh"></i><span class="hidden-xs">&nbsp;刷新</span></a>
+                    </div>
+
+                    <div class="btn-group">
+                        <a class="btn btn-success btn-sm tree-ntstable-add" url="/admin/sys_permission/create" title="新增" onclick="operation($(this));">
+                            <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
+                        </a>
+                    </div>
+
                 </div>
-        
-                <div class="btn-group">
-                    <a class="btn btn-info btn-sm tree-ntstable-save" title="保存"><i class="fa fa-save"></i><span class="hidden-xs">&nbsp;保存</span></a>
+                <!-- /.box-header -->
+                <div class="card-body table-responsive no-padding">
+                    <div class="dd" id="tree-ntstable">
+                        {!! $lists !!}
+                    </div>
                 </div>
-                
-                <div class="btn-group">
-                    <a class="btn btn-warning btn-sm tree-ntstable-refresh" title="刷新"><i class="fa fa-refresh"></i><span class="hidden-xs">&nbsp;刷新</span></a>
-                </div>
-                
-                <div class="btn-group">
-                    <a class="btn btn-warning btn-sm tree-ntstable-add" url="/admin/sys_permission/create" title="新增" onclick="operation($(this));">
-                        <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
-                    </a>
-                </div>
-        
+                <!-- /.box-body -->
             </div>
-            <!-- /.box-header -->
-            <div class="box-body table-responsive no-padding">
-                <div class="dd" id="tree-ntstable">
-                    {!! $lists !!}
-                </div>
-            </div>
-            <!-- /.box-body -->
         </div>
     </div>
     <script src="{{URL::asset('/include/nestable/jquery.nestable.js')}}"></script>

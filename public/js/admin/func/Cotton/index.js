@@ -249,13 +249,13 @@ $(function(){
                     formatter: function(value, row, index){
                         let res = "";
                         if(0 == value){
-                            res = '<span class="text-primary">未解析</span>';
-                        }else if(1 == value){
-                            res = '<span class="text-danger">解析失败</span>';
+                            res = '<span class="x-tag x-tag-sm x-tag-info">未解析</span>';
                         }else if(2 == value){
-                            res = '<span class="text-success">解析成功</span>';
+                            res = '<span class="x-tag x-tag-sm x-tag-danger">解析失败</span>';
+                        }else if(1 == value){
+                            res = '<span class="x-tag x-tag-sm x-tag-success">解析成功</span>';
                         }else{
-                            res = '<span class="text-danger">批号重复</span>'
+                            res = '<span class="x-tag x-tag-sm x-tag-danger">批号重复</span>'
                         }
                         return res;
                     }
@@ -288,7 +288,7 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        if(row.state == 2){
+                        if(row.state == 1){
                             result += '<a class="btn btn-primary btn-sm param" href="javascript:void(0);" id="change_type1">归档</a><br/>';
                         }else if(row.state == 3){
                             result += '<a class="btn btn-success btn-sm param" href="javascript:void(0);" id="change_type2">替包</a><br/>';

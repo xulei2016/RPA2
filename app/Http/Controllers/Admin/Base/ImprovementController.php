@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Base;
 
 use App\models\admin\base\SysImprovement;
+use App\Models\Admin\Base\SysMessage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 
@@ -40,7 +41,22 @@ class ImprovementController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        //
+        $this->log(__CLASS__, __FUNCTION__, $request, "添加 意见");
+        $data = $this->get_params($request, ['title','content']);
+        SysImprovement::create($data);
+
+        //发送通知
+        $data = [
+            'mode' => 1,
+            'user' => 1,
+            'title' => "改进意见",
+            'type' => 3,
+            'content' => '有一个新的改进意见',
+            'add_time' => date('Y-m-d H:i:s',time())
+        ];
+        SysMessage::create($data);
+
+        return $this->ajax_return(200, '操作成功！');
     }
 
     /**

@@ -3,33 +3,35 @@ $(function(){
     /**
      * 页面初始化
      */
+
+    let modal = RPA.config.modal;
     function init(){
+
         bindEvent();
 
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
-    
+
     //事件绑定
     function bindEvent(){
         $("#select2-menu").select2({
             "allowClear":true,
             "placeholder":"父级菜单",
         });
-        
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
 
     }
-    
+
     //添加
     function add(e){
         RPA.form.ajaxSubmit(e, FormOptions);
     }
     //提交信息的表单配置
-    var id = $('#modal #id').val();
+    var id = $(modal+' #id').val();
     var FormOptions={
         url:'/admin/sys_menu/'+id,
         success:function(json, xml){

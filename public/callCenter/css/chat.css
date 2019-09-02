@@ -1,0 +1,694 @@
+body,div,ul,ol,li,p,i,em,h1,h2,h3,h4,a,strong,span,img,form,input,textarea, button {
+    padding: 0;
+    margin: 0
+}
+input,textarea {outline: 0}
+ul li {list-style: none}
+a {text-decoration: none;color: inherit}
+img {border: 0}
+.pr {position: relative}
+.pa {position: absolute}
+.pf {position: fixed}
+.f-l {float: left}
+.f-r {float: right}
+li, div, ul {*zoom: 1}
+.clear-both{clear: both;}
+
+.mb10{margin-bottom: 10px;}
+
+/*客户列表开始*/
+.online-users{
+    width: 100%;
+    border: 1px solid #ddd;
+    height: 380px;
+}
+.online-users-head,.online-operators-head{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 2px solid #86C953;
+}
+.online-users-info{
+    width: 100%;
+    height: 340px;
+    overflow-y:scroll
+
+}
+.online-users-info .free{
+    width:14px;
+    height: 14px;
+    border-radius: 50%;
+    background: url(../img/free.png) no-repeat;
+    background-size: cover;
+    float: right;
+    margin-top: 2px;
+}
+
+.online-users-info .busy{
+    width:14px;
+    height: 14px;
+    border-radius: 50%;
+    background: url(../img/busy.png) no-repeat;
+    background-size: cover;
+    float: right;
+    margin-top: 2px;
+}
+
+.online-users-info .message{
+    width:14px;
+    height: 14px;
+    border-radius: 50%;
+    background: url(../img/message.png) no-repeat;
+    background-size: cover;
+    float: right;
+    margin-top: 2px;
+}
+
+.talk .message{
+    width:14px;
+    height: 14px;
+    border-radius: 50%;
+    background: url(../img/message.png) no-repeat;
+    background-size: cover;
+    float: right;
+    margin-top: 2px;
+    margin-left: 6px;
+}
+
+.online-users-info li{
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+    box-sizing: border-box;
+    padding: 10px 20px 10px 20px;
+    position: relative;
+    cursor: pointer;
+}
+.online-users-info li:hover{
+    background-color: #DCDCDC;
+}
+/*客户列表结束*/
+
+/*客服列表 开始*/
+.online-operators{
+    position: relative;
+    top: 20px;
+    width: 100%;
+    height: 320px;
+    border: 1px solid #ddd;
+}
+.online-operators-info{
+    width: 100%;
+    height: 280px;
+    overflow-y:scroll;
+}
+.online-operators-info ul li{
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 20px;
+    position: relative;
+}
+.online-operators-info ul li:hover{
+    background-color: #DCDCDC;
+}
+.online-operators-info .sign{
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    background: url(../img/sign.png) no-repeat;
+    background-size: cover;
+    float: right;
+    margin-top: 2px;
+}
+/*客服列表结束*/
+
+/*聊天窗口开始*/
+
+.chat-content-out{
+    width: 100%;
+    min-height: 620px;
+    border: 1px solid #ddd;
+}
+
+.chat-content{
+    width: 100%;
+    margin: 0 auto;
+    background-color:#cccccc17;
+    border: 1px solid #ccc;
+    border-top: none;
+    left: 0;
+    overflow-y: scroll;
+    height: 620px;
+    display: none;
+}
+
+.chat-content.active{
+    display: block;
+}
+
+.user_info{
+    width: 100%;
+    height: 40px;
+    font-size: 14px;
+    line-height: 40px;
+    text-align: center;
+    border-bottom: 2px solid #86C953;
+}
+
+.nav-tabs li{
+    color: #000;
+    cursor: default;
+    border-radius: 4px 4px 0 0;
+    width: auto;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.nav-tabs li.active{
+    color: #555;
+    cursor: default;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-bottom-color: transparent;
+    border-top: 3px solid #86C953;
+    box-sizing: border-box;
+}
+
+.nav-tabs li .tabDel{
+    width: 33px;
+    height: 40px;
+    display: block;
+    border-bottom-color: transparent;
+    border: none;
+    z-index: 999;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.nav-tabs li .tabDel:after{
+    content : 'X'
+}
+
+.nav-tabs li a{
+    padding: 0 10px;
+    height: 44px;
+    line-height: 44px;
+    text-align: center;
+    margin: 0;
+    border: none;
+
+}
+.nav-tabs li a:hover{
+    background-color: transparent;
+}
+
+/*聊天框信息样式*/
+.customer-chat-content-message-operator{
+    padding: 16px;
+    clear: both;
+    overflow: hidden;
+}
+.customer-chat-content-message-avatar-operator{
+    float: left;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /*background:url(../img/avatar-2.png) no-repeat;*/
+    margin-top: 6px;
+}
+.customer-chat-content-message-column {
+    width: 100%;
+    float: none;
+    padding-left: 60px;
+    padding-right: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.customer-chat-content-message-author{
+    font-size: 14px;
+    float: left;
+    color: #0879b1;
+    font-weight: 600;
+    position: relative;
+    top: 8px;
+}
+.customer-chat-content-message-time{
+    float: right;
+    color: #ccc;
+    font-size: 12px;
+}
+.customer-chat-content-message-body {
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: left;
+    clear: both;
+}
+.customer-chat-content-message-avatar-operator{
+    position: relative;
+}
+
+.mychat .myChatHead{
+    position: relative;
+    float: right;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: url(../img/b.png) no-repeat;
+    top: 16px;
+    right: 16px;
+}
+.mychat .myChatCon{
+    width: 100%;
+    float: none;
+    padding-right: 60px;
+    padding-left: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.mychatoperator{
+    width: 100%;
+    padding: 16px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+}
+.mychatTime{
+    float: left;
+    color: #ccc;
+    font-size: 12px;
+}
+.mychatAuthor{
+    font-size: 14px;
+    float: right;
+    color: #0879b1;
+    font-weight: 600;
+}
+.mychatMess{
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: right;
+    clear: both;
+}
+.mychatoperator .mychatMessDe{
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+
+    clear: both;
+    float: right;
+}
+
+.mychatoperator .mychatMessDe span{
+    display: inline-block;
+    text-align: right;
+    text-align-last: left;
+}
+.serviceChat .mychatMessDe{
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: left;
+    clear: both;
+    text-align-last:left;
+    position: relative;
+    bottom: 18px;
+}
+.mychatMessDe .upPic,.mychatMessDe img{
+    max-width: 150px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+/*输入窗口*/
+.footer{
+    width: 100%;
+    position: relative;
+    padding: 2px;
+    height: 50px;
+    border: none;
+    background: none;
+    left: 0;
+}
+.customer-chat-content-message-input-field{
+    color: #999;
+    border: 2px solid #ccc;
+    font-weight: bold;
+    font-size: 12px;
+    background: #fff;
+    margin: 0;
+    width: 100%;
+    position: relative;
+    padding: 16px 90px 16px 16px;
+    box-sizing:border-box;
+
+}
+.customer-chat-content-message-input-field:focus{
+    border-color: #86C953 !important;
+    color: #86C953;
+}
+.file-button {
+    overflow: hidden;
+    float: right;
+    position: relative;
+    right: 55px;
+    bottom: 37px;
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    color: #36a9e1;
+    cursor: pointer;
+}
+#file-input{
+    display: none;
+}
+.fa-upload{
+    display: block;
+    width: 16px;
+    height: 14px;
+    background: url(../img/up.png) no-repeat center center;
+    background-size: cover;
+    margin-top: 4px;
+}
+.customer-chat-content-message-emots-button {
+    right: 16px;
+    top: 11px;
+}
+.customer-chat-content-message-emots-button {
+    position: absolute;
+    right: 26px;
+    top: 13px;
+    line-height: 30px;
+    text-align: center;
+    font-weight: 600;
+    color: #ccc;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+.customer-chat-content-message-emots-button:after {
+    content: '';
+    display: block;
+    background: url(../img/emots.png) no-repeat -18px 0;
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -9px 0 0 -9px;
+}
+
+.customer-chat-emots-menu {
+    border: 2px solid #e0e0e0;
+    /* padding: 10px;*/
+    width: 315px;
+    padding: 10px 2px;
+    bottom: 54px;
+    right: 2px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 5px;
+}
+.customer-chat-emots-menu {
+    top: auto;
+    height: 74px;
+    line-height: 18px;
+
+}
+.customer-chat-emots-menu {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    background: #fff;
+
+}
+.customer-chat-emots-menu .customer-chat-header-menu-triangle {
+    border: 7px solid transparent;
+    border-top-color: #e0e0e0;
+    right: 20px;
+    top: 100%;
+    position: absolute;
+    width: 0;
+    height: 0;
+
+    pointer-events: none;
+}
+
+.customer-chat-emoticon {
+    margin-left: 8px;
+    margin-bottom: 10px;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+
+.emot {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    background-image: url(../img/emots.png);
+}
+.emot.emot-1  { background-position:  -18px -0px; }
+.emot.emot-2  { background-position: -198px -0px; }
+.emot.emot-3  { background-position: -234px -0px; }
+.emot.emot-4  { background-position: -252px -0px; }
+.emot.emot-5  { background-position: -270px -0px; }
+.emot.emot-6  { background-position: -288px -0px; }
+.emot.emot-7  { background-position: -306px -0px; }
+.emot.emot-8  { background-position: -324px -0px; }
+.emot.emot-9  { background-position: -342px -0px; }
+.emot.emot-10 { background-position: -180px -0px; }
+.emot.emot-11 { background-position:  -36px -0px; }
+.emot.emot-12 { background-position:  -54px -0px; }
+.emot.emot-13 { background-position:  -72px -0px; }
+.emot.emot-14 { background-position:  -90px -0px; }
+.emot.emot-15 { background-position: -108px -0px; }
+.emot.emot-16 { background-position: -126px -0px; }
+.emot.emot-17 { background-position: -144px -0px; }
+.emot.emot-18 { background-position: -162px -0px; }
+.emot.emot-19 { background-position:   -0px -0px; }
+.emot.emot-20 { background-position: -216px -0px; }
+
+
+/*个人信息*/
+.id-card{
+    margin-top: 20px !important;
+}
+.id-sure-btn{
+    display: block;
+    margin: 0 auto;
+    width: 310px;
+    height: 40px;
+    border: none;
+    font-weight: bold;
+    font-size: 12px;
+    color: #999;
+    margin-top: 20px;
+    border-radius: 3px;
+    outline: none;
+}
+
+.addclass{
+    background-color:#86C953;
+    color: #fff;
+}
+
+.mychat .myChatHead{
+    position: absolute;
+    float: right;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: url(../img/b.png) no-repeat;
+    top: 16px;
+    right: 16px;
+}
+.mychat .myChatCon{
+    width: 100%;
+    float: none;
+    padding-right: 60px;
+    padding-left: 20px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.mychatoperator{
+    width: 100%;
+    padding: 16px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+}
+.mychatTime{
+    float: left;
+    color: #ccc;
+    font-size: 12px;
+}
+.mychatAuthor{
+    font-size: 14px;
+    float: right;
+    color: #0879b1;
+    font-weight: 600;
+}
+.mychatMess{
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: right;
+    clear: both;
+}
+.mychatoperator .mychatMessDe{
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: right;
+    clear: both;
+    float: right;
+
+}
+.mychatoperator .mychatMessDe span{
+    display: inline-block;
+    text-align: right;
+    text-align-last: left;
+}
+.serviceChat .mychatMessDe{
+    font-size: 12px;
+    line-height: 1.75em;
+    word-break: break-word;
+    word-wrap: break-word;
+    text-align: left;
+    clear: both;
+
+}
+.mychatMessDe .upPic,.mychatMessDe img{
+    max-width: 150px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.modification-info{
+    position: relative;
+    height: auto;
+    width: 92%;
+    right: 0;
+}
+.modification-header,.userMod-header, .common-header{
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 14px;
+    border-bottom: 2px solid #86C953;
+}
+.col-md-3,.col-md-6{
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+.modification-body,.userMod-body{
+    width: 100%;
+    text-align: center;
+}
+.modification-body img,.userMod-body img{
+    width: 40px;
+    height: 40px;
+    float: none;
+    display: block;
+    vertical-align: middle;
+    margin: 20px auto;
+    border-radius: 50%;
+}
+.modification-body div,.userMod-body div{
+    margin: 10px 0;
+}
+.modification-body div input{
+    font-size: 14px;
+    border: none;
+    color: #666;
+    position: relative;
+    left: 16px;
+    /*display: none;*/
+}
+.modification-body div label,.userMod-body div label{
+    color: #36A9E1;
+}
+
+.modification-body div span{
+    font-size: 14px;
+    border: none;
+    color: #bbb;
+}
+
+.opMod, .userMod{
+    border: 1px solid #ddd;
+}
+.opMod{
+    margin-top: 12px;
+}
+.common-panel{
+    border: 1px solid #ddd;
+    margin-top: 12px;
+}
+
+.template .common-body {
+    height: 280px;
+    overflow-y: scroll;
+}
+
+.show-template {
+    padding: 8px;
+    width: 300px;
+    /*height: 200px;*/
+    /*overflow-y: scroll;*/
+    z-index: 99;
+    position: relative;
+    right: 300px;
+    bottom: 200px;
+    background-color: white;
+    border: 1px solid #666;
+    text-align: center;
+    display: none;
+}
+
+.show-template .t-title {
+    margin-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.common-body li {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    box-sizing: border-box;
+    padding: 10px 20px 10px 20px;
+    position: relative;
+    cursor: pointer;
+    overflow-x: hidden;
+}
+
+.common-body li:hover{
+    background-color: #DCDCDC;
+}
+
+
+

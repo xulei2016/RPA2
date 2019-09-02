@@ -11,36 +11,39 @@
 </style>
 
 <meta charset="utf-8">
-<div class="row">
-    <div class="col-lg-8">
-        <div class="chart">
-            <canvas id="trueorfail"></canvas>
-        </div>
-    </div>
-    <div class="col-lg-4">
-        <div class="chart">
-            <canvas id="charts"></canvas>
-        </div>
-    </div>
-    <div class="col-lg-11">
-        <div class="chart">
-            <div class="title text-center">RPA数据统计图表</div>
-            <div class="taskType">
-                <select name="task" id="taskType" class="btn btn-default btn-sm">
-                    @foreach($taskname as $v)
-                        <option value="{{$v['name']}}">{{$v['bewrite']}}</option>
-                    @endforeach
-                </select>
-                <select name="days" id="taskDays" class="btn btn-default btn-sm">
-                    <option value="7" selected>7天</option>
-                    <option value="15">15天</option>
-                    <option value="30">30天</option>
-                </select>
+<div class="card card-primary card-outline">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="chart">
+                    <canvas id="trueorfail"></canvas>
+                </div>
             </div>
-            <canvas id="canvas"></canvas>
+            <div class="col-lg-4">
+                <div class="chart">
+                    <canvas id="charts"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-11">
+                <div class="chart">
+                    <div class="title text-center">RPA数据统计图表</div>
+                    <div class="taskType">
+                        <select name="task" id="taskType" class="btn btn-default btn-sm">
+                            @foreach($taskname as $v)
+                                <option value="{{$v['name']}}">{{$v['bewrite']}}</option>
+                            @endforeach
+                        </select>
+                        <select name="days" id="taskDays" class="btn btn-default btn-sm">
+                            <option value="7" selected>7天</option>
+                            <option value="15">15天</option>
+                            <option value="30">30天</option>
+                        </select>
+                    </div>
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
         </div>
     </div>
-
 </div>
 
 

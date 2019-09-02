@@ -1,19 +1,19 @@
 @component('admin.widgets.addForm')    
     @slot('formContent')
 
-    <div class="form-group">
+    <div class="form-group row">
             <label for="name" class="col-sm-2 control-label"><span class="must-tag">*</span>任务名称</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="name" id="name" value="InvestorPassword" placeholder="任务名称" required disabled>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="type" class="col-sm-2 control-label"><span class="must-tag">*</span>任务类型</label>
             <div class="col-sm-10">
                 <input type="checkbox" class="my-switch" id="type" name="type" value="1">
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="" class="col-sm-2 control-label"><span class="must-tag">*</span>日期设定</label>
             <div class="col-sm-10">
                 <div class="date hidden">
@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group ">
+        <div class="form-group row ">
             <label for="" class="col-sm-2 control-label"><span class="must-tag">*</span>参数设定</label>
             <div class="col-sm-10">
                 <div class="target_web">
@@ -48,13 +48,13 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="implement_type" class="col-sm-2 control-label"><span class="must-tag">*</span>执行时间</label>
             <div class="col-sm-10">
                 <input type="checkbox" class="my-switch" id="implement_type" name="implement_type" value="1">
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="" class="col-sm-2 control-label"></label>
             <div class="col-sm-10">
                 <div class="row hidden">
@@ -78,7 +78,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="description" class="col-sm-2 control-label"><span class="must-tag">*</span>任务描述</label>
             <div class="col-sm-10">
                 <textarea type="text" class="form-control" name="description" id="description" placeholder="任务描述" required></textarea>

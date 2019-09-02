@@ -1,133 +1,124 @@
-<header class="main-header">
-
-        <!-- Logo -->
-        <a href="index2.html" class="logo">
-          <span class="logo-mini"> {!! config('admin.logo-mini') !!} </span>
-          <span class="logo-lg"> {!! config('admin.logo') !!} </span>
-        </a>
-
-        <!-- Header Navbar -->
-        <nav class="navbar navbar-static-top">
-          <!-- Sidebar toggle button-->
-          <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-            <span class="sr-only">Toggle navigation</span>
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
+        </li>
+    </ul>
+    <!-- SEARCH FORM -->
+    <form class="form-inline ml-3">
+        <div class="input-group input-group-sm">
+            <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+            <div class="input-group-append">
+                <button class="btn btn-navbar" type="submit">
+                  <i class="fa fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+    <ul class="navbar-nav ml-auto">
+        <!-- Messages Menu -->
+        <li class="nav-item navbar-right">
+            <a class="nav-link" data-toggle="fullscreen" href="#">
+                <i class="fa fa-arrows-alt"></i>
+            </a>
+        </li>
+        <!-- Notifications Menu -->
+        <li class="nav-item admin-message navbar-right">
+          <a class="nav-link" id="notification_count" href="#">
+            <i style="font-size: 18px" class="fa fa-bell"></i>
+              @if(Auth::user()->notification_count >0)
+                    <span class="badge badge-warning navbar-badge">{{ Auth::user()->notification_count }}</span>
+              @endif
           </a>
-    
-          <div class="navbar-custom-menu">
-            <ul class="nav navbar-nav">
-
-              <li class="hidden-xs">
-                  <a href="#" data-toggle="fullscreen"><i class="fa fa-arrows-alt"></i></a>
-              </li>
-              <!-- Messages -->
-              <li class="dropdown messages-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-envelope-o"></i>
-                    @if( \App\models\admin\base\SysUserMail::mailCount() > 0)
-                        <span class="label label-success">{{ \App\models\admin\base\SysUserMail::mailCount() }}</span>
-                    @endif
-                </a>
-                  @if( \App\models\admin\base\SysUserMail::mailCount() > 0)
-                    <ul class="dropdown-menu">
-                      <li class="header">你有 {{ \App\models\admin\base\SysUserMail::mailCount() }} 条未读邮件</li>
-                      <li>
-                        <ul class="menu">
-                        @foreach(\App\models\admin\base\SysUserMail::maillist() as $v)
-                          <li>
-                            <a onclick="operation($(this));" url='/admin/sys_mail/{{$v->mid}}'>
-                              <div class="pull-left">
-                                <img src="dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
-                              </div>
-                              <h4>
-                                {{env('APP_NAME')}}
-                                <small><i class="fa fa-clock-o"></i>{{ \Carbon\Carbon::parse($v->mails->created_at)->diffForHumans()}}</small>
-                              </h4>
-                              <p>{{$v->mails->title}}</p>
-                            </a>
-                          </li>
-                        @endforeach
-                        </ul>
-                      </li>
-                      <li class="footer"><a href="#">查看所有邮件</a></li>
-                    </ul>
-                  @endif
-              </li>
-
-              <!-- Notifications -->
-              <li class="dropdown notifications-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-bell-o"></i>
-                  @if(Auth::user()->notification_count >0)
-                    <span class="label label-warning">{{ Auth::user()->notification_count}}</span>
-                  @endif
-                </a>
-                @if(Auth::user()->notification_count >0)
-                <ul class="dropdown-menu">
-                  <li class="header">您有 {{ Auth::user()->notification_count}} 条新消息未读</li>
-                  <li>
-                    <!-- inner menu: contains the actual data -->
-                    <ul class="menu">
-                      @foreach(Auth::user()->unreadNotifications as $v)
-                        @if($loop->index < 5)
-                          <li><a href="javascript:;" onclick="operation($(this));" url="/admin/sys_message_list/view/{{$v->id}}"><i class="fa fa-users text-aqua"></i> {{$v->data['title']}}</a></li>
+          <div class="hidden popup">
+                <div class="admin-info message">
+                    <div class="head">
+                        <h3 class="popup-title">消息中心</h3>
+                        <a href="javascript:void(0);" class="popup-close"><span class="fa fa-close"></span></a>
+                    </div>
+                    <div class="body notifications-menu">
+                        @if(Auth::user()->notification_count >0)
+                            <ul class="menu" id="notification_list">
+                                @foreach(Auth::user()->unreadNotifications as $v)
+                                    @if($loop->index < 5)
+                                        <li><a href="javascript:;" onclick="operation($(this));readEvent($(this));"  url="/admin/sys_message_list/view/{{$v->id}}"><i class="fa fa-users text-aqua"></i> {{$v->data['title']}}</a></li>
+                                    @endif
+                                @endforeach
+                            </ul>
+                        @else
+                            <div class="body-tool-info">暂无未读消息</div>
                         @endif
-                      @endforeach
-                    </ul>
-                  </li>
-                  <li class="footer"><a href="#">查看全部消息</a></li>
-                </ul>
-                @endif
-              </li>
-
-              <!-- User Account -->
-              <li class="dropdown user user-menu">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" class="user-image" alt="User Image">
-                  <span class="hidden-xs">{{ session('sys_admin')['name'] }}</span>
-                </a>
-                <ul class="dropdown-menu">
-                  <!-- User image -->
-                  <li class="user-header">
-                    <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" class="img-circle" alt="User Image">
-    
-                    <p>
-                      victor
-                      <small>Member since Nov. 2012</small>
-                    </p>
-                  </li>
-                  <!-- Menu Body -->
-                  <li class="user-body">
-                        <div class="row">
-                            <div class="col-xs-4 text-center">
-                                <a href="#" target="_blank">#</a>
-                            </div>
-                            <div class="col-xs-4 text-center">
-                                <a href="#" target="_blank">#</a>
-                            </div>
-                            <div class="col-xs-4 text-center">
-                                <a href="javascript:void(0);" onclick="RPA.clearCache();" target="_blank">清除缓存</a>
-                            </div>
-                        </div>
-                    </li>
-                    <!-- Menu Footer-->
-                    <li class="user-footer">
-                        <div class="pull-left">
-                            <a href="/admin/sys_profile" class="btn btn-primary addtabsit"><i class="fa fa-user"></i>
-                                个人配置</a>
-                        </div>
-                        <div class="pull-right">
-                            <a href="/admin/logout" class="btn btn-danger"><i class="fa fa-sign-out"></i>
-                                注销</a>
-                        </div>
-                    </li>
-                </ul>
-              </li>
-              
-              <!-- Control Sidebar Toggle Button -->
-              <li>
-                <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-              </li>
-            </ul>
-          </div>
-        </nav>
-      </header>
+                    </div>
+                    <div class="foot">
+                        <a href="/admin/sys_message_list"> <span>进入消息中心</span> </a>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <!-- Notifications Menu -->
+        <li class="user-panel d-flex admin-info-list navbar-right">
+            <a class="nav-link" href="#" style="padding:0 1rem;">
+                <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" onerror="this.src='{{URL::asset('/common/images/default_head.png')}}'" class="img-circle elevation-2" alt="User Image">
+            </a>
+            {{--  popup page  --}}
+            <div class="hidden popup">
+                <div class="admin-info admin">
+                    <div class="head">
+                        <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" onerror="this.src='{{URL::asset('/common/images/default_head.png')}}'" class="img-circle">
+                        <p>
+                            <span title="{{ session('sys_admin')['email'] }}">
+                                {{ session('sys_admin')['name'] }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="body">
+                        <a class="adminbar-list" href="/admin/sys_profile">
+                            <span class="adminbar-icon"><span class="fa fa-user"></span></span><span>个人信息</span>
+                        </a>
+                        {{--<a class="adminbar-list" url="{{ url('/admin/sys_admin_center/changePWD') }}" onclick="pjaxContent($(this));">--}}
+                            {{--<span class="adminbar-icon"><span class="fa fa-expeditedssl"></span></span><span>修改密码</span>--}}
+                        {{--</a>--}}
+                        {{--<a class="adminbar-list" url="{{ url('/admin/sys_admin_center/safeSetting') }}" onclick="pjaxContent($(this));">--}}
+                            {{--<span class="adminbar-icon"><span class="fa fa-shield"></span></span><span>安全设置</span>--}}
+                        {{--</a>--}}
+                        {{--<a class="adminbar-list">--}}
+                            {{--<span class="adminbar-icon"><span class="fa fa-expeditedssl"></span></span><span>修改密码</span>--}}
+                        </a>
+                        <a href="#" onclick="javascript:window.location.reload();" class="adminbar-list">
+                            <span class="adminbar-icon"><span class="fa fa-refresh"></span></span><span>重新加载</span>
+                        </a>
+                        <a href="#" onclick="RPA.clearCache();" class="adminbar-list">
+                            <span class="adminbar-icon"><span class="fa fa-undo"></span></span><span>清除缓存</span>
+                        </a>
+                    </div>
+                    <div class="foot">
+                        <a href="{{ url('/admin/logout') }}">
+                            <span>退出登录</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
+            <i class="fa fa-th-large"></i>
+          </a>
+        </li>
+    </ul>
+</nav>
+<script>
+    //读消息
+    function readEvent(obj){
+        var notification_menu = obj.parent().parent().parent().parent().parent().parent();
+        var count = notification_menu.find('#notification_count span').text();
+        if(count >1){
+            notification_menu.find('#notification_count span').text(parseInt(count) - 1);
+            obj.remove();
+        }else{
+            notification_menu.find('#notification_count span').remove();
+            notification_menu.find('.notifications-menu').html('<div class="body-tool-info">暂无未读消息</div>');
+        }
+    }
+</script>

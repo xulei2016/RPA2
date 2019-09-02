@@ -107,7 +107,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             name : $("#pjax-container #search-group #name").val(),
-            type : $("#pjax-container #search-group #type").val()
+            desc : $("#pjax-container #search-group #desc").val()
         }
         return temp;
     }
@@ -164,7 +164,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(res){
-                        return (1 == res) ? '<span class="text-success">启用</span>' : '<span class="text-danger">禁用</span>' ;
+                        return (1 == res) ? '<span class="x-tag x-tag-sm x-tag-success">启用</span>' : '<span class="x-tag x-tag-sm x-tag-danger">禁用</span>' ;
                     }
                 },{
                     field: 'desc',
@@ -192,9 +192,9 @@ $(function(){
                         var id = value;
                         var result = "";
                         // if(1 != id){
-                            result += " <a href='javascript:;' class='btn btn-xs btn-info' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/getPermission' title='权限分配'>权限管理</span></a>";
-                            result += " <a href='javascript:;' class='btn btn-xs btn-warning' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/edit' title='编辑'>编辑</a>";
-                            result += " <a href='javascript:;' class='btn btn-xs btn-danger' id='deleteOne' title='删除'>删除</span></a>";
+                            result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/getPermission' title='权限分配'>权限管理</span></a>";
+                            result += " <a href='javascript:;' class='btn btn-sm btn-warning' onclick=\"operation($(this));\" url='/admin/sys_role/"+id+"/edit' title='编辑'>编辑</a>";
+                            result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</span></a>";
                         // }
 
                         return result;

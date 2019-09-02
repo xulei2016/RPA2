@@ -18,25 +18,15 @@ use App\Http\Controllers\Base\BaseController;
 class BaseAdminController extends BaseController
 {
     public function __CONSTRUCT(){
-        
+        $this->get_sysConfigs();
     }
 
-    /**
-     * 地址分析
-     */
-    public function analysis_url(){
-        //获取网页地址
-        $url = $_SERVER['REQUEST_URI'];
-        $url = strpos($url,'?') ? substr($url,0,strpos($url,'?')) : $url ;
-        foreach (session('sys_info')['menus'] as $menu){
-            if(strpos($url, $menu['unique_name'])){
-                Cache::put('active_list', [
-                    'active_id' => $menu['team_id'], 
-                    'active_name' => $menu['name'],
-                    'active_unique_name' => $menu['unique_name'],
-                    'active_icon' => $menu['icon']
-                ], '30');
-                break;
+    public function get_sysConfigs()
+    {
+        if (!Cache::has("sysConfigs")) {
+            $sysConfigs = SysConfig::get();
+            if($sysConfigs){
+                Cache::add("sysConfigs",$sysConfigs,3600);
             }
         }
     }

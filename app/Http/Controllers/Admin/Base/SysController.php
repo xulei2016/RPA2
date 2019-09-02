@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\admin\base;
 
+use App\Models\Admin\Base\SysConfig;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Base\BaseAdminController;
 
 /**
@@ -15,9 +17,9 @@ class SysController extends BaseAdminController
     /**
      * dashboard
      */
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
-
         return view('admin.index.index');
     }
     
@@ -29,67 +31,6 @@ class SysController extends BaseAdminController
         $info = $this->sys_info();
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
         return view('admin/index/dashboard', ['info'=>$info,'admin'=>$admin]);
-    }
-
-    /**
-     * 系统管理
-     */
-    public function sysConfig(Request $request){
-        $condition = [['type','<>','hidden']];
-        $config = $this->model->findAllBy($condition,['sort', 'asc']);
-        $this->log(__CLASS__, __FUNCTION__, $request, "系统管理页面");
-        return view('admin/sys/config/list',['config'=>$config['data']]);
-    }
-
-    /**
-     * 头像列表
-     */
-    public function headImgList(Request $request){
-        return $this->img->all();
-    }
-
-    /**
-     * 修改系统管理
-     */
-    public function update(Request $request){
-        $data = $request->all();
-        //是否重新上传图片
-        if(!empty($_FILES['logo'])){
-            $thumb = $this->model->utilUploadPhotoJust('logo', 'images/common/logo/',120,120);
-            if(!$thumb){
-                return $this->ajax_return('500', '图片保存失败！');
-            }
-            $data['logo'] = $thumb;
-            $this->unlinkImg($request->prevurl);
-        }
-        foreach($data as $k => $val){
-            $this->model->update(['item_value'=>$val], $k, 'item_key');
-        }
-        $this->log(__CLASS__, __FUNCTION__, $request, "修改系统设置");
-        return $this->ajax_return(200, '更新成功！');
-    }
-
-    /**
-     * 上传头像
-     */
-    public function addImg(Request $request){
-        if($request->imgUrl){
-            $thumb = $this->img->utilUploadPhoto('imgUrl', 'images/admin/headImg/',120,120);
-            if(!$thumb){
-                return $this->ajax_return('500', '图片保存失败！',$thumb);
-            }
-            $data['url'] = $thumb['url'];
-            $data['thumb'] = $thumb['thumb'];
-        }
-        $this->log(__CLASS__, __FUNCTION__, $request, "上传头像");
-        return $this->img->create($data);
-    }
-
-    //delete one
-    public function del_img(Request $request){
-        $id = $request->id;
-        $this->log(__CLASS__, __FUNCTION__, $request, "删除 头像 信息");
-        return $this->img->delete($id);
     }
 
     /**
@@ -166,7 +107,19 @@ class SysController extends BaseAdminController
      * 系统设置
      */
     public function setting(){
-        return view('admin.Base.system.index');
+        //获取配置分组
+        $item_group = SysConfig::groupBy("item_group")->pluck("item_group");
+        $sysconfig = SysConfig::get();
+        return view('admin.Base.system.index',['item_group' => $item_group,'sysconfig' => $sysconfig]);
+    }
+
+    public function update_config(Request $request)
+    {
+        $data = $request->all();
+        foreach($data as $k => $v){
+            SysConfig::where("item_key","=",$k)->update(["item_value" => $v]);
+        }
+        return $this->ajax_return(200, '配置更新成功！');
     }
     
     /**

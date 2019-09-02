@@ -3,11 +3,12 @@ $(function(){
     /**
      * 页面初始化
      */
+    let modal = RPA.config.modal;
     function init(){
         bindEvent();
 
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
     
     //事件绑定
@@ -18,8 +19,9 @@ $(function(){
         });
         
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
+            $("#select2-menu").empty(); 
         });
 
     }

@@ -2,7 +2,7 @@
     <div class="panel-heading">查询条件</div>
     <div class="panel-body">
         <form id="formSearch" class="form-horizontal">
-            <div class="form-group" style="margin-top:15px">
+            <div class="form-group row" style="margin-top:15px">
 
                 {{ $searchContent }}
 

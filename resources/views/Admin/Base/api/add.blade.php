@@ -1,21 +1,21 @@
 @component('admin.widgets.addForm')    
     @slot('formContent')
 
-        <div class="form-group">
+        <div class="form-group row">
             <label for="api" class="col-sm-2 control-label"><span class="must-tag">*</span>api名称</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="api" id="api" placeholder="api名称">
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group row">
             <label for="url" class="col-sm-2 control-label"><span class="must-tag">*</span>请求路由</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="url" id="url" placeholder="请求路由">
             </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group row">
             <label for="method" class="col-sm-2 control-label">请求方式</label>
             <div class="col-sm-10">
                 <select name="method" class="form-control" id="method">
@@ -26,7 +26,7 @@
                 </select>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="state" class="col-sm-2 control-label">是否开启</label>
             <div class="col-sm-10">
                 <div class="switch">
@@ -34,11 +34,11 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="ip" class="col-sm-2 control-label"><span class="must-tag">*</span>黑名单</label>
             <div class="col-sm-10">
                 <div class="target_data black">
-                    <div class="row">
+                    <div class="row weblist">
                         <div class="col-xs-7">
                             <input type="text" class="form-control" id="ip" name="ip" placeholder="例如：172.0.0.0">
                         </div>
@@ -52,11 +52,11 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="ip" class="col-sm-2 control-label"><span class="must-tag">*</span>白名单</label>
             <div class="col-sm-10">
                 <div class="target_data white">
-                    <div class="row">
+                    <div class="row weblist">
                         <div class="col-xs-7">
                             <input type="text" class="form-control" id="ip" name="ip" placeholder="例如：172.0.0.0">
                         </div>
@@ -70,7 +70,7 @@
                 </div>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group row">
             <label for="desc" class="col-sm-2 control-label"><span class="must-tag">*</span>接口描述</label>
             <div class="col-sm-10">
                 <textarea type="text" class="form-control" name="desc" id="desc" placeholder="接口描述" required></textarea>

@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrustProxies::class,
         
         \Spatie\Pjax\Middleware\FilterIfPjax::class,//pjax-plungin
+        \Barryvdh\Cors\HandleCors::class,
     ];
 
     /**
@@ -40,7 +41,7 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:60,1',
+            'throttle:2000,1',
             'bindings',
         ],
     ];

@@ -96,6 +96,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             customer : $("#pjax-container #search-group #customer").val(),
+            pihao : $("#pjax-container #search-group #pihao").val(),
             from_created_at : $("#pjax-container #search-group #startTime").val(),
             to_created_at : $("#pjax-container #search-group #endTime").val()
         };
@@ -185,8 +186,7 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/rpa_cotton/official_detail/"+id+"' title='详情'>详情</a><br/>";
-                        //result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/rpa_cotton/official_detail/"+id+"' title='详情'>详情</a>";
 
                         return result;
                     }

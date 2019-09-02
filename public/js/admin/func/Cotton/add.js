@@ -51,18 +51,6 @@ $(function(){
             },function(dismiss){
                 Swal(dismiss, '', 'error');
             });
-
-            //if(confirm('确定上传？')){
-            //    for(let i=0;i<files.length;i++){
-            //        let formData = new FormData();
-            //        formData.append("filename", document.getElementById("uploadFile").files[i]);
-            //        uploadFile(formData,i);
-            //    };
-            //    $("#loading").modal('show');
-            //    immedtask();
-            //}else{
-            //    return false;
-            //}
         });
     }
     //发起rpa任务
@@ -87,12 +75,13 @@ $(function(){
             url: '/admin/rpa_cotton/isanalysis',
             dataType:'json',
             success: function (json) {
-                if(json){
+                if(json.length > 0){
                     time +=1;
                     if(10 <= time){
                         clearInterval(interval);
-                        $("#modal").modal('hide');
+                        $("#modal-lg").modal('hide');
                         $.pjax.reload('#pjax-container');
+                        Swal('上传成功', '', 'success');
                     }
                 }else{
                     report("数据解析完成，正在检查数据。。。",1);
@@ -111,8 +100,9 @@ $(function(){
             dataType:'json',
             success: function (json) {
                 if(json.code == 200){
-                    $("#modal").modal('hide');
+                    $("#modal-lg").modal('hide');
                     $.pjax.reload('#pjax-container');
+                    Swal('上传成功', '', 'success');
                 }
             }
         });
@@ -130,10 +120,10 @@ $(function(){
                 i = i+1;
                 if(200 == json.code){
                     //resolve(json);
-                    $(".list-group-item").eq(i).prepend("<i style='color:green;font-size:16px;' class='glyphicon glyphicon-ok-circle'></i>");
+                    $(".list-group-item").eq(i-1).prepend("<i style='color:green;font-size:16px;' class='glyphicon glyphicon-ok-circle'></i>");
                     report('第'+i+'个：'+json.info,1);
                 }else{
-                    $(".list-group-item").eq(i).prepend("<i style='color:green;font-size:16px;' class='glyphicon glyphicon-remove-circle'></i>");
+                    $(".list-group-item").eq(i-1).prepend("<i style='color:green;font-size:16px;' class='glyphicon glyphicon-remove-circle'></i>");
                     report('第'+i+'个：'+json.info,0);
                 }
             }

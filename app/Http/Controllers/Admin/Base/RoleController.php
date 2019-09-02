@@ -112,8 +112,8 @@ class RoleController extends BaseAdminController
      */
     public function pagenation(Request $request){
         $rows = $request->rows;
-        $param = $this->get_params($request, ['name', 'type']);
-        $conditions = $this->getPagingList($param, ['name'=>'like', 'type'=>'=']);
+        $param = $this->get_params($request, ['name', 'desc']);
+        $conditions = $this->getPagingList($param, ['name'=>'like', 'desc'=>'like']);
         $result = Role::where($conditions)
                 ->paginate($rows);
         return $result;

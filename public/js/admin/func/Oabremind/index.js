@@ -135,6 +135,7 @@ $(function(){
             customer : $("#pjax-container #search-group #customer").val(),
             tid : $("#pjax-container #search-group #tid").val(),
             state : $("#pjax-container #search-group #state").val(),
+            blancenum : $("#pjax-container #search-group #blancenum").val(),
             from_created_at : $("#pjax-container #search-group #startTime").val(),
             to_created_at : $("#pjax-container #search-group #endTime").val()
         };
@@ -190,16 +191,17 @@ $(function(){
                     title: '状态',
                     align: 'center',
                     valign: 'middle',
+                    sortable: true,
                     formatter: function(value, row, index){
                         let res = "";
                         if(1 == value){
-                            res = '<span class="text-success">已达标</span>';
+                            res = '<span class="x-tag x-tag-sm">已达标</span>';
                         }else if(2 == value){
-                            res = '<span class="text-primary">已归档</span>';
+                            res = '<span class="x-tag x-tag-sm x-tag-success">已归档</span>';
                         }else if(-1 == value){
-                            res = '<span class="text-danger">客户不存在</span>';
+                            res = '<span class="x-tag x-tag-sm x-tag-danger">客户不存在</span>';
                         }else{
-                            res = '<span class="text-danger">未达标</span>'
+                            res = '<span class="x-tag x-tag-sm x-tag-danger">未达标</span>'
                         }
                         return res;
                     }
@@ -243,19 +245,12 @@ $(function(){
                     formatter: function(value, row, index){
                         return row.day_five+" -<br/>"+row.blance_five
                     }
-                }, {
-                    field: 'day_active',
-                    title: '当前账户',
-                    align: 'center',
-                    valign: 'middle',
-                    formatter: function(value, row, index){
-                        return row.day_active+" -<br/>"+row.blance_active
-                    }
                 },{
                     field: 'updatetime',
                     title: '归档时间',
                     align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                    sortable: true,
                 }, {
                     field: 'id',
                     title: '操作',

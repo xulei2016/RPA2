@@ -22,8 +22,7 @@ class PermissionController extends BaseAdminController
      */
     public function index(Request $request)
     {
-        $top_list = Permission::where('table','=',1)->orderBy('sort','asc')->get();
-        $lists = $this->get_group_menu($top_list);
+        $lists = $this->getAllPermissions();
         $lists = $this->initTree($lists);
         $this->log(__CLASS__, __FUNCTION__, $request, "权限 列表页");
         return view('admin.base.permission.index', ['lists' => $lists]);
@@ -148,26 +147,17 @@ class PermissionController extends BaseAdminController
      * getTree
      */
     public function getTree(){
-        $top_list = Permission::where('table','=',1)->orderBy('sort','asc')->get();
-        $lists = $this->get_group_menu($top_list);
+        $lists = $this->getAllPermissions();
         return $this->ajax_return('200', '查询成功！', $lists);
     }
 
     /**
-     * 查询分组
+     * initTree function
+     *
+     * @Description 权限树生成
+     * @param [type] $data
+     * @return string $html
      */
-    private function get_group_menu($menus){
-        foreach($menus as $menu){
-            $result = Permission::where('pid','=',$menu['id'])->orderBy('sort','asc')->get();
-            if(!$result->isEmpty()){
-                $result = $this->get_group_menu($result);
-                // array_splice($menus, 1, 0, $result);
-                $menu['child'] = $result;
-            }
-        }
-        return $menus;
-    }
-
     public function initTree($data){
         $html = "<ol class='dd-list'>";
         foreach($data as $list){
@@ -184,5 +174,36 @@ class PermissionController extends BaseAdminController
         }
         $html .= "</ol>";
         return $html;
+    }
+
+        
+    /**
+     * permissions
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    private function getAllPermissions()
+    {
+        $menuList = Permission::where('status', 1)
+                    ->orderBy('sort', 'asc')
+                    ->get()
+                    ->toArray();
+
+        $data = [];
+
+        $newMenuList = [];
+        foreach($menuList as $key => $menus){
+            $newMenuList[$menus['id']] = $menus;
+        }
+        unset($menuList);
+
+        foreach($newMenuList as $k => $menu){
+            if(isset($newMenuList[$menu['pid']])){
+                $newMenuList[$menu['pid']]['child'][] = &$newMenuList[$menu['id']];
+            }else{
+                $data[] = &$newMenuList[$menu['id']];
+            }
+        }
+        return $data;
     }
 }

@@ -15,12 +15,60 @@ use Illuminate\Http\Request;
 Route::post('login', 'API\PassportController@login');
 
 Route::group(['namespace' => 'api'], function(){
-    Route::middleware('auth:api')->post('/v1/zzy_sms', 'SysApiController@zzy_sms');
-    Route::middleware('auth:api')->post('/v1/yx_sms', 'SysApiController@yx_sms');
-    Route::middleware('auth:api')->post('/v1/mail', 'SysApiController@mail');
-    Route::middleware('auth:api')->post('/v1/task_notice', 'SysApiController@task_notice');
-    Route::middleware('auth:api')->post('/v1/message', 'SysApiController@message');
-    Route::middleware('auth:api')->post('/v1/test', 'SysApiController@test');
+//    系统
+    Route::group(['namespace' => 'Base'], function(){
+        Route::middleware('auth:api')->post('/v1/sms', 'NoticeApiController@sms');
+        Route::middleware('auth:api')->post('/v1/mail', 'NoticeApiController@mail');
+        Route::middleware('auth:api')->post('/v1/task_notice', 'NoticeApiController@task_notice');
+        Route::middleware('auth:api')->post('/v1/message', 'NoticeApiController@message');
+        Route::middleware('auth:api')->post('/v1/sms_tpl', 'NoticeApiController@sms_tpl');
+        Route::middleware('auth:api')->post('/v1/tpl_send', 'NoticeApiController@tpl_send');
+        Route::middleware('auth:api')->post('/v1/yundama', 'NoticeApiController@yundama');
+    });
+//    rpa系统
+    Route::group(['namespace' => 'rpa'], function(){
+//        rpa相关
+        Route::middleware('auth:api')->post('/v1/punch_card', 'RpaApiController@punch_card');
+        Route::middleware('auth:api')->post('/v1/get_card', 'RpaApiController@get_card');
+        Route::middleware('auth:api')->post('/v1/release_task', 'RpaApiController@release_task');
+        Route::middleware('auth:api')->post('/v1/dtu_save_sms', 'RpaApiController@dtu_save_sms');
+        Route::middleware('auth:api')->post('/v1/dtu_get_sms', 'RpaApiController@dtu_get_sms');
+        Route::middleware('auth:api')->post('/v1/investor_password', 'RpaApiController@investor_password');
+        Route::middleware('auth:api')->post('/v1/get_customer_info', 'RpaApiController@get_customer_info');
+        Route::middleware('auth:api')->post('/v1/get_customer_by_khh', 'RpaApiController@get_customer_by_khh');
+        Route::middleware('auth:api')->post('/v1/get_customer_kyzj', 'RpaApiController@get_customer_kyzj');
+        Route::middleware('auth:api')->post('/v1/gg_sms', 'RpaApiController@gg_sms');
+        Route::middleware('auth:api')->post('/v1/flow', 'RpaApiController@flow');
+        Route::middleware('auth:api')->post('/v1/gw_fee', 'RpaApiController@gw_fee');
+        Route::middleware('auth:api')->post('/v1/monitor_kh', 'RpaApiController@monitor_kh');
+        Route::middleware('auth:api')->post('/v1/crm_connection', 'RpaApiController@crm_connection');
+//        官网
+        Route::post('/v1/release_task2', 'OfficialApiController@release_task2');
+        Route::post('/v1/get_trading_flow', 'OfficialApiController@get_trading_flow');
+        Route::post('/v1/get_trading_flow_test', 'OfficialApiController@get_trading_flow_test');
+        Route::post('/v1/release_task2_result', 'OfficialApiController@release_task2_result');
+        Route::post('/v1/get_mediator_by_number', 'OfficialApiController@get_mediator_by_number');
+//        插件相关
+        Route::middleware('auth:api')->post('/v1/oa_flow_save', 'PluginApiController@oa_flow_save');
+        Route::middleware('auth:api')->post('/v1/oa_get_sign', 'PluginApiController@oa_get_sign');
+        Route::middleware('auth:api')->post('/v1/crm_flow_save', 'PluginApiController@crm_flow_save');
+        Route::middleware('auth:api')->post('/v1/crm_get_sign', 'PluginApiController@crm_get_sign');
+        Route::middleware('auth:api')->post('/v1/credit', 'PluginApiController@credit');
+        Route::middleware('auth:api')->post('/v1/save_customer_info', 'PluginApiController@save_customer_info');
+        Route::middleware('auth:api')->post('/v1/customer_review', 'PluginApiController@customer_review');
+        Route::middleware('auth:api')->post('/v1/open_history', 'PluginApiController@open_history');
+        Route::middleware('auth:api')->post('/v1/mediator_info', 'PluginApiController@mediator_info');
+        Route::middleware('auth:api')->post('/v1/mediator_info2', 'PluginApiController@mediator_info2');
+        Route::middleware('auth:api')->post('/v1/fxq', 'PluginApiController@fxq');
+        Route::middleware('auth:api')->post('/v1/sync_data', 'PluginApiController@sync_data');
+//        其他
+        Route::middleware('auth:api')->post('/v1/mediator_flow', 'OtherApiController@mediator_flow');
+        Route::middleware('auth:api')->post('/v1/get_customer_relation', 'OtherApiController@get_customer_relation');
+        Route::middleware('auth:api')->post('/v1/get_mediator_relation', 'OtherApiController@get_mediator_relation');
+        Route::middleware('auth:api')->post('/v1/test', 'OtherApiController@test');
+    });
+//   掌上营业厅
+
 });
 
 

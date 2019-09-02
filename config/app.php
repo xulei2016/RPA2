@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -122,6 +122,7 @@ return [
     */
 
     'log' => env('APP_LOG', 'single'),
+    'log_max_file' => env('APP_LOG_MAX_FILE', '5'),
 
     'log_level' => env('APP_LOG_LEVEL', 'debug'),
 
@@ -185,6 +186,12 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         //passport
         Laravel\Passport\PassportServiceProvider::class,
+        //oci8
+        Yajra\Oci8\Oci8ServiceProvider::class,
+        //LaravelLogViewer
+        Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
+        //Cors
+        Barryvdh\Cors\ServiceProvider::class,
     ],
 
     /*

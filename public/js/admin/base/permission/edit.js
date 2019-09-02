@@ -1,16 +1,17 @@
 $(function(){
+    let modal = RPA.config.modal;
     //初始化
     function init(){
         bindEvent();
 
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
 
     //绑定事件
     function bindEvent(){
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
 
@@ -19,7 +20,7 @@ $(function(){
             "placeholder":"父级菜单",
         });
 
-        $('#modal form .switch input#status').bootstrapSwitch({onText:"启用", offText:"禁用"});
+        $(modal+' form .switch input#status').bootstrapSwitch({onText:"启用", offText:"禁用"});
 
         $.post('/admin/sys_permission/getTree', {}, function(json){
             if(200 == json.code){
@@ -58,12 +59,10 @@ $(function(){
 
     //添加
     function add(e){
-        let table = $('#modal #select2-menu option:selected').attr('table');
-        $('#modal #table').val(table);
         RPA.form.ajaxSubmit(e, FormOptions);
     }
 
-    var id = $('#modal #id').val();
+    var id = $(modal+' #id').val();
     //提交信息的表单配置
     var FormOptions={
         url:'/admin/sys_permission/'+id,

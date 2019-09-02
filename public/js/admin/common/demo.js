@@ -7,6 +7,8 @@
 $(function () {
     'use strict'
 
+    // CKEDITOR.replace('editor');
+    
     /**
      * Get access to plugins
      */
@@ -179,9 +181,8 @@ $(function () {
             + '</a>')
 
     // Add the tab button to the right sidebar tabs
-    $('[href="#control-sidebar-home-tab"]')
-        .parent()
-        .before($tabButton)
+    $('.control-sidebar-tabs')
+        .append($tabButton)
 
     // Create the menu
     var $demoSettings = $('<div />')
@@ -346,7 +347,7 @@ $(function () {
     $demoSettings.append($skinsList)
 
     $tabPane.append($demoSettings)
-    $('#control-sidebar-home-tab').after($tabPane)
+    $('.tab-content').append($tabPane)
 
     setup()
 

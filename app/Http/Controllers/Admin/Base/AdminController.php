@@ -60,7 +60,7 @@ class AdminController extends BaseAdminController
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','type','sex','phone','realName','desc','password','email','roleLists','groupID']);
+        $data = $this->get_params($request, ['name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID']);
         $roles = $data['roleLists'];
         $data['roleLists'] = implode(',', $data['roleLists']);
         $data['password'] = bcrypt($data['password']);
@@ -77,7 +77,7 @@ class AdminController extends BaseAdminController
      * update
      */
     public function update(Request $request){
-        $data = $this->get_params($request, ['id','name','type','sex','phone','realName','desc','password','email','roleLists','groupID']);
+        $data = $this->get_params($request, ['id','name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID']);
         $roles = $data['roleLists'];
         if(null == $data['password'] || '' == $data['password']){
             unset($data['password']);
@@ -121,8 +121,8 @@ class AdminController extends BaseAdminController
      */
     public function pagenation(Request $request){
         $rows = $request->rows;
-        $data = $this->get_params($request, ['name','role','type']);
-        $conditions = $this->getPagingList($data, ['name'=>'like', 'role'=>'=', 'type'=>'=']);
+        $data = $this->get_params($request, ['name','realName']);
+        $conditions = $this->getPagingList($data, ['name'=>'like', 'realName'=>'like']);
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder;
         $result = SysAdmin::where($conditions)

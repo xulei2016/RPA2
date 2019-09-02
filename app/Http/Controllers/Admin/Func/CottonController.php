@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Func;
 
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Models\Admin\Admin\SysAdmin;
+use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Func\rpa_cotton_entrys;
 use App\Models\Admin\Func\rpa_cotton_entrys_tmps;
 use App\Models\Admin\Rpa\rpa_immedtasks;
@@ -19,7 +20,7 @@ class CottonController extends BaseAdminController{
     public function index(Request $request){
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 仓单临时数据 页");
         //获取结算部名单
-        $conditions = [["groupID","=",2]];
+        $conditions = [["groupID","=",3]];
         $result = SysAdmin::where($conditions)->get();
         return view('admin/func/Cotton/index', ['list' => $result]);
     }
@@ -30,18 +31,30 @@ class CottonController extends BaseAdminController{
     }
     //查询信息
     public function pagination(Request $request){
-        $selectInfo = $this->get_params($request,["type","operator","state","from_saveDate","to_saveDate","customer"]);
+        $selectInfo = $this->get_params($request,["type","operator","state","from_saveDate","to_saveDate","customer","pihao"]);
         $type = $selectInfo['type'];
         if($type == "tmp"){
             $condition = $this->getPagingList($selectInfo, ['operator'=>'=','state'=>'=']);
         }elseif($type == "official"){
             $condition = $this->getPagingList($selectInfo, ['from_saveDate'=>'>=','to_saveDate'=>'<=']);
+
+            //批号查询
+            $pihao = $selectInfo['pihao'];
+            if(!empty($pihao)){
+                $pici = DB::table('rpa_cotton_batchs')->where("pihao",$pihao)->first();
+                if($pici){
+                    $id = $pici->eid;
+                }else{
+                    $id = 0;
+                }
+                array_push($condition,  array('id', '=', $id));
+            }
         }
         $customer = $selectInfo['customer'];
         if($customer && is_numeric( $customer )){
             array_push($condition,  array('khbm', '=', $customer));
         }elseif(!empty( $customer )){
-            array_push($condition,  array('khmc', '=', $customer));
+            array_push($condition,  array('khmc', 'like', "%".$customer."%"));
         }
         //预报总数
         $sum = rpa_cotton_entrys::where($condition)->sum('ybsl');
@@ -67,7 +80,7 @@ class CottonController extends BaseAdminController{
     public function adddata(Request $request)
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "上传 仓单数据");
-        $fileResource = 'D:/uploadFile/zhxt/';
+        $fileResource = 'D:/uploadFile/cotton/';
         $data = $_POST;
         $file = $_FILES['filename'];
 
@@ -185,7 +198,7 @@ class CottonController extends BaseAdminController{
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 仓单详情");
         $info = rpa_cotton_entrys_tmps::find($id);
-        $batch = DB::table('rpa_cotton_batchs_tmp')->where("eid",$id)->get();
+        $batch = DB::table('rpa_cotton_batchs_tmps')->where("eid",$id)->get();
         return view('admin/func/Cotton/detail', ['info' => $info,'batch'=>$batch]);
     }
     //详情
@@ -193,8 +206,6 @@ class CottonController extends BaseAdminController{
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 归档仓单详情");
         $info = rpa_cotton_entrys::find($id);
-        $info = $info['data'];
-
         $batch = DB::table('rpa_cotton_batchs')->where("eid",$id)->get();
         return view('admin/func/Cotton/detail', ['info' => $info,'batch'=>$batch]);
     }
@@ -210,7 +221,7 @@ class CottonController extends BaseAdminController{
             unset($info['state']);
             unset($info['remark']);
             $info['saveDate'] = date("Y-m-d H:i:s",time());
-            $batch = DB::table('rpa_cotton_batchs_tmp')->select("pihao","package","level")->where("eid",$id)->get()->map(function ($value) {return (array)$value;})->toArray();
+            $batch = DB::table('rpa_cotton_batchs_tmps')->select("pihao","package","level")->where("eid",$id)->get()->map(function ($value) {return (array)$value;})->toArray();
             $eid = DB::table('rpa_cotton_entrys')->insertGetId($info);
             foreach($batch as $k=>$v){
                 $v['eid'] = $eid;
@@ -218,7 +229,7 @@ class CottonController extends BaseAdminController{
                 $batch[$k] = $v;
                 DB::table('rpa_cotton_batchs')->insert($v);
             }
-            DB::table('rpa_cotton_batchs_tmp')->where("eid",$id)->delete();
+            DB::table('rpa_cotton_batchs_tmps')->where("eid",$id)->delete();
         }
         rpa_cotton_entrys_tmps::destroy($data);
         return $this->ajax_return(200, '操作成功！');
@@ -228,7 +239,7 @@ class CottonController extends BaseAdminController{
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "替包 仓单数据");
         $id = $request->id;
-        $batchs = DB::table("rpa_cotton_batchs_tmp")->where('eid','=',$id)->get()->map(function ($value) {return (array)$value;})->toArray();
+        $batchs = DB::table("rpa_cotton_batchs_tmps")->where('eid','=',$id)->get()->map(function ($value) {return (array)$value;})->toArray();
         foreach($batchs as $k=>$v){
             $eid = DB::table("rpa_cotton_batchs")->where('pihao','=',$v['pihao'])->value("eid");
             DB::table("rpa_cotton_batchs")->where('pihao','=',$v['pihao'])->update(["state"=>1]);
@@ -238,17 +249,18 @@ class CottonController extends BaseAdminController{
             unset($v['remark']);
             DB::table("rpa_cotton_batchs")->insert($v);
         }
-        DB::table("rpa_cotton_batchs_tmp")->where('eid','=',$id)->delete();
+        DB::table("rpa_cotton_batchs_tmps")->where('eid','=',$id)->delete();
         rpa_cotton_entrys_tmps::destroy($id);
         return $this->ajax_return(200, '操作成功！');
     }
+    
     //删除
     public function delete(Request $request){
         $ids = $request->id;
         $this->log(__CLASS__, __FUNCTION__, $request, "删除 仓单 列表");
         $data = explode(',',$ids);
         foreach($data as $v){
-            DB::table('rpa_cotton_batchs_tmp')->where('eid','=',$v)->delete();
+            DB::table('rpa_cotton_batchs_tmps')->where('eid','=',$v)->delete();
             $res = rpa_cotton_entrys_tmps::find($v);
             if(is_file($res->file_address)){
                 unlink($res->file_address);
@@ -257,9 +269,12 @@ class CottonController extends BaseAdminController{
         rpa_cotton_entrys_tmps::destroy($data);
         return $this->ajax_return(200, '操作成功！');
     }
+
     //发布任务
     public function immedtask(){
-        $data = ['name'=>'AnalysisCottonExcel','jsondata'=>''];
+        $ip = $_SERVER['LOCAL_ADDR'];
+        $config = SysConfig::where("item_value",$ip)->first();
+        $data = ['name'=>'AnalysisCottonExcel','jsondata'=>'{}','server'=>$config->tip];
         rpa_immedtasks::create($data);
         return $this->ajax_return(200, '操作成功！');
     }
@@ -276,14 +291,14 @@ class CottonController extends BaseAdminController{
     //验证数据是否正确
     public function checkdata()
     {
-        $res = DB::table('rpa_cotton_batchs_tmp')->pluck("pihao")->toArray();
+        $res = DB::table('rpa_cotton_batchs_tmps')->pluck("pihao")->toArray();
         $unique_arr = array_unique($res);
         $repeat_arr = array_diff_assoc($res,$unique_arr);
         if($repeat_arr){
             //临时表查询
             foreach($repeat_arr as $v){
-                DB::table('rpa_cotton_batchs_tmp')->where("pihao",$v)->update(['remark'=>"临时表有相同批号"]);
-                $ids = DB::table('rpa_cotton_batchs_tmp')->where("pihao","=",$v)->pluck("eid")->toArray();
+                DB::table('rpa_cotton_batchs_tmps')->where("pihao",$v)->update(['remark'=>"临时表有相同批号"]);
+                $ids = DB::table('rpa_cotton_batchs_tmps')->where("pihao","=",$v)->pluck("eid")->toArray();
                 foreach($ids as $id){
                     rpa_cotton_entrys_tmps::where('id',$id)->update(['state'=>2]);
                 }
@@ -297,8 +312,8 @@ class CottonController extends BaseAdminController{
             ];
             $re = DB::table('rpa_cotton_batchs')->where($where)->get();
             if(!$re->isEmpty()){
-                DB::table('rpa_cotton_batchs_tmp')->where("pihao",$v)->update(['remark'=>"正式表有相同批号"]);
-                $ids = DB::table('rpa_cotton_batchs_tmp')->where("pihao","=",$v)->pluck("eid")->toArray();
+                DB::table('rpa_cotton_batchs_tmps')->where("pihao",$v)->update(['remark'=>"正式表有相同批号"]);
+                $ids = DB::table('rpa_cotton_batchs_tmps')->where("pihao","=",$v)->pluck("eid")->toArray();
                 foreach($ids as $id){
                     rpa_cotton_entrys_tmps::where("id",$id)->update(['state'=>3]);
                 }
@@ -322,7 +337,7 @@ class CottonController extends BaseAdminController{
         }else{
             $file_name = "郑商所棉花交割入库预报表.xls";     //下载文件名
             $file_name = iconv("utf-8","gbk",$file_name);
-            $file_dir = "D:/download/";        //下载文件存放目录
+            $file_dir = "D:/uploadFile/cotton/";        //下载文件存放目录
             $file = $file_dir . $file_name;
         }
 

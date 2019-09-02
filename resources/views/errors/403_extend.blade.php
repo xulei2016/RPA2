@@ -18,18 +18,6 @@
           您没有访问权限.
           你可以 <b>联系管理员授权处理</b>.
         </p>
-
-        <form class="search-form">
-          <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search">
-
-            <div class="input-group-btn">
-              <button type="submit" name="submit" class="btn btn-warning btn-flat"><i class="fa fa-search"></i>
-              </button>
-            </div>
-          </div>
-          <!-- /.input-group -->
-        </form>
       </div>
       <!-- /.error-content -->
   </div>
