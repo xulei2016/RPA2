@@ -262,22 +262,22 @@ RPA.prototype = {
                     var id = row.ID;
                     // EditViewById(id, 'view');
                 },
-                onPostBody: function () {
-                    //改变复选框样式
-                    $(selector).find("input:checkbox").each(function (i) {
-                        var $check = $(this);
-                        if ($check.attr("id") && $check.next("label")) {
-                            return;
-                        }
-                        var name = $check.attr("name");
-                        var id = name + "-" + i;
-                        var $label = $('<label for="'+ id +'"></label>');
-                        $check.attr("id", id).parent().addClass("bella-checkbox").append($label);
-                    });
-                    if ($.isFunction(param.onPostBody)) {
-                        param.onPostBody();
-                    }
-                },
+                // onPostBody: function () {
+                //     //改变复选框样式
+                //     $(selector).find("input:checkbox").each(function (i) {
+                //         var $check = $(this);
+                //         if ($check.attr("id") && $check.next("label")) {
+                //             return;
+                //         }
+                //         var name = $check.attr("name");
+                //         var id = name + "-" + i;
+                //         var $label = $('<label for="'+ id +'"></label>');
+                //         $check.attr("id", id).parent().addClass("bella-checkbox").append($label);
+                //     });
+                //     if ($.isFunction(param.onPostBody)) {
+                //         param.onPostBody();
+                //     }
+                // },
             });
         };
     
