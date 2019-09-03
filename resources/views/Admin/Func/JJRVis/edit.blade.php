@@ -37,7 +37,6 @@
                 </div>
             </div>
         </div>
-        {{ method_field('PATCH')}}
         <input type="hidden" class="form-control" id="id" name="id" value="{{$id}}">
     @endslot
 

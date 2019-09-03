@@ -14,6 +14,7 @@ EchoManager.prototype = {
     templateUrl:'/call_center/template_list_background',
     getRecordById:'/call_center/getRecordById',
     getRecord:'/call_center/getRecordList',
+    getCustomerInfo:'/call_center/getCustomerInfo',
     connectNumber:0,
     init:function () {
         this.echo = window.Echo;

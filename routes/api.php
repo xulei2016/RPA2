@@ -42,6 +42,8 @@ Route::group(['namespace' => 'api'], function(){
         Route::middleware('auth:api')->post('/v1/gw_fee', 'RpaApiController@gw_fee');
         Route::middleware('auth:api')->post('/v1/monitor_kh', 'RpaApiController@monitor_kh');
         Route::middleware('auth:api')->post('/v1/crm_connection', 'RpaApiController@crm_connection');
+        Route::middleware('auth:api')->post('/v1/simulation', 'RpaApiController@simulation');
+        Route::middleware('auth:api')->post('/v1/simulation_open', 'RpaApiController@simulation_open');
 //        官网
         Route::post('/v1/release_task2', 'OfficialApiController@release_task2');
         Route::post('/v1/get_trading_flow', 'OfficialApiController@get_trading_flow');
@@ -61,6 +63,7 @@ Route::group(['namespace' => 'api'], function(){
         Route::middleware('auth:api')->post('/v1/mediator_info2', 'PluginApiController@mediator_info2');
         Route::middleware('auth:api')->post('/v1/fxq', 'PluginApiController@fxq');
         Route::middleware('auth:api')->post('/v1/sync_data', 'PluginApiController@sync_data');
+        Route::middleware('auth:api')->post('/v1/get_entry_by_pihao', 'PluginApiController@get_entry_by_pihao');
 //        其他
         Route::middleware('auth:api')->post('/v1/mediator_flow', 'OtherApiController@mediator_flow');
         Route::middleware('auth:api')->post('/v1/get_customer_relation', 'OtherApiController@get_customer_relation');

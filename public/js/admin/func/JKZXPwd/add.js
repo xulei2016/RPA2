@@ -1,40 +1,36 @@
 $(function(){
-    let modal = RPA.config.modal;
     var type = false;
     var time_type = false;
+    let modal = RPA.config.modal;
+    
     /**
      * 页面初始化
      */
     function init(){
         bindEvent();
+
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
         $(modal+" form").validate(validateInfo);
     }
     
     //事件绑定
     function bindEvent(){
-        $("#select2-menu").select2({
-            "allowClear":true,
-            "placeholder":"关联用户",
-        });
-
         //表单提交
         $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
 
-    };
-
+        $(modal+' form input#type').bootstrapSwitch({"onColor":"info","offColor":"danger",'onText':"普通",'offText':"IB"});
+    }
     
     //添加
     function add(e){
-        // serializeForm();
         RPA.form.ajaxSubmit(e, FormOptions);
     }
 
     //提交信息的表单配置
     var FormOptions={
-        url:'/admin/sys_call_center_manager',
+        url:'/admin/rpa_jkzxPwd',
         success:function(json, xml){
             if(200 == json.code){
                 RPA.form.response();
@@ -48,21 +44,18 @@ $(function(){
     //表单验证信息
     var validateInfo ={
         rules:{
-            nickname:{
+            name:{//名称
                 required:true
             },
-            work_number:{
+            account:{
                 required:true
             },
-            label:{
+            tel:{
                 required:true
             },
-            group_id:{
+            pwd:{
                 required:true
             },
-            sys_admin_id:{
-                required:true
-            }
         },
         errorPlacement:function(error,element){
             element.parent().append(error);

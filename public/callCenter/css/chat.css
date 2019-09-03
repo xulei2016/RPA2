@@ -605,10 +605,16 @@ li, div, ul {*zoom: 1}
     padding: 0 15px;
     box-sizing: border-box;
 }
-.modification-body,.userMod-body{
+.modification-body{
     width: 100%;
     text-align: center;
 }
+
+.userMod-body {
+    width: 100%;
+    text-align: center;
+}
+
 .modification-body img,.userMod-body img{
     width: 40px;
     height: 40px;
@@ -619,14 +625,28 @@ li, div, ul {*zoom: 1}
     border-radius: 50%;
 }
 .modification-body div,.userMod-body div{
-    margin: 10px 0;
+    margin: 5px 0;
 }
+
+
+.userMod-body .userDiv span{
+    display: inline-block;
+    width: 66%;
+    text-align: center;
+}
+
+.userMod-body .userDiv  label{
+    display: inline-block;
+    text-align: right;
+    width: 25%;
+}
+
 .modification-body div input{
     font-size: 14px;
     border: none;
     color: #666;
     position: relative;
-    left: 16px;
+    left: 6px;
     /*display: none;*/
 }
 .modification-body div label,.userMod-body div label{
@@ -661,8 +681,8 @@ li, div, ul {*zoom: 1}
     /*height: 200px;*/
     /*overflow-y: scroll;*/
     z-index: 99;
-    position: relative;
-    right: 300px;
+    position: absolute;
+    right: 320px;
     bottom: 200px;
     background-color: white;
     border: 1px solid #666;

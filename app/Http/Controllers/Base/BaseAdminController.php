@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Admin\Base\SysConfig;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Base\BaseController;
+use GuzzleHttp\Client;
+use App\Models\Admin\Base\SysSmsLog;
 
 /**
  * 基础控制器
@@ -29,6 +31,55 @@ class BaseAdminController extends BaseController
                 Cache::add("sysConfigs",$sysConfigs,3600);
             }
         }
+    }
+
+    /**
+     * 优信短信接口
+     * @param   [String]  $phone    手机号
+     * @param   [String]  $msg      发送内容
+     * @return  [Integer] $code     状态码
+     * @return  [String]  $data     返回信息
+     */
+    public function yx_sms($phone,$msg)
+    {
+        $msg = iconv("utf-8","gb2312",$msg);
+
+        $yx = config('sms.YX');
+        $url = $yx['url']['mult'];
+        $statuses = $yx['status'];
+
+        $form_params = [
+            'CorpID' => $yx['account'],
+            'Pwd' => $yx['password'],
+            "Mobile" => $phone,
+            "Content" => $msg,
+            "Cell" => '',
+            "SendTime" => ''
+        ];
+
+        $guzzle = new Client();
+        $response = $guzzle->post($url, [
+            'form_params' => $form_params
+        ]);
+        $body = $response->getBody();
+        $body = (string)$body;
+
+        $data = [
+            'status' => $body,
+            'msg' => $statuses[$body]
+        ];
+
+        //短信日志
+        $sms = [
+            'type' => '优信',
+            'api' => 'sms',
+            'phone' => $phone,
+            'content' => iconv("gb2312","utf-8",$msg),
+            'return' => $body,
+        ];
+        SysSmsLog::create($sms);
+
+        return $data;
     }
 
     /**

@@ -170,7 +170,7 @@ $(function(){
                     var id = value;
                     var result = "";
                     let url = detail_url_prefix+"?record_id="+row.id;
-                    result += " <a href='javascript:;' class='btn btn-xs btn-primary' onclick=\"operation($(this));\" url='"+url+"' title='查看'><span class='glyphicon glyphicon-pencil'></span></a>";
+                    result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='"+url+"' title='查看'>查看</a>";
                     return result;
                 }
             }],

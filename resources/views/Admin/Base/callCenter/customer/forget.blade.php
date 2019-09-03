@@ -5,6 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no,viewport-fit=cover" />
 	<title>登录</title>
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<link rel="stylesheet" href="{{asset('callCenter/css/main.css')}}" />
 	<link rel="stylesheet" href="{{asset('callCenter/css/bootstrapValidator.css')}}" />
 </head>
@@ -22,7 +23,7 @@
 	</div>
 
 	<div class="form-group">
-		<input type="text" name="id_card" placeholder="身份证号" class="id-card" id="id_card">
+		<input type="text" name="card" placeholder="身份证号" class="id-card" id="card">
 		<div class="error-message"></div>
 	</div>
 
@@ -41,18 +42,18 @@
 		var idReg=/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
 		var flag = false;
 		var name = $('input#name').val();
-		var id_card = $('input#id_card').val();
+		var card = $('input#card').val();
 		if(!name) {
 			$('input#name').parent().find('div.error-message').text("姓名必填");
 			flag = true;
 		}
-		if(!id_card || !idReg.test(id_card)) {
-			$('input#id_card').parent().find('div.error-message').text("请输入正确的身份证号码");
+		if(!card || !idReg.test(card)) {
+			$('input#card').parent().find('div.error-message').text("请输入正确的身份证号码");
 			flag = true;
 		}
 		if(flag) return;
 		var data = {
-			id_card:id_card,
+			card:card,
 			name:name
 		};
 		EchoClient.prototype.login(data);

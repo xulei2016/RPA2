@@ -27,7 +27,7 @@ Route::get('/', function () {
 
 });
 
-//客服中心
+//客服中心前台
 Route::group(['prefix' => 'call_center', 'namespace' => 'Admin\Base\CallCenter'], function(){
     Route::post('/login', 'CustomerController@doLogin');
     Route::post('/logout', 'CustomerController@logout');
@@ -40,6 +40,7 @@ Route::group(['prefix' => 'call_center', 'namespace' => 'Admin\Base\CallCenter']
     Route::get("/getOnlineManagerList", 'ManagerController@getOnlineManagerList');
     Route::get("/getRecordById", 'RecordDetailController@getRecordById');
     Route::get("/getRecordList", 'RecordDetailController@getRecordList');
+    Route::post('/getCustomerInfo', 'CustomerController@getById');
     Route::post("/connect", 'ManagerController@connect');
     Route::post("/transfer", 'ManagerController@transfer');
     //图片上传
@@ -222,7 +223,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             });
 
 
-            //客服中心
+            //客服中心后台
             Route::group(['namespace' => 'CallCenter','middleware' => ['permission:sys_call_center']], function(){
                 //聊天室
                 Route::get("/sys_call_center_chat_room", 'ChatRoomController@index');
@@ -442,6 +443,28 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('/rpa_customer/adddata', 'CustomerController@adddata')->middleware('permission:rpa_customer_add');
                 Route::get('/rpa_customer/list', 'CustomerController@pagination');
                 Route::post('/rpa_customer/delete','CustomerController@delete')->middleware('permission:rpa_customer_delete');
+            });
+
+            //监控中心密码
+            Route::group(['middleware' => ['permission:rpa_jkzxPwd']], function () {
+                Route::get('/rpa_jkzxPwd/send/{id}', 'JKZXPwdController@send');
+                Route::get('/rpa_jkzxPwd/resend/{id}', 'JKZXPwdController@resend');
+                Route::post('/rpa_jkzxPwd/senddata', 'JKZXPwdController@senddata');
+                Route::post('/rpa_jkzxPwd/yjsend', 'JKZXPwdController@yjsend');
+                Route::get('/rpa_jkzxPwd/list', 'JKZXPwdController@pagination');
+                Route::resource("/rpa_jkzxPwd", 'JKZXPwdController');
+            });
+
+            //监控中心密码
+            Route::group(['middleware' => ['permission:rpa_address_recognition']], function () {
+                Route::get('/rpa_address_recognition/list', 'RecognitionController@pagination');
+                Route::resource("/rpa_address_recognition", 'RecognitionController');
+            });
+
+            //手续费和保证金
+            Route::group([], function () {
+                Route::get('/rpa_bzj', 'BzjController@index');
+                Route::get('/rpa_bzj/list', 'BzjController@pagination');
             });
         });
     });

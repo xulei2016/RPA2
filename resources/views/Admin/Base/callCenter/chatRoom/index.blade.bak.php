@@ -40,27 +40,27 @@
                             <div class="customer-chat-emots-menu">
                                 <div class="customer-chat-header-menu-triangle"></div>
                                 <div class="emots-wrapper">
-                                    <a href="javascript:;" id=":)" class="customer-chat-emoticon"><i class="emot emot-1"></i></a>
-                                    <a href="javascript:;" id=";)" class="customer-chat-emoticon"><i class="emot emot-2"></i></a>
-                                    <a href="javascript:;" id=":(" class="customer-chat-emoticon"><i class="emot emot-3"></i></a>
-                                    <a href="javascript:;" id=":D" class="customer-chat-emoticon"><i class="emot emot-4"></i></a>
-                                    <a href="javascript:;" id=":P" class="customer-chat-emoticon"><i class="emot emot-5"></i></a>
-                                    <a href="javascript:;" id="=)" class="customer-chat-emoticon"><i class="emot emot-6"></i></a>
-                                    <a href="javascript:;" id=":|" class="customer-chat-emoticon"><i class="emot emot-7"></i></a>
-                                    <a href="javascript:;" id="=|" class="customer-chat-emoticon"><i class="emot emot-8"></i></a>
-                                    <a href="javascript:;" id=">:|" class="customer-chat-emoticon"><i class="emot emot-9"></i></a>
-                                    <a href="javascript:;" id=">:D" class="customer-chat-emoticon"><i class="emot emot-10"></i></a>
+                                    <a href="#" id=":)" class="customer-chat-emoticon"><i class="emot emot-1"></i></a>
+                                    <a href="#" id=";)" class="customer-chat-emoticon"><i class="emot emot-2"></i></a>
+                                    <a href="#" id=":(" class="customer-chat-emoticon"><i class="emot emot-3"></i></a>
+                                    <a href="#" id=":D" class="customer-chat-emoticon"><i class="emot emot-4"></i></a>
+                                    <a href="#" id=":P" class="customer-chat-emoticon"><i class="emot emot-5"></i></a>
+                                    <a href="#" id="=)" class="customer-chat-emoticon"><i class="emot emot-6"></i></a>
+                                    <a href="#" id=":|" class="customer-chat-emoticon"><i class="emot emot-7"></i></a>
+                                    <a href="#" id="=|" class="customer-chat-emoticon"><i class="emot emot-8"></i></a>
+                                    <a href="#" id=">:|" class="customer-chat-emoticon"><i class="emot emot-9"></i></a>
+                                    <a href="#" id=">:D" class="customer-chat-emoticon"><i class="emot emot-10"></i></a>
 
-                                    <a href="javascript:;" id="o_O" class="customer-chat-emoticon"><i class="emot emot-11"></i></a>
-                                    <a href="javascript:;" id="=O" class="customer-chat-emoticon"><i class="emot emot-12"></i></a>
-                                    <a href="javascript:;" id="<3" class="customer-chat-emoticon"><i class="emot emot-13"></i></a>
-                                    <a href="javascript:;" id=":S" class="customer-chat-emoticon"><i class="emot emot-14"></i></a>
-                                    <a href="javascript:;" id=":*" class="customer-chat-emoticon"><i class="emot emot-15"></i></a>
-                                    <a href="javascript:;" id=":$" class="customer-chat-emoticon"><i class="emot emot-16"></i></a>
-                                    <a href="javascript:;" id="=B" class="customer-chat-emoticon"><i class="emot emot-17"></i></a>
-                                    <a href="javascript:;" id=":-D" class="customer-chat-emoticon"><i class="emot emot-18"></i></a>
-                                    <a href="javascript:;" id=";-D" class="customer-chat-emoticon"><i class="emot emot-19"></i></a>
-                                    <a href="javascript:;" id="*-D" class="customer-chat-emoticon"><i class="emot emot-20"></i></a>
+                                    <a href="#" id="o_O" class="customer-chat-emoticon"><i class="emot emot-11"></i></a>
+                                    <a href="#" id="=O" class="customer-chat-emoticon"><i class="emot emot-12"></i></a>
+                                    <a href="#" id="<3" class="customer-chat-emoticon"><i class="emot emot-13"></i></a>
+                                    <a href="#" id=":S" class="customer-chat-emoticon"><i class="emot emot-14"></i></a>
+                                    <a href="#" id=":*" class="customer-chat-emoticon"><i class="emot emot-15"></i></a>
+                                    <a href="#" id=":$" class="customer-chat-emoticon"><i class="emot emot-16"></i></a>
+                                    <a href="#" id="=B" class="customer-chat-emoticon"><i class="emot emot-17"></i></a>
+                                    <a href="#" id=":-D" class="customer-chat-emoticon"><i class="emot emot-18"></i></a>
+                                    <a href="#" id=";-D" class="customer-chat-emoticon"><i class="emot emot-19"></i></a>
+                                    <a href="#" id="*-D" class="customer-chat-emoticon"><i class="emot emot-20"></i></a>
                                 </div>
                             </div>
                             <input type="text" id="customer-chat-message-input" class="customer-chat-content-message-input-field" placeholder="输入你的问题">
@@ -82,47 +82,59 @@
                             <div class="userMod-header">
                                 客户信息
                             </div>
-                            <div class="userMod-body">
+                            <div class="userMod-body" style="text-align: left">
 {{--                                <img id="customer-avatar" src="{{asset('callCenter/img/avatar-2.png')}}" />--}}
                                 <div class="userDiv">
-                                    <label>客户姓名:</label>
-                                    <span id="customer-name">暂无</span>
+                                    <div>
+                                        <label>客户姓名:</label>
+                                        <span id="customer-name">暂无</span>
+                                    </div>
+                                    <div>
+                                        <label>资金账号:</label>
+                                        <span id="customer-zjzh">暂无</span>
+                                    </div>
+
+                                </div>
+
+                                <div class="userDiv">
+                                    <div>
+                                        <label>开户日期:</label>
+                                        <span id="customer-khrq">暂无</span>
+                                    </div>
+                                    <div>
+                                        <label>当日权益:</label>
+                                        <span id="customer-zjqy">暂无</span>
+                                    </div>
+                                </div>
+
+                                <div class="userDiv">
+                                    <div>
+                                        <label>客户类型:</label>
+                                        <span id="customer-client">暂无</span>
+                                    </div>
+                                    <div>
+                                        <label>银期关联:</label>
+                                        <span id="customer-yq">未知</span>
+                                    </div>
+
+                                </div>
+
+                                <div class="userDiv">
+                                    <div>
+                                        <label>手续费标准:</label>
+                                        <span id="customer-sxf">暂无</span>
+                                    </div>
+                                    <div>
+                                        <label>保证金标准:</label>
+                                        <span id="customer-bzj">暂无</span>
+                                    </div>
+
                                 </div>
                                 <div class="userDiv">
-                                    <label>资金账号:</label>
-                                    <span id="customer-zjzh">暂无</span>
-                                </div>
-                                <div class="userDiv">
-                                    <label>开户日期:</label>
-                                    <span id="customer-khrq">暂无</span>
-                                </div>
-                                <div class="userDiv">
-                                    <label>当日权益:</label>
-                                    <span id="customer-zjqy">暂无</span>
-                                </div>
-                                <div class="userDiv">
-                                    <label>客户类型:</label>
-                                    <span id="customer-client">暂无</span>
-                                </div>
-                                <div class="userDiv">
-                                    <label>银期关联:</label>
-                                    <span id="customer-yq">未知</span>
-                                </div>
-                                <div class="userDiv">
-                                    <label>手续费标准:</label>
-                                    <span id="customer-sxf">暂无</span>
-                                </div>
-                                <div class="userDiv">
-                                    <label>保证金标准:</label>
-                                    <span id="customer-bzj">暂无</span>
-                                </div>
-                                <hr />
-                                <div class="userDiv">
-                                    <label>交易权限:</label>
-                                    <br>
-                                    <span id="customer-jybm">
-                                        未知
-                                    </span>
+                                    <label>交易编码:</label>
+                                    <p id="customer-jybm" style="text-align: center">
+
+                                    </p>
                                 </div>
                             </div>
 

@@ -12,6 +12,7 @@ use App\Models\Admin\Rpa\rpa_timetasks;
 use App\Models\Admin\Rpa\rpa_clock_list;
 use App\Models\Admin\Api\RpaDtuSms;
 use Illuminate\Support\Facades\DB;
+use App\Models\Admin\Func\RpaSimulationAccount;
 
 class RpaApiController extends BaseApiController
 {
@@ -303,11 +304,14 @@ class RpaApiController extends BaseApiController
         while(!feof($handle)){
             $row = fgetcsv($handle);
             //跳过表头
-            if($line == 0){
+            if($line == 0 || empty($row[2])){
                 $line++;
                 continue;
             }
             //处理数据
+            foreach($row as $k => $v){
+                $row[$k] = trim($v);
+            }
             $csv_zjzh = iconv("gbk","utf-8",$row[2]);
             //crm获取交易编码
             $post_data = [
@@ -677,6 +681,56 @@ class RpaApiController extends BaseApiController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
+    public function simulation(Request $request){
+        //ip检测
+        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
+
+        //表单验证
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'sfz' => 'required',
+            'phone' => 'required|numeric',
+            'address' => 'required',
+            'postcode' => 'required|numeric',
+            'email' => 'required|email',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'sfz' => $request->sfz,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'postcode' => $request->postcode,
+            'email' => $request->email,
+        ];
+        $res = RpaSimulationAccount::create($data);
+        if($res){
+            $return = [
+                'status' => 200,
+                'msg' => '申请成功'
+            ];            
+        }else{
+            $return = [
+                'status' => 500,
+                'msg' => '申请失败'
+            ];
+        }
+
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
+
+        return response()->json($return);
+    }
+
+
+    /**
+     * 仿真开户短信发送
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function simulation_open(Request $request){
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
@@ -690,20 +744,33 @@ class RpaApiController extends BaseApiController
             'zjzh' => 'required'
         ]);
 
-        //添加资金账号
-        $data = [
-            'khdate' => time(),
-            'ifsms' => 1,
-            'fundaccountORreason' => $request->zjzh
-        ];
+        $res = RpaSimulationAccount::where("id",$request->id)->update(['zjzh'=>$request->zjzh]);
+        if($res){
+            $kh = RpaSimulationAccount::find($request->id);
+            $content = "尊敬的".$kh->name."：您好，您的仿真期权账号为".$request->zjzh."，初始密码为身份证后六位，可于下一个交易日参与交易。请到华安期货官网-软件下载-其他及模拟仿真栏目下载软件，推荐下载“期权仿真恒生-5.0”";
+            $res = $this->yx_sms($kh->phone,$content);
+            if($res['status'] == '0'){
+                $re = [
+                    'status' => 200,
+                    'msg' => '数据更新成功，短信发送成功'
+                ];
+            }else{
+                $re = [
+                    'status' => 500,
+                    'msg' => '数据更新成，短信发送失败，失败原因：'.$res['msg']
+                ];
+            }
+        }else{
+            $re = [
+                'status' => 500,
+                'msg' => '数据更新失败'
+            ];
+        }
 
-        // DB::connection("oa")->table("oa_option")->where("id",$request->id)->update($data);
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+
+        return response()->json($re);
         
-        // $sql = "select * from oa_option where id =".$id;
-        // $res = $oa->getOne($sql);
-
-        // $content = "尊敬的{$res['name']}：您好，您的仿真期权账号为{$zjzh}，初始密码为身份证后六位，请在华安期货官网-软件下载-期权仿真软件，下载软件，可于下一个交易日参与交易，参与商品期权需满足10天20笔的仿真记录并具有行权经历，祝您交易愉快。(仅允许交易豆粕、白糖的期货和期权，其他品种请勿开仓)";
-        // $re = send_sms($res['tel'],$content);
-        // echo json_encode($re);
     }
 }

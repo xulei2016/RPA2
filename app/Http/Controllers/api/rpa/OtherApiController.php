@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\rpa;
 use App\Http\Controllers\api\BaseApiController;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-
+use App\Models\Admin\Api\RpaHaLcztcx;
 
 class OtherApiController extends BaseApiController
 {
@@ -170,6 +170,7 @@ class OtherApiController extends BaseApiController
                     break;
                 case "TXCTC_LC_JJRBLQR": //居间人比例确认
                     $re = $this->jjrBLQR($lc->instid);
+                    break;
                 default:
                     $re = [
                         'status' => 500,
@@ -310,7 +311,7 @@ class OtherApiController extends BaseApiController
 			];
             
             $guzzle = new Client();
-            $response = $guzzle->post('http:/172.16.191.26/oa2_test/index.php?m=Xy&a=xyHB2',[
+            $response = $guzzle->post('http:/172.16.191.26/oa2/index.php?m=Xy&a=xyHB2',[
                 'form_params' => $post_data,
             ]);
             $body = $response->getBody();

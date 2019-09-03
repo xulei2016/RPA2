@@ -1,4 +1,5 @@
 $(function(){
+    let modal = RPA.config.modal;
     var type = false;
     var time_type = false;
 
@@ -8,13 +9,13 @@ $(function(){
     function init(){
         bindEvent();
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
-        $("#modal form").validate(validateInfo);
+        $(modal+" form").validate(validateInfo);
     }
     
     //事件绑定
     function bindEvent(){
         //表单提交
-        $('#modal form #save').click(function(){
+        $(modal+' form #save').click(function(){
             add($(this).parents('form'));
         });
     }
@@ -24,7 +25,7 @@ $(function(){
     function add(e){
         RPA.form.ajaxSubmit(e, FormOptions);
     }
-    var id = $('#modal form #id').val();
+    var id = $(modal+' form #id').val();
     //提交信息的表单配置
     var FormOptions={
         url:'/admin/sys_call_center_manager/'+id,

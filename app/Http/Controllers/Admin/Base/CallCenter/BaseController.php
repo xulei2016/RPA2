@@ -229,4 +229,64 @@ class BaseController extends BaseAdminController
         broadcast(new CallCenterCustomerChangeEvent($result));
     }
 
+
+    /**
+     * 在线客户中剔除客户
+     * @param $customer_id
+     */
+    public function leaveOnlineVisitors($customer_id)
+    {
+        Redis::hDel(self::ONLINE_CUSTOMER_LIST, $customer_id);
+    }
+
+    /**
+     * 获取客户端类别
+     */
+    public function getClientGroup($id, $flag = false){
+        if(!$flag) {
+            $client_group = [
+                '94' => '恒生',
+                '93' => '恒生',
+                '92' => 'CTP',
+                '91' => 'CTP',
+                '90' => 'CTP',		//CTP
+                '61' => '易胜',
+                '11' => '飞鼠',
+                '10' => '飞创',
+                '9' => 'CTP',
+                '8' => '易胜',
+                '7' => '易胜',
+                '6' => '易胜',
+                '5' => '易胜',
+                '4' => '恒生',			//恒生
+                '3' => '大户',
+                '2' => '中户',
+                '1' => '散户',
+                '0' => '恒生'			//恒生
+            ];
+        } else {
+            $client_group = [
+                '94' => '达钱艾扬（恒生）',
+                '93' => '恒生（开拓者）',
+                '92' => '达钱艾扬（CTP）',
+                '91' => '开拓者（CTP）',
+                '90' => 'ATP客户',		//CTP
+                '61' => '大连易胜9.0',
+                '11' => '飞鼠',
+                '10' => '飞创',
+                '9' => 'CTP客户',
+                '8' => '郑州易胜8.2',
+                '7' => '郑州易胜9.0',
+                '6' => '张江易胜9.0',
+                '5' => '张江易胜8.2',
+                '4' => '增量',			//恒生
+                '3' => '大户',
+                '2' => '中户',
+                '1' => '散户',
+                '0' => '普通'			//恒生
+            ];
+        }
+        return isset($client_group[$id]) ? $client_group[$id] : '未知' ;
+    }
+
 }

@@ -21,6 +21,7 @@
   "dependencies": {
     "ajv": "^6.0.0",
     "laravel-echo": "^1.5.2",
+    "npm": "^6.11.2",
     "pusher-js": "^4.3.1",
     "socket.io-client": "^2.2.0",
     "sweetalert": "^2.1.2"

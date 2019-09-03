@@ -159,76 +159,26 @@ class BaseApiController extends BaseController
             $sysapiip = Cache::get($api);
         }
         //判断
-        $black_list = array_keys($sysapiip->black_list ? json_decode($sysapiip->black_list,true) : []);
-        $white_list = array_keys($sysapiip->white_list ? json_decode($sysapiip->white_list,true) : []);
-        //有白名单存在，请求ip必须在白名单中
-        if($white_list && !in_array($ip,$white_list)){
-            $data = [
-                'status' => 450,
-                'msg' => "ip限制访问"
-            ];
-            return $data;
-        }
-        //有黑名单存在，请求ip必须不在黑名单中
-        if($black_list && in_array($ip,$black_list)){
-            $data = [
-                'status' => 450,
-                'msg' => "ip限制访问"
-            ];
-            return $data;
-        }
+        // $black_list = array_keys($sysapiip->black_list ? json_decode($sysapiip->black_list,true) : []);
+        // $white_list = array_keys($sysapiip->white_list ? json_decode($sysapiip->white_list,true) : []);
+        
+        // //有白名单存在，请求ip必须在白名单中
+        // if($white_list && !in_array($ip,$white_list)){
+        //     $data = [
+        //         'status' => 450,
+        //         'msg' => "ip限制访问"
+        //     ];
+        //     return $data;
+        // }
+        // //有黑名单存在，请求ip必须不在黑名单中
+        // if($black_list && in_array($ip,$black_list)){
+        //     $data = [
+        //         'status' => 450,
+        //         'msg' => "ip限制访问"
+        //     ];
+        //     return $data;
+        // }
         return true;
-    }
-
-    /**
-     * base64转图片文件
-     * @param $img
-     * @param string $path
-     * @param string $filename
-     * @return string
-     */
-    protected function base64ToImage($img, $path = '/',$filename= ''){
-        $flag = false;
-        $log = "000";
-        if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $img, $result)) {
-
-            $type = $result[2];//图片后缀
-            $new_file = "d:/uploadFile".$path;
-            if (!is_dir($new_file)) {
-                //检查是否有该文件夹，如果没有就创建，并给予最高权限
-                mkdir($new_file, 0700, true);
-            }
-            if($filename == ''){
-                $filename = time() . '_' . uniqid() . ".{$type}";
-            }
-            $new_file = $new_file . $filename;
-
-            //写入操作
-            if(file_put_contents($new_file, base64_decode(str_replace($result[1], '', $img)))){
-                $log = $filename;
-                $flag = true;
-            }else{
-                $log = '图片保存失败';
-            }
-        }else{
-            $log = 'base64解析失败';
-        }
-        return ['log_img'=>$log, 'filename'=>$filename, 'flag'=>$flag, 'result'=>$result];
-    }
-
-
-    /** 图片文件转base64
-     * @param  String $file 文件路径
-     * @return String base64 string
-     */
-    protected function base64EncodeImage ($image_file) {
-        if(!file_exists($image_file)){
-            return false;
-        }
-        $image_info = getimagesize($image_file);
-        $image_data = fread(fopen($image_file, 'r'), filesize($image_file));
-        $base64_image = 'data:' . $image_info['mime'] . ';base64,' . chunk_split(base64_encode($image_data));
-        return $base64_image;
     }
 
     /** 图片转二进制

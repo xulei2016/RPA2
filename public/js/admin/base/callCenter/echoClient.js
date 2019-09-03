@@ -101,7 +101,7 @@ EchoClient.prototype = {
         this.axios(this.config.message_url, 'post', data).then((r) => {
         }).catch(error => {});
     },
-    logout: function(){
+    logout: function(flag = false){
         var info = localStorage.getItem(this.config.cache_key);
         info = JSON.parse(info);
         this.axios(this.config.logout_url, 'post',{customer_id:info.customer_id}).then((r) => {
@@ -111,7 +111,9 @@ EchoClient.prototype = {
             localStorage.removeItem(this.config.cache_key);
             localStorage.removeItem(this.config.cache_config_key);
             localStorage.removeItem(this.config.cache_manager_key);
-            window.location.href = this.config.login_url;
+            if(!flag) {
+                window.location.href = this.config.login_url;
+            }
         })
     },
     login:function(data){

@@ -13,6 +13,7 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Admin\Func\rpa_cotton_entrys;
 
 class PluginApiController extends BaseApiController
 {
@@ -311,7 +312,7 @@ class PluginApiController extends BaseApiController
     public function credit(Request $request)
     {
         //ip检测
-        $res = $this->check_ip("credit",$request->getClientIp());
+        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
         if($res !== true){
             return response()->json($res);
         }
@@ -323,25 +324,62 @@ class PluginApiController extends BaseApiController
             'type' => 'required|in:1,2'
         ]);
 
-        $time = date("Y-m-d",time());
+        $today = date("Y-m-d H:i:s",time());
+        $yesterday = date("Y-m-d",strtotime("-1 day"))." 15:00:00";
         //期货
-        $cfa = RpaShixincfa::where([["updatetime",$time],["idnum",$request->idCard],["name",$request->name]])->orderBy('id','desc')->first();
+        $cfa = RpaShixincfa::where([["updatetime",'>=',$yesterday],["updatetime",'<=',$today],["idnum",$request->idCard],["name",$request->name]])->orderBy('id','desc')->first();
         //证券
-        $sf = RpaShixinsf::where([["updatetime",$time],["idnum",$request->idCard],["name",$request->name]])->orderBy('id','desc')->first();
-       
-        //期货证券同时存在，且无失败记录，无需发布任务
-        if(isset($cfa) && isset($sf) && ($cfa->state != -1) && ($sf->state != -1)){
-            if($request->type == 1){
+        $sf = RpaShixinsf::where([["updatetime",'>=',$yesterday],["updatetime",'<=',$today],["idnum",$request->idCard],["name",$request->name]])->orderBy('id','desc')->first();
+
+        //$type 1代表发布任务 2代表查询结果
+        if($request->type == 1){
+            $param = [
+                'name' => $request->name,
+                'idCard' => $request->idCard,
+                'operator' => Auth::user()->name
+            ];
+            if(!isset($cfa) || $cfa->state == -1){
+                $data1 = [
+                    'name' => 'SupervisionCFA_im',
+                    'jsondata' => json_encode($param,JSON_UNESCAPED_UNICODE)
+                ];
+                $res1 = rpa_immedtasks::create($data1);
+            }
+            if(!isset($sf) || $sf->state == -1){
+                $data2 = [
+                    'name' => 'SupervisionSF_im',
+                    'jsondata' => json_encode($param,JSON_UNESCAPED_UNICODE)
+                ];
+                $res2 = rpa_immedtasks::create($data2);
+            }
+
+            $re = [
+                'status' => 200,
+                'msg' => 'rpa任务发布成功！'
+            ];
+        }else{
+            if(!isset($cfa) || !isset($sf)){
                 $re = [
-                    'status' => 200,
-                    'msg' => '数据已存在，无需发布任务'
+                    'status' => 500,
+                    'msg' => "未找到数据！"
+                ];
+            }elseif($cfa->state == null || $sf->state == null){
+                $re = [
+                    'status' => 500,
+                    'msg' => 'rpa任务正在执行，请稍等...'
                 ];
             }else{
+                //增加查询操作人
                 //期货
-                if($cfa){
+                if(isset($cfa) && $cfa->state != -1){
                     $opera1 = json_decode($cfa->operator,true);
                     if(is_array($opera1)){
                         $opera1[] = [
+                            'name' => Auth::user()->name,
+                            'date' => date('Y-m-d H:i:s',time())
+                        ];
+                    }else{
+                        $opera1 = [
                             'name' => Auth::user()->name,
                             'date' => date('Y-m-d H:i:s',time())
                         ];
@@ -353,10 +391,15 @@ class PluginApiController extends BaseApiController
                     RpaShixincfa::where("id",$cfa->id)->update($data1);
                 }
                 //证券
-                if($sf){
+                if(isset($sf) && $sf->state != -1){
                     $opera2 = json_decode($sf->operator,true);
                     if(is_array($opera2)){
                         $opera2[] = [
+                            'name' => Auth::user()->name,
+                            'date' => date('Y-m-d H:i:s',time())
+                        ];
+                    }else{
+                        $opera2 = [
                             'name' => Auth::user()->name,
                             'date' => date('Y-m-d H:i:s',time())
                         ];
@@ -368,61 +411,14 @@ class PluginApiController extends BaseApiController
                     ];
                     RpaShixinsf::where("id",$sf->id)->update($data2);
                 }
-                
+
                 $re = [
                     'status' => 200,
                     'qh' => $cfa->state,
                     'zq' => $sf->state
                 ];
             }
-        }else{
-            if($request->type == 2){
-                //判断是否存在任务运行失败情况
-                if(!isset($cfa) || !isset($sf)){
-                    $re = [
-                        'status' => 500,
-                        'msg' => '未找到数据!'
-                    ];
-                }elseif($cfa->state == -1 || $sf->state == -1){
-                    $re = [
-                        'status' => 500,
-                        'msg' => '期货或证券有任务运行失败'
-                    ];
-                }else{
-                    $re = [
-                        'status' => 500,
-                        'msg' => '未找到数据!'
-                    ];
-                }
-            }else{
-                //添加rpa及时任务
-                $param = [
-                    'name' => $request->name,
-                    'idCard' => $request->idCard,
-                    'operator' => Auth::user()->name
-                ];
-                if(!isset($cfa) || $cfa->state == -1){
-                    $data1 = [
-                        'name' => 'SupervisionCFA_im',
-                        'jsondata' => json_encode($param,JSON_UNESCAPED_UNICODE)
-                    ];
-                    $res1 = rpa_immedtasks::create($data1);
-                }
-                if(!isset($sf) || $sf->state == -1){
-                    $data2 = [
-                        'name' => 'SupervisionSF_im',
-                        'jsondata' => json_encode($param,JSON_UNESCAPED_UNICODE)
-                    ];
-                    $res2 = rpa_immedtasks::create($data2);
-                }
-                
-                $re = [
-                    'status' => 200,
-                    'msg' => 'rpa任务发布成功！'
-                ];
-            }
         }
-
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
 
@@ -821,8 +817,8 @@ class PluginApiController extends BaseApiController
             'customerNum' =>isset($request->customerNum) ? $request->customerNum : "",
             'fundsNum' =>$request->fundsNum,
             'message' =>isset($request->message) ? $request->message : "",
-            'creater' =>$request->getClientIp(),
-            'add_time' => date('Y-m-d h:i:s'),
+            'creater' =>Auth::user()->name,
+            'add_time' => date('Y-m-d H:i:s'),
             'special' => trim($request->special,','),
             'is_visit' => 0
         ];
@@ -1007,5 +1003,49 @@ class PluginApiController extends BaseApiController
         $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
 
         return response()->json($re);
+    }
+
+    /**
+     * 棉花仓单根据批号获取仓单
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_entry_by_pihao(Request $request)
+    {
+        //ip检测
+        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
+
+        //表单验证
+        $validatedData = $request->validate([
+            'pihao' => 'required|numeric'
+        ]);
+
+        $eid = DB::table("rpa_cotton_batchs")->where('pihao','=',$request->pihao)->value("eid");
+        if($eid){
+            $entry = rpa_cotton_entrys::find($eid);
+            $batch = DB::table('rpa_cotton_batchs')->where("eid",$eid)->get();
+
+            $re = [
+                'status' => 200,
+                'msg' => [
+                    'entry' => $entry,
+                    'batch' => $batch
+                ]
+            ];
+        }else{
+            $re = [
+                'status' => 500,
+                'msg' => '该批号不存在'
+            ];
+        }
+
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+
+        return response()->json($re);
+
     }
 }

@@ -74,8 +74,6 @@ $(function(){
                 var content = '<div class="chat-content active" id="'+content_id+'"></div>';
                 $('.chat-content-out').append(content);
             }
-
-
             _this.attr('refresh', 1);
         });
 
@@ -101,6 +99,7 @@ $(function(){
             } else {
                 active_id = customer_id;
             }
+            echoManager.connectNumber++;
             changeCustomerInfo();
             event.stopPropagation()
         });
@@ -159,6 +158,7 @@ $(function(){
             var serIptVal = getIptVal + ' ' + face;
             $("#customer-chat-message-input").val(serIptVal);
             $(".customer-chat-emots-menu").hide()
+            scrollBottom();
         });
 
         // 客服修改单个信息
@@ -263,12 +263,29 @@ $(function(){
      */
     function changeCustomerInfo() { // 先清空 在赋值
         $('#customer-name').text('暂无');
-        $('#customer-avatar').attr('src', 'http://www.rpa.com/callCenter/img/a.png');
         var li = $('#customer_'+active_id);
         var customer_name = li.attr('customer_name');
-        var customer_avatar = li.attr('customer_avatar');
         $('#customer-name').text(customer_name);
-        $('#customer-avatar').attr('src', customer_avatar);
+        // 清空数据
+        $('#customer-zjzh').text('暂无');
+        $('#customer-khrq').text('暂无');
+        $('#customer-client').text('暂无');
+        $('#customer-zjqy').text('暂无');
+        $('#customer-sxf').text('暂无');
+        $('#customer-bzj').text('暂无');
+        $('#customer-jybm').text('未知');
+        $('#customer-yq').text('未知');
+        // 请求获取客户信息并展示
+        echoManager.axios(echoManager.getCustomerInfo, 'post', {id:active_id}).then(r => {
+            $('#customer-zjzh').text(r.zjzh);
+            $('#customer-khrq').text(r.khrq);
+            $('#customer-client').text(r.client);
+            $('#customer-zjqy').text(r.zjqy);
+            $('#customer-jybm').text(r.auth);
+            $('#customer-sxf').text(r.sxf);
+            $('#customer-bzj').text(r.bzj);
+            $('#customer-yq').text(r.yq);
+        })
     }
 
     /**

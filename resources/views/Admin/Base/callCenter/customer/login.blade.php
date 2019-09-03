@@ -28,7 +28,7 @@
 						<input type="text" id="name" name="name" class="name"  placeholder="姓名">
 					</div>
 					<div class="form-group">
-						<input type="text" id="capital_account" name="capital_account" placeholder="资金账号" class="account">
+						<input type="text" id="zjzh" name="zjzh" placeholder="资金账号" class="account">
 					</div>
 					<div class="form-group yd-div">
 						<a href="/call_center/forget" class="forget">忘记账号?</a>
@@ -74,7 +74,7 @@
 									}
 								}
 							},
-							capital_account: {
+							zjzh: {
 								validators: {
 									notEmpty: {
 										message: '资金账号不能为空'
@@ -88,7 +88,7 @@
 						bootstrapValidator.validate();
 						if(bootstrapValidator.isValid()){
 							var data = {
-								capital_account:$('#capital_account').val(),
+								zjzh:$('#zjzh').val(),
 								name:$('#name').val(),
 								avatar:$('.icon-pic').attr('src')
 							};

@@ -49,7 +49,7 @@ $(function(){
                 black_list[ip] = name;
             }
         });
-        $(modal+' form .target_data.white ..weblist').each(function(){
+        $(modal+' form .target_data.white .row.weblist').each(function(){
             let ip = $(this).find("input[name='ip']").val().trim();
             let name = $(this).find("input[name='name']").val().trim();
             if(ip != ""){
