@@ -24,6 +24,7 @@ Route::group(['namespace' => 'api'], function(){
         Route::middleware('auth:api')->post('/v1/sms_tpl', 'NoticeApiController@sms_tpl');
         Route::middleware('auth:api')->post('/v1/tpl_send', 'NoticeApiController@tpl_send');
         Route::middleware('auth:api')->post('/v1/yundama', 'NoticeApiController@yundama');
+        Route::middleware('auth:api')->post('/v1/code_distinguish', 'NoticeApiController@code_distinguish');
     });
 //    rpa系统
     Route::group(['namespace' => 'rpa'], function(){
