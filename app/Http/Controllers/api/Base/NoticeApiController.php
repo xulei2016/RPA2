@@ -12,9 +12,19 @@ use App\Models\Admin\Rpa\rpa_uploademail;
 use App\Http\Controllers\Api\BaseApiController;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Admin\Base\SysSmsTpl;
+use App\Models\Admin\Rpa\rpa_filebinarys;
+use GuzzleHttp\Client;
 
 class NoticeApiController extends BaseApiController
 {
+    private $redrect = "";//跳转
+
+    public function __construct()
+    {
+        $redirect = $this->isredirect();
+        $this->redrect = $redirect;
+    }
+
     /**
      * 短信发送接口
      * @param Request $request
@@ -22,6 +32,11 @@ class NoticeApiController extends BaseApiController
      */
     public function sms(Request $request)
     {
+        //跳转检测
+        $res = $this->change($request->getRequestUri(),$request->all());
+        if($res !== true){
+            return response()->json($res);
+        }
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
         if($res !== true){
@@ -55,6 +70,11 @@ class NoticeApiController extends BaseApiController
      */
     public function mail(Request $request)
     {
+        //跳转检测
+        $res = $this->change($request->getRequestUri(),$request->all());
+        if($res !== true){
+            return response()->json($res);
+        }
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
         if($res !== true){
@@ -90,7 +110,7 @@ class NoticeApiController extends BaseApiController
         }
 
         //api日志
-        $this->apiLog(__FUNCTION__,$request,response()->json($data),$request->getClientIp());
+        $this->apiLog(__FUNCTION__,$request,json_encode($data,true),$request->getClientIp());
 
         return response()->json($data);
     }
@@ -103,6 +123,11 @@ class NoticeApiController extends BaseApiController
      */
     public function task_notice(Request $request)
     {
+        //跳转检测
+        $res = $this->change($request->getRequestUri(),$request->all());
+        if($res !== true){
+            return response()->json($res);
+        }
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
         if($res !== true){
@@ -111,7 +136,7 @@ class NoticeApiController extends BaseApiController
 
         //表单验证
         $validatedData = $request->validate([
-            'id' => 'required|integer'
+            'id' => 'required|numeric'
         ]);
 
         $id = $request->id;
@@ -164,8 +189,9 @@ class NoticeApiController extends BaseApiController
                     if(empty($uploadmail['SMS'])){
                         $sms = "短信不发送";
                     }else{
-                        $data = $this->zzy_sms($phones,$uploadmail['SMS']);
-                        $sms = $data['msg'];
+                        $ph = implode(",", $phones);
+                        $smsdata = $this->zzy_sms($ph,$uploadmail['SMS']);
+                        $sms = $smsdata['msg'];
                     }
                     $data['mail'] = $mail;
                     $data['sms'] = $sms;
@@ -193,7 +219,7 @@ class NoticeApiController extends BaseApiController
         }
 
         //api日志
-        $this->apiLog(__FUNCTION__,$request,response()->json($data),$request->getClientIp());
+        $this->apiLog(__FUNCTION__,$request,json_encode($data,true),$request->getClientIp());
 
         return response()->json($data);
     }
@@ -206,6 +232,11 @@ class NoticeApiController extends BaseApiController
      */
     public function message(Request $request)
     {
+        //跳转检测
+        $res = $this->change($request->getRequestUri(),$request->all());
+        if($res !== true){
+            return response()->json($res);
+        }
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
         if($res !== true){
@@ -214,7 +245,7 @@ class NoticeApiController extends BaseApiController
 
         //表单验证
         $validatedData = $request->validate([
-            'id' => 'required|integer'
+            'id' => 'required|numeric'
         ]);
 
         $id = $request->id;
@@ -251,6 +282,11 @@ class NoticeApiController extends BaseApiController
                         'msg' => "任务名称错误！"
                     ];
                 }
+            }else{
+                $data = [
+                    'status' => 200,
+                    'msg' => "无需通知"
+                ];
             }
         }else{
             $data = [
@@ -260,7 +296,7 @@ class NoticeApiController extends BaseApiController
         }
 
         //api日志
-        $this->apiLog(__FUNCTION__,$request,response()->json($data),$request->getClientIp());
+        $this->apiLog(__FUNCTION__,$request,json_encode($data,true),$request->getClientIp());
 
         return response()->json($data);
     }
@@ -297,7 +333,7 @@ class NoticeApiController extends BaseApiController
         }
 
         //api日志
-        $this->apiLog(__FUNCTION__,$request,response()->json($re),$request->getClientIp());
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
 
         return response()->json($re);
     }
@@ -309,6 +345,11 @@ class NoticeApiController extends BaseApiController
      */
     public function tpl_send(Request $request)
     {
+        //跳转检测
+        $res = $this->change($request->getRequestUri(),$request->all());
+        if($res !== true){
+            return response()->json($res);
+        }
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
         if($res !== true){
@@ -318,7 +359,7 @@ class NoticeApiController extends BaseApiController
         //表单验证
         $validatedData = $request->validate([
             'name' => 'required',
-            'phone' => 'required|integer',
+            'phone' => 'required|numeric',
             'ids' => 'required',
         ]);
 
@@ -356,8 +397,199 @@ class NoticeApiController extends BaseApiController
         }
 
         //api日志
-        $this->apiLog(__FUNCTION__,$request,response()->json($re),$request->getClientIp());
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
 
         return response()->json($re);
+    }
+
+    /** 验证码识别
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function code_distinguish(Request $request)
+    {
+        //跳转检测
+        $res = $this->change($request->getRequestUri(),$request->all());
+        if($res !== true){
+            return response()->json($res);
+        }
+//        ip检测
+        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
+
+        //表单验证
+        $validatedData = $request->validate([
+            'id' => 'required',
+        ]);
+        //根据id获取图片二进制
+
+        $file = rpa_filebinarys::find($request->id);
+        $data = $this->base64ToImage($file->filebinary);
+        $path = "d:/uploadFile/".$data['filename'];
+        $type = $file->codetype;
+
+        $config = $this->get_config(['code_distinguish']);
+        $func = $config['code_distinguish'];
+        if($func == '尖叫'){
+            $return = $this->jianjiao($file->filebinary,'cn');
+        }elseif($func == '云打码'){
+            $return = $this->yundama($path,$type);
+        }else{
+            $func = config('code.default');
+            $return = $this->$func($path,$type);
+        }
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
+
+        return response()->json($return);
+    }
+
+    /** 尖叫识别验证码
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function jianjiao($file_path,$type)
+    {
+        $data = [
+            'v_pic' => $file_path,
+            'v_type' => $type
+        ];
+        $guzzle = new Client(['verify'=>false]);
+        $response = $guzzle->post(config('code.jianjiao.url.mult'), [
+            'headers' => [
+                'appcode' => config('code.jianjiao.APPCODE'),
+                'appKey' => config('code.jianjiao.APPKEY'),
+                'appSecret' => config('code.jianjiao.APPSECRET'),
+                'Content-Type' => "application/x-www-form-urlencoded; charset=UTF-8",
+            ],
+            'form_params' => $data,
+        ]);
+        $body = $response->getBody();
+        $body = json_decode((string)$body,true);
+        if($body['errCode'] == 0){
+            $return = [
+                'status' => 200,
+                'msg' => $body['v_code']
+            ];
+        }else{
+            $return = [
+                'status' => 500,
+                'msg' => $body['msg']
+            ];
+        }
+        return $return;
+    }
+
+    /** 云打码识别验证码
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function yundama($file_path,$type)
+    {
+        $url = config('code.yundama.url.mult');
+        $form_params = [
+            'method' => 'upload',
+            'username'=> config('code.yundama.USERNAME'),
+            'password'=> config('code.yundama.PASSWORD'),
+            'appid'=> config('code.yundama.APPID'),
+            'appkey'=> config('code.yundama.APPKEY'),
+            'codetype'=> $type,
+            'timeout'=> 60,
+            'file'=> new \CURLFile(realpath($file_path))
+        ];
+        $body = $this->http($url,"POST",$form_params);
+        $data = json_decode($body);
+        if(is_object($data) && property_exists($data, 'cid')){
+            $cid = $data->cid;
+            for($i=1;$i>0;){
+                $posts = array(
+                    'method'=>'result',
+                    'username'=> config('code.yundama.USERNAME'),
+                    'password'=> config('code.yundama.PASSWORD'),
+                    'appid'=> config('code.yundama.APPID'),
+                    'appkey'=> config('code.yundama.APPKEY'),
+                    'cid'=>$cid);
+                $data = $this->http($url, 'POST',$posts);
+                $data = json_decode($data);
+
+                if(is_object($data) && property_exists($data, 'text') && $data->text){
+                    unlink($file_path);
+                    $return['status'] = 200;
+                    $return['msg'] = $data->text;
+                    break;
+                }
+            }
+        }
+        return $return;
+    }
+
+    /************************************工具方法***************************************/
+    /**
+     * 接口是否需要转移
+     * @return string
+     */
+    private function isredirect()
+    {
+        $redrect = "";
+        $server = $this->get_config();
+        $config = $this->get_config(['H1_inner','H2_inner','rpa_clock_interval']);
+        //判断当前服务器是否是从服务器
+        if($server == "S1_inner" || $server == "S2_inner"){
+            //判断从服务器是否正常工作
+            $cards = $this->getCard();
+            $sign = 0;
+            foreach($cards['info'] as $card){
+                // 主一
+                if($card->host == 'H1_inner' && (time() - $card->created_at < $config['rpa_clock_interval']*2)){
+                    $sign = 1;
+                    $redrect = "rpa.haqh.com";
+                    return $redrect;
+                }
+                //主二
+                if($card->host == 'H2_inner' && (time() - $card->created_at < $config['rpa_clock_interval']*2)){
+                    $sign = 1;
+                    $redrect = "rpa.slave.haqh.com";
+                    return $redrect;
+                }
+            }
+            if($sign == 0){
+                $redrect = -1;
+            }
+        }
+        return $redrect;
+    }
+
+    /**
+     * 接口转移
+     * @param $url
+     * @param $data
+     * @return \Psr\Http\Message\StreamInterface|string
+     */
+    private function change($url,$data){
+        if($this->redrect == -1){
+            $data = ['status' => 500, 'msg' => '没有可用服务器'];
+            return $data;
+        }
+        if($this->redrect != ""){
+            //主机名
+            $host = "https://".$this->redrect.":8088";
+            //获取token
+            $token = $this->access_token($host);
+            $guzzle = new Client(['verify'=>false]);
+            $response = $guzzle->post($host.$url, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => $token
+                ],
+                'form_params' => $data,
+            ]);
+            $body = $response->getBody();
+            $body = json_decode((string)$body,true);
+
+            return $body;
+        }
+        return true;
     }
 }

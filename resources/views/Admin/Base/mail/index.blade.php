@@ -6,7 +6,7 @@
     <div class="mail-box col-md-3">
         <div class="card card-primary card-outline">
             <div class="card-header">
-                <a href="/admin/sys_mail/create" title="新增" class="btn btn-primary btn-block margin-bottom">发邮件</a>
+                <a href="/admin/sys_mail/create" title="发邮件" class="btn btn-primary btn-block margin-bottom">发邮件</a>
             </div>
             <div class="card-body">
                 <div class="card card-solid">
@@ -14,14 +14,14 @@
                         <h3 class="card-title">Folders</h3>
 
                         <div class="card-tools">
-                            <button type="button" class="btn btn-card-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="card-body no-padding">
-                        <ul class="nav nav-pills nav-stacked mail-type">
+                    <div class="card-body p-0">
+                        <ul class="nav nav-pills flex-column">
                             @foreach($global as $mail)
-                                <li class=" @if ($loop->first) active @endif" data-value="{{ $mail['id'] }}"><a href="#"><i class="fa {{ $mail['icon'] }}"></i> {{ $mail['desc'] }}
+                                <li class="nav-item @if ($loop->first) active @endif" data-value="{{ $mail['id'] }}"><a href="#" class="nav-link"><i class="fa {{ $mail['icon'] }}"></i> {{ $mail['desc'] }}
                                         @if($mail['count'])
                                             <span class="label label-primary pull-right">{{ $mail['count'] }}</span>
                                         @endif
