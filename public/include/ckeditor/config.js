@@ -34,5 +34,15 @@ CKEDITOR.editorConfig = function( config ) {
 	config.format_tags = 'p;h1;h2;h3;pre';
 
 	// Simplify the dialog windows.
-	config.removeDialogTabs = 'image:advanced;link:advanced';
+    config.removeDialogTabs = 'image:advanced;link:advanced';
+    
+    /*将编辑器的语言设置为中文*/
+    config.language = 'zh-cn';
+
+    /*去掉图片预览框的文字*/
+    config.image_previewText = ' ';
+
+    /*开启工具栏“图像”中文件上传功能，后面的url为图片上传要指向的的action或servlet*/
+    config.filebrowserImageUploadUrl= "/admin/sys_document/uploadFile";
+
 };

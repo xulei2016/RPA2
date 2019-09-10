@@ -193,6 +193,17 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 //错误日志
             });
 
+            //文档中心
+            Route::group(['namespace' => 'Document','middleware' => ['permission:sys_document']], function () {
+                Route::get("/sys_document/getAllMenus",'DocumentController@getAllMenus');
+                Route::get("/sys_document/getDoc/{id}",'DocumentController@getDoc');
+                Route::post("/sys_document/uploadFile",'DocumentController@uploadFiles');
+                Route::post("/sys_document/{id}/deleteDoc",'DocumentController@deleteDoc');
+                Route::resource('/sys_document', 'DocumentController');
+            });
+
+            //文档图片上传
+
             //api插件
             Route::group(['middleware' => ['permission:sys_api_config']], function () {
                 Route::get('/sys_api/list', 'ApiController@pagination');
@@ -359,6 +370,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::get('/rpa_statistics','StatisticsController@index');
 
         });
+
         //RPA 功能中心
         Route::group(['namespace' => 'Func'],function(){
             //居间人回访
@@ -467,6 +479,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get('/rpa_bzj/list', 'BzjController@pagination');
             });
         });
+
     });
 
     //异常路由跳转

@@ -1,0 +1,8 @@
+##ignore this file##
+/target/ 
+node_modules
+vendor
+
+ ##filter databfile、sln file##
+ .env
+ .gitignore

@@ -83,7 +83,7 @@ module.exports = __webpack_require__(1);
 
 __webpack_require__(2);
 
-//window.Vue = require('vue');
+// window.Vue = require('vue');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -128,6 +128,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  */
 
 // window.axios = require('axios');
+
 
 // window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

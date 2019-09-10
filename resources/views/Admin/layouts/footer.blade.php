@@ -40,8 +40,6 @@
 <script src="{{URL::asset('/include/daterangepicker/daterangepicker.js')}}"></script>
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="{{URL::asset('/include/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
-<!-- Summernote -->
-<script src="{{URL::asset('/include/summernote/summernote-bs4.min.js')}}"></script>
 <!-- overlayScrollbars -->
 <script src="{{URL::asset('/include/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 <!-- FastClick -->
