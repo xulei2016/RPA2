@@ -1,5 +1,6 @@
 $(function () {
     const formData = new FormData();
+    const helloWord = '该文档还没有内容，赶紧编辑成为创建者吧！';
     var editId;
     var editor = CKEDITOR.replace('editor', { fileTools_requestHeaders: { 'X-CSRF-TOKEN': LA.token } });
 
@@ -23,7 +24,7 @@ $(function () {
             $.ajax({
                 url: `/admin/sys_document/${editId}`,
                 data: formData,
-                type:'post',
+                type: 'post',
                 dataType: 'json',
                 contentType: false,
                 processData: false,
@@ -93,7 +94,7 @@ $(function () {
                     confirmButtonText: '确认',
                     cancelButtonText: '取消',
                 }).then((result) => {
-                    if(result.value){
+                    if (result.value) {
                         let name = _this.prev().prev().text();
                         let upload = _this.parents('.text-info').attr('upload');
                         for (i of formData) {
@@ -163,7 +164,7 @@ $(function () {
     }
 
     //附件删除
-    function deleteDoc(){
+    function deleteDoc() {
         console.log(1);
     }
 
@@ -209,6 +210,7 @@ $(function () {
         formData.delete('upfile');
         $('section.content .card-body .card-footer .uploads').html('');
         $('#pjax-container #document input[name="attachment"]').val('');
+        editor.setData(helloWord);
 
         editId = treeNode.id;
         //单击事件，是否根节点
@@ -230,52 +232,52 @@ $(function () {
                             $('section.content .card-body.read').css("display", "block");
                             $('section.content .card-body.read button.edit').attr("id", data.did);
                             //是否有附件
-                            if(response.data.uploads){
+                            if (response.data.uploads) {
                                 let files = response.data.uploads;
                                 let html = '';
                                 let file_html = '';
-                                for(i of files){
+                                for (i of files) {
                                     let type = '';
-                                    switch(i.type){
+                                    switch (i.type) {
                                         case 'pdf':
                                             type = 'fa-file-pdf-o';
-                                        break;
+                                            break;
                                         case 'doc':
                                             type = 'fa-file-word-o';
-                                        break;
+                                            break;
                                         case 'docx':
                                             type = 'fa-file-word-o';
-                                        break;
+                                            break;
                                         case 'xlx':
                                             type = 'fa-file-excel-o';
-                                        break;
+                                            break;
                                         case 'xlsx':
                                             type = 'fa-file-excel-o';
-                                        break;
+                                            break;
                                         case 'png':
                                             type = 'fa-file-image-o';
-                                        break;
+                                            break;
                                         case 'jpg':
                                             type = 'fa-file-image-o';
-                                        break;
+                                            break;
                                         case 'jpeg':
                                             type = 'fa-file-image-o';
-                                        break;
+                                            break;
                                         case 'gif':
                                             type = 'fa-file-image-o';
-                                        break;
+                                            break;
                                         case 'rar':
                                             type = 'fa-file-archive-o';
-                                        break;
+                                            break;
                                         case 'zip':
                                             type = 'fa-file-archive-o';
-                                        break;
+                                            break;
                                         case 'txt':
                                             type = 'fa-file-text-o';
-                                        break;
+                                            break;
                                     }
-                                    html += `<li><span class="mailbox-attachment-icon"><i class="fa ${type}"></i></span><div class="mailbox-attachment-info"><a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i>${i.originalName}</a><span class="mailbox-attachment-size clearfix mt-1"><span>${(i.size/1024).toFixed(2)} KB</span><a href="${window.location.protocol+"//"+window.location.host}/storage/${i.filename}" class="btn btn-default btn-sm float-right"><i class="fa fa-cloud-download"></i></a></span></div></li>`;
-                                    file_html += `<div class="text-info" style="padding:10px;"><b>${i.originalName}</b><span style="margin:0 10px">(${(i.size/1024).toFixed(2)} KB)</span><span class="float-sm-right delete"><a><i class="fa fa-times"></i></a></span></div>`;
+                                    html += `<li><span class="mailbox-attachment-icon"><i class="fa ${type}"></i></span><div class="mailbox-attachment-info"><a href="#" class="mailbox-attachment-name"><i class="fa fa-paperclip"></i>${i.originalName}</a><span class="mailbox-attachment-size clearfix mt-1"><span>${(i.size / 1024).toFixed(2)} KB</span><a href="${window.location.protocol + "//" + window.location.host}/storage/${i.filename}" class="btn btn-default btn-sm float-right"><i class="fa fa-cloud-download"></i></a></span></div></li>`;
+                                    file_html += `<div class="text-info" style="padding:10px;"><b>${i.originalName}</b><span style="margin:0 10px">(${(i.size / 1024).toFixed(2)} KB)</span><span class="float-sm-right delete"><a><i class="fa fa-times"></i></a></span></div>`;
                                 }
                                 $('section.content .card-body.read .card-footer .uploads').html(html);
                                 $('section.content .card-body.edit .card-footer .uploads').html(file_html);
@@ -294,25 +296,25 @@ $(function () {
                                         confirmButtonText: '确认',
                                         cancelButtonText: '取消',
                                     }).then((result) => {
-                                        if(result.value){
-                                            $.post(`/admin/sys_document/${response.data.id}/deleteDoc`,{file:file})
-                                            .then((json) => {
-                                                if (200 == json.code) {
-                                                    toastr.success(json.info);
-                                                    let name = _this.prev().prev().text();
-                                                    let upload = _this.parents('.text-info').attr('upload');
-                                                    if(upload){
-                                                        for (i of formData) {
-                                                            if (i[1].name == name) formData.delete(upload);
+                                        if (result.value) {
+                                            $.post(`/admin/sys_document/${response.data.id}/deleteDoc`, { file: file })
+                                                .then((json) => {
+                                                    if (200 == json.code) {
+                                                        toastr.success(json.info);
+                                                        let name = _this.prev().prev().text();
+                                                        let upload = _this.parents('.text-info').attr('upload');
+                                                        if (upload) {
+                                                            for (i of formData) {
+                                                                if (i[1].name == name) formData.delete(upload);
+                                                            }
                                                         }
+                                                        _this.parents('.text-info').remove();
+                                                    } else {
+                                                        toastr.error(json.info);
                                                     }
-                                                    _this.parents('.text-info').remove();
-                                                } else {
-                                                    toastr.error(json.info);
-                                                }
-                                            }, (e) => {
-                                                Swal.fire('操作提示', '网络错误！', 'error');
-                                            });
+                                                }, (e) => {
+                                                    Swal.fire('操作提示', '网络错误！', 'error');
+                                                });
                                         }
                                     });
                                 });
@@ -347,8 +349,7 @@ $(function () {
                 _method: 'PATCH',
                 moveType: moveType,
                 objId: targetNode.id,
-            })
-            .then((json) => {
+            }).then((json) => {
                 if (200 == json.code) {
                     toastr.success(json.info);
                 } else {
@@ -412,15 +413,15 @@ $(function () {
             }).then((result) => {
                 if (result.value) {
                     $.post(`/admin/sys_document/${treeNode.id}`, { _method: 'PATCH', name: treeNode.name })
-                    .then((json) => {
-                        if (200 == json.code) {
-                            toastr.success(json.info);
-                        } else {
-                            toastr.error(json.info);
-                        }
-                    }, (e) => {
-                        Swal.fire('操作提示', '网络错误！', 'error');
-                    });
+                        .then((json) => {
+                            if (200 == json.code) {
+                                toastr.success(json.info);
+                            } else {
+                                toastr.error(json.info);
+                            }
+                        }, (e) => {
+                            Swal.fire('操作提示', '网络错误！', 'error');
+                        });
                 }
             })
         }
