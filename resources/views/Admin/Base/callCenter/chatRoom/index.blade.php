@@ -5,13 +5,14 @@
 
     <div class="row" >
         <div class="col-md-3">
-            <div class="card card-parimary card-outline">
+            <div class="card card-primary card-outline">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
                         <li class="nav-item"><a class="nav-link active" href="#kh" data-toggle="tab">在线客户</a></li>
                         <li class="nav-item"><a class="nav-link" href="#kf" data-toggle="tab">在线客服</a></li>
                     </ul>
-                    <div class="card-body tab-content">
+
+                    <div class="card-body  tab-content">
                         <div class="tab-pane active" id="kh">
                             <div class="online-users">
                                 <div class="online-users-head">在线客户</div>
@@ -35,7 +36,7 @@
             </div>
         </div>
         {{--聊天界面--}}
-        <div class="col-md-6">
+        <div class="col-md-6" id="talk-content">
             <div class="card card-primary card-outline">
                 <div class="card-body" style="height: 100%">
                     <div class="talk">
@@ -89,39 +90,38 @@
         </div>
                 {{--客户与客服信息--}}
         <div class="col-md-3">
-            <div class="card card-parimary card-outline">
+            <div class="card card-primary card-outline">
                 <div class="nav-tabs-custom">
                     <ul class="nav nav-tabs">
                         <li class="nav-item"><a class="nav-link active" href="#kh_infos" data-toggle="tab">客户信息</a></li>
                         <li class="nav-item"><a class="nav-link" href="#speed_moudle" data-toggle="tab">快捷模板</a></li>
                         <li class="nav-item"><a class="nav-link" href="#kf_infos" data-toggle="tab">客服管理</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#operation" data-toggle="tab">操作</a></li>
                     </ul>
                     <div class="card-body tab-content">
                         <div class="tab-pane active" id="kh_infos">
                             <ul class="nav nav-pills flex-column">
                                 <li class="nav-item">
-                                    <a href="" class="nav-link">客户姓名:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">资金账号:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">开户日期:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">当日权益:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">客户类型:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">银期关联:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">银期关联:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">手续费标准:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">保证金标准:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">客户姓名:<span class="label label-primary pull-right">暂无</span></a>
-                                    <a href="" class="nav-link">客户姓名:<span class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">客户姓名:<span id="customer-name" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">资金账号:<span id="customer-zjzh" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">开户日期:<span id="customer-khrq" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">当日权益:<span id="customer-zjqy" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">营业部:<span id="customer-yyb" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">风险要素:<span id="customer-fxys" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">客户类型:<span id="customer-client" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">银期关联:<span id="customer-yq" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">手续费标准:<span id="customer-sxf" class="label label-primary pull-right">暂无</span></a>
+                                    <a href="javascript:;" class="nav-link">保证金标准:<span id="customer-bzj" class="label label-primary pull-right">暂无</span></a>
                                 </li>
                             </ul>
-                            <div class="userMod-body">
+                            <div style="margin-left: 5px;">
                                 {{--<img id="customer-avatar" src="{{asset('callCenter/img/avatar-2.png')}}" />--}}
                                 <hr />
                                 <div class="userDiv">
-                                    <label>交易权限:</label>
+                                    <p style="text-align: center;color: #6c757d">交易权限</p>
                                     <br>
-                                    <span id="customer-jybm">
-                                        未知
-                                    </span>
+                                    <div id="customer-jybm">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -154,6 +154,16 @@
                             <div class="show-template">
                                 <p class="t-title">参考回答</p>
                                 <div></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane" id="operation">
+                            <div class="operation common-panel">
+                                <div class="common-header">常用操作</div>
+                                <div class="common-body">
+                                    <ul>
+                                        <li id="disconnect">断开连接</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Admin\Base\Plugin;
+namespace App\Http\Controllers\Admin\Func\Plugin;
 
 use App\Http\Controllers\base\BaseAdminController;
 

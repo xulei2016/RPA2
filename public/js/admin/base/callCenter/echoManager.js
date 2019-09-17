@@ -9,6 +9,7 @@ EchoManager.prototype = {
     manager_id:null,
     sendByManagerUrl:'/call_center/sendByManager',
     leaveUrl:'/call_center/leave',
+    logoutUrl:'/call_center/logout',
     onlineCustomerUrl:'/call_center/getOnlineCustomerList',
     onlineManagerUrl:'/call_center/getOnlineManagerList',
     templateUrl:'/call_center/template_list_background',

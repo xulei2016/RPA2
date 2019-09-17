@@ -1,8 +1,8 @@
 <?php
-namespace App\Http\Controllers\Admin\Base\Plugin;
+namespace App\Http\Controllers\Admin\Func\Plugin;
 
-use App\Models\Admin\Base\Plugin\SysPlugin;
-use App\Models\Admin\Base\Plugin\SysPluginVersion;
+use App\Models\Admin\Func\Plugin\RpaPlugin;
+use App\Models\Admin\Func\Plugin\RpaPluginVersion;
 use Illuminate\Http\Request;
 
 /**
@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
  */
 class PluginController extends BaseController {
 
-    private $view_prefix = "admin.base.plugin.plugin.";
+    private $view_prefix = "admin.func.plugin.plugin.";
 
     /**
      * 列表页面
@@ -35,7 +35,7 @@ class PluginController extends BaseController {
         $rows = $request->rows;
         $order = ($request->sort ?? 'id');
         $sort = 'asc';
-        $result = SysPlugin::from('sys_plugins as sp')
+        $result = RpaPlugin::from('rpa_plugins as sp')
             ->where($condition)
             ->orderBy($order, $sort)
             ->paginate($rows);
@@ -57,7 +57,7 @@ class PluginController extends BaseController {
      */
     public function store(Request $request){
         $data = $this->get_params($request, ['name','desc']);
-        SysPlugin::create($data);
+        RpaPlugin::create($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "新增 插件");
         return $this->ajax_return('200', '操作成功！');
     }
@@ -69,7 +69,7 @@ class PluginController extends BaseController {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Request $request, $id){
-        $plugin = SysPlugin::where('id', $id)->first();
+        $plugin = RpaPlugin::where('id', $id)->first();
         return view($this->view_prefix.'edit', ['plugin' => $plugin]);
     }
 
@@ -81,7 +81,7 @@ class PluginController extends BaseController {
      */
     public function update(Request $request){
         $data = $this->get_params($request, ['name','desc','id',['status',0]]);
-        $result = SysPlugin::where('id', $data['id'])->update($data);
+        $result = RpaPlugin::where('id', $data['id'])->update($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 插件");
         return $this->ajax_return('200', '操作成功！');
     }
@@ -94,7 +94,7 @@ class PluginController extends BaseController {
      */
     public function destroy(Request $request, $ids){
         $ids = explode(',', $ids);
-        SysPlugin::destroy($ids);
+        RpaPlugin::destroy($ids);
         $this->log(__CLASS__, __FUNCTION__, $request, "删除 插件");
         return $this->ajax_return('200', '操作成功');
     }
@@ -106,7 +106,7 @@ class PluginController extends BaseController {
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show(Request $request, $id) {
-        $versions = SysPluginVersion::where(["status" => 1,'pid' => $id])->orderBy('id', 'desc')->get();
+        $versions = RpaPluginVersion::where(["status" => 1,'pid' => $id])->orderBy('id', 'desc')->get();
         return view($this->view_prefix.'show',['versions' => $versions]);
     }
 

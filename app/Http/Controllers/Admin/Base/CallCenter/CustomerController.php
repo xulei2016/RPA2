@@ -6,6 +6,7 @@ use App\Events\CallCenterCustomerChangeEvent;
 use App\Events\CallCenterCustomerEvent;
 use App\Models\Admin\Base\CallCenter\SysCustomer;
 use App\Models\Admin\Base\CallCenter\SysRecord;
+use App\Models\Admin\Base\CallCenter\SysTemplate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use GuzzleHttp\Client;
@@ -71,15 +72,13 @@ class CustomerController extends BaseController
         ];
         if($card) {
             $condition['card'] = $card;
-            $by[] = ['ZJBM', '=', $card];
+            $by[] = ['ZJBH', '=', $card];
         }
         if($zjzh) {
             $condition['zjzh'] = $zjzh;
             $by[] = ['ZJZH', '=', $zjzh];
         }
-
         if(count($condition) < 2) return $this->ajax_return(500, "参数不足");
-
         //查询客户信息
         $customerData = [
             'type' => 'common',
@@ -90,10 +89,25 @@ class CustomerController extends BaseController
             ]
         ];
         $khxx = $this->getCrmData($customerData);
+
         if(!$khxx) {
             return $this->ajax_return(500, '您输入的姓名或账号有误,请重试');
         }
         $kh = $khxx[0];
+        //查询营业部
+        $yybData = [
+            'type' => 'common',
+            'action' => 'getEveryBy',
+            'param' => [
+                'table' => 'JYBM',
+                'by' => 'select ID,NAME from LBORGANIZATION'
+            ]
+        ];
+        $yybs = $this->getCrmData($yybData);
+        $yybList = [];
+        foreach ($yybs as $v) {
+            $yybList[$v['ID']] = $v['NAME'];
+        }
         //查询交易编码
         $jys = [
             'NY' => '能源交易所',
@@ -122,9 +136,9 @@ class CustomerController extends BaseController
                     'type' => 'common',
                     'action' => 'getEveryBy',
                     'param' => [
-                        'table' => 'KHHYCCXE',
+                        'table' => 'JYBM',
                         'by' => [
-                            "select * from tfu_khhyccxe where ZJZH = '{$zjzh}'"
+                            "select * from dcuser.tfu_khhyccxe where ZJZH = '{$zjzh}'"
                         ],
                     ]
                 ];
@@ -137,7 +151,7 @@ class CustomerController extends BaseController
             $jybmList[] = [
                 'jys' => trim($v['JYS']),
                 'name' => $jys[trim($v['JYS'])],
-                'auth' => $v['YWLX'],
+                'auth' => $auth,
                 'jybm' => $v['JYBM']
             ];
 
@@ -150,9 +164,10 @@ class CustomerController extends BaseController
                 'table' => 'ZJQKLS',
                 'by' => [
                     ['KHH', '=', $kh['KHH']],
-                    ['RQ', '=', date('Ymd')],
                 ],
-                'columns' => ['BRJC']
+                'orderBy' => 'RQ desc',
+                'limit' => '5'
+
             ]
         ];
         $rights = $this->getCrmData($rightData);
@@ -169,8 +184,9 @@ class CustomerController extends BaseController
             'type' => 'common',
             'action' => 'getEveryBy',
             'param' => [
-                'table' => 'TFU_YHZH_YQGL',
-                'by' => "select * from TFU_YHZH_YQGL where ZJZH = '$zjzh'"
+                'table' => 'JYBM',
+                'by' => "select * from dcuser.TFU_YHZH_YQGL where ZJZH = '$zjzh'",
+
             ]
         ];
         $yqs = $this->getCrmData($yqData);
@@ -186,7 +202,11 @@ class CustomerController extends BaseController
             }
         }
 
-
+        if($kh['FXYS'] == 5 || is_null($kh['FXYS'])) {
+            $fxys = '正常';
+        } else {
+            $fxys = '监管休眠';
+        }
         $data = [
             'client' => $this->getClientGroup($kh['KHFL_HS']),
             'ip' => $request->getClientIp(),
@@ -195,7 +215,9 @@ class CustomerController extends BaseController
             'updated_at' => date('Y-m-d H:i:s'),
             'sxf' => $kh['KHSXF'],
             'bzj' => $kh['KHBZJ'],
-            'yq' => $yq
+            'yq' => $yq,
+            'yyb' => $yybList[$kh['YYB']],
+            'fxys' => $fxys
         ];
         $visitor = SysCustomer::where($condition)->first();
         if($visitor) {
@@ -276,15 +298,32 @@ class CustomerController extends BaseController
      */
     public function sendByCustomer(Request $request){
         $customer_id = $request->post('customer_id');
+        $online = $this->checkOnline($customer_id);
+        
         $manager_id = $request->post('manager_id');
         $content = $request->post('content');
         $type = $request->post('type'); //类型
+        
         $this->customer_id = $customer_id;
-        $this->storeMessage($request->post());
+        if(!$online) {
+            $data = $this->messagePackaging($customer_id, 0, 'manager', 'customer', '非常抱歉, 连接已断开, 请点击结束聊天后, 重新登录', 'message');
+            broadcast(new CallCenterCustomerEvent($data));
+        }
+        $post = $request->post();
+        if($type == 'template') {
+            $result = SysTemplate::where('id', trim($content))->first();
+            $post['content'] = $result->content;
+        }
+        $this->storeMessage($post);
         if(!$manager_id) {
             //客服id不存在, 自动回复
             $this->autoReply($type, $content);
         } else {
+            if($type == 'template') { //正常聊天 也可以提交模板信息
+                $this->autoReply($type, $content);
+                $content = $result->content;
+                $content.="(模板信息)";
+            } 
             $data = $this->messagePackaging($this->customer_id, $manager_id, 'customer','manager', $content, 'message');
             broadcast(new CallCenterCustomerEvent($data));
         }
@@ -329,37 +368,52 @@ class CustomerController extends BaseController
     public function getById(Request $request){
         $result = SysCustomer::where('id', $request->id)->first();
         $info = $result->toArray();
-        $jybms = json_decode($info['jybm'], true);
+        $jybms = $info['jybm']?json_decode($info['jybm'], true):[];
         $jybmList = [];
         foreach ($jybms as $k => $v) {
+            $name = $v['name'];
+            $auth = '';
+            $auths = [];
             if($v['jys'] == 'ZJ') {
-                $jybmList[] = '金融';
+                $auth = '金融';
+
             } elseif($v['jys'] == 'NY') {
+                $auths = [];
                 if(strpos($v['auth'], '5') > -1) {
-                    $jybmList[] = '原油';
+                    $auths[] = '原油';
                 }
                 if(strpos($v['auth'], '6') > -1) {
-                    $jybmList[] = '20号胶';
+                    $auths[] = '20号胶';
                 }
+                $auth = implode('、', $auths);
             } elseif($v['jys'] == 'SQ') {
                 if(strpos($v['auth'], '2') > -1) {
-                    $jybmList[] = '上海期权';
+                    $auth = '上海期权';
                 }
             } elseif ($v['jys'] == 'ZZ'){
                 if(strpos($v['auth'], '2') > -1) {
-                    $jybmList[] = '郑州期权';
+                    $auths[] = '郑州期权';
                 }
                 if(strpos($v['auth'], '8') > -1) {
-                    $jybmList[] = '郑州特定品种';
+                    $auths[] = '郑州特定品种';
                 }
+                $auth = implode('、', $auths);
             } elseif ($v['jys'] == 'DL'){
                 if(strpos($v['auth'], '2') > -1) {
-                    $jybmList[] = '大连期权';
+                    $auths[] = '大连期权';
                 }
                 if(strpos($v['auth'], '8') > -1) {
-                    $jybmList[] = '大连特定品种';
+                    $auths[] = '大连特定品种';
                 }
+                $auth = implode('、', $auths);
             }
+            if($auth) {
+                $jybmList[] = [
+                    'name' => $name,
+                    'auth' => $auth
+                ];
+            }
+
         }
         if($info['yq'] == 0) {
             $yq = '未关联';
@@ -369,7 +423,7 @@ class CustomerController extends BaseController
             $yq = '已解除';
         }
         $info['yq'] = $yq;
-        $info['auth'] = implode('、', $jybmList);
+        $info['jybms'] = $jybmList;
         return $this->ajax_return(200, '查询成功', $info);
     }
 }

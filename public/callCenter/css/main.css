@@ -387,7 +387,7 @@ a.newUser{
     height: 50px;
     border: none;
     background: none;
-    bottom: 0;
+    bottom: 10px;
 
 }
 .customer-chat-content-message-input-field{
@@ -657,7 +657,7 @@ a.newUser{
     border: none;
     background-color: #fff;
     z-index: 999;
-    bottom: 50px;
+    bottom: 60px;
     border-radius: 5px;
     display: none;
 }

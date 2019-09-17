@@ -1,12 +1,12 @@
 <?php
-namespace App\Models\Admin\Base\Plugin;
+namespace App\Models\Admin\Func\Plugin;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SysPlugin extends Model
+class RpaPlugin extends Model
 {
 
-    protected $table = "sys_plugins";
+    protected $table = "rpa_plugins";
 
     protected $fillable = ['name', 'status', 'desc'];
 

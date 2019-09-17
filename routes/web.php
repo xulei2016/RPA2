@@ -210,30 +210,6 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::resource('/sys_api', 'ApiController');
             });
 
-            //插件管理
-            Route::group(['namespace' => 'Plugin','middleware' => ['permission:plugin']], function(){
-
-                // 插件管理
-                Route::get("/sys_plugin/list", 'PluginController@pagination');
-                Route::get("/sys_plugin/export", 'PluginController@export');
-                Route::resource("/sys_plugin", 'PluginController');
-//                Route::post("/sys_plugin/{id}", 'PluginController@update');
-
-                // 版本管理
-                Route::get("/sys_plugin_version/list", 'VersionController@pagination');
-                Route::get("/sys_plugin_version/export", 'VersionController@export');
-                Route::post("/sys_plugin_version/upload", 'VersionController@upload');
-                Route::resource("/sys_plugin_version", 'VersionController');
-//                Route::post("/sys_plugin_version/{id}", 'VersionController@update');
-
-                //黑白名单
-                Route::resource("/sys_plugin_black_list", 'BlackListController');
-
-                //下载
-                Route::get("/sys_plugin_download/", 'DownloadController@index');
-            });
-
-
             //客服中心后台
             Route::group(['namespace' => 'CallCenter','middleware' => ['permission:sys_call_center']], function(){
                 //聊天室
@@ -361,6 +337,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('/rpa_downloadPDF/insertImmedtasks', 'downloadPDFController@insertImmedtasks');
                 Route::resource('/rpa_downloadPDF', 'downloadPDFController');
             });
+            //职业变更
+            Route::group(['middleware' => ['permission:rpa_profession_change_task']], function () {
+                Route::get('/rpa_profession_change_task/list', 'ProfessionChangeController@pagenation');
+                Route::get('/rpa_profession_change_task/immedtasks/{id?}', 'ProfessionChangeController@immedtasks');
+                Route::post('/rpa_profession_change_task/insertImmedtasks', 'ProfessionChangeController@insertImmedtasks');
+                Route::resource('/rpa_profession_change_task', 'ProfessionChangeController');
+            });
             //rpa任务运行日志
             Route::get('/rpa_logs/log','StatisticsController@pagination');
             Route::get('/rpa_logs/show/{id}','StatisticsController@show');
@@ -473,11 +456,53 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::resource("/rpa_address_recognition", 'RecognitionController');
             });
 
+            /**
+             * 插件下载
+             */
+            Route::group([], function(){
+                Route::get('/rpa_download_plugin', 'DownloadPluginController@index');
+                Route::post('/rpa_download_plugin/apply', 'DownloadPluginController@apply');
+                Route::get('/rpa_download_plugin/download/{id}', 'DownloadPluginController@download');
+                Route::resource('/rpa_download_plugin', 'DownloadPluginController');
+            });
+
+            //插件管理
+            Route::group(['namespace' => 'Plugin','middleware' => ['permission:plugin']], function(){
+
+                // 插件管理
+                Route::get("/rpa_plugin/list", 'PluginController@pagination');
+                Route::get("/rpa_plugin/export", 'PluginController@export');
+                Route::resource("/rpa_plugin", 'PluginController');
+                Route::get("/rpa_plugin_apply/list", 'ApplyController@pagination');
+                Route::resource("/rpa_plugin_apply", 'ApplyController');
+                Route::post("/rpa_plugin_apply/confirm", 'ApplyController@confirm');
+
+                // 版本管理
+                Route::get("/rpa_plugin_version/list", 'VersionController@pagination');
+                Route::get("/rpa_plugin_version/plugin/{id}", 'VersionController@getByPlugin');
+                Route::get("/rpa_plugin_version/export", 'VersionController@export');
+                Route::post("/rpa_plugin_version/upload", 'VersionController@upload');
+                Route::resource("/rpa_plugin_version", 'VersionController');
+
+                //黑白名单
+                Route::resource("/rpa_plugin_black_list", 'BlackListController');
+
+                //下载
+                Route::get("/rpa_plugin_download/", 'DownloadController@index');
+            });
+
             //手续费和保证金
             Route::group([], function () {
                 Route::get('/rpa_bzj', 'BzjController@index');
                 Route::get('/rpa_bzj/list', 'BzjController@pagination');
+                Route::get('/rpa_sxf', 'SxfController@index');
+                Route::get('/rpa_sxf/list', 'SxfController@pagination');
             });
+
+            //职业变更
+            Route::get('/rpa_profession_change','ProfessionChangeController@index');
+            Route::get('/rpa_profession_change/list','ProfessionChangeController@pagination');
+            Route::post('/rpa_profession_change/confirmOne','ProfessionChangeController@confirmOne');
         });
 
     });

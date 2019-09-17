@@ -135,13 +135,15 @@ class DocumentController extends BaseAdminController
                 // $data['uploads'] = json_encode($data['uploads'],JSON_UNESCAPED_UNICODE);
                 unset($data['upfile']);
             }
-            $content_exists = SysDocumentContent::find($id);
+            // $content_exists = SysDocumentContent::find($id);
+            $content_exists = SysDocumentContent::where('did',$id)->first();
             if($content_exists){
-                $content = SysDocumentContent::where('did',$id)->first();
-                $file = $content['uploads'] ? json_decode($content['uploads'], true) : [] ; 
-                $data['uploads'] = $file ? array_merge($file, $data['uploads']) : $data['uploads'] ;
-                $data['uploads'] = json_encode($data['uploads'],JSON_UNESCAPED_UNICODE);
-
+                $content = $content_exists;
+                $file = isset($content['uploads']) ? json_decode($content['uploads'], true) : [] ; 
+                if($file){
+                    $data['uploads'] = array_merge($file, $data['uploads']);
+                    $data['uploads'] = json_encode($data['uploads'],JSON_UNESCAPED_UNICODE);
+                }
                 $result = SysDocumentContent::where('did',$id)->update($data);
             }else{
                 $creater_id = auth()->guard()->user()->id;
@@ -251,7 +253,7 @@ class DocumentController extends BaseAdminController
     public function upload($file, $disk='local') {
         // 2.是否符合文件类型 getClientOriginalExtension 获得文件后缀名
         $fileExtension = $file->getClientOriginalExtension();
-        if(!in_array($fileExtension, ['gif','jpeg',".jpg", ".png", ".rar", ".txt", ".zip", ".doc", ".ppt", ".xls", ".pdf", ".docx", ".xlsx"])) {
+        if(!in_array($fileExtension, ['gif','jpeg',"jpg", "png", "rar", "txt", "zip", "doc", "ppt", "xls", "pdf", "docx", "xlsx"])) {
             return false;
         }
 

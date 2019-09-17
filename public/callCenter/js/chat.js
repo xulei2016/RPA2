@@ -123,7 +123,7 @@ $(function () {
         //初始化信息
         $('#init-message').text(callCenterConfig.welcome);
 
-// 发送按钮点击
+        // 发送按钮点击
         $(document).on('click', '.btn-send', function(){
             var getVal = $("#customer-chat-message-input").val();
             var getDataId = $("#mychat").children(".chatWindow:last-child").attr("data-id");
@@ -153,7 +153,7 @@ $(function () {
 
         //模糊查询
         $("#customer-chat-message-input").on("input  propertychange", function() {
-            if(echoClient.manager_id) return; //当客服存在的时候直接return
+            //if(echoClient.manager_id) return; //当客服存在的时候直接return
             if($(this).val()==""){
                 $(".record").hide();
             }else{

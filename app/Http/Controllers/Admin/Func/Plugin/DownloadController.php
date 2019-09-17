@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Admin\Base\Plugin;
+namespace App\Http\Controllers\Admin\Func\Plugin;
 
 /**
  * 下载
@@ -9,7 +9,7 @@ namespace App\Http\Controllers\Admin\Base\Plugin;
 class DownloadController extends BaseController
 {
 
-    private $view_prefix = "admin.base.plugin.download.";
+    private $view_prefix = "admin.func.plugin.download.";
 
     public function index(){
         return view($this->view_prefix.'index');

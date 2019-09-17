@@ -152,4 +152,11 @@ function smsLog($type, $phone, $content, $status){
     return App\Models\Admin\Base\SysSmsLog::create($sms);
 }
 
+/**
+ * 生成密码
+ */
+function createPassword($name){
+    return \Illuminate\Support\Facades\Crypt::encrypt('H@qh9772_'.$name);
+}
+
 ?>

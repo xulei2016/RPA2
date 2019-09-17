@@ -8,6 +8,11 @@
 	<link rel="stylesheet" href="{{asset('callCenter/css/main.css')}}" />
 	<link rel="stylesheet" href="{{asset('css/all.css')}}" />
 	<meta name="csrf-token" content="{{ csrf_token() }}">
+	<style>
+		ul li {
+			cursor:pointer
+		}
+	</style>
 </head>
 <body>
 <div class="container">
@@ -19,8 +24,8 @@
 		</audio>
 		<div class="customer-chat-header-menu" >
 			<div class="customer-chat-header-menu-triangle"></div>
-			<a href="#" id="customer-chat-setting-toggle-sound" flag="1" class="customer-chat-toggle-sound"><i class="icon-music"></i> <div>声音提醒</div></a>
-			<a href="#" id="customer-chat-action-end-chat">
+			<a href="javascript:;" id="customer-chat-setting-toggle-sound" flag="1" class="customer-chat-toggle-sound"><i class="icon-music"></i> <div>声音提醒</div></a>
+			<a href="javascript:;" id="customer-chat-action-end-chat">
 				<i class="icon-off"></i>
 				<div>结束聊天</div>
 			</a>
@@ -60,27 +65,27 @@
 		<div class="customer-chat-emots-menu" show="0">
 			<div class="customer-chat-header-menu-triangle"></div>
 			<div class="emots-wrapper">
-				<a href="#" id=":)" class="customer-chat-emoticon"><i class="emot emot-1"></i></a>
-				<a href="#" id=";)" class="customer-chat-emoticon"><i class="emot emot-2"></i></a>
-				<a href="#" id=":(" class="customer-chat-emoticon"><i class="emot emot-3"></i></a>
-				<a href="#" id=":D" class="customer-chat-emoticon"><i class="emot emot-4"></i></a>
-				<a href="#" id=":P" class="customer-chat-emoticon"><i class="emot emot-5"></i></a>
-				<a href="#" id="=)" class="customer-chat-emoticon"><i class="emot emot-6"></i></a>
-				<a href="#" id=":|" class="customer-chat-emoticon"><i class="emot emot-7"></i></a>
-				<a href="#" id="=|" class="customer-chat-emoticon"><i class="emot emot-8"></i></a>
-				<a href="#" id=">:|" class="customer-chat-emoticon"><i class="emot emot-9"></i></a>
-				<a href="#" id=">:D" class="customer-chat-emoticon"><i class="emot emot-10"></i></a>
+				<a href="javascript:;" id=":)" class="customer-chat-emoticon"><i class="emot emot-1"></i></a>
+				<a href="javascript:;" id=";)" class="customer-chat-emoticon"><i class="emot emot-2"></i></a>
+				<a href="javascript:;" id=":(" class="customer-chat-emoticon"><i class="emot emot-3"></i></a>
+				<a href="javascript:;" id=":D" class="customer-chat-emoticon"><i class="emot emot-4"></i></a>
+				<a href="javascript:;" id=":P" class="customer-chat-emoticon"><i class="emot emot-5"></i></a>
+				<a href="javascript:;" id="=)" class="customer-chat-emoticon"><i class="emot emot-6"></i></a>
+				<a href="javascript:;" id=":|" class="customer-chat-emoticon"><i class="emot emot-7"></i></a>
+				<a href="javascript:;" id="=|" class="customer-chat-emoticon"><i class="emot emot-8"></i></a>
+				<a href="javascript:;" id=">:|" class="customer-chat-emoticon"><i class="emot emot-9"></i></a>
+				<a href="javascript:;" id=">:D" class="customer-chat-emoticon"><i class="emot emot-10"></i></a>
 
-				<a href="#" id="o_O" class="customer-chat-emoticon"><i class="emot emot-11"></i></a>
-				<a href="#" id="=O" class="customer-chat-emoticon"><i class="emot emot-12"></i></a>
-				<a href="#" id="<3" class="customer-chat-emoticon"><i class="emot emot-13"></i></a>
-				<a href="#" id=":S" class="customer-chat-emoticon"><i class="emot emot-14"></i></a>
-				<a href="#" id=":*" class="customer-chat-emoticon"><i class="emot emot-15"></i></a>
-				<a href="#" id=":$" class="customer-chat-emoticon"><i class="emot emot-16"></i></a>
-				<a href="#" id="=B" class="customer-chat-emoticon"><i class="emot emot-17"></i></a>
-				<a href="#" id=":-D" class="customer-chat-emoticon"><i class="emot emot-18"></i></a>
-				<a href="#" id=";-D" class="customer-chat-emoticon"><i class="emot emot-19"></i></a>
-				<a href="#" id="*-D" class="customer-chat-emoticon"><i class="emot emot-20"></i></a>
+				<a href="javascript:;" id="o_O" class="customer-chat-emoticon"><i class="emot emot-11"></i></a>
+				<a href="javascript:;" id="=O" class="customer-chat-emoticon"><i class="emot emot-12"></i></a>
+				<a href="javascript:;" id="<3" class="customer-chat-emoticon"><i class="emot emot-13"></i></a>
+				<a href="javascript:;" id=":S" class="customer-chat-emoticon"><i class="emot emot-14"></i></a>
+				<a href="javascript:;" id=":*" class="customer-chat-emoticon"><i class="emot emot-15"></i></a>
+				<a href="javascript:;" id=":$" class="customer-chat-emoticon"><i class="emot emot-16"></i></a>
+				<a href="javascript:;" id="=B" class="customer-chat-emoticon"><i class="emot emot-17"></i></a>
+				<a href="javascript:;" id=":-D" class="customer-chat-emoticon"><i class="emot emot-18"></i></a>
+				<a href="javascript:;" id=";-D" class="customer-chat-emoticon"><i class="emot emot-19"></i></a>
+				<a href="javascript:;" id="*-D" class="customer-chat-emoticon"><i class="emot emot-20"></i></a>
 			</div>
 		</div>
 		<input type="text" id="customer-chat-message-input" class="customer-chat-content-message-input-field" placeholder="输入你的问题">
@@ -91,7 +96,7 @@
 			<input name="firstImg"  type="file" id="file-input" multiple="">
 		</label>
 		<div class="customer-chat-content-message-emots-button"></div>
-		<div class="btn btn-sm btn-info btn-send">发送</div>
+		<div class="btn btn-info btn-send">发送</div>
 	</div>
 </div>
 <script>

@@ -37,8 +37,13 @@ class RecordDetailController extends BaseController
      */
     public function getRecordById(Request $request){
         $record_id = $request->get('record_id');
-        $list = SysRecordDetail::where('record_id', $record_id)->get();
-        return $this->ajax_return(200, 'success', $list->toArray());
+        $list = SysRecordDetail::where('record_id', $record_id)->get()->toArray();
+        foreach($list as $k => $v) {
+            if($v['type'] == 'template') {
+                $list[$k]['content'] = $v['content'].'(模板信息)';
+            }   
+        }
+        return $this->ajax_return(200, 'success', $list);
     }
 
     /**
@@ -47,7 +52,12 @@ class RecordDetailController extends BaseController
     public function getRecordList(Request $request){
         $manager_id = $request->get('manager_id');
         $customer_id = $request->get('customer_id');
-        $list = SysRecordDetail::where(['manager_id'=>$manager_id,'customer_id' => $customer_id, 'type' => 'message'])->orderBy('id', 'desc')->limit(20)->get();
-        return $this->ajax_return(200, 'success', $list->toArray());
+        $list = SysRecordDetail::where(['manager_id'=>$manager_id,'customer_id' => $customer_id])->orderBy('id', 'desc')->limit(20)->get()->toArray();
+        foreach($list as $k => $v) {
+            if($v['type'] == 'template') {
+                $list[$k]['content'] = $v['content'].'(模板信息)';
+            }   
+        }
+        return $this->ajax_return(200, 'success', $list);
     }
 }

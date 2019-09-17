@@ -24,6 +24,7 @@
 
 	<div class="form-group">
 		<input type="text" name="card" placeholder="身份证号" class="id-card" id="card">
+		<p class="error-message">如果身份证中含有字母,请使用大写字母</p>
 		<div class="error-message"></div>
 	</div>
 

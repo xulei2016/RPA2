@@ -28,7 +28,8 @@ li, div, ul {*zoom: 1}
     line-height: 40px;
     text-align: center;
     font-size: 14px;
-    border-bottom: 2px solid #86C953;
+    /*border-bottom: 2px solid #86C953;*/
+    border-bottom: 2px solid #007bff;
 }
 .online-users-info{
     width: 100%;
@@ -170,13 +171,18 @@ li, div, ul {*zoom: 1}
     border: none;
 }
 
+.userDiv #customer-jybm p{
+    color: #6c757d;
+    padding: 2px 8px
+}
+
 .nav-tabs li.active{
     color: #555;
     cursor: default;
     background-color: #fff;
     border: 1px solid #ddd;
     border-bottom-color: transparent;
-    border-top: 3px solid #86C953;
+    /*border-top: 3px solid #86C953;*/
     box-sizing: border-box;
 }
 
@@ -599,7 +605,8 @@ li, div, ul {*zoom: 1}
     line-height: 40px;
     text-align: center;
     font-size: 14px;
-    border-bottom: 2px solid #86C953;
+    /*border-bottom: 2px solid #86C953;*/
+    border-bottom: 2px solid #007bff;
 }
 .col-md-3,.col-md-6{
     padding: 0 15px;

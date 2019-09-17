@@ -231,6 +231,15 @@ class BaseController extends BaseAdminController
 
 
     /**
+     * 检测客户是否在redis中
+     */
+    public function checkOnline($customer_id){
+        $data = Redis::hGet(self::ONLINE_CUSTOMER_LIST, $customer_id);
+        if($data) return true;
+        return false;
+    }
+
+    /**
      * 在线客户中剔除客户
      * @param $customer_id
      */

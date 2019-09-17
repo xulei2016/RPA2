@@ -24,7 +24,12 @@ $(function(){
             var refresh = _this.attr('refresh');
             var manager_id = _this.attr('manager_id');
             if(manager_id && manager_id !== echoManager.manager_id) {
-                alert('该用户正在与其它客服聊天');return false;
+                swal(
+                    '提示',
+                    '该用户正在与其它客服聊天',
+                    'warning'
+                );
+                return false;
             }
             var issetTab = false;
             var issetContent = false;
@@ -35,7 +40,12 @@ $(function(){
             }
             if(manager_id !== echoManager.manager_id) {
                 if(echoManager.connectNumber > 8) {
-                    alert('超过最大聊天数量');return false;
+                    swal(
+                        '提示',
+                        '超过最大聊天数量',
+                        'warning'
+                    );
+                    return false;
                 }
                 _this.attr('manager_id', echoManager.manager_id);
                 var record_id = _this.attr('record_id');
@@ -75,10 +85,11 @@ $(function(){
                 $('.chat-content-out').append(content);
             }
             _this.attr('refresh', 1);
+            window.location.href = "#talk-content";
         });
 
         // tab切换
-        $(document).on("click", ".nav-tabs li", function() {
+        $(document).on("click", ".talk .nav-tabs li", function() {
             var customer_id = $(this).attr('customer_id');
             $(this).addClass('active').siblings().removeClass('active');
             $('.chat-content-out .chat-content').removeClass('active');
@@ -133,7 +144,11 @@ $(function(){
                 mimeType: "multipart/form-data",
                 success: function (r) {
                     if(r.code !== 200) {
-                        alert(r.info);
+                        swal(
+                            '提示',
+                            r.info,
+                            'warning'
+                        );
                         return;
                     }
                     var url = r.data.url;
@@ -223,6 +238,29 @@ $(function(){
             }
             echoManager.transferService(active_id, manager_id);
         })
+
+        //常用操作
+        //断开连接
+        $("#disconnect").on('click', function(){
+            if(!active_id) return false;
+            swal({
+                title: '警告',
+                text: "您确认断开与对方的连接吗！",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '确认'
+            }).then(function(isConfirm) {
+                if (isConfirm) {
+                    echoManager.axios(echoManager.logoutUrl, 'post', {customer_id:active_id}).then(r => {
+                        console.log(r);
+                    }).catch(error => {
+                        console.log(error)
+                    })
+                }
+            })
+        });
     }
 
 
@@ -270,21 +308,30 @@ $(function(){
         $('#customer-zjzh').text('暂无');
         $('#customer-khrq').text('暂无');
         $('#customer-client').text('暂无');
+        $('#customer-yyb').text('暂无');
+        $('#customer-fxys').text('暂无');
         $('#customer-zjqy').text('暂无');
         $('#customer-sxf').text('暂无');
         $('#customer-bzj').text('暂无');
-        $('#customer-jybm').text('未知');
-        $('#customer-yq').text('未知');
+        $('#customer-jybm').text('');
+        $('#customer-yq').text('暂无');
         // 请求获取客户信息并展示
         echoManager.axios(echoManager.getCustomerInfo, 'post', {id:active_id}).then(r => {
             $('#customer-zjzh').text(r.zjzh);
             $('#customer-khrq').text(r.khrq);
             $('#customer-client').text(r.client);
             $('#customer-zjqy').text(r.zjqy);
-            $('#customer-jybm').text(r.auth);
             $('#customer-sxf').text(r.sxf);
             $('#customer-bzj').text(r.bzj);
+            $('#customer-yyb').text(r.yyb);
+            $('#customer-fxys').text(r.fxys);
             $('#customer-yq').text(r.yq);
+            var jybms = r.jybms;
+            var jy = '';
+            for(let jybm of jybms) {
+                jy += '<p>'+jybm.name+': <span class="pull-right">'+jybm.auth+'</span></p>'
+            }
+            $('#customer-jybm').html(jy);
         })
     }
 
@@ -314,7 +361,8 @@ $(function(){
                 if(data.sender == 'customer') {
                     showCustomerMessage(data);
                 } else if(data.sender == 'manager') {
-                    $("#content_customer_"+active_id).append(buildManager(data.content));
+                    var content = data.content;
+                    $("#content_customer_"+active_id).append(buildManager(content, data.created_at));
                 }
             }
             $("#content_customer_"+active_id).append('<div  class="text-primary text-center customer-chat-content-message-operator serviceChat chatWindow mb10">* * * * 以上是历史消息 * * * *</div>');
@@ -356,10 +404,17 @@ $(function(){
      * @param content
      * @returns {string}
      */
-    function buildManager(content){
+    function buildManager(content, flag = false){
+        content = replace(content);
+        let t;
+        if(flag) {
+            t = flag;
+        } else {
+            t = getCurrentTime();
+        }
         var html = '<div class="mychatoperator mychat chatWindow" data-id="1">\n' +
             '<div class="myChatCon">' +
-            '<div class="mychatTime">'+getCurrentTime()+'</div>' +
+            '<div class="mychatTime">'+t+'</div>' +
             '<div class="mychatAuthor">你自己</div>' +
             '<div class="mychatMess">' +
             '<div class="mychatMessDe">'+content+'</div>\n' +
