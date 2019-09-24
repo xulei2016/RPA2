@@ -23,9 +23,12 @@ RPA.prototype = {
         NProgressParent: '#body', //nprogress 父级作用元素
         adminPopup: $('.navbar .navbar-nav .admin-info-list,.navbar .navbar-nav .admin-message'),
         sidebar: {
-            obj:$('body aside .sidebar'),
+            obj:$('body aside .sidebar, .content-wrapper .tags-warp '),
             activeBar: sessionStorage.activeBar ? sessionStorage.activeBar : '/admin' ,
         },
+        tags: {
+            obj: $('.content-wrapper .tags-warp'),
+        }
     },
     bind: function() {
         var _this = this;
@@ -43,7 +46,7 @@ RPA.prototype = {
         toastr.options = _this.toastOptions;
 
         // //moprogress
-        NProgress.configure({ parent: '#pjax-container' });
+        NProgress.configure({ parent: '.content-wrapper' });
 
         //异步请求csrf头
         $.ajaxSetup({
@@ -58,13 +61,129 @@ RPA.prototype = {
         });
 
         //侧边栏点击事件
-        _this.config.sidebar.obj.on('click','.nav-item a.nav-link',function(e){
+        _this.config.sidebar.obj.on('click','.nav-item a.nav-link, a',function(e){
             _this.config.sidebar.activeBar = sessionStorage.activeBar = $(this).attr('href');
             if(!$(this).parents('li').hasClass('active')){
                 $(this).parents('li').siblings('.active').removeClass('active');
                 // $(this).addClass('active');
             }
+            _this.tags.addTags(_this, event);
         });
+        
+        //初始化tags
+        _this.tags.initTags.call(_this);
+        
+    },
+    tags:{
+        initTags: function(e){
+            let tagsList;
+            if(tagsList = localStorage.getItem('tagsList')){
+                let html = '';
+                tagsList = JSON.parse(tagsList);
+            }else{
+                tagsList = {
+                    '首页':{
+                        type: true,
+                        uri: '/admin',
+                        title: '首页'
+                    }
+                };
+                localStorage.setItem('tagsList', JSON.stringify(tagsList));
+            }
+            this.tags.setHtml(this, tagsList);
+        },
+        addTags: function(_this,e) {
+            let obj = $(e.target);
+            let href = obj.attr('href') ? obj.attr('href') : obj.parents('a').attr('href') ;
+            let tagsList,html;
+            if('#' != href){
+                let data = {
+                    type: true,
+                    uri: href,
+                    title: obj[0].innerText
+                };
+                let array = { [obj[0].innerText]:data };
+                if(tagsList = localStorage.getItem('tagsList')){
+                    tagsList = JSON.parse(tagsList);
+                    for(item in tagsList){
+                        tagsList[item].type = false;
+                    }
+                    if(tagsList[obj[0].innerText.trim()]){
+                        tagsList[obj[0].innerText.trim()].type = true;
+                    }else{
+                        tagsList[obj[0].innerText.trim()] = data;
+                    }
+                    array = tagsList;
+                };
+                localStorage.setItem('tagsList', JSON.stringify(array));
+                _this.tags.setHtml(_this, tagsList);
+            }
+        },
+        delTags: function (e) {
+            e.preventDefault();
+            e.returnValue = false;
+            let _this = $(e.target);
+            let uri,obj;
+            if(tagsList = localStorage.getItem('tagsList')){
+                tagsList = JSON.parse(tagsList);
+                if(tagsList[_this.parents('a').text().trim()].type){
+                    delete tagsList[_this.parent().text().trim()];
+                    for(i in tagsList){
+                        obj = i;
+                    }
+                    tagsList[obj].type = true;
+                    uri = tagsList[obj].uri;
+                    $.pjax.reload(RPA.config.pjax.container, {url:uri})
+                }else{
+                    delete tagsList[_this.parent().text().trim()];
+                }
+            }
+            RPA.tags.setHtml(RPA, tagsList);
+            localStorage.setItem('tagsList', JSON.stringify(tagsList));
+        },
+        setHtml: function(_this, tagsList){
+            let html = '';
+            for(item in tagsList){
+                if(tagsList[item].type){
+                    html += ("首页" == item) ? `<a href="${tagsList[item].uri}"><span class="tags-item active">${tagsList[item].title} </span></a>` : 
+                        `<a href="${tagsList[item].uri}"><span class="tags-item active">${tagsList[item].title} <span class="fa fa-remove tags-close" onclick="RPA.tags.delTags(event);"></span></span></a>`;
+                }else{
+                    html += ("首页" == item) ? `<a href="${tagsList[item].uri}"><span class="tags-item">${tagsList[item].title} </span></a>` : 
+                        `<a href="${tagsList[item].uri}"><span class="tags-item">${tagsList[item].title} <span class="fa fa-remove tags-close" onclick="RPA.tags.delTags(event);"></span></span></a>`;
+                }
+            }
+            _this.config.tags.obj.html(html);
+        }
+    },
+    initTags: function(e) {
+        let obj = $(e.target);
+        let href = obj.attr('href') ? obj.attr('href') : obj.parents('a').attr('href') ;
+        let tagsList,html;
+        if('#' != href){
+            let data = {
+                type: true,
+                uri: href,
+                title: obj[0].innerText
+            };
+            let array = { [obj[0].innerText]:data };
+            if(tagsList = localStorage.getItem('tagsList')){
+                tagsList = JSON.parse(tagsList);
+                for(item in tagsList){
+                    tagsList[item].type = false;
+                }
+                if(tagsList[obj[0].innerText]){
+                    tagsList[obj[0].innerText].type = true;
+                    return;
+                }
+                tagsList[obj[0].innerText] = data;
+                array = tagsList;
+            };
+            localStorage.setItem('tagsList', JSON.stringify(array));
+            html = `<a href="${data.uri}"><span class="tags-item active">${data.title} <span class="fa fa-remove tags-close" onclick="RPA.delTags(event);"></span></span></a>`;
+
+            this.config.tags.obj.find('.active').removeClass('active');
+            this.config.tags.obj.append(html);
+        }
     },
     screenOperation: {
         requestFullScreen: function() {

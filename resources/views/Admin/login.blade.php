@@ -34,7 +34,7 @@
               {{ csrf_field() }}
 
             <dd class="user_icon">
-                <input type="text" id="name" name="name" placeholder="账号" value="{{ old('name') }}" class="login_txtbx"/>
+                <input type="text" id="name" name="name" placeholder="账号" value="{{ old('name') }}" class="login_txtbx" autocomplete="on"/>
                 @if ($errors->has('name'))
                     <span class="invalid-feedback ">
                         <strong>{{ $errors->first('name') }}</strong>
@@ -43,7 +43,7 @@
             </dd>
 
             <dd class="pwd_icon">
-                <input type="password" id="password" name="password" placeholder="密码" class="login_txtbx"/>
+                <input type="password" id="password" name="password" placeholder="密码" class="login_txtbx" autocomplete="on"/>
                 @if ($errors->has('password'))
                     <span class="invalid-feedback ">
                         <strong>{{ $errors->first('password') }}</strong>
