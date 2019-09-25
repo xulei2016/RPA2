@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers\admin\base;
 
+use DB;
 use App\Models\Admin\Base\SysConfig;
+use App\Models\Admin\Admin\SysAdmin;
+use App\Models\Admin\Api\RpaApiLog;
+use App\Models\Admin\Base\SysLog;
+use App\Models\Admin\RPA\rpa_taskcollections;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Base\BaseAdminController;
@@ -19,8 +24,31 @@ class SysController extends BaseAdminController
      */
     public function index(Request $request)
     {
+        //用户数
+        $data['countUser'] = SysAdmin::where('type', 1)->count();
+        //日活
+        $date = date('Y-m-d', strtotime('-1 day'));
+        $data['countYUser'] = SysAdmin::where([['type', 1],['updated_at','>=', "{$date}"]])->count();
+        //未读邮件
+        $data['notification_count'] = auth()->guard('admin')->user()->notification_count;
+        //执行任务数
+        $data['countTask'] = rpa_taskcollections::count();
+        //条用接口数
+        $data['countApi'] = RpaApiLog::count();
+        //活动内容
+        $data['footprint'] = DB::select('select count(*)c,simple_desc from sys_logs GROUP BY controller,simple_desc ORDER BY c desc limit 10');
+        $data['pie_labels'] = '';
+        $data['pie_datas'] = '';
+        foreach($data['footprint']  as $footprint){
+            $data['pie_labels'] .= "'{$footprint->simple_desc}',";
+            $data['pie_datas'] .= "{$footprint->c},";
+        }
+        $data['pie_labels'] = trim($data['pie_labels'],',');
+        $data['pie_datas'] = trim($data['pie_datas'],',');
+        
+        $data = array_merge($data, self::sys_info());
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
-        return view('admin.index.index');
+        return view('admin.index.index', ['data'=>$data]);
     }
     
     /**
@@ -65,26 +93,28 @@ class SysController extends BaseAdminController
     */
     private function sys_info(){
         $info['sys'] = [
-            '设备信息'      => php_uname() ,
-            '协议'          => $_SERVER['SERVER_PROTOCOL'] ,
-            'PHP 版本'      => 'PHP/'.PHP_VERSION ,
-            'Laravel 版本'  => app()->version() ,
+            'PHP_OS'      => php_uname() ,
+            'SERVER_PROTOCOL'          => $_SERVER['SERVER_PROTOCOL'] ,
+            'PHP_VERSION'      => 'PHP/'.PHP_VERSION ,
+            'Laravel_VERSION'  => app()->version().'LARAVEL' ,
             'CGI'           => php_sapi_name() ,
-            '服务'          => array_get($_SERVER, 'SERVER_SOFTWARE') ,
-            '服务允许上传最大文件'  => get_cfg_var ("upload_max_filesize")?get_cfg_var ("upload_max_filesize"):"不允许上传附件" ,
+            'SERVER_INFO'          => array_get($_SERVER, 'SERVER_SOFTWARE') ,
+            'FILE_UPLOAD_MAX_SIZE'  => get_cfg_var ("upload_max_filesize")?get_cfg_var ("upload_max_filesize"):"不允许上传附件" ,
 
-            '缓存驱动'      => config('cache.default') ,
-            'Session驱动'   => config('session.driver') ,
-            '队列驱动'      => config('queue.default') ,
+            'CACHE'      => config('cache.default') ,
+            'Session'   => config('session.driver') ,
+            'QUEUE'      => config('queue.default') ,
 
-            '时区'          => config('app.timezone') ,
+            'TIMEZONE'          => config('app.timezone') ,
             'Locale'        => config('app.locale') ,
             'Env'           => config('app.env') ,
             'URL'           => config('app.url') ,
         ];
         $con = mysqli_connect(env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_DATABASE'));
         $info['database'] = [
-            '数据库版本'    => mysqli_get_server_info($con),
+            'ALLOW_PERSISTENT' => @get_cfg_var("mysql.allow_persistent")?"是 ":"否",
+            'MAX_LINKS' => @get_cfg_var("mysql.max_links")==-1 ? "不限" : @get_cfg_var("mysql.max_links"),
+            'MYSQL_VERSION'    => mysqli_get_server_info($con),
         ];
         // exec("wmic LOGICALDISK get name,Description,filesystem,size,freespace",$info['disk']);
 

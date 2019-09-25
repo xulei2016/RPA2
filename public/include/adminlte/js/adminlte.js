@@ -338,8 +338,7 @@
         var max = this._max(heights);
 
         if ($('body').hasClass(ClassName.LAYOUT_FIXED)) {
-          $(Selector.CONTENT).css('min-height', max - heights.footer); // $(Selector.SIDEBAR).css('min-height', max - heights.header)
-        //   $(Selector.CONTENT).css('min-height', max - heights.header - heights.footer); // $(Selector.SIDEBAR).css('min-height', max - heights.header)
+          $(Selector.CONTENT).css('min-height', max - heights.header - heights.footer); // $(Selector.SIDEBAR).css('min-height', max - heights.header)
 
           if (typeof $.fn.overlayScrollbars !== 'undefined') {
             $(Selector.SIDEBAR).overlayScrollbars({
@@ -353,11 +352,9 @@
           }
         } else {
           if (heights.window > heights.sidebar) {
-            $(Selector.CONTENT).css('min-height', heights.window - 50);
-            // $(Selector.CONTENT).css('min-height', heights.window - heights.header - heights.footer);
+            $(Selector.CONTENT).css('min-height', heights.window - heights.header - heights.footer);
           } else {
-            $(Selector.CONTENT).css('min-height', heights.sidebar);
-            // $(Selector.CONTENT).css('min-height', heights.sidebar - heights.header);
+            $(Selector.CONTENT).css('min-height', heights.sidebar - heights.header);
           }
         }
       } // Private

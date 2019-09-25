@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<nav class="header navbar navbar-expand navbar-white navbar-light">
+<nav class="main-header navbar navbar-expand navbar-white navbar-light">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <li class="nav-item">
@@ -108,8 +108,3 @@
         </li>
     </ul>
 </nav>
-<div class="tags-view-container">
-    <div class="tags-warp">
-        <div class="scrop"></div>
-    </div>
-</div>

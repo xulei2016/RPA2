@@ -4,103 +4,295 @@
     <!-- Main content -->
     <!-- Small boxes (Stat box) -->
     <div class="row">
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-aqua">
-                <div class="inner">
-                    <h3>150</h3>
-
-                    <p>New Orders</p>
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box">
+                <span class="info-box-icon bg-info elevation-1"><i class="fa fa-cog"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">总计执行任务</span>
+                  <span class="info-box-number">{{ $data['countTask'] }} <small>次</small></span>
                 </div>
-                <div class="icon">
-                    <i class="ion ion-bag"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-green">
-                <div class="inner">
-                    <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                    <p>Bounce Rate</p>
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-danger elevation-1"><i class="fa fa-thumbs-up"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">累计运行</span>
+                  <span class="info-box-number accumulated_time">41,410</span>
                 </div>
-                <div class="icon">
-                    <i class="ion ion-stats-bars"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-yellow">
-                <div class="inner">
-                    <h3>44</h3>
-
-                    <p>User Registrations</p>
+            <!-- /.col -->
+  
+            <!-- fix for small devices only -->
+            <div class="clearfix hidden-md-up"></div>
+  
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fa fa-shopping-cart"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">接口调用次数</span>
+                  <span class="info-box-number">{{ $data['countApi'] }}</span>
                 </div>
-                <div class="icon">
-                    <i class="ion ion-person-add"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-        </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-            <!-- small box -->
-            <div class="small-box bg-red">
-                <div class="inner">
-                    <h3>65</h3>
-
-                    <p>Unique Visitors</p>
+            <!-- /.col -->
+            <div class="col-12 col-sm-6 col-md-3">
+              <div class="info-box mb-3">
+                <span class="info-box-icon bg-warning elevation-1"><i class="fa fa-users"></i></span>
+  
+                <div class="info-box-content">
+                  <span class="info-box-text">用户数-活跃度</span>
+                  <span class="info-box-number">{{ $data['countUser'] }}-{{ round($data['countYUser']/$data['countUser'],2)*100 }}%</span>
                 </div>
-                <div class="icon">
-                    <i class="ion ion-pie-graph"></i>
-                </div>
-                <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+                <!-- /.info-box-content -->
+              </div>
+              <!-- /.info-box -->
             </div>
-        </div>
-        <!-- ./col -->
-    </div>
+            <!-- /.col -->
+          </div>
     <!-- /.row -->
 
-    <!-- Main row -->
     <div class="row">
-        <section class="col-lg-12">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">快速邮件</h3>
-                    <div class="pull-right box-tools">
-                        <button type="button" class="btn btn-info btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
-                        <button type="button" class="btn btn-info btn-sm" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
+            <div class="col-lg-6">
+            <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">我的活跃内容</h5>
+        
+                        <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-times"></i>
+                        </button>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                        <div class="col-md-8">
+                            <div class="chart-responsive">
+                            <canvas id="pieChart" height="150"></canvas>
+                            </div>
+                            <!-- ./chart-responsive -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-md-4">
+                            <ul class="chart-legend clearfix">
+                            @foreach($data['footprint'] as $footprint)
+                                <li><i class="fa fa-circle-o"></i> {{  $footprint->simple_desc }}</li>
+                            @endforeach
+                            </ul>
+                        </div>
+                        <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer bg-white p-0">
+                        <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                            United States of America
+                            <span class="float-right text-danger">
+                                <i class="fa fa-arrow-down text-sm"></i>
+                                12%</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                            India
+                            <span class="float-right text-success">
+                                <i class="fa fa-arrow-up text-sm"></i> 4%
+                            </span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                            China
+                            <span class="float-right text-warning">
+                                <i class="fa fa-arrow-left text-sm"></i> 0%
+                            </span>
+                            </a>
+                        </li>
+                        </ul>
+                    </div>
+                    <!-- /.footer -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+        </div>
+
+    
+        <div class="row">
+        <section class="col-lg-7">
+            <!-- Main row -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- The timeline -->
+                    <div class="timeline timeline-inverse">
+                            <!-- timeline time label -->
+                            <div class="time-label">
+                            <span class="bg-danger">
+                                10 Feb. 2014
+                            </span>
+                            </div>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <div>
+                            <i class="fa fa-envelope bg-primary"></i>
+        
+                            <div class="timeline-item">
+                                <span class="time"><i class="far fa-clock"></i> 12:05</span>
+        
+                                <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
+        
+                                <div class="timeline-body">
+                                Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
+                                weebly ning heekya handango imeem plugg dopplr jibjab, movity
+                                jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
+                                quora plaxo ideeli hulu weebly balihoo...
+                                </div>
+                                <div class="timeline-footer">
+                                <a href="#" class="btn btn-primary btn-sm">Read more</a>
+                                <a href="#" class="btn btn-danger btn-sm">Delete</a>
+                                </div>
+                            </div>
+                            </div>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <div>
+                            <i class="fa fa-user bg-info"></i>
+        
+                            <div class="timeline-item">
+                                <span class="time"><i class="far fa-clock"></i> 5 mins ago</span>
+        
+                                <h3 class="timeline-header border-0"><a href="#">Sarah Young</a> accepted your friend request
+                                </h3>
+                            </div>
+                            </div>
+                            <!-- END timeline item -->
+                            <!-- timeline item -->
+                            <div>
+                            <i class="fa fa-comments bg-warning"></i>
+        
+                            <div class="timeline-item">
+                                <span class="time"><i class="far fa-clock"></i> 27 mins ago</span>
+        
+                                <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
+        
+                                <div class="timeline-body">
+                                Take me to your leader!
+                                Switzerland is small and neutral!
+                                We are more like Germany, ambitious and misunderstood!
+                                </div>
+                                <div class="timeline-footer">
+                                <a href="#" class="btn btn-warning btn-flat btn-sm">View comment</a>
+                                </div>
+                            </div>
+                            </div>
+                            <!-- END timeline item -->
+                            <!-- timeline time label -->
+                            <div class="time-label">
+                            <span class="bg-success">
+                                3 Jan. 2014
+                            </span>
+                            </div>
+                            <!-- /.timeline-label -->
+                            <!-- timeline item -->
+                            <div>
+                            <i class="fa fa-camera bg-purple"></i>
+        
+                            <div class="timeline-item">
+                                <span class="time"><i class="far fa-clock"></i> 2 days ago</span>
+        
+                                <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+        
+                                <div class="timeline-body">
+                                <img src="http://placehold.it/150x100" alt="...">
+                                <img src="http://placehold.it/150x100" alt="...">
+                                <img src="http://placehold.it/150x100" alt="...">
+                                <img src="http://placehold.it/150x100" alt="...">
+                                </div>
+                            </div>
+                            </div>
+                            <!-- END timeline item -->
+                            <div>
+                            <i class="far fa-clock bg-gray"></i>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </section>
+        <section class="col-lg-5">
+            <!-- Main row -->
+            <div class="card">
+                <div class="card-header border-transparent">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-th-list"></i> 服务器信息</h5>
                     </div>
                 </div>
-                <div class="box-body">
-                    <div class="form-group">
-                        <input class="form-control" placeholder="发送人:" required>
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control" placeholder="抄送:">
-                    </div>
-                    <div class="form-group">
-                        <input class="form-control" placeholder="主题:" required>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="editor" class="form-control"  placeholder="写点什么吧"></textarea>
-                    </div>
-                </div>
-                <div class="box-footer">
-                    <div class="pull-right">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-envelope-o"></i> 发送</button>
+                <div class="card-body">
+                    <div class="ibox-content" style="display: block;">
+                        <ul class="todo-list m-t small-list">
+                            <li>设备信息：{{ $data['sys']['PHP_OS'] }}</li>
+                            <li>服务：{{ $data['sys']['SERVER_INFO'] }}</li>
+                            <li>脚本版本：{{ $data['sys']['PHP_VERSION'] }}</li>
+                            <li>框架版本：{{ $data['sys']['Laravel_VERSION'] }}</li>
+                            <li>CGI：{{ $data['sys']['CGI'] }}</li>
+                            <li>时区：{{ $data['sys']['TIMEZONE'] }}</li>
+                            <li>协议：{{ $data['sys']['SERVER_PROTOCOL'] }}</li>
+                            <li>缓存驱动：{{ $data['sys']['CACHE'] }}</li>
+                            <li>session驱动：{{ $data['sys']['Session'] }}</li>
+                            <li>队列驱动：{{ $data['sys']['QUEUE'] }}</li>
+                            <li>允许文件上传最大尺寸：{{ $data['sys']['FILE_UPLOAD_MAX_SIZE'] }}</li>
+                            <li>MySQL允许持久连接：{{ $data['database']['ALLOW_PERSISTENT'] }}</li>
+                            <li>MySQL最大连接数：{{ $data['database']['ALLOW_PERSISTENT'] }}</li>
+                            <li>MySQL版本：{{ $data['database']['MYSQL_VERSION'] }}</li>
+                            <li>GD图形处理库：bundled (2.1.0 compatible)</li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- /.row (main row) -->
-    </section>
+        </section>
+    
 
+<script src="{{URL::asset('/include/charts/Chart.min.js')}}"></script>
+<script src="{{URL::asset('/js/admin/dashboard.js')}}"></script>
+<script>
+  var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+    var pieData        = {
+      labels: [
+          @foreach($data['footprint'] as $footprint)
+          '{{ $footprint->simple_desc }}',
+          @endforeach
+      ],
+      datasets: [
+        {
+          data: [{{ $data['pie_datas'] }}],
+          backgroundColor : ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
+        }
+      ]
+    }
+    var pieOptions     = {
+      legend: {
+        display: false,
+        },
+    }
+    var pieChart = new Chart(pieChartCanvas, {
+      type: 'doughnut',
+      data: pieData,
+      options: pieOptions      
+    })
+</script>
 </section>
 <!-- /.content -->

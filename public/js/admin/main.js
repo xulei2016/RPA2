@@ -27,7 +27,7 @@ RPA.prototype = {
             activeBar: sessionStorage.activeBar ? sessionStorage.activeBar : '/admin' ,
         },
         tags: {
-            obj: $('.content-wrapper .tags-warp'),
+            obj: $('.wrapper .tags-warp'),
         }
     },
     bind: function() {

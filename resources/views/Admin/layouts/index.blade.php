@@ -11,12 +11,17 @@
         {{-- left bar --}} 
         @include('admin.layouts.sidebar')
 
+        {{-- top --}}
+        @include('admin.layouts.top')
         
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
 
-            {{-- top --}}
-            @include('admin.layouts.top')
+            <div class="tags-view-container">
+                <div class="tags-warp">
+                    <div class="scrop"></div>
+                </div>
+            </div>
 
             {{-- wrapper --}} 
             @include('admin.layouts.wrapper')
