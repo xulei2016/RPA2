@@ -309,7 +309,9 @@ RPA.prototype = {
             toastr.success('操作成功！');
             // $.pjax.reload('#pjax-container');
             $('#tb_departments').bootstrapTable('refresh');
-            $(obj+' #form-continue').is(':checked') ? RPA.form.reset(obj+' #form') : $(obj).modal('hide');
+            if($(obj+' #form-continue').length > 0){
+                $(obj+' #form-continue').is(':checked') ? RPA.form.reset(obj+' #form') : $(obj).modal('hide');;
+            }
             callback ? callback() : '' ;
         },
         ajaxSubmit: function(e, FormOptions) {
@@ -365,7 +367,7 @@ RPA.prototype = {
                 minimumCountColumns: 1,             //最少允许的列数
                 clickToSelect: true,                //是否启用点击选中行
                 // height: 800,                     //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-                uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+                uniqueId: "id",                     //每一行的唯一标识，一般为主键列
                 showToggle:false,                    //是否显示详细视图和列表视图的切换按钮
                 cardView: false,                    //是否显示详细视图
                 detailView: false,                   //是否显示父子表

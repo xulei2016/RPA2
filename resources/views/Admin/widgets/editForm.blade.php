@@ -1,6 +1,6 @@
 <div class="modal-header with-border">
     <h3 class="modal-title">
-        {{ $title or '修改操作' }}
+        {{ $title or '修改' }}操作
     </h3>
 </div>
 
@@ -11,8 +11,8 @@
     <!-- /.modal-body -->
     <div class="modal-footer">
         {{ method_field('PATCH')}}
-        <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue">继续修改</label></div>
-        <button type="button" class="btn btn-success pull-right" id="save">提交</button>
+        <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue" {{ $edit_continue or '' }}>继续{{ $title or '修改' }}</label></div>
+        <button type="button" class="btn btn-success pull-right" id="save">{{ $title or '修改' }}</button>
     </div>
     <!-- /.modal-footer -->
 </form>

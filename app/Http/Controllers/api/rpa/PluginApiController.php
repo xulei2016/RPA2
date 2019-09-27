@@ -153,8 +153,8 @@ class PluginApiController extends BaseApiController
         //表单验证
         $validatedData = $request->validate([
             'title' => 'required',//流程标题
-            'name' => 'required',//名称
-            'number' => 'required',//编号
+            // 'name' => 'required',//名称
+            // 'number' => 'required',//编号
             'file_id' => 'required',//文件id
             'work_id' => 'required',//文件id
             'type' => 'required'//类型  kh客户 jjr居间人
@@ -513,6 +513,20 @@ class PluginApiController extends BaseApiController
                 $s = 0;
             }
         }
+
+        //身份证识别
+        if(!empty($sfz_zm_base64)){
+            $result = RpaCustomerInfo::where("fundAccount",$data['fundAccount'])->first();
+            if($result->sfz_zm){
+                $data = [
+                    'name' => "IDRecognition",
+                    'jsondata' => json_encode(['ids' => (string)$result->id],JSON_UNESCAPED_UNICODE)
+                ];
+                //插入即时任务
+                $res = rpa_immedtasks::create($data);
+            }
+        }
+
         if($flag){
             if($s && $flag){
                 $re = [
@@ -532,7 +546,6 @@ class PluginApiController extends BaseApiController
             ];
         }
         
-
         //api日志
         //$this->apiLog(__FUNCTION__,$request,$re['status'],$request->getClientIp());
 

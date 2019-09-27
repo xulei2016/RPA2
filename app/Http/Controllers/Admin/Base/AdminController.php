@@ -26,7 +26,7 @@ class AdminController extends BaseAdminController
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "用户 列表页");
         return view('admin.admin.index');
-    } 
+    }
 
     /**
      * show
@@ -63,6 +63,13 @@ class AdminController extends BaseAdminController
         $data = $this->get_params($request, ['name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID']);
         $roles = $data['roleLists'];
         $data['roleLists'] = implode(',', $data['roleLists']);
+
+        //密码强度检测
+        $result = self::check_pwd($data['password']);
+        if(isset($result['code'])){
+            return $result;
+        };
+
         $data['password'] = bcrypt($data['password']);
         $result = SysAdmin::create($data);
 
@@ -82,6 +89,11 @@ class AdminController extends BaseAdminController
         if(null == $data['password'] || '' == $data['password']){
             unset($data['password']);
         }else{
+            //密码强度检测
+            $result = self::check_pwd($data['password']);
+            if(isset($result['code'])){
+                return $result;
+            };
             $data['password'] = bcrypt($data['password']);
         }
         $data['roleLists'] = implode(',', $data['roleLists']);
@@ -102,7 +114,7 @@ class AdminController extends BaseAdminController
         if(in_array(1, $ids)){
             return $this->ajax_return('500', '操作失败！包含保护项！！');
         }
-        
+
         $result = SysAdmin::destroy($ids);
         $this->log(__CLASS__, __FUNCTION__, $request, "删除 用户");
         return $this->ajax_return('200', '操作成功！');
@@ -126,10 +138,10 @@ class AdminController extends BaseAdminController
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder;
         $result = SysAdmin::where($conditions)
-                ->leftJoin('sys_admin_groups', 'sys_admins.groupID', '=', 'sys_admin_groups.id')
-                ->select(['sys_admins.*', 'sys_admin_groups.group'])
-                ->orderBy($order, $sort)
-                ->paginate($rows);
+            ->leftJoin('sys_admin_groups', 'sys_admins.groupID', '=', 'sys_admin_groups.id')
+            ->select(['sys_admins.*', 'sys_admin_groups.group'])
+            ->orderBy($order, $sort)
+            ->paginate($rows);
         return $result;
     }
 
@@ -145,7 +157,7 @@ class AdminController extends BaseAdminController
         }else{
             $data = SysAdmin::where($conditions)->get()->toArray();
         }
-        
+
         $cellData = [];
         $cellData[] = array_keys($data[0]);
         foreach($data as $k => $info){
@@ -190,7 +202,7 @@ class AdminController extends BaseAdminController
                 return $this->ajax_return('500', '操作失败，未匹配到操作类型！！');
                 break;
         }
-    } 
+    }
 
     /**
      * rpasetting
@@ -202,15 +214,15 @@ class AdminController extends BaseAdminController
         if(isset($data['accept_mes_info'])){
             if(1 == $data['accept_mes_type']){
                 if(!$user['phone']){
-                    $error_info = '请先完善手机号！'; 
+                    $error_info = '请先完善手机号！';
                 }
             }elseif(2 == $data['accept_mes_type']){
                 if(!$user['email']){
-                    $error_info = '请先完善邮箱！'; 
+                    $error_info = '请先完善邮箱！';
                 }
             }elseif(3 == $data['accept_mes_type']){
                 if(!$user['email'] || !$user['phone']){
-                    $error_info = '请先完善邮箱和手机号！'; 
+                    $error_info = '请先完善邮箱和手机号！';
                 }
             }
             if(isset($error_info)){
@@ -242,10 +254,37 @@ class AdminController extends BaseAdminController
 
             //修改密码
             $this->log(__CLASS__, __FUNCTION__, $request, "更新 密码 信息");
-            SysAdmin::where('id', auth()->guard('admin')->user()->id)->update(['password'=>bcrypt($data['password'])]);
+            SysAdmin::where('id', auth()->guard('admin')->user()->id)->update([
+                'password' => bcrypt($data['password']),
+                'first_login' => 0
+            ]);
             return [ 'code' => '200', 'info' => '修改成功！！'];
         }else{
             return [ 'code' => '500', 'info' => '原始密码错误！！！'];
+        }
+    }
+
+    /**
+     * 初次登陆修改密码页面
+     * @param Request $request
+     */
+    public function firstLogin(Request $request){
+        return view("admin.base.admin.first");
+    }
+
+    /**
+     * 清空错误次数
+     * @param Request $request
+     */
+    public function clearCount(Request $request){
+        $admin = SysAdmin::where('id', $request->id)->first();
+        if(!$admin) return $this->ajax_return(500, '未找到该用户');
+        $admin->error_count = 0;
+        $result = $admin->save();
+        if($result) {
+            return $this->ajax_return(200, '修改成功');
+        } else {
+            return $this->ajax_return(500, '修改失败');
         }
     }
 
@@ -287,7 +326,7 @@ class AdminController extends BaseAdminController
 
         return [ 'code' => '200', 'info' => '上传成功！！'];
     }
-    
+
     /**
      * 检查原密码
      */
@@ -314,7 +353,7 @@ class AdminController extends BaseAdminController
             "/[_|\-|+|=|*|!|@|#|$|%|^|&|(|)]+/"
         ];
         if(strlen($str) < 8){
-			return ['code' => 500, 'info' => '密码长度至少8位。'];
+            return ['code' => 500, 'info' => '密码长度至少8位。'];
         }
         $user = auth()->guard('admin')->user();
         $pwd = $user->pwd;
@@ -333,5 +372,5 @@ class AdminController extends BaseAdminController
             return ['code' => 500, 'info' => '密码强度不足，请确认至少需要数字、字母、字母大写小、特殊字符中的三个及以上组合。'];
         }
         return true;
-	}
+    }
 }

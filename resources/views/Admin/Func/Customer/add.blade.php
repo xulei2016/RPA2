@@ -46,10 +46,10 @@
     <div class="form-group row">
         <label for="special" class="col-sm-2 control-label">特殊开户</label>
         <div class="col-sm-10">
-            <label><input type="checkbox" class="select-single" class="special" value="1">仅账户激活</label>
-            <label><input type="checkbox" class="select-single" class="special" value="2">仅账户更新</label>
-            <label><input type="checkbox" class="select-single" class="special" value="3">仅二次金融</label>
-            <label><input type="checkbox" class="select-single" class="special" value="4">仅二次能源</label>
+            <label><input type="checkbox" class="select-single" name="special" value="1">仅账户激活</label>
+            <label><input type="checkbox" class="select-single" name="special" value="2">仅账户更新</label>
+            <label><input type="checkbox" class="select-single" name="special" value="3">仅二次金融</label>
+            <label><input type="checkbox" class="select-single" name="special" value="4">仅二次能源</label>
         </div>
     </div>
 

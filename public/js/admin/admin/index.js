@@ -95,6 +95,27 @@ $(function(){
         });
     }
 
+    /**
+     * 清空错误次数
+     * @param id
+     */
+    function clearCount(id){
+        $.ajax({
+            url:'/admin/sys_admin/clearCount',
+            dataType:'json',
+            type:'post',
+            data:{id:id,_token:LA.token},
+            success:function(r) {
+                if(r.code == 200) {
+                    swal("成功", '', 'success');
+                } else {
+                    swal(r.info, '', 'error');
+                    return false;
+                }
+            }
+        });
+    }
+
     //get searchGroup
     function getSearchGroup(){
         //特殊格式的条件处理
@@ -206,6 +227,11 @@ $(function(){
                     valign: 'middle',
                     sortable: true,
                 },{
+                    field: 'error_count',
+                    title: '登录错误次数',
+                    align: 'center',
+                    valign: 'middle'
+                },{
                     field: 'id',
                     title: '操作',
                     align: 'center',
@@ -214,7 +240,11 @@ $(function(){
                         "click #deleteOne":function (e, value, row, index){
                             var id = row.id;
                             Delete(id);
-                        }
+                        },
+                        'click .clearCount':function(e, value, row, index) {
+                            var id = row.id;
+                            clearCount(id);
+                         }
                     },
                     formatter: function(value, row, index){
                         var id = value;
@@ -222,7 +252,7 @@ $(function(){
                         if(1 == id)return result;
                         result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/sys_admin/"+id+"/edit' title='编辑'>编辑</a>";
                         result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
-
+                        if(row.error_count >= 10) result += " <a href='javascript:;' class='btn btn-primary btn-sm clearCount'>清空次数</a>";
                         return result;
                     }
                 }],

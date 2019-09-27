@@ -123,7 +123,7 @@ class JKZXPwdController extends BaseAdminController{
     public function send(Request $request, $id){
         $info = rpa_customer_jkzx::find($id);
         $info['content'] = $this->get_sms_content($info);
-        return view('admin.func.JKZXPwd.send',['info' => $info]);
+        return view('admin.func.JKZXPwd.send',['info' => $info,'re' => false]);
     }
 
     /**
@@ -146,6 +146,7 @@ class JKZXPwdController extends BaseAdminController{
             $update = [
                 'tel' => $data['tel'],
                 'content' => $data['content'],
+                'has_jybm' => 1,
                 'status' => 1
             ];
             rpa_customer_jkzx::where('id',$data['id'])->update($update);

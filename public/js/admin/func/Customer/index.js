@@ -38,6 +38,19 @@ $(function(){
                 $('#tb_departments').bootstrapTable('refresh');
             }
         });
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/rpa_customer/export?"+$url;
+        });
+
+        //导出选中
+        $("#pjax-container section.content #toolbar #export").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
+            location.href="/admin/rpa_customer/export?id="+ids;
+        });
     }
 
     /**

@@ -42,7 +42,7 @@ class BaseAdminController extends BaseController
      */
     public function yx_sms($phone,$msg)
     {
-        $msg = iconv("utf-8","gb2312",$msg);
+        $msg = iconv("utf-8","gbk",$msg);
 
         $yx = config('sms.YX');
         $url = $yx['url']['mult'];
@@ -74,7 +74,7 @@ class BaseAdminController extends BaseController
             'type' => '优信',
             'api' => 'sms',
             'phone' => $phone,
-            'content' => iconv("gb2312","utf-8",$msg),
+            'content' => iconv("gbk","utf-8",$msg),
             'return' => $body,
         ];
         SysSmsLog::create($sms);

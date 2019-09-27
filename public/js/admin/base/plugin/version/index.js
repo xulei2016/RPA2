@@ -103,7 +103,8 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             version : $("#pjax-container #search-group #version").val(),
-            name : $("#pjax-container #search-group #name").val()
+            name : $("#pjax-container #search-group #name").val(),
+            pid : $("#pjax-container #search-group #pid").val()
         };
         return temp;
     }

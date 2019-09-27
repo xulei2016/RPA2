@@ -10,7 +10,7 @@
                             @slot('listsOperation')
                             @endslot
                             @slot('operation')
-                                <a class="btn btn-success btn-sm tree-ntstable-add" url="/admin/sys_plugin_version/create" title="新增" onclick="operation($(this));">
+                                <a class="btn btn-success btn-sm tree-ntstable-add" url="/admin/sys_plugin_version/create?id={{$id}}" title="新增" onclick="operation($(this));">
                                     <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
                                 </a>
                             @endslot
@@ -24,7 +24,8 @@
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="version" placeholder="版本">
                                 </div>
-                            @endslot
+                                    <input type="hidden" name="pid" id="pid" value="{{$id}}" />
+                                @endslot
                         @endcomponent
                         <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
                     </div>

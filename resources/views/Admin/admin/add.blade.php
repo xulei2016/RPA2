@@ -37,13 +37,13 @@
         <div class="form-group row">
             <label for="password" class="col-sm-2 control-label"><span class="must-tag">*</span>密码</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control" name="password" id="password" placeholder="密码" autocomplete>
+                <input type="password" class="form-control" name="password" id="password" placeholder="密码" autocomplete="off">
             </div>
         </div>
         <div class="form-group row">
             <label for="rePWD" class="col-sm-2 control-label"><span class="must-tag">*</span>确认密码</label>
             <div class="col-sm-10">
-                <input type="password" class="form-control" name="rePWD" id="rePWD" placeholder="确认密码" autocomplete>
+                <input type="password" class="form-control" name="rePWD" id="rePWD" placeholder="确认密码" autocomplete="off">
             </div>
         </div>
         <div class="form-group row">

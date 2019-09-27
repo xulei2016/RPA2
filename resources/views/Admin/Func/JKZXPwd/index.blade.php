@@ -12,14 +12,12 @@
                         @endslot
 
                         @slot('operation')
-                            @if(auth()->guard('admin')->user()->can('rpa_customer_add'))
-                                <a class="btn btn-success btn-sm" url="/admin/rpa_jkzxPwd/create" title="新增" onclick="operation($(this));">
-                                    <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;添加客户</span>
-                                </a>
-                                <a class="btn btn-primary btn-sm" id="yjsend" href="javascript:void(0);">
-                                    <span class="fa fa-send-o"></span><span class="hidden-xs">&nbsp;短信一键发送</span>
-                                </a>
-                            @endif
+                            <a class="btn btn-success btn-sm" url="/admin/rpa_jkzxPwd/create" title="新增" onclick="operation($(this));">
+                                <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;添加客户</span>
+                            </a>
+                            <a class="btn btn-primary btn-sm" id="yjsend" href="javascript:void(0);">
+                                <span class="fa fa-send-o"></span><span class="hidden-xs">&nbsp;短信一键发送</span>
+                            </a>
                         @endslot
                         @endcomponent
 

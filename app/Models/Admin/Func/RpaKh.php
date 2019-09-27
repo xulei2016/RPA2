@@ -12,4 +12,6 @@ use Illuminate\Database\Eloquent\Model;
 class RpaKh extends Model
 {
     public $timestamps = true;
+
+    public $fillable = ['name', 'sfz', 'zjzh', 'phone', 'address', 'postcode', 'email'];
 }

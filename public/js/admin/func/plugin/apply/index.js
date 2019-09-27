@@ -69,7 +69,7 @@ $(function(){
                 confirmButtonText: '确认',
                 cancelButtonText: '取消'
             }).then(function(isConfirm) {
-                if (isConfirm) {
+                if (isConfirm.value) {
                     $.ajax({
                         url:'/admin/rpa_plugin_apply/confirm',
                         data:{id:id,status:2},

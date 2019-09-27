@@ -224,6 +224,98 @@ class NoticeApiController extends BaseApiController
         return response()->json($data);
     }
 
+    public function test_notice(Request $request)
+    {
+        //表单验证
+        $validatedData = $request->validate([
+            'id' => 'required|numeric'
+        ]);
+
+        $id = $request->id;
+        $uploadmail = rpa_uploademail::find($id);
+        if($uploadmail){
+            $maintenance = rpa_maintenance::where([['name','=',$uploadmail['name']]])->first();
+            if($maintenance){
+                //任务设置不发送
+                if($maintenance['notice_type'] != 0){
+                    $admin = getAdmin($maintenance['notice_type'],$maintenance['noticeAccepter']);
+                    // 获取通知的用户和id
+                    $sysAdminIds = $admin['sysAdminIds'];
+                    $sysAdmin = $admin['sysAdmin'];
+                    //取出所有要发送的手机号和邮箱
+                    $phones = [];
+                    $emails = [];
+                    foreach ($sysAdmin as $v){
+                        $phones[] = $v->phone;
+                        $emails[] = $v->email;
+                    }
+
+                    $data = [
+                        'status' => 200,
+                        'emails' => $emails,
+                        'phones' => $phones
+                    ];
+                    //邮件内容为空不发送
+                    if(empty($uploadmail['content'])){
+                        rpa_uploademail::where('id',$id)->update(['state'=>'不发送']);
+                        $mail = "邮件不发送";
+                    }else{
+                        //发邮件
+                        $data1 = [
+                            'title' => $maintenance['bewrite']."任务运行反馈",
+                            'content' => $uploadmail['content'],
+                            'tid' => 2
+                        ];
+                        $sysmail = SysMail::create($data1);
+                        $sysmail->admins()->attach($sysAdminIds);
+                        Mail::to($sysAdmin)->send(new MdEmail($sysmail));
+                        if($sysmail){
+                            $mail = "邮件发送成功";
+                            rpa_uploademail::where('id',$id)->update(['state'=>'已发送']);
+                        }else{
+                            $mail = "邮件发送失败";
+                            rpa_uploademail::where('id',$id)->update(['state'=>'发送失败']);
+                        }
+                    }
+                    //短信内容为空不发送
+                    if(empty($uploadmail['SMS'])){
+                        $sms = "短信不发送";
+                    }else{
+                        $ph = implode(",", $phones);
+                        $smsdata = $this->zzy_sms($ph,$uploadmail['SMS']);
+                        $sms = $smsdata['msg'];
+                    }
+                    $data['mail'] = $mail;
+                    $data['sms'] = $sms;
+                }else{
+                    rpa_uploademail::where('id',$id)->update(['state'=>'不发送']);
+                    $data = [
+                        'status' => 200,
+                        'mail' => '邮件不发送',
+                        'sms' => '短信不发送',
+                        'phones' => '',
+                        'emails' => ''
+                    ];
+                }
+            }else{
+                $data = [
+                    'status' => 500,
+                    'msg' => "任务名称错误！"
+                ];
+            }
+        }else{
+            $data = [
+                'status' => 500,
+                'msg' => "数据查询失败！"
+            ];
+        }
+
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($data,true),$request->getClientIp());
+
+        return response()->json($data);
+    }
+
     /**
      * 消息通知接口
      * @param   [Integer]  $id     任务回收表id
@@ -285,7 +377,7 @@ class NoticeApiController extends BaseApiController
             }else{
                 $data = [
                     'status' => 200,
-                    'msg' => "无需通知"
+                    'msg' => "无需通知" 
                 ];
             }
         }else{

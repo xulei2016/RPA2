@@ -108,6 +108,25 @@ class CustomerController extends BaseController
         foreach ($yybs as $v) {
             $yybList[$v['ID']] = $v['NAME'];
         }
+
+        // 只允许IB客户登录
+        $ibData = [
+            'type' => 'common',
+            'action' => 'getEveryBy',
+            'param' => [
+                'table' => 'JYBM',
+                'by' => 'select ID from LBORGANIZATION where FID = 102' // 102表示ib
+            ]
+        ];
+        $ibs = $this->getCrmData($ibData);
+        $ibList = [];
+        foreach ($ibs as $v) {
+            $ibList[] = $v['ID'];
+        }
+        if(!in_array($kh['YYB'], $ibList)) {
+            return $this->ajax_return(500, '对不起, 该功能还在开发中');
+        }
+
         //查询交易编码
         $jys = [
             'NY' => '能源交易所',
@@ -276,7 +295,8 @@ class CustomerController extends BaseController
             'customer_name' => $visitor->name,
             'status' => 1,
         ];
-        Redis::hSet(self::ONLINE_CUSTOMER_LIST, $visitor->id, json_encode($data));
+        $result = Redis::hSet(self::ONLINE_CUSTOMER_LIST, $visitor->id, json_encode($data));
+        if(!$result) $this->joinOnlineVisitors($visitor);
     }
 
     /**
@@ -308,6 +328,7 @@ class CustomerController extends BaseController
         if(!$online) {
             $data = $this->messagePackaging($customer_id, 0, 'manager', 'customer', '非常抱歉, 连接已断开, 请点击结束聊天后, 重新登录', 'message');
             broadcast(new CallCenterCustomerEvent($data));
+            die;
         }
         $post = $request->post();
         if($type == 'template') {

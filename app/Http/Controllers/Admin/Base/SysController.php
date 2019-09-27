@@ -9,6 +9,7 @@ use App\Models\Admin\Api\RpaApiLog;
 use App\Models\Admin\Base\SysLog;
 use App\Models\Admin\RPA\rpa_taskcollections;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Base\BaseAdminController;
 
@@ -154,6 +155,7 @@ class SysController extends BaseAdminController
         foreach($data as $k => $v){
             SysConfig::where("item_key","=",$k)->update(["item_value" => $v]);
         }
+        Cache::forget('sysConfigs');
         return $this->ajax_return(200, '配置更新成功！');
     }
     

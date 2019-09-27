@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\Admin\Base;
 
+use App\Models\Admin\Admin\SysAdmin;
+
+use App\Models\Admin\Base\SysConfig;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
+
 
 class LoginController extends BaseAdminController
 {
@@ -59,11 +64,55 @@ class LoginController extends BaseAdminController
     }
 
     /**
+     * 登录验证
+     * @param Request $request
+     * @throws \Exception
+     */
+    protected function validateLogin(Request $request){
+        $configs = SysConfig::where('item_key', 'verification_code')->first();
+        $codeConfig = $configs->item_value;  //0 关闭  1 仅开启图片验证码  2仅开启滑动验证码 3全开
+        $validateDetail = [
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ];
+        $validateStr = [];
+        if($codeConfig == 1 || $codeConfig == 3) {
+            $validateDetail['captcha'] =  'required|captcha';
+            $validateStr = [
+                'captcha.required' => trans('validation.required'),
+                'captcha.captcha' => trans('validation.captcha'),
+            ];
+        }
+        try {
+            $validate = $this->getValidationFactory()->make($request->all(), $validateDetail, $validateStr);
+            $validate->validate();
+            $admin = SysAdmin::where($this->username(), $request->name)->first();
+            if($admin->error_count >= 10) {
+                $validate->errors()->add('account', '错误次数过多,账号被锁定');
+                throw new ValidationException($validate);
+            } else {
+                $admin->error_count = 0;
+                $admin->save();
+            }
+        } catch (\Exception $e) {
+            $admin = SysAdmin::where($this->username(), $request->name)->first();
+            if($admin) {
+                $admin->error_count++;
+                $admin->save();
+            }
+            throw $e;
+        }
+
+    }
+
+    /**
      * login page
      */
     public function showLoginForm(Request $request)
     {
-        return view('admin.login');
+        $configs = SysConfig::where('item_key', 'verification_code')->first();
+        $codeConfig = $configs->item_value;  //0 关闭  1 仅开启图片验证码  2仅开启滑动验证码 3全开
+        return view('admin.login', ['codeConfig' => $codeConfig]);
     }
 
     /**

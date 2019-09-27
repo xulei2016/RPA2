@@ -24,7 +24,7 @@ class BaseApiController extends BaseController
      */
     protected function zzy_sms($phone,$msg)
     {
-        $msg = iconv("utf-8","gb2312",$msg);
+        $msg = iconv("utf-8","gbk",$msg);
 
         $zzy = config('sms.ZZY');
         $url = $zzy['url']['mult'];
@@ -50,7 +50,7 @@ class BaseApiController extends BaseController
             'msg' => $statuses[$status]
         ];
 
-        $this->smsLog('中正云', $phone, iconv("gb2312","utf-8",$msg), $status);
+        $this->smsLog('中正云', $phone, iconv("gbk","utf-8",$msg), $status);
 
         return $data;
     }
@@ -64,7 +64,7 @@ class BaseApiController extends BaseController
      */
     protected function yx_sms($phone,$msg)
     {
-        $msg = iconv("utf-8","gb2312",$msg);
+        $msg = iconv("utf-8","gbk",$msg);
 
         $yx = config('sms.YX');
         $url = $yx['url']['mult'];
@@ -92,7 +92,7 @@ class BaseApiController extends BaseController
         ];
 
         //短信日志
-        $this->smsLog('优信', $phone, iconv("gb2312","utf-8",$msg), $body);
+        $this->smsLog('优信', $phone, iconv("gbk","utf-8",$msg), $body);
 
         return $data;
     }

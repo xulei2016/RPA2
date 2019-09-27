@@ -113,6 +113,7 @@ EchoClient.prototype = {
             localStorage.removeItem(this.config.cache_manager_key);
             if(!flag) {
                 window.location.href = this.config.login_url;
+                return false
             }
         })
     },
@@ -127,7 +128,7 @@ EchoClient.prototype = {
             success:function(res){
                 console.log(res);
                 if(res.code !== 200) {
-                    alert('登录失败');
+                    alert(res.info);
                     return;
                 }
                 alert('登录成功');

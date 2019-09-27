@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Admin\Func;
 
 use App\Http\Controllers\api\BaseApiController;
 use App\Http\Controllers\base\BaseAdminController;
-use App\Models\Admin\Func\RpaSimulationAccountBusiness;
+use App\Models\Admin\Func\RpaSimulationAccount;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -36,11 +36,9 @@ class SimulationController extends BaseAdminController
         $rows = $request->rows;
         $order = 'rb.'.($request->sort ?? 'id');
         $sort = 'asc';
-        $result = RpaSimulationAccountBusiness::from('rpa_simulation_account_business as rb')
-            ->leftJoin('rpa_kh_flows as rf', 'rf.business_id', '=', 'rb.id')
-            ->leftJoin('rpa_khs as rk', 'rk.id', '=', 'rf.uid');
+        $result = RpaSimulationAccount::from('rpa_simulation_account as rb');
         if($selectInfo['name']) {
-            $result = $result->where('rk.name','like', "%{$selectInfo['name']}%");
+            $result = $result->where('rb.name','like', "%{$selectInfo['name']}%");
         }
         if($selectInfo['startTime']) {
             $result = $result->whereDate('rb.created_at','>=', $selectInfo['startTime']." 00:00:00");
@@ -48,7 +46,7 @@ class SimulationController extends BaseAdminController
         if($selectInfo['endTime']) {
             $result = $result->whereDate('rb.created_at','<=', $selectInfo['endTime']. " 23:59:59");
         }
-        $result = $result->select(['rb.*','rk.name','rk.sfz','rk.phone','rk.created_at'])
+        $result = $result->select(['rb.*'])
             ->orderBy($order, $sort)
             ->paginate($rows);
         return $result;
@@ -61,7 +59,7 @@ class SimulationController extends BaseAdminController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Request $request, $id){
-        $info = RpaSimulationAccountBusiness::from('rpa_simulation_account_business as rb')
+        $info = RpaSimulationAccount::from('rpa_simulation_account as rb')
                 ->where('rb.id', $id)
                 ->leftJoin('rpa_kh_flows as rf', 'rf.business_id', '=', 'rb.id')
                 ->leftJoin('rpa_khs as rk', 'rk.id', '=', 'rf.uid')
@@ -79,7 +77,7 @@ class SimulationController extends BaseAdminController
         $data = $this->get_params($request, ['zjzh','id']);
         $user_id = (int) auth()->guard('admin')->user()->id;
         $data['updated_by'] = $user_id;
-        $result = RpaSimulationAccountBusiness::where('id', $data['id'])->update($data);
+        $result = RpaSimulationAccount::where('id', $data['id'])->update($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 仿真开户");
         return $this->ajax_return('200', '操作成功！');
     }
@@ -91,7 +89,7 @@ class SimulationController extends BaseAdminController
      */
     public function sendSms(Request $request){
         $data = $this->get_params($request, ['id', 'type']);
-        $result = RpaSimulationAccountBusiness::from('rpa_simulation_account_business as rb')
+        $result = RpaSimulationAccount::from('rpa_simulation_account as rb')
             ->where('rb.id', $data['id'])
             ->leftJoin('rpa_kh_flows as rf', 'rf.business_id', '=', 'rb.id')
             ->leftJoin('rpa_khs as rk', 'rk.id', '=', 'rf.uid')
@@ -108,7 +106,7 @@ class SimulationController extends BaseAdminController
             $content = "尊敬的{$name}客户：您好，您的仿真期权账号为{$result['zjzh']}，初始密码为身份证后六位，请在华安期货官网-软件下载-期权仿真软件，下载软件，可于下一个交易日参与交易，参与商品期权需满足10天20笔的仿真记录并具有行权经历，祝您交易愉快。(仅允许交易豆粕、白糖的期货和期权，其他品种请勿开仓)";
             $result = yx_sms($phone, $content);
             if($result['status'] == 0) {
-                RpaSimulationAccountBusiness::where('id', $data['id'])->update([
+                RpaSimulationAccount::where('id', $data['id'])->update([
                     'is_notice' => 1
                 ]);
                 return $this->ajax_return(200, '短信发送成功');
@@ -146,7 +144,7 @@ class SimulationController extends BaseAdminController
         }
         $result = yx_sms($phone, $content);
         if($result['status'] == 0) {
-            RpaSimulationAccountBusiness::where('id', $data['id'])->update([
+            RpaSimulationAccount::where('id', $data['id'])->update([
                 'is_sms' => 1
             ]);
             return $this->ajax_return(200, '短信发送成功');
@@ -160,7 +158,7 @@ class SimulationController extends BaseAdminController
      * 一键发送短信
      */
     public function sendAll(Request $request){
-        $list = RpaSimulationAccountBusiness::from('rpa_simulation_account_business as rb')
+        $list = RpaSimulationAccount::from('rpa_simulation_account as rb')
             ->where('rb.is_sms', 0)
             ->leftJoin('rpa_kh_flows as rf', 'rf.business_id', '=', 'rb.id')
             ->leftJoin('rpa_khs as rk', 'rk.id', '=', 'rf.uid')
@@ -188,7 +186,7 @@ class SimulationController extends BaseAdminController
             }
             $r = yx_sms($v['phone'], $content);
             if($r['status'] == 0) {
-                RpaSimulationAccountBusiness::where('id', $v['id'])->update([
+                RpaSimulationAccount::where('id', $v['id'])->update([
                     'is_sms' => 1
                 ]);
                 $successCount++;
@@ -210,7 +208,7 @@ class SimulationController extends BaseAdminController
      */
     public function export(Request $request){
         $param = $this->get_params($request, ['condition', 'name', 'startTime', 'endTime']);
-        $data = RpaSimulationAccountBusiness::from('rpa_simulation_account_business as rb')
+        $data = RpaSimulationAccount::from('rpa_simulation_account as rb')
             ->leftJoin('rpa_kh_flows as rf', 'rf.business_id', '=', 'rb.id')
             ->leftJoin('rpa_khs as rk', 'rk.id', '=', 'rf.uid');
         if($param['condition'] == 'all') {

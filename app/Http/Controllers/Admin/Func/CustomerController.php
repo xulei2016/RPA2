@@ -8,6 +8,7 @@ use App\Models\Admin\Func\rpa_customer_manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use GuzzleHttp\Client;
+use Excel;
 
 /**
  * JJRVisController
@@ -63,9 +64,9 @@ class CustomerController extends BaseAdminController{
         $condition = $this->getPagingList($selectInfo, ['from_add_time'=>'>=','to_add_time'=>'<=']);
         $customer = $selectInfo['customer'];
         if($customer && is_numeric( $customer )){
-            array_push($condition,  array('fundsNum', '=', $customer));
+            array_push($condition,  array('fundsNum', 'like', "%".$customer."%"));
         }elseif(!empty( $customer )){
-            array_push($condition,  array('name', '=', $customer));
+            array_push($condition,  array('name', 'like', "%".$customer."%"));
         }
         $manager = $selectInfo['manager'];
         if($manager && is_numeric( $manager )){
@@ -113,5 +114,73 @@ class CustomerController extends BaseAdminController{
             ])->delete();
         }
         return $this->ajax_return(200, '操作成功！');
+    }
+
+    /**
+     * export
+     */
+    public function export(Request $request){
+        $selectInfo = $this->get_params($request, ['id','customer','manager','mediator','from_add_time','to_add_time']);
+        $condition = $this->getPagingList($selectInfo, ['from_add_time'=>'>=','to_add_time'=>'<=']);
+        $customer = $selectInfo['customer'];
+        if($customer && is_numeric( $customer )){
+            array_push($condition,  array('fundsNum', '=', $customer));
+        }elseif(!empty( $customer )){
+            array_push($condition,  array('name', '=', $customer));
+        }
+        $manager = $selectInfo['manager'];
+        if($manager && is_numeric( $manager )){
+            array_push($condition,  array('customerNum', '=', $manager));
+        }elseif(!empty( $manager )){
+            array_push($condition,  array('customerManagerName', '=', $manager));
+        }
+        $mediator = $selectInfo['mediator'];
+        if($mediator && is_numeric( $mediator )){
+            array_push($condition,  array('jjrNum', '=', $mediator));
+        }elseif(!empty( $mediator )){
+            array_push($condition,  array('jjrName', '=', $mediator));
+        }
+
+        //设置需要导出的列，以及对应的表头
+        $exportList = [
+            'name' => '客户名称',
+            'fundsNum' => '资金账号',
+            'idCard' => '身份证号',
+            'yybName' => '所属营业部',
+            'customerManagerName' => '客户经理',
+            'customerNum' => '客户经理工号',
+            'jjrName' => '居间人姓名',
+            'jjrNum' => '居间人编号',
+            'add_time' => '开户时间',
+            'special' => '特殊',
+            'message' => '备注',
+            'visit_time' => '回访时间',
+            'visit_message' => '回访备注',
+            'creater' => '操作人',
+        ];
+
+        if(isset($selectInfo['id'])){
+            $data = rpa_customer_manager::whereIn('id', explode(',',$selectInfo['id']))->select(array_keys($exportList))->get()->toArray();
+        }else{
+            $data = rpa_customer_manager::where($condition)->select(array_keys($exportList))->get()->toArray();
+        }
+        //设置表头
+        $cellData[] = array_values($exportList);
+
+        foreach($data as $k => $info){
+            $special = str_replace("1","仅账户激活",$info['special']);
+            $special = str_replace("2","仅账户更新",$special);
+            $special = str_replace("3","仅二次金融",$special);
+            $special = str_replace("4","仅二次能源",$special);
+            $info['special'] = $special;
+            
+            array_push($cellData, array_values($info));
+        }
+        $this->log(__CLASS__, __FUNCTION__, $request, "导出 开户客户列表");
+        Excel::create('开户客户列表',function($excel) use ($cellData){
+            $excel->sheet('客户列表', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xls');
     }
 }

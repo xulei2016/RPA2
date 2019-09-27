@@ -149,14 +149,6 @@ $(function(){
                 align: 'center',
                 valign: 'middle'
             }, {
-                field: 'created_at',
-                title: '录入时间',
-                align: 'center',
-                valign: 'middle',
-                formatter:function(value, row, index){
-                    return value.substr(0, 10);
-                }
-            }, {
                 field: 'zjzh',
                 title: '资金账号',
                 align: 'center',
@@ -197,46 +189,6 @@ $(function(){
                 align: 'center',
                 valign: 'middle'
             }
-            // , {
-            //     field: 'is_sms',
-            //     title: '短信发送情况',
-            //     align: 'center',
-            //     valign: 'middle',
-            //     formatter:function (value, row, index) {
-            //         var is_sms = value;
-            //         var is_notice = row.is_notice;
-            //         var result;
-            //         if(row.zjzh) {
-            //             if(!is_notice) {
-            //                 var type = "notice";
-            //                 result = "<a href='javascript:;' onclick='sendSms("+row.id+",\"notice\""+" )'  class='btn btn-sm btn-info sendSms'>发送初始通知短信</a>";
-            //             } else {
-            //                 result = is_sms?"已发送":"<a href='javascript:;' onclick='sendSms("+row.id+")'  class='btn btn-sm btn-info sendSms'>发送交易情况短信</a>";
-            //             }
-            //         } else {
-            //             result = "资金账号未设置";
-            //         }
-
-            //         return result;
-            //     }
-            // }
-            // , {
-            //     field: 'id',
-            //     title: '操作',
-            //     align: 'center',
-            //     valign: 'middle',
-            //     events: {
-            //         "click #change_type":function (e, value, row, index){
-            //             var id = row.id;
-            //             change_type(id);
-            //         }
-            //     },
-            //     formatter: function(value, row, index){
-            //         var id = value;
-            //         var result = " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_simulation_account_business/edit/"+id+"' title='编辑'>编辑</a><br/>";
-            //         return result;
-            //     }
-            // }
         ],
         }
 

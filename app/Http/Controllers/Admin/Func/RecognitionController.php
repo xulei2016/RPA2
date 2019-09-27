@@ -11,6 +11,7 @@ use App\Models\Admin\Func\rpa_address_recognition;
 use App\Models\Admin\Api\RpaCustomerInfo;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin\Rpa\rpa_immedtasks;
+use Excel;
 
 /**
  * JJRVisController
@@ -66,14 +67,34 @@ class RecognitionController extends BaseAdminController{
 
     //查询信息
     public function pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['zjzh','status','from_created_at','to_created_at']);
+        $selectInfo = $this->get_params($request, ['zjzh','state','from_created_at','to_created_at']);
 
-        $condition = $this->getPagingList($selectInfo, ['zjzh'=>'=','status'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
+        $condition = $this->getPagingList($selectInfo, ['zjzh'=>'=','state'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
         
         $rows = $request->rows;
         $order = $request->sort ?? 'created_at';
         $sort = $request->sortOrder ?? 'desc';
-        return rpa_address_recognition::where($condition)->orderBy($order,$sort)->orderBy('id','desc')->paginate($rows);
+        $data = rpa_address_recognition::where($condition)->orderBy($order,$sort)->orderBy('id','desc')->paginate($rows);
+        foreach($data as $k=>&$v){
+            $v->next_id = null;
+            if($v->state == 0){
+                for($i=$k+1;$i<count($data);$i++){
+                    if($data[$i]['state'] == 0){
+                        $v->next_id = $data[$i]['id'];
+                        break;
+                    }
+                }
+            }
+            if($v->state == 1){
+                for($i=$k+1;$i<count($data);$i++){
+                    if($data[$i]['state'] == 1){
+                        $v->next_id = $data[$i]['id'];
+                        break;
+                    }
+                }
+            }
+        }
+        return $data;
     }
 
     /**
@@ -100,31 +121,57 @@ class RecognitionController extends BaseAdminController{
      */
     public function reviewdata(Request $request, $id)
     {
-        $data = $this->get_params($request, [['state',-1]]);
+        $this->log(__CLASS__, __FUNCTION__, $request, "复核 身份证识别");
+
+        $data = $this->get_params($request, [['state',-1],['address_final']]);
         $data['review'] = Auth::user()->realName;
+        
+        //判断审核人和复核人不能是同一个人
+        $rec = rpa_address_recognition::where('id',$id)->first();
+        if($rec->check == Auth::user()->realName){
+            return $this->ajax_return(500, '审核人和复核人不能是同一人！');
+        }
         $data['review_time'] = date("Y-m-d H:i:s");
         $res = rpa_address_recognition::where('id',$id)->update($data);
-        $this->log(__CLASS__, __FUNCTION__, $request, "复核 身份证识别");
-        return $this->ajax_return(200, '操作成功1！');
+        return $this->ajax_return(200, '操作成功！');
     }
-
+   
     /**
-     * 上报
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * export
      */
-    public function report(Request $request, $id)
-    {
-        $data = [
-            'name' => 'IDRecognition',
-            'jsondata' => $id
+    public function export(Request $request){
+        $selectInfo = $this->get_params($request, ['zjzh','state','from_created_at','to_created_at']);
+
+        $condition = $this->getPagingList($selectInfo, ['zjzh'=>'=','state'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
+
+        //设置需要导出的列，以及对应的表头
+        $exportList = [
+            'zjzh' => '资金账号',
+            'address' => '普通识别',
+            'address_deep' => '深度识别',
+            'check' => '审核人',
+            'check_time' => '审核时间',
+            'review' => '复核人',
+            'review_time' => '复核时间',
+            'created_at' => '开户时间',
         ];
-        rpa_immedtasks::create($data);
-        $res = rpa_address_recognition::where('id',$id)->update(['state'=>3]);
-        
-        $this->log(__CLASS__, __FUNCTION__, $request, "上报 身份证识别");
-        return $this->ajax_return(200, 'rpa任务发布成功！');
+
+        if(isset($selectInfo['id'])){
+            $data = rpa_address_recognition::whereIn('id', explode(',',$selectInfo['id']))->select(array_keys($exportList))->get()->toArray();
+        }else{
+            $data = rpa_address_recognition::where($condition)->select(array_keys($exportList))->get()->toArray();
+        }
+        //设置表头
+        $cellData[] = array_values($exportList);
+
+        foreach($data as $k => $info){
+            array_push($cellData, array_values($info));
+        }
+        $this->log(__CLASS__, __FUNCTION__, $request, "导出 身份证地址识别");
+        Excel::create('身份证地址识别',function($excel) use ($cellData){
+            $excel->sheet('客户列表', function($sheet) use ($cellData){
+                $sheet->rows($cellData);
+            });
+        })->export('xls');
     }
 }

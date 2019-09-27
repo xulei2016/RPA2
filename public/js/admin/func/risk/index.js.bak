@@ -1,0 +1,389 @@
+$(function(){
+    let selectInfo = [];
+    var url_prefix = "/admin/rpa_risk/";
+    /*
+     * 初始化
+     */
+    function init(){
+        bindEvent();
+        $('.slider').bootstrapSlider()
+
+        //1.初始化Table
+        var oTable = new RPA.TableInit();
+        pageNation(oTable);
+    }
+
+
+
+    /*
+     * 绑定事件
+     */
+    function bindEvent(){
+        let nowDate = getFormatDate();
+        //定义时间按钮事件
+        let rq = '#pjax-container #search-group #rq';
+        laydate.render({ elem: rq, type: 'date', max: nowDate });
+
+
+
+        //根据条件查询信息
+        $('#pjax-container #search-group #formSearch #search-btn').click(function() {
+            $('#tb_departments').bootstrapTable('refresh');
+        });
+
+        //enter键盘事件
+        $("#pjax-container #search-group #formSearch input").keydown(function(event){
+            event = event ? event: window.event;
+            if(event.keyCode == 13){
+                $('#tb_departments').bootstrapTable('refresh');
+            }
+        });
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href= url_prefix + "export?"+$url;
+        });
+
+        //导出选中
+        $("#pjax-container section.content #toolbar #export").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href= url_prefix + "export?"+$url+'&id='+ids;
+        });
+
+        /**
+         * 获取数据
+         */
+        $('.get-data').on('click', function(){
+            swal({
+                title: '请输入获取数据的日期',
+                type: 'info',
+                html: '<input style="width: 50%" type="text" id="date" class="text-center,form-control">',
+                showCloseButton: true,
+                showCancelButton: true,
+                confirmButtonColor: '#3fc3ee',
+                cancelButtonColor: 'gray',
+                confirmButtonText: '确认',
+                cancelButtonText: ' 取消'
+            }).then(function (res) {
+                if(res.value) {
+                    var date = $('#date').val();
+                    if(!date) {
+                        swal('日期必填','', 'error');
+                        return false;
+                    }
+                    $.ajax()
+                }
+
+            });
+            let date = '#date';
+            laydate.render({ elem: date, type: 'date', max: nowDate });
+        })
+
+    }
+
+    /**
+     * 获取模糊参数
+     */
+    function getSearchGroup(){
+        //特殊格式的条件处理
+        var temp = {
+            rq : $("#pjax-container #search-group #rq").val(),
+            zjzh : $("#pjax-container #search-group #zjzh").val(),
+            khxm : $("#pjax-container #search-group #khxm").val(),
+
+            bzj_rate_start : $("#pjax-container #search-group #bzj_rate_start").val(),
+            bzj_rate_end : $("#pjax-container #search-group #bzj_rate_end").val(),
+
+            jys_rate_start : $("#pjax-container #search-group #jys_rate_start").val(),
+            jys_rate_end : $("#pjax-container #search-group #jys_rate_end").val(),
+
+            pz_c_rate_start : $("#pjax-container #search-group #pz_c_rate_start").val(),
+            pz_c_rate_end : $("#pjax-container #search-group #pz_c_rate_end").val(),
+
+            pz_rate_start : $("#pjax-container #search-group #pz_rate_start").val(),
+            pz_rate_end : $("#pjax-container #search-group #pz_rate_end").val()
+        };
+        return temp;
+    }
+
+    //分页参数
+    function pageNation(oTable){
+        oTable.queryParams = function (params) {
+            //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+            var temp = $("#pjax-container #search-group").serializeJsonObject();
+            temp["rows"] = params.limit;                        //页面大小
+            temp["total"] = params.total;                        //页面大小
+            temp["page"] = (params.offset / params.limit) + 1;  //页码
+            temp["sort"] = params.sort;                         //排序列名
+            temp["sortOrder"] = params.order;                   //排位命令（desc，asc）
+            //特殊格式的条件处理
+            let obj = getSearchGroup();
+            for(let i in obj){
+                temp[i] = obj[i];
+            }
+            return temp;
+        }
+
+
+
+        var param = {
+            url: url_prefix+'list',
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'khh',
+                title: '客户号',
+                align: 'center',
+                valign: 'middle'
+            }, {
+                field: 'zjzh',
+                title: '资金账号',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'khxm',
+                title: '姓名',
+                align: 'center',
+                valign: 'middle'
+            }, {
+                field: 'phone',
+                title: '手机号',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'bzj_jys',
+                title: '交易所<br />保证金',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'bzj',
+                title: '公司<br />保证金',
+                align: 'center',
+                valign: 'middle'
+            }, {
+                field: 'brjc',
+                title: '当日权益',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'bzj_rate',
+                title: '公司<br />风险度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'jys_rate',
+                title: '交易所<br />风险度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'pz1',
+                title: '品种A<br />(交易所)',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'pz1_rate',
+                title: '品种A<br />集中度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'exp1',
+                title: '品种A<br />敞口',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'pz2',
+                title: '品种B<br />(交易所)',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'pz2_rate',
+                title: '品种B<br />集中度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'exp2',
+                title: '品种B<br />敞口',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'pz3',
+                title: '品种C<br />(交易所)',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'pz3_rate',
+                title: '品种C<br />集中度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'exp3',
+                title: '品种C<br />敞口',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            }, {
+                field: 'pz1_c',
+                title: '品种1<br />(公司)',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'pz1_c_rate',
+                title: '品种1<br />集中度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'exp1_c',
+                title: '品种1<br />敞口',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'pz2_c',
+                title: '品种2<br />(交易所)',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'pz2_c_rate',
+                title: '品种2<br />集中度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'exp2_c',
+                title: '品种2<br />敞口',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'pz3_c',
+                title: '品种3<br />(交易所)',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'pz3_c_rate',
+                title: '品种3<br />集中度',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'exp3_c',
+                title: '品种3<br />敞口',
+                align: 'center',
+                valign: 'middle',
+                formatter:function (value, row, index){
+                    if(value == 0) return value;
+                    var str=Number(value*100).toFixed(2);
+                    str+="%";
+                    return str;
+                }
+            },{
+                field: 'yyb',
+                title: '营业部',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'khjl',
+                title: '客户经理',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'sxf',
+                title: '手续费',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'sxf_jys',
+                title: '交易所<br />手续费',
+                align: 'center',
+                valign: 'middle'
+            },{
+                field: 'rq',
+                title: '日期',
+                align: 'center',
+                valign: 'middle'
+            }],
+        }
+
+        //初始化表格
+        oTable.Init('#tb_departments', param);
+    }
+
+    init();
+});

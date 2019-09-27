@@ -10,5 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RpaKhFlow extends Model
 {
-    public $timestamps = false;
+    public $timestamps = true;
+
+    public $fillable = ['uid', 'tid', 'business_id', 'number', 'status'];
 }

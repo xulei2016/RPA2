@@ -163,7 +163,12 @@ $(function(){
         // 表情展现
         $(".customer-chat-content-message-emots-button").click(function() {
             $(".customer-chat-emots-menu").show();
+            
         });
+        
+        $('.chat-content-out').on('click', function(){
+            $(".customer-chat-emots-menu").hide();
+        })
 
         // 表情展现在输入框中
         $(".customer-chat-emoticon").click(function() {
@@ -252,7 +257,7 @@ $(function(){
                 cancelButtonColor: '#d33',
                 confirmButtonText: '确认'
             }).then(function(isConfirm) {
-                if (isConfirm) {
+                if (isConfirm.value) {
                     echoManager.axios(echoManager.logoutUrl, 'post', {customer_id:active_id}).then(r => {
                         console.log(r);
                     }).catch(error => {

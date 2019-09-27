@@ -578,5 +578,4 @@ class BaseController extends Controller
         $base64_image = 'data:' . $image_info['mime'] . ';base64,' . chunk_split(base64_encode($image_data));
         return $base64_image;
     }
-
 }

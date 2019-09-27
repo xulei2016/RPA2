@@ -195,7 +195,7 @@ class BaseController extends BaseAdminController
         } else {
             $content = "请稍等,正在为您接入客服,您可以输入关键词提前获取帮助";
         }
-        $data = $this->messagePackaging($this->customer_id, 0, 'manager','customer', $content, 'message');
+        $data = $this->messagePackaging($this->customer_id, 0, 'manager', 'customer', $content, 'message');
         broadcast(new CallCenterCustomerEvent($data));
     }
 

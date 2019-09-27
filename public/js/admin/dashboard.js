@@ -29,7 +29,7 @@ $(function () {
             let leave3 = leave2 % (60 * 1000);
             let seconds = Math.round(leave3 / 1000);
             let accumulated_time = "<i>" + days + " </i>天<i> " + hours + " </i>时<i> " + minutes + " </i>分<i> " + seconds + " </i>秒";
-            $('#pjax-container .content .accumulated_time').html(accumulated_time);
+            $('#pjax-container.content .accumulated_time').html(accumulated_time);
         }, 1000);
     }
 

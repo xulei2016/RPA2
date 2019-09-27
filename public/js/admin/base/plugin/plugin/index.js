@@ -1,5 +1,6 @@
 $(function(){
     let url_prefix = '/admin/sys_plugin/';
+    let url_prefix_verrsion = '/admin/sys_plugin_version/plugin/';
     let selectInfo = [];
     /*
      * 初始化
@@ -161,7 +162,8 @@ $(function(){
                 formatter: function(value, row, index){
                     var id = value;
                     var result = "";
-                    result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='"+url_prefix+id+"' title='查看'>查看</a>";
+                    // result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='"+url_prefix+id+"' title='查看'>查看</a>";
+                    result += " <a href='"+url_prefix_verrsion+id+"' class='btn btn-sm btn-info' title='查看'>插件管理</a>";
                     result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='"+url_prefix + id+"/edit' title='编辑'>编辑</a>";
                     result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
                     return result;

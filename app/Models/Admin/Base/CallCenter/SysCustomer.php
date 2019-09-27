@@ -10,5 +10,5 @@ class SysCustomer extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['client','ip','jybm','zjqy','updated_at','sxf','bzj','gtsj','card','khrq','name','zjzh','khh','created_at'];
+    protected $fillable = ['client','ip','jybm','zjqy','updated_at','sxf','bzj','gtsj','card','khrq','name','zjzh','khh','created_at','fxys','yyb'];
 }

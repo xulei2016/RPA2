@@ -8,6 +8,8 @@
                     <div class="card-body">
                         @component('admin.widgets.toolbar')
                         @slot('listsOperation')
+                            <li><a class="dropdown-item" href="javascript:void(0)" id="exportAll">导出全部</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" id="export">导出选中</a></li>
                         @endslot
 
                         @slot('operation')

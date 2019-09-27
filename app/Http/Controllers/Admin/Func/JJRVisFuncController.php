@@ -60,21 +60,21 @@ class JJRVisFuncController extends BaseAdminController{
         //居间
         $customer = $selectInfo['customer'];
         if($customer && is_numeric( $customer )){
-            array_push($condition,  array('number', '=', $customer));
+            array_push($condition,  array('number', 'like', "%".$customer."%"));
         }elseif(!empty( $customer )){
-            array_push($condition,  array('mediatorname', '=', $customer));
+            array_push($condition,  array('mediatorname', 'like', "%".$customer."%"));
         }
         //经理
         $manager = $selectInfo['manager'];
         if($manager && is_numeric( $manager )){
-            array_push($condition,  array('managerNo', '=', $manager));
+            array_push($condition,  array('managerNo', 'like', "%".$manager."%"));
         }elseif(!empty( $manager )){
-            array_push($condition,  array('manager_name', '=', $manager));
+            array_push($condition,  array('manager_name', 'like', "%".$manager."%"));
         }
         //部门
         $dept = $selectInfo['dept'];
         if(!empty( $dept )){
-            array_push($condition,  array('deptname', '=', $dept));
+            array_push($condition,  array('deptname', 'like', "%".$dept."%"));
         }
         $rows = $request->rows;
         $order = $request->sort ?? 'id';

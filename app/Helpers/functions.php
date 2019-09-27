@@ -159,4 +159,36 @@ function createPassword($name){
     return \Illuminate\Support\Facades\Crypt::encrypt('H@qh9772_'.$name);
 }
 
-?>
+/**
+ * 显示配置名
+ * @param $str
+ * @return string
+ */
+function showConfigName($str){
+    $str = trim($str);
+    switch ($str) {
+        case 'rpa':
+            $result = 'RPA设置';
+            break;
+        case 'sys':
+            $result = '系统设置';
+            break;
+        case 'common':
+            $result = '通用配置';
+            break;    
+        default:
+            $result = '未知';
+    }
+    return $result;
+}
+
+/**
+ * 小数点转百分数
+ * @param $number
+ * @return int|string
+ */
+function transNumber($number){
+    if($number == 0) return 0;
+    $number = round($number*100, 2);
+    return $number."%";
+}

@@ -23,8 +23,11 @@ $(function () {
 
     //定时器清除
     function timerClear(flag = false){
-        clearTimeout(myTimer);
-        if(flag) initSecond = 0;
+        if(flag) {
+            initSecond = 0;
+        } else {
+            clearTimeout(myTimer);
+        }
 
     }
 
@@ -43,12 +46,14 @@ $(function () {
             timerClear();
             alert('对不起, 聊天已经结束, 请重新登录');
             echoClient.logout();
+            return false;
         }
         myTimer = setTimeout(timer, 1000);
     }
 
     //收到私聊消息的时候 @todo 分类
     function privateEventFunc(r){
+        console.log(r);
         if(r.receiver !== "customer") return;
         if(r.category === 'event') {
             handleEvent(r);
@@ -85,6 +90,7 @@ $(function () {
         var html = buildManager(content);
         $("#mychat").append(html);
         echoClient.soundPlay();
+        // kickBack();
         scrollBottom();
     }
 
@@ -139,7 +145,7 @@ $(function () {
                 echoClient.send(getVal);
                 timerClear(true);
                 clearInput();
-                kickBack();
+                // kickBack();
                 scrollBottom();
             }
         });
@@ -150,6 +156,13 @@ $(function () {
                 $('.btn-send').click();
             }
         });
+
+        /**
+         * 表单失去焦点
+         */
+        $('input').on('blur', function(){
+            scrollBottom();
+        })
 
         //模糊查询
         $("#customer-chat-message-input").on("input  propertychange", function() {

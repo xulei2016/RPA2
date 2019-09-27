@@ -2,6 +2,7 @@
 /target/ 
 node_modules
 vendor
+.env
 
  ##filter databfile、sln file##
  .env

@@ -83,6 +83,7 @@ return [
 'timezone'             => ':attribute 必须是个有效的时区.',
 'unique'               => ':attribute 已存在',
 'url'                  => ':attribute 无效的格式',
+    'captcha'                  => ':attribute 不正确',
 
 /*
 |--------------------------------------------------------------------------
@@ -115,6 +116,7 @@ return [
 'attributes' => [
    // 'name'         => '名字',
    // 'age'         => '年龄',
+    'captcha'               => '验证码',
 ],
 
 ];

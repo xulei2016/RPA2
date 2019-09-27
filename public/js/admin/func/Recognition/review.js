@@ -31,7 +31,21 @@ $(function(){
         url:'/admin/rpa_address_recognition/reviewdata/'+id,
         success:function(json, xml){
             if(200 == json.code){
-                RPA.form.response();
+                RPA.form.response(function(){
+                    //自动跳转下一条
+                    if($(modal+' #form-continue').is(':checked')){
+                        var dataModel=$('#tb_departments').bootstrapTable('getRowByUniqueId', id);
+                        if(dataModel.next_id != null){
+                            var url = '/admin/rpa_address_recognition/review/'+dataModel.next_id;
+                            $(modal+' .modal-content').text('').load(url);
+                        }else{
+                            $(modal).modal('hide');
+                            toastr.error('当页数据已结束，请手动跳转下一页');
+                        }
+                    }else{
+                        $(modal).modal('hide');
+                    }
+                });
             }else{
                 toastr.error(json.info);
             }

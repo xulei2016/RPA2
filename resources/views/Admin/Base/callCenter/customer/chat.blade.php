@@ -14,7 +14,7 @@
 		}
 	</style>
 </head>
-<body>
+<body id="body">
 <div class="container">
 	<div class="customer-chat-top chat-window-top">
 		<div class="customer-chat-header-title">在线咨询</div>

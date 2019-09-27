@@ -8,28 +8,28 @@
                     <div class="card-body">
                         @component('admin.widgets.toolbar')
                         @slot('listsOperation')
-
+                        <li><a class="dropdown-item" href="javascript:void(0)" id="exportAll">导出全部</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" id="export">导出选中</a></li>
                         @endslot
 
                         @slot('operation')
-                            @if(auth()->guard('admin')->user()->can('rpa_customer_add'))
-                                
-                            @endif
+                            
                         @endslot
                         @endcomponent
 
                         @component('admin.widgets.search-group')
                         @slot('searchContent')
                         <div class="col-sm-2">
-                            <select name="status" id="status" class="form-control">
+                            <select name="state" id="state" class="form-control">
                                 <option value="" selected>状态:全部</option>
                                 <option value="0">未处理</option>
                                 <option value="1">已审核</option>
                                 <option value="2">已复核</option>
-                                <option value="3">rpa状态1</option>
-                                <option value="4">rpa状态2</option>
-                                <option value="5">rpa状态3</option>
-                                <option value="6">rpa状态4</option>
+                                <option value="-1">已打回</option>
+                                <option value="4">地址已修改</option>
+                                <option value="5">地址已核验</option>
+                                <option value="6">已上报</option>
+                                <option value="7">上报已核验</option>
                             </select>
                         </div>
                         <div class="col-sm-2">

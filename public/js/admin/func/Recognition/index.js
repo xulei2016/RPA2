@@ -39,46 +39,19 @@ $(function(){
             }
         });
 
-    }
-
-    /**
-     * 删除单条记录
-     */
-    function Report(id){
-        Swal({
-            title: "确认上报?",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#DD6B55",
-            confirmButtonText: "确认",
-            showLoaderOnConfirm: true,
-            cancelButtonText: "取消",
-            preConfirm: function() {
-                return new Promise(function(resolve, reject) {
-                    $.ajax({
-                        method: 'post',
-                        url: '/admin/rpa_address_recognition/report/'+id,
-                        data: {
-                            _token:LA.token,
-                            id:id
-                        },
-                        success: function (json) {
-                            if(200 == json.code){
-                                $.pjax.reload('#pjax-container');
-                                resolve(json);
-                            }else{
-                                reject(json.info);
-                            }
-                        }
-                    });
-                });
-            }
-        }).then(function(json) {
-            var json = json.value;
-            Swal(json.info, '', 'success');
-        },function(dismiss){
-            Swal(dismiss, '', 'error');
+        //导出全部
+        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/rpa_address_recognition/export?"+$url;
         });
+
+        //导出选中
+        $("#pjax-container section.content #toolbar #export").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
+            location.href="/admin/rpa_address_recognition/export?id="+ids;
+        });
+
     }
 
     /**
@@ -88,7 +61,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             zjzh : $("#pjax-container #search-group #zjzh").val(),
-            status : $("#pjax-container #search-group #status").val(),
+            state : $("#pjax-container #search-group #state").val(),
             from_created_at : $("#pjax-container #search-group #startTime").val(),
             to_created_at : $("#pjax-container #search-group #endTime").val()
         };
@@ -165,27 +138,36 @@ $(function(){
                     valign: 'middle',
                     formatter: function(value, row, index){
                         let res = "";
-                        if(-1 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-danger">复核失败</span>';
-                        }else if(0 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-info">未处理</span>';
-                        }else if(1 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-warning">已审核</span>';
-                        }else if(2 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-success">已复核</span>';
-                        }else if(3 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-danger">正在上报</span>';
-                        }else if(4 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-primary">地址已修改</span>';
-                        }else if(5 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-primary">地址修改校验通过</span>';
-                        }else if(6 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-primary">已上报</span>';
-                        }else if(7 == value){
-                            res = '<span class="x-tag x-tag-sm x-tag-primary">上报检验通过</span>';
+                        if(row.rpa_state == 1){
+                            if(4 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-primary">地址已修改</span>';
+                            }else if(5 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-primary">地址已核验</span>';
+                            }else if(6 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-primary">已上报</span>';
+                            }else if(7 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-primary">上报已核验</span>';
+                            }else{
+                                res = '<span class="x-tag x-tag-sm x-tag-primary">rpa运行失败</span>';
+                            }
+                        }else{
+                            if(-1 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-danger">复核失败</span>';
+                            }else if(0 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-info">未处理</span>';
+                            }else if(1 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-warning">已审核</span>';
+                            }else if(2 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-success">已复核</span>';
+                            }
                         }
                         return res;
                     }
+                }, {
+                    field: 'remarks',
+                    title: '备注',
+                    align: 'center',
+                    valign: 'middle',
                 }, {
                     field: 'created_at',
                     title: '创建时间',
@@ -197,12 +179,6 @@ $(function(){
                     title: '操作',
                     align: 'center',
                     valign: 'middle',
-                    events: {
-                        "click #report":function (e, value, row, index){
-                            var id = row.id;
-                            Report(id);
-                        }
-                    },
                     formatter: function(value, row, index){
                         var result = "";
                         var id = row.id;
@@ -210,8 +186,6 @@ $(function(){
                             result += "<a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_address_recognition/"+id+"/edit' title='审核'>审核</a>";
                         }else if(row.state == 1){
                             result += "<a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_address_recognition/review/"+id+"' title='复核'>复核</a>";
-                        }else if(row.state == 2){
-                            result += "<a href='javascript:;' class='btn btn-sm btn-success' id='report' title='上报'>上报</a>";
                         }
                         return result;
                     }

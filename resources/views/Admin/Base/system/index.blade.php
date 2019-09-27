@@ -6,7 +6,7 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-pills">
                     @foreach($item_group as $v)
-                        <li class="nav-item"><a class="nav-link @if($loop->first) active @endif" href="#{{ $v }}" data-toggle="tab" aria-expanded="false">{{ $v }}</a></li>
+                        <li class="nav-item"><a class="nav-link @if($loop->first) active @endif" href="#{{ $v }}" data-toggle="tab" aria-expanded="false">{{ showConfigName($v) }}</a></li>
                     @endforeach
                 </ul>
                 <div class="tab-content">
@@ -26,11 +26,21 @@
                                     <td class="text-right">{{$config->label}}</td>
                                     <td class="text-left">
                                         @if('text' == $config->type)
-                                            <input required type="{{$config->type}}" class="form-control" name="{{$config->item_key}}" id="{{$config->item_key}}" value="{{$config->item_value}}" placeholder="{{$config->label}}">
-                                        @elseif('radio' == $config->type)
-                                            <input required type="radio" name="{{$config->item_key}}" id="{{$config->item_key}}">{{$config->item_value}}
+                                            <input required type="{{$config->type}}" class="form-control" name="{{$config->item_key}}" id="{{$config->item_key}}" value="{{$config->item_value}}" placeholder="{{$config->label}}" />
+                                        @elseif('checkbox' == $config->type)
+                                            <input required type="checkbox" name="{{$config->item_key}}" id="{{$config->item_key}}" value="{{$config->item_value}}" class="form-control" />
                                         @elseif('textarea' == $config->type)
                                             <textarea required name="{{$config->item_key}}" id="{{$config->item_key}}" cols="100%" rows="6">{{$config->item_value}}</textarea>
+                                        @elseif('select' == $config->type)
+                                            <select name="{{$config->item_key}}" id="{{$config->item_key}}" class="form-control">
+                                                @foreach(json_decode($config->option) as $k => $option)
+                                                    @if($config->item_value == $option)
+                                                        <option selected value="{{$option}}">{{$k}}</option>
+                                                        @else
+                                                        <option value="{{$option}}">{{$k}}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
                                         @endif
                                     </td>
                                     <td></td>

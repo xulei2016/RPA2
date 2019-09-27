@@ -13,6 +13,7 @@ use App\Models\Admin\Rpa\rpa_clock_list;
 use App\Models\Admin\Api\RpaDtuSms;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Func\RpaSimulationAccount;
+use App\Models\Admin\Func\rpa_customer_jkzx; 
 
 class RpaApiController extends BaseApiController
 {
@@ -338,6 +339,19 @@ class RpaApiController extends BaseApiController
             // 存入内部系统
             $sql = "insert into `oa_office_send` (`name`,`account`,`pwd`,`tel`,`has_jybm`,`fzjg`,`status`,`type`,`inputtime`,`content`) values ('{$row[1]}','{$row[2]}','{$row[3]}','{$row[4]}','{$has_jymb}','{$row[5]}',2,'{$row[6]}','{$time}','')";
             $res = DB::connection('oa')->insert($sql);
+            $create = [
+                'name' => $row[1],
+                'account' => $row[2],
+                'pwd' => $row[3],
+                'tel' => $row[4],
+                'has_jybm' => $has_jymb,
+                'fzjg' => $row[5],
+                'status' => 2,
+                'type' => $row[6],
+                'inputtime' => $time,
+                'content' => ''
+            ];
+            rpa_customer_jkzx::create($create);
             if($res){
                 $return = [
                     'status' => $row[2]."*1",

@@ -19,11 +19,11 @@ Route::group(['namespace' => 'api'], function(){
     Route::group(['namespace' => 'Base'], function(){
         Route::middleware('auth:api')->post('/v1/sms', 'NoticeApiController@sms');
         Route::middleware('auth:api')->post('/v1/mail', 'NoticeApiController@mail');
+        Route::middleware('auth:api')->post('/v1/test_notice', 'NoticeApiController@test_notice');
         Route::middleware('auth:api')->post('/v1/task_notice', 'NoticeApiController@task_notice');
         Route::middleware('auth:api')->post('/v1/message', 'NoticeApiController@message');
         Route::middleware('auth:api')->post('/v1/sms_tpl', 'NoticeApiController@sms_tpl');
         Route::middleware('auth:api')->post('/v1/tpl_send', 'NoticeApiController@tpl_send');
-        Route::middleware('auth:api')->post('/v1/yundama', 'NoticeApiController@yundama');
         Route::middleware('auth:api')->post('/v1/code_distinguish', 'NoticeApiController@code_distinguish');
     });
 //    rpa系统
@@ -51,6 +51,9 @@ Route::group(['namespace' => 'api'], function(){
         Route::post('/v1/get_trading_flow_test', 'OfficialApiController@get_trading_flow_test');
         Route::post('/v1/release_task2_result', 'OfficialApiController@release_task2_result');
         Route::post('/v1/get_mediator_by_number', 'OfficialApiController@get_mediator_by_number');
+        Route::post('/v1/get_profession', 'OfficialApiController@get_profession');
+        Route::post('/v1/change_profession', 'OfficialApiController@change_profession');
+        Route::post('/v1/get_customer_img', 'OfficialApiController@get_customer_img');
 //        插件相关
         Route::middleware('auth:api')->post('/v1/oa_flow_save', 'PluginApiController@oa_flow_save');
         Route::middleware('auth:api')->post('/v1/oa_get_sign', 'PluginApiController@oa_get_sign');
