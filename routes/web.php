@@ -149,6 +149,12 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post('sys_config_update', 'SysController@update_config');
 
             });
+
+            //统计中心
+            Route::group([ 'namespace' => 'Chart'], function(){
+                Route::post('/sys_chart/footprint', 'ChartController@footprint');
+            });
+
             //通知中心
             Route::group(['middleware' => ['permission:sys_notice']], function () {
                 //通知列表
@@ -202,8 +208,6 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::resource('/sys_document', 'DocumentController');
             });
 
-            //文档图片上传
-
             //api插件
             Route::group(['middleware' => ['permission:sys_api_config']], function () {
                 Route::get('/sys_api/list', 'ApiController@pagination');
@@ -234,6 +238,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post("/sys_call_center_setting", 'SettingController@store')->middleware('permission:sys_call_center_setting');
             });
         });
+
         //RPA 任务中心
         Route::group(['namespace' => 'Rpa'], function(){
             //rpa 任务管理中心
