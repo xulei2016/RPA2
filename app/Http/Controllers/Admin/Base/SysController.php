@@ -39,6 +39,11 @@ class SysController extends BaseAdminController
         $data['footprint'] = DB::select('select count(*)c,simple_desc from sys_logs GROUP BY controller,simple_desc ORDER BY c desc limit 10');
         $data['pie_labels'] = '';
         $data['pie_datas'] = '';
+        $data['pie_all'] = 0;
+        foreach($data['footprint']  as $footprint){
+            $data['pie_all'] += $footprint->c;
+        }
+        
         foreach($data['footprint']  as $footprint){
             $data['pie_labels'] .= "'{$footprint->simple_desc}',";
             $data['pie_datas'] .= "{$footprint->c},";

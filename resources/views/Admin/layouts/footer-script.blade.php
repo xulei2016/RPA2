@@ -1,12 +1,9 @@
 <!-- daterangepicker -->
 <script src="//{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
 <!-- ChartJS -->
-<script src="{{URL::asset('/include/chart.js/Chart.min.js')}}"></script>
+{{-- <script src="{{URL::asset('/include/chart.js/Chart.min.js')}}"></script> --}}
 <!-- Sparkline -->
 <script src="{{URL::asset('/include/sparklines/sparkline.js')}}"></script>
-<!-- JQVMap -->
-<script src="{{URL::asset('/include/jqvmap/jquery.vmap.min.js')}}"></script>
-<script src="{{URL::asset('/include/jqvmap/maps/jquery.vmap.world.js')}}"></script>
 {{-- pjax --}}
 <script src="{{URL::asset('/include/jquery-pjax/JQuery.pjax.js')}}"></script>
 {{-- toastr --}}
@@ -43,8 +40,6 @@
 <script src="{{URL::asset('/include/adminlte/js/adminlte.js')}}"></script>
 <!-- select2 -->
 <script src="{{URL::asset('/include/select2/js/select2.js')}}"></script>
-<!-- toastr -->
-<script src="{{URL::asset('/include/toastr/toastr.js')}}"></script>
 <script src="{{URL::asset('/js/app.js')}}"></script>
 <script>
     //消息通知laravel-echo
