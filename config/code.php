@@ -29,7 +29,7 @@ return [
             'mult' => 'http://api.yundama.com/api.php',
         ],
         'USERNAME' => 'haqhrjgcb',
-        'PASSWORD' => 'rjgcb,.',
+        'PASSWORD' => 'H@qhrjgcb9772,.',
         'APPID' => '1',
         'APPKEY' => '22cc5376925e9387a23cf797cb9ba745',
     ],
