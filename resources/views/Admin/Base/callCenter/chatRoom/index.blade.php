@@ -27,7 +27,9 @@
                                 <div class="online-operators-head">在线客服</div>
                                 <div class="online-operators-info">
                                     {{--在线客服--}}
-                                    <ul></ul>
+                                    <ul>
+                                        <li class="text-center self" style="background-color:#eee;cursor:not-allowed;">你自己</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -171,6 +173,18 @@
             </div>
         </div>
     </div>
+    <script>
+        $('.self').on('click', function(e){
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        })
+        var head_img = "{{auth()->user()->head_img}}";
+        var style = '';
+        if(head_img.indexOf('image') > -1) {
+             style = "background: url(/"+head_img+") no-repeat; background-size: cover;"
+        }
+    </script>
     <script src="{{asset('js/admin/base/callCenter/echoManager.js')}}"></script>
     <script src="{{asset('callCenter/js/chatManager.js')}}"></script>
 @endsection

@@ -3,7 +3,7 @@
 @section('content')
     <div class="container-fluid" id="document">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="card card-primary card-outline">
                     <div class="card-header">
                         <h3 class="card-title">目录</h3>
@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div class="card card-primary card-outline">
                     <div class="card-header">
                         <h3 class="card-title">查阅文档</h3>

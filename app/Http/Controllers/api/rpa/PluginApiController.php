@@ -785,8 +785,10 @@ class PluginApiController extends BaseApiController
         $khfs = ($result['ZY']=='互联网开户扩展信息登记') ? '互联网' : '<span style="color:red;">未识别</span>' ;
         $age = $this->get_age($result['ZJBH']);
 
+        //姓名
+        $model['0'] = "<span style='color:red;'>{$result['KHXM']}</span>";
         //模板1
-        $model['1'] = "<span style='color:red;'>——{$result['KHXM']}</span><br/>经调查把客户风险评估指标分为四类基本要素<br/>客户特性：客户持有效身份证明文件于{$result['KHRQ']}通过{$khfs}方式开户，客户为普通投资者，身份证号码为{$result['ZJBH']}，年龄为{$age}岁，学历为{$result['XLDM']}。<br/>客户地域：客户身份地址为：{$result['SFZDZ']}，联系地址为：{$result['DZ']}。<br/>客户业务：客户自己操作账户，不存在实际控制其他主体的期货交易或被其他主体实际控制期货交易的行为。<br/>客户行业：客户职业为{$result['ZYDM']}，客户本人不是外国政要，与洗钱、职务犯罪等的关联性不高。<br/>根据公司的规章制度，并结合对客户的尽职调查，现将此客户的风险等级评定为低风险。";
+        $model['1'] = "经调查把客户风险评估指标分为四类基本要素<br/>客户特性：客户持有效身份证明文件于{$result['KHRQ']}通过{$khfs}方式开户，客户为普通投资者，身份证号码为{$result['ZJBH']}，年龄为{$age}岁，学历为{$result['XLDM']}。<br/>客户地域：客户身份地址为：{$result['SFZDZ']}，联系地址为：{$result['DZ']}。<br/>客户业务：客户自己操作账户，不存在实际控制其他主体的期货交易或被其他主体实际控制期货交易的行为。<br/>客户行业：客户职业为{$result['ZYDM']}，客户本人不是外国政要，与洗钱、职务犯罪等的关联性不高。<br/>根据公司的规章制度，并结合对客户的尽职调查，现将此客户的风险等级评定为低风险。";
 
         //模板2
         $model['2'] = "经调查把客户风险评估指标分为四类基本要素<br/>客户特性：客户持有效身份证明文件于{$result['KHRQ']}通过{$khfs}方式开户，客户为普通投资者，客户关联XX银行和XX银行,身份证号码为{$result['ZJBH']}，年龄为{$age}岁，学历为{$result['XLDM']}。<br/>客户地域：客户身份地址为：{$result['SFZDZ']}，联系地址为：{$result['DZ']}。<br/>客户业务：客户自己操作账户，不存在实际控制其他主体的期货交易或被其他主体实际控制期货交易的行为。<br/>客户行业：客户职业为{$result['ZYDM']}，客户本人不是外国政要，与洗钱、职务犯罪等的关联性不高。<br/>根据公司的规章制度，并结合对客户的尽职调查，现将此客户的风险等级评定为低风险。";
@@ -1060,5 +1062,91 @@ class PluginApiController extends BaseApiController
 
         return response()->json($re);
 
+    }
+
+    /**
+     * 获取线下居间培训记录
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function offline_training_records(Request $request)
+    {
+        //ip检测
+        // $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+        // if($res !== true){
+        //     return response()->json($res);
+        // }
+
+        //表单验证
+        $validatedData = $request->validate([
+            'mediatorName' => 'required',
+            'mediatorNo' => 'required',
+        ]);
+        
+        // 判断线上还是线下
+        $sql = "select * from oa_mediator where mediatorname = '".$request->mediatorName."' and 
+        number =".$request->mediatorNo." and length(sfz_img_zm) > 15";
+        $res = DB::connection("oa")->select($sql);
+        if(!$res){
+            //线下
+            
+            //获取手机号
+            if(!isset($request->mediatorPhone)){
+                //根据姓名加资金账号查询客户
+                $post_data = [
+                    'type' => 'common',
+                    'action' => 'getEveryBy',
+                    'param' => [
+                        'table' => 'JJR',
+                        'by' => [
+                            ['XM','=',$request->mediatorName],
+                            ['BH','=',$request->mediatorNo]
+                        ],
+                        'columns' => ['LXSJ','DH']
+                    ]
+                ];
+                $result = $this->getCrmData($post_data);
+                $phone = $result[0]['LXSJ'] ?? $result[0]['DH'];
+            }else{
+                $phone = $request->mediatorPhone;
+            }
+
+            $guzzle = new Client();
+            $response = $guzzle->get('http://api.hatzjh.com/mediator/check',[
+                'query' => [
+                    'username' => 'haqhJJCX',
+                    'password' => 'JJCXMediator',
+                    '_time' => 1,
+                    'mediatorName' => $request->mediatorName,
+                    'mediatorNo' => $request->mediatorNo,
+                    'mediatorPhone' => $phone,
+                    'tdsourcetag' => 's_pctim_aiomsg'
+                ]
+            ]);
+            $body = $response->getBody();
+            $body = json_decode((string)$body,true);
+
+            if($body['code'] == 0){
+                $re = [
+                    'status' => 500,
+                    'msg' => '未参加线下视频培训'
+                ];
+            }elseif($body['code'] == 200){
+                $re = [
+                    'status' => 200,
+                    'msg' => date('Y-m-d H:i:s',$body['datetime'])
+                ];
+            }
+        }else{
+            //线上
+            $re = [
+                'status' => 201,
+                'msg' => '该居间为线上居间'
+            ];
+        }
+
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+        return response()->json($re);
     }
 }

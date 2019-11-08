@@ -6,6 +6,7 @@ $(function () {
     var myTimer;
     var initSecond = 0;
     var timeoutFlag = true;
+    var alert = false;
 
     function init(){
         checkLogin();
@@ -42,13 +43,18 @@ $(function () {
                 echoClient.logout();
             }
         }
-        if(initSecond > callCenterConfig.disconnect_length) { // 超时 断开连接
+        if(initSecond >= callCenterConfig.disconnect_length) { // 超时 断开连接
             timerClear();
-            alert('对不起, 聊天已经结束, 请重新登录');
+            if(!alert) {
+                alert = true;
+                alert('对不起, 聊天已经结束, 请重新登录');
+            }
             echoClient.logout();
             return false;
+        } else {
+            myTimer = setTimeout(timer, 1000);
         }
-        myTimer = setTimeout(timer, 1000);
+        
     }
 
     //收到私聊消息的时候 @todo 分类

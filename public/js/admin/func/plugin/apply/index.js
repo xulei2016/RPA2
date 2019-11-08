@@ -78,7 +78,7 @@ $(function(){
                         success:function(r){
                             if(r.code == 200) {
                                 swal('提示', '操作成功','success');
-                                location.reload();
+                                $.pjax.reload('#pjax-container');
                             } else {
                                 swal('提示', r.info, 'error');
                             }}
@@ -135,7 +135,8 @@ $(function(){
     function getSearchGroup(){
         //特殊格式的条件处理
         var temp = {
-            status : $("#pjax-container #search-group #status").val()
+            status : $("#pjax-container #search-group #status").val(),
+            pid : $("#pid").val()
         };
         return temp;
     }

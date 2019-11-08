@@ -24,7 +24,8 @@ class ChartController extends Controller
      */
     public function footprint(){
         //活动内容
-        $res = DB::select('select count(*)c,simple_desc from sys_logs GROUP BY controller,simple_desc ORDER BY c desc limit 10');
+        $user_id = auth()->guard('admin')->user()->id;
+        $res = DB::select("select count(*)c,simple_desc from sys_logs  where user_id = {$user_id} GROUP BY controller,simple_desc ORDER BY c desc limit 10");
         $data = [];
         $label = [];
         $count = [];

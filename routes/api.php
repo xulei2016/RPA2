@@ -65,14 +65,33 @@ Route::group(['namespace' => 'api'], function(){
         Route::middleware('auth:api')->post('/v1/open_history', 'PluginApiController@open_history');
         Route::middleware('auth:api')->post('/v1/mediator_info', 'PluginApiController@mediator_info');
         Route::middleware('auth:api')->post('/v1/mediator_info2', 'PluginApiController@mediator_info2');
-        Route::middleware('auth:api')->post('/v1/fxq', 'PluginApiController@fxq');
+        Route::post('/v1/fxq', 'PluginApiController@fxq');
         Route::middleware('auth:api')->post('/v1/sync_data', 'PluginApiController@sync_data');
         Route::middleware('auth:api')->post('/v1/get_entry_by_pihao', 'PluginApiController@get_entry_by_pihao');
+        Route::middleware('auth:api')->post('/v1/offline_training_records', 'PluginApiController@offline_training_records');
+
 //        其他
         Route::middleware('auth:api')->post('/v1/mediator_flow', 'OtherApiController@mediator_flow');
         Route::middleware('auth:api')->post('/v1/get_customer_relation', 'OtherApiController@get_customer_relation');
         Route::middleware('auth:api')->post('/v1/get_mediator_relation', 'OtherApiController@get_mediator_relation');
         Route::middleware('auth:api')->post('/v1/test', 'OtherApiController@test');
+
+//        线下视频上传
+        Route::post('/v1/login', 'VideoCollectApiController@login');
+        Route::post('/v1/customer', 'VideoCollectApiController@customer');
+        Route::post('/v1/upload', 'VideoCollectApiController@upload');
+        Route::post('/v1/history', 'VideoCollectApiController@history');
+        Route::post('/v1/getRemark', 'VideoCollectApiController@getRemark');
+
+//        账户分析
+        Route::middleware('auth:api')->post('/v1/get_customer_jyls', 'TradeApiController@get_customer_jyls');
+        Route::middleware('auth:api')->post('/v1/get_jyr', 'TradeApiController@get_jyr');
+        Route::middleware('auth:api')->post('/v1/get_code_table', 'TradeApiController@get_code_table');
+
+        //  V2  
+        Route::group(['namespace' => 'v2'], function(){
+            Route::middleware('auth:api')->post('/v2/credit', 'PluginApiController@credit');
+        });
     });
 //   掌上营业厅
 

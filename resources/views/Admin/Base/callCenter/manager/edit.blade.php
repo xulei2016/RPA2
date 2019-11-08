@@ -31,7 +31,7 @@
                         @if($group['id'] == $manager->group_id)
                             <option selected value ="{{ $group['id'] }}">{{ $group['group'] }}</option>
                         @else
-                            <option selected value ="{{ $group['id'] }}">{{ $group['group'] }}</option>
+                            <option value ="{{ $group['id'] }}">{{ $group['group'] }}</option>
                         @endif
                     @endforeach
                 </select>

@@ -40,6 +40,7 @@
                                         <option value="0">个人</option>
                                         <option value="1">机构</option>
                                         <option value="2">自营</option>
+                                        <option value="3">特殊客户</option>
                                     </select>
                                 </div>
                                  <div class="col-sm-12" style="height: 10px;"></div>

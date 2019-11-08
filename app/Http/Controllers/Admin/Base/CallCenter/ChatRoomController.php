@@ -18,8 +18,9 @@ class ChatRoomController extends BaseController
     public function index(){
         $manager = auth()->guard()->user();
         $id = $manager->id;
+        $id = 1;
         $manager_detail = SysManager::where('sys_admin_id', $id)->first();
-        if(!$manager_detail) return view('errors.403_extend');
+        // if(!$manager_detail) return view('errors.403_extend');
         $result = [
             'id' => $id,
             'head_img' => $manager->head_img,

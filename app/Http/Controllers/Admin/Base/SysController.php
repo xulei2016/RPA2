@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\admin\base;
 
+use App\Models\Admin\Base\SysVersionUpdate;
 use DB;
 use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Admin\SysAdmin;
@@ -37,7 +38,8 @@ class SysController extends BaseAdminController
         //条用接口数
         $data['countApi'] = RpaApiLog::count();
         //活动内容
-        $data['footprint'] = DB::select('select count(*)c,simple_desc from sys_logs GROUP BY controller,simple_desc ORDER BY c desc limit 10');
+        $user_id = auth()->guard('admin')->user()->id;
+        $data['footprint'] = DB::select("select count(*)c,simple_desc from sys_logs where user_id = {$user_id} GROUP BY controller,simple_desc ORDER BY c desc limit 10");
         $data['pie_labels'] = '';
         $data['pie_datas'] = '';
         $data['pie_all'] = 0;
@@ -54,7 +56,10 @@ class SysController extends BaseAdminController
         
         $data = array_merge($data, self::sys_info());
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
-        return view('admin.index.index', ['data'=>$data]);
+
+        $versionUpdateList = SysVersionUpdate::where('status', 1)->orderBy('id', 'desc')->limit(3)->get();
+
+        return view('admin.index.index', ['data'=>$data, 'versionUpdateList' => $versionUpdateList]);
     }
     
     /**
@@ -116,13 +121,13 @@ class SysController extends BaseAdminController
             'Env'           => config('app.env') ,
             'URL'           => config('app.url') ,
         ];
-        $con = mysqli_connect(env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_DATABASE'));
+        $con = mysqli_connect(env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_DATABASE'),env('DB_PORT'));
         $info['database'] = [
             'ALLOW_PERSISTENT' => @get_cfg_var("mysql.allow_persistent")?"是 ":"否",
             'MAX_LINKS' => @get_cfg_var("mysql.max_links")==-1 ? "不限" : @get_cfg_var("mysql.max_links"),
             'MYSQL_VERSION'    => mysqli_get_server_info($con),
         ];
-        // exec("wmic LOGICALDISK get name,Description,filesystem,size,freespace",$info['disk']);
+        exec("wmic LOGICALDISK get name,Description,filesystem,size,freespace",$info['disk']);
 
         return $info;
     }

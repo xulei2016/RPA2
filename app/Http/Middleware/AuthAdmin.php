@@ -21,15 +21,12 @@ class AuthAdmin
 
             return redirect('admin/login');
         }
-        
+
         //缓存当前路由
         $pathInfo = explode('/', $request->path());
         $permission = end($pathInfo);
         if(session('menuList') && $route = self::cacheKeepRoute(session('menuList'), $permission)){
             session(['keepMenu' => $route]);
-            
-            //缓存菜单列表
-            self::cacheTagsList($route);
         }else{
             $request->session()->forget('keepMenu');
         }
@@ -40,8 +37,7 @@ class AuthAdmin
     /**
      * cacheKeepRoute
      */
-    public function cacheKeepRoute($routeList, $permission)
-    {
+    public function cacheKeepRoute($routeList, $permission){
         $route = '';
         
         foreach($routeList as $list){
@@ -55,30 +51,5 @@ class AuthAdmin
             }
         }
         return $route;
-    }
-
-    /**
-     * cacheTagsList
-     */
-    public function cacheTagsList($route)
-    {
-        $tagsList = session('tagsList');
-        if(!$tagsList){
-            $tagsList = [
-                1 => [
-                    'id' => 1,
-                    'uri' => '/admin',
-                    'title' => '首页'
-                ]
-            ];
-        }
-
-        if(!isset($tagsList[$route['id']])){
-
-            $tagsList[$route['id']] = $route;
-
-        }
-        session(['tagsList' => $tagsList]);
-        return $tagsList;
     }
 }

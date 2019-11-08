@@ -12,9 +12,9 @@
                 <select name="roleLists[]" id="select2-menu" class="form-control parent_id select2" multiple>
                     @foreach($roles as $role)
                         @if(in_array($role['name'], $info->roleLists))
-                            <option value ="{{ $role['name'] }}" selected>{{ $role['name'] }}</option>
+                            <option value ="{{ $role['name'] }}" selected>{{ $role['desc'] }}</option>
                         @else
-                            <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
+                            <option value ="{{ $role['name'] }}">{{ $role['desc'] }}</option>
                         @endif
                     @endforeach
                 </select>

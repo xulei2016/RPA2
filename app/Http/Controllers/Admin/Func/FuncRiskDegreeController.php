@@ -29,6 +29,7 @@ class FuncRiskDegreeController extends BaseAdminController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request){
+        dd('功能已下线');
         $result = FuncRiskDegree::orderBy('rq', 'desc')->first();
         if($result) {
             $date = date('Y-m-d', strtotime($result->rq));
@@ -121,6 +122,7 @@ class FuncRiskDegreeController extends BaseAdminController
             0 => '个人',
             1 => '机构',
             2 => '自营',
+            3 => '特殊客户'
         ];
         $this->objPHPExcel = new \PHPExcel();
         $this->objPHPExcel->getProperties()->setCreator("excel")

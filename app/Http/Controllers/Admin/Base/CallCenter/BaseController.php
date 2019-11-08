@@ -8,6 +8,7 @@ use App\Http\Controllers\base\BaseAdminController;
 use App\Models\Admin\Base\CallCenter\SysRecordDetail;
 use App\Models\Admin\Base\CallCenter\SysSetting;
 use App\Models\Admin\Base\CallCenter\SysTemplate;
+use App\Models\Admin\Base\CallCenter\SysManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -193,7 +194,12 @@ class BaseController extends BaseAdminController
                 SysTemplate::where("id", $result->id)->update(['count' => $count]);
             }
         } else {
-            $content = "请稍等,正在为您接入客服,您可以输入关键词提前获取帮助";
+            $flag = $this->hasOnlineManager();
+            if($flag) {
+                $content = "客服连接中, 请稍后";
+            } else {
+                $content = "当前没有客服在线, 请输入关键词快速获取帮助, 如有疑问请拨打400-882-0628。<br>工作日8.30-17.00";
+            }
         }
         $data = $this->messagePackaging($this->customer_id, 0, 'manager', 'customer', $content, 'message');
         broadcast(new CallCenterCustomerEvent($data));
@@ -296,6 +302,22 @@ class BaseController extends BaseAdminController
             ];
         }
         return isset($client_group[$id]) ? $client_group[$id] : '未知' ;
+    }
+
+
+    /**
+     * 判断是否有在线客服
+     */
+    public function hasOnlineManager(){
+        $list = Redis::hKeys(self::ONLINE_MANAGER_LIST); //redis 在线列表
+        if(empty($list)) return false;
+        $admins = SysManager::where('group_id', 13)->select('sys_admin_id')->get()->toArray(); //所有ib客服列表
+        foreach($admins as $v) {
+            if(in_array("{$v['sys_admin_id']}", $list)) { //找到表示有客服在线
+                return true;
+            }
+        }
+        return false;
     }
 
 }

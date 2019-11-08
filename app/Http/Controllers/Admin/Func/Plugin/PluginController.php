@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Admin\Func\Plugin;
 
 use App\Models\Admin\Func\Plugin\RpaPlugin;
 use App\Models\Admin\Func\Plugin\RpaPluginVersion;
+use App\Models\Admin\Func\Plugin\RpaPluginDownload;
+use App\Models\Admin\Func\Plugin\RpaPluginApply;
 use Illuminate\Http\Request;
 
 /**
@@ -21,7 +23,8 @@ class PluginController extends BaseController {
      */
     public function index(Request $request) {
         $this->log(__CLASS__, __FUNCTION__, $request, "插件 列表页");
-        return view($this->view_prefix.'index');
+        $applyCount = RpaPluginApply::where('status', 1)->count();
+        return view($this->view_prefix.'index', ['applyCount' => $applyCount]);
     }
 
     /**
@@ -39,6 +42,9 @@ class PluginController extends BaseController {
             ->where($condition)
             ->orderBy($order, $sort)
             ->paginate($rows);
+        foreach($result as &$v) {
+            $v->downloadCount = RpaPluginDownload::where('plugin_id', $v->id)->count();
+        }    
         return $result;
     }
 

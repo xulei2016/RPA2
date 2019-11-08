@@ -27,6 +27,7 @@ Route::get('/', function () {
 
 });
 
+
 //客服中心前台
 Route::group(['prefix' => 'call_center', 'namespace' => 'Admin\Base\CallCenter'], function(){
     Route::post('/login', 'CustomerController@doLogin');
@@ -50,6 +51,7 @@ Route::group(['prefix' => 'call_center', 'namespace' => 'Admin\Base\CallCenter']
     Route::get("/template_list_background", 'TemplateController@getTemplateList');
 
     // 客户部分三个界面
+    Route::get('/', 'CustomerController@login');
     Route::get('/login', 'CustomerController@login');
     Route::get('/forget', 'CustomerController@forget');
     Route::get('/chat', 'CustomerController@chat');
@@ -87,6 +89,20 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin\Base'], function(){
 });
 
 
+// 前台路由管理
+Route::group(['prefix' => 'index', 'namespace' => 'Index'], function(){
+    Route::group(['middleware' => ['web'], ], function(){
+        //视频上传
+        Route::group(['prefix' => 'uploadVideo'], function(){
+        
+            Route::get('/', 'VideoCollectController@index');
+            Route::get('/client', 'VideoCollectController@client');
+            Route::get('/upload', 'VideoCollectController@upload');
+            Route::get('/record', 'VideoCollectController@record');
+        });
+    });
+});
+
 // 后台路由管理
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
     Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
@@ -113,6 +129,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::resource('/sys_menu', 'MenuController')->middleware('permission:sys_menu');
                 Route::post('/sys_menu/order', 'MenuController@orderUpdate');
             });
+            //版本更新查看单个
+            Route::get('/sys_version_update/{id}', 'VersionUpdateController@show');
+
             //控制面板
             Route::group(['middleware' => ['permission:sys_board']], function () {
                 //用户管理
@@ -148,14 +167,17 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 //系统设置
                 Route::get('sys_config', 'SysController@setting')->middleware('permission:sys_config');
                 Route::post('sys_config_update', 'SysController@update_config');
-
+                //版本更新
+                Route::group(['middleware' => ['permission:sys_version_update']], function () {
+                    Route::get('/sys_version_update', 'VersionUpdateController@index');
+                    Route::get('/sys_version_update/list', 'VersionUpdateController@pagination');
+                    Route::resource('/sys_version_update', 'VersionUpdateController');
+                });
             });
-
-            //统计中心
-            Route::group([ 'namespace' => 'Chart'], function(){
+             //统计中心
+             Route::group([ 'namespace' => 'Chart'], function(){
                 Route::post('/sys_chart/footprint', 'ChartController@footprint');
             });
-
             //通知中心
             Route::group(['middleware' => ['permission:sys_notice']], function () {
                 //通知列表
@@ -207,7 +229,6 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::post("/sys_document/{id}/deleteDoc",'DocumentController@deleteDoc');
                 Route::resource('/sys_document', 'DocumentController');
             });
-            
             //api插件
             Route::group(['middleware' => ['permission:sys_api_config']], function () {
                 Route::get('/sys_api/list', 'ApiController@pagination');
@@ -236,9 +257,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 //设置
                 Route::get("/sys_call_center_setting", 'SettingController@index')->middleware('permission:sys_call_center_setting');
                 Route::post("/sys_call_center_setting", 'SettingController@store')->middleware('permission:sys_call_center_setting');
+               
             });
         });
-
         //RPA 任务中心
         Route::group(['namespace' => 'Rpa'], function(){
             //rpa 任务管理中心
@@ -420,11 +441,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             //仿真开户 rpa_simulation_account_business
             Route::group(['middleware' => ['permission:rpa_simulation_account_business']], function () {
                 Route::get("/rpa_simulation_account_business/list", 'SimulationController@pagination');
+                Route::get("/rpa_simulation_account_business", 'SimulationController@index');
                 Route::get("/rpa_simulation_account_business/export", 'SimulationController@export');
-                Route::get("/rpa_simulation_account_business/edit/{id}", 'SimulationController@edit');
-                Route::post("/rpa_simulation_account_business/sendSms", 'SimulationController@sendSms');
-                Route::post("/rpa_simulation_account_business/sendAll", 'SimulationController@sendAll');
-                Route::resource("/rpa_simulation_account_business", 'SimulationController');
+                Route::post("/rpa_simulation_account_business/ctp", 'SimulationController@ctp');
+                Route::post("/rpa_simulation_account_business/setZjzh", 'SimulationController@setZjzh');
             });
 
             //开户证件识别 rpa_cloud_recognition
@@ -440,8 +460,17 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
                 Route::get("/rpa_customer/export", 'CustomerController@export');
                 Route::get('/rpa_customer/add', 'CustomerController@add')->middleware('permission:rpa_customer_add');
                 Route::post('/rpa_customer/adddata', 'CustomerController@adddata')->middleware('permission:rpa_customer_add');
+                Route::get('/rpa_customer/edit/{id}', 'CustomerController@edit');
+                Route::patch('/rpa_customer/editdata/{id}', 'CustomerController@editdata');
                 Route::get('/rpa_customer/list', 'CustomerController@pagination');
                 Route::post('/rpa_customer/delete','CustomerController@delete')->middleware('permission:rpa_customer_delete');
+            });
+
+            //线下客户视频收集
+            Route::group(['middleware' => ['permission:rpa_customer_video_collect']], function () {
+                Route::get('/rpa_customer_video_collect/export', 'VideoCollectController@export');
+                Route::get('/rpa_customer_video_collect/list', 'VideoCollectController@pagenation');
+                Route::resource('/rpa_customer_video_collect', 'VideoCollectController');
             });
 
             //监控中心密码
@@ -468,6 +497,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
              */
             Route::group([], function(){
                 Route::get('/rpa_download_plugin', 'DownloadPluginController@index');
+                Route::get('/rpa_download_plugin/document', 'DownloadPluginController@document');
                 Route::post('/rpa_download_plugin/apply', 'DownloadPluginController@apply');
                 Route::get('/rpa_download_plugin/download/{id}', 'DownloadPluginController@download');
                 Route::resource('/rpa_download_plugin', 'DownloadPluginController');
@@ -477,25 +507,31 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             Route::group(['namespace' => 'Plugin','middleware' => ['permission:plugin']], function(){
 
                 // 插件管理
-                Route::get("/rpa_plugin/list", 'PluginController@pagination');
-                Route::get("/rpa_plugin/export", 'PluginController@export');
-                Route::resource("/rpa_plugin", 'PluginController');
-                Route::get("/rpa_plugin_apply/list", 'ApplyController@pagination');
-                Route::resource("/rpa_plugin_apply", 'ApplyController');
-                Route::post("/rpa_plugin_apply/confirm", 'ApplyController@confirm');
-
+                Route::group(['middleware' => ['permission:rpa_plugin']], function(){
+                    Route::get("/rpa_plugin/list", 'PluginController@pagination');
+                    Route::get("/rpa_plugin/export", 'PluginController@export');
+                    Route::resource("/rpa_plugin", 'PluginController');
+                });
+                //插件申请
+                Route::group(['middleware' => ['permission:rpa_plugin_apply']], function(){
+                    Route::get("/rpa_plugin_apply/list", 'ApplyController@pagination');
+                    Route::resource("/rpa_plugin_apply", 'ApplyController');
+                    Route::post("/rpa_plugin_apply/confirm", 'ApplyController@confirm');
+                });    
                 // 版本管理
-                Route::get("/rpa_plugin_version/list", 'VersionController@pagination');
-                Route::get("/rpa_plugin_version/plugin/{id}", 'VersionController@getByPlugin');
-                Route::get("/rpa_plugin_version/export", 'VersionController@export');
-                Route::post("/rpa_plugin_version/upload", 'VersionController@upload');
-                Route::resource("/rpa_plugin_version", 'VersionController');
+                Route::group(['middleware' => ['permission:rpa_plugin_version']], function(){
+                    Route::get("/rpa_plugin_version/list", 'VersionController@pagination');
+                    Route::get("/rpa_plugin_version/plugin/{id}", 'VersionController@getByPlugin');
+                    Route::get("/rpa_plugin_version/export", 'VersionController@export');
+                    Route::post("/rpa_plugin_version/upload", 'VersionController@upload');
+                    Route::resource("/rpa_plugin_version", 'VersionController');
+                });
+                 //插件下载
+                 Route::group([], function(){
+                    Route::get("/rpa_plugin_download/list", 'DownloadController@pagination');
+                    Route::get("/rpa_plugin_download", 'DownloadController@index');
+                });
 
-                //黑白名单
-                Route::resource("/rpa_plugin_black_list", 'BlackListController');
-
-                //下载
-                Route::get("/rpa_plugin_download/", 'DownloadController@index');
             });
 
             //手续费和保证金
@@ -515,12 +551,39 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             
 
             //风险指标
-            Route::group(['middleware' => ['permission:rpa_risk_center']], function () {    
-                Route::get('/rpa_risk','FuncRiskDegreeController@index');
-                Route::get('/rpa_risk/list','FuncRiskDegreeController@pagination');
-                Route::get('/rpa_risk/export','FuncRiskDegreeController@export');
-                Route::post('/rpa_risk/getData','FuncRiskDegreeController@getData');
-                Route::get('/rpa_risk/getQueryDay','FuncRiskDegreeController@getQueryDay');
+            // Route::group(['middleware' => ['permission:rpa_risk_center']], function () {    
+            //     Route::get('/rpa_risk','FuncRiskDegreeController@index');
+            //     Route::get('/rpa_risk/list','FuncRiskDegreeController@pagination');
+            //     Route::get('/rpa_risk/export','FuncRiskDegreeController@export');
+            //     Route::post('/rpa_risk/getData','FuncRiskDegreeController@getData');
+            //     Route::get('/rpa_risk/getQueryDay','FuncRiskDegreeController@getQueryDay');
+            // });
+            //合约提醒
+            Route::group(['middleware' => ['permission:rpa_contract_detail'], 'namespace' => 'Contract'], function () {
+                //交易所管理
+                Route::get('/rpa_contract_jys/list','JysController@pagination');
+                Route::resource("/rpa_contract_jys", 'JysController');
+                //接收者管理
+                Route::get('/rpa_contract_receiver/list','ReceiverController@pagination');
+                Route::post('/rpa_contract_receiver/email','ReceiverController@email');
+                Route::resource("/rpa_contract_receiver", 'ReceiverController');
+                //品种管理
+                Route::get('/rpa_contract_pz/list','PzController@pagination');
+                Route::get('/rpa_contract_pz/getByJys','PzController@getByJys');
+                Route::resource("/rpa_contract_pz", 'PzController');
+                //合约详细
+                Route::get('/rpa_contract_detail/list','DetailController@pagination');
+                Route::resource("/rpa_contract_detail", 'DetailController');
+                Route::post('/rpa_contract_detail/updateAll','DetailController@updateAll');
+                //配置信息
+                Route::resource("/rpa_contract_dict", 'DictController');
+                //推送信息
+                Route::get('/rpa_contract_publish/list','PublishController@pagination');
+                Route::get('/rpa_contract_publish/getByDate','PublishController@getByDate');
+                Route::resource("/rpa_contract_publish", 'PublishController');
+                //指定上市日期
+                Route::get('/rpa_contract_extra/list','ExtraController@pagination');
+                Route::resource("/rpa_contract_extra", 'ExtraController');
             });
            
         });
@@ -530,6 +593,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             //客户失信查询
             Route::get('/rpa_customer_discredit','DiscreditController@index');
             Route::post('/rpa_customer_discredit/search','DiscreditController@search');
+
+            //反洗钱查询
+            Route::get('/rpa_fxq','FxqController@index')->middleware('permission:rpa_fxq');
         });
     });
 

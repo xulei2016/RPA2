@@ -155,8 +155,14 @@ function smsLog($type, $phone, $content, $status){
 /**
  * 生成密码
  */
-function createPassword($name){
-    return \Illuminate\Support\Facades\Crypt::encrypt('H@qh9772_'.$name);
+function createPassword($name, $flag = false){
+    $a = 'H@qh9772_'.$name;
+    if($flag) {
+        return $a;
+    } else {
+        return bcrypt('H@qh9772_'.$name);
+    }
+   
 }
 
 /**

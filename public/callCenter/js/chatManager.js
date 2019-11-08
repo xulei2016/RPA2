@@ -86,6 +86,11 @@ $(function(){
             }
             _this.attr('refresh', 1);
             window.location.href = "#talk-content";
+            // let index1 = 0;
+            // setInterval(function(){
+            //     echoManager.send(active_id, index1);
+            //     index1++;
+            // },2000);
         });
 
         // tab切换
@@ -193,8 +198,10 @@ $(function(){
         });
 
         // 跳转到其它页面
-        $(document).on('click', '.sidebar-menu a', function(){
-            echoManager.managerLeave();
+        $(".main-sidebar a").on('click', function(){
+            if($(this).attr('href') != '/admin/sys_call_center_chat_room') {
+                echoManager.managerLeave();
+            }
         });
 
         // 展现模板信息
@@ -425,7 +432,7 @@ $(function(){
             '<div class="mychatMessDe">'+content+'</div>\n' +
             '</div>' +
             '</div>' +
-            '<div class="myChatHead"></div>' +
+            '<div class="myChatHead" style="'+style+'"></div>' +
             '<div class="clear-both"></div>' +
             '</div>';
         return html;

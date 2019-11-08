@@ -142,6 +142,14 @@ class AdminController extends BaseAdminController
             ->select(['sys_admins.*', 'sys_admin_groups.group'])
             ->orderBy($order, $sort)
             ->paginate($rows);
+        // foreach ($result as &$item) {
+        //     $roleLists = [];
+        //     foreach (explode(',', $item->roleLists) as $v) {
+        //         $role = SysRole::where('name', $v)->first();
+        //         if($role) $roleLists[] = $role->desc;
+        //     }
+        //     $item->roleLists = implode(',', $roleLists);
+        // }
         return $result;
     }
 

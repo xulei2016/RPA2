@@ -16,6 +16,10 @@ $(function(){
 
     //事件绑定
     function bindEvent(){
+        //定义时间按钮事件
+        let rq = '#online_time';
+        laydate.render({ elem: rq, type: 'date'});
+
         //表单提交
         $(modal+' form #save').click(function(){
             for (instance in CKEDITOR.instances)
@@ -56,6 +60,9 @@ $(function(){
                 required:true
             },
             content:{
+                required:true
+            },
+            online_time:{
                 required:true
             }
         },

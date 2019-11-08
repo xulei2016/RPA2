@@ -710,29 +710,42 @@ class RpaApiController extends BaseApiController
             'address' => 'required',
             'postcode' => 'required|numeric',
             'email' => 'required|email',
+            'isCtp' => 'required|in:0,1',
         ]);
 
-        $data = [
-            'name' => $request->name,
-            'sfz' => $request->sfz,
-            'phone' => $request->phone,
-            'address' => $request->address,
-            'postcode' => $request->postcode,
-            'email' => $request->email,
-        ];
-        $res = RpaSimulationAccount::create($data);
-        if($res){
-            $return = [
-                'status' => 200,
-                'msg' => '申请成功'
-            ];            
+        //判断是否已经申请过了
+        $acc = RpaSimulationAccount::where('sfz', $request->sfz)->first();
+        if(!$acc){
+            $data = [
+                'name' => $request->name,
+                'sfz' => $request->sfz,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'postcode' => $request->postcode,
+                'email' => $request->email,
+                'isCtp' => $request->isCtp,
+            ];
+            $res = RpaSimulationAccount::create($data);
+            if($res){
+                //发布任务
+                $this->rpa_task('FzkhGetData',$res->id);
+
+                $return = [
+                    'status' => 200,
+                    'msg' => '申请成功'
+                ];            
+            }else{
+                $return = [
+                    'status' => 500,
+                    'msg' => '申请失败'
+                ];
+            }
         }else{
             $return = [
                 'status' => 500,
-                'msg' => '申请失败'
+                'msg' => '该身份证已经注册过了'
             ];
         }
-
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
 
@@ -758,7 +771,7 @@ class RpaApiController extends BaseApiController
             'zjzh' => 'required'
         ]);
 
-        $res = RpaSimulationAccount::where("id",$request->id)->update(['zjzh'=>$request->zjzh]);
+        $res = RpaSimulationAccount::where("id",$request->id)->update(['zjzh'=>$request->zjzh,'khdate'=>time()]);
         if($res){
             $kh = RpaSimulationAccount::find($request->id);
             $content = "尊敬的".$kh->name."：您好，您的仿真期权账号为".$request->zjzh."，初始密码为身份证后六位，可于下一个交易日参与交易。请到华安期货官网-软件下载-其他及模拟仿真栏目下载软件，推荐下载“期权仿真恒生-5.0”";
@@ -786,5 +799,19 @@ class RpaApiController extends BaseApiController
 
         return response()->json($re);
         
+    }
+
+
+    private function rpa_task($name,$id){
+        $param = [
+            'name' => $name,
+            'id' => $id
+        ];
+        $data1 = [
+            'name' => 'TaskDistribution_im',
+            'jsondata' => json_encode($param,JSON_UNESCAPED_UNICODE),
+            'server' => '主服务器1'
+        ];
+        $res1 = rpa_immedtasks::create($data1);
     }
 }

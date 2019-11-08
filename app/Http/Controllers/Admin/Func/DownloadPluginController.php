@@ -9,6 +9,7 @@ use App\Models\Admin\Func\Plugin\RpaPlugin;
 use App\Models\Admin\Func\Plugin\RpaPluginVersion;
 use App\Models\Admin\Func\Plugin\RpaPluginApply;
 use App\Models\Admin\Func\Plugin\RpaPluginDownload;
+use App\Models\Admin\Base\Document\SysDocumentContent;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ class DownloadPluginController extends BaseAdminController
 {
     public function index(Request $request){
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 插件下载 页");
-        $list = RpaPlugin::get()->toArray();
+        $list = RpaPlugin::where('status', 1)->get()->toArray();
         $user_id = (int) auth()->guard('admin')->user()->id; // 登录用户id
         foreach ($list as $k => $v) {
             $download = 0;
@@ -33,7 +34,9 @@ class DownloadPluginController extends BaseAdminController
             if($count) $download = 1;
             $list[$k]['download'] = $download;
         }
-        return view('admin/func/DownloadPlugin/index', ['list' => $list]);
+        $document = SysDocumentContent::where('name', '插件通用安装指南')->orderBy('id', 'desc')->first();
+
+        return view('admin/func/DownloadPlugin/index', ['list' => $list,'document' => $document]);
     }
 
 
@@ -84,6 +87,9 @@ class DownloadPluginController extends BaseAdminController
      * @return array|string
      */
     public function download(Request $request, $id){
+        if(isset($request->_pjax)) {
+            dd();
+        }
         $this->log(__CLASS__, __FUNCTION__, $request, "插件下载");
         $version = RpaPluginVersion::where('id', $id)->first();
         $name = auth()->guard('admin')->user()->name;
@@ -101,6 +107,9 @@ class DownloadPluginController extends BaseAdminController
         $dir = base_path();
         $copy = $dir."/storage/app/plugins/copy{$user_id}.zip";
         $filename = $dir."/storage/app/".$version->url;
+        if(!file_exists($filename)) {
+            die ("文件不存在<a href='javascript:history.go(-1);'>点击返回</a>");
+        }
         copy($filename, $copy);
         $real = pathinfo($version->show_name);
         $str = $this->getConfigByUser($user);
@@ -150,15 +159,35 @@ class DownloadPluginController extends BaseAdminController
      * @return string
      */
     public function getConfigByUser($user){
-        $password = \Illuminate\Support\Facades\Crypt::decrypt($user->password);
+        $email = $user->email;
+        $a = explode('@', $email);
+        $name = $a[0];
+        $password = createPassword($name, true);
         $str = 'var ojson = {
             grant_type: "password",
             client_id: 2,
             client_secret: "DuNMC6w9faxgeRx1g1eTC5N3lGvukbNiERAI7Jya",
-            password: "'.($password).'",
-            username: "'.($user->email).'",
-            scope: ""
+            password: "'.$password.'",
+            username: "'.$email.'",
+            scope: "",
+            rpa_ip_back: "https://172.16.253.26/rpa/index.php",
+            rpa_ip: "https://www.haqh.com/rpa/index.php"
         };';
         return $str;
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function document(Request $request){
+        $id = $request->id;
+        $plugin = RpaPlugin::where('id', $id)->orderBy('id', 'desc')->first();
+        $document = SysDocumentContent::where('name', $plugin->name)->orderBy('id', 'desc')->first();
+        if($document) {
+            return $this->ajax_return(200, $document->content);
+        } else {
+            return $this->ajax_return(500, '该插件暂无使用说明');
+        }
     }
 }

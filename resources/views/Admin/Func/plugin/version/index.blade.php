@@ -10,6 +10,9 @@
                             @slot('listsOperation')
                             @endslot
                             @slot('operation')
+                                <a class="btn btn-primary btn-sm" href="javascript:history.go(-1);"  title="返回">
+                                    返 回
+                                </a>
                                 <a class="btn btn-success btn-sm tree-ntstable-add" url="/admin/rpa_plugin_version/create?id={{$id}}" title="新增" onclick="operation($(this));">
                                     <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
                                 </a>

@@ -10,7 +10,9 @@
                             @slot('listsOperation')
                             @endslot
                             @slot('operation')
-                                
+                            <a class="btn btn-primary btn-sm" href="javascript:history.go(-1);"  title="返回">
+                                    返 回
+                                </a>
                             @endslot
                         @endcomponent
 
@@ -26,6 +28,7 @@
                                 </div>
                             @endslot
                         @endcomponent
+                            <input type="hidden" name="pid" id="pid" value="{{$pid}}">
                         <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
                     </div>
                 </div>

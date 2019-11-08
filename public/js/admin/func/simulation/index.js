@@ -1,19 +1,4 @@
-function sendSms(id, type = "msg") {
-    $.ajax({
-        url:'/admin/rpa_simulation_account_business/sendSms',
-        data:{id:id,type:type},
-        type:'post',
-        dataType:'json',
-        success:function (r) {
-            if(r.code == 200) {
-                toastr.success('发送成功');
-                location.reload();
-            } else {
-                toastr.error(r.info);
-            }
-        }
-    });
-}
+
 $(function(){
     let selectInfo = [];
     let url_prefix = "/admin/rpa_simulation_account_business/";
@@ -102,11 +87,74 @@ $(function(){
         var temp = {
             startTime : $("#pjax-container #search-group #startTime").val(),
             endTime : $("#pjax-container #search-group #endTime").val(),
-            name : $("#pjax-container #search-group #name").val()
+            name : $("#pjax-container #search-group #name").val(),
+            isCtp : $("#pjax-container #search-group #isCtp").val()
         };
         return temp;
     }
+    
+    function fp(id) {
+        $.ajax({
+            url:'/admin/rpa_simulation_account_business/ctp',
+            data:{id:id},
+            type:'post',
+            dataType:'json',
+            success:function(r) {
+                if(r.code != 200) {
+                    swal(r.info, '', 'error');
+                    return false;
+                } else {
+                    swal('分配成功', '', 'success');
+                    $.pjax.reload('#pjax-container');
+                }
+            },
+            error:function() {
+                swal('分配失败', '', 'error');
+                return false;
+            }
+        });
+    }
 
+    function zjzh(row) {
+        swal({
+            title: '请为客户('+row.name+')分配资金账号(开发中.....)',
+            type: 'info',
+            html: '<div class="text-center">'+
+            '<input style="width: 70%;display:inline-block;margin-top:6px;" type="text" id="zjzh" class="form-control" placeholder="资金账号">'+
+            '</div>',
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonColor: '#3fc3ee',
+            cancelButtonColor: 'gray',
+            confirmButtonText: '确认',
+            cancelButtonText: ' 取消'
+        }).then(function (res) {
+            if(res.value) {
+               var zjzh = $('#zjzh').val();
+               if(!zjzh) {
+                    swal('资金账号必填','', 'error');
+                    return false;
+               }  
+               $.ajax({
+                   url:url_prefix + 'setZjzh',
+                   data:{id:row.id, zjzh:zjzh},
+                   type:'post',
+                   dataType:'json',
+                   success:function(r){
+                        if(r.code == 200) {
+                            swal('成功', '', 'success');
+                            $('#tb_departments').bootstrapTable('refresh');
+                            
+                        } else {
+                            swal(r.info, '', 'error');
+                            return false;
+                        }
+                   }
+               })
+            }
+
+        });
+    }
 
 
     //分页参数
@@ -152,42 +200,49 @@ $(function(){
                 field: 'zjzh',
                 title: '资金账号',
                 align: 'center',
-                valign: 'middle'
+                valign: 'middle',
+                formatter:function(v) {
+                    if(!v) {
+                        return "<button class='btn btn-primary btn-sm zjzh'>手动添加</button>"
+                    } else {
+                        return v;
+                    }
+                },
+                events: {
+                    "click .zjzh":function (e, value, row, index){
+                        zjzh(row);
+                    }
+                },
             }, {
-                field: 'dl_days',
-                title: '大连天数',
+                field: 'address',
+                title: '地址',
                 align: 'center',
                 valign: 'middle'
             }, {
-                field: 'dl_amount',
-                title: '大连笔数',
-                align: 'center',
-                valign: 'middle'
-            }, {
-                field: 'dl_xq',
-                title: '大连行权数',
-                align: 'center',
-                valign: 'middle'
-            }, {
-                field: 'zz_days',
-                title: '郑州天数',
-                align: 'center',
-                valign: 'middle'
-            }, {
-                field: 'zz_amount',
-                title: '郑州笔数',
-                align: 'center',
-                valign: 'middle'
-            }, {
-                field: 'zz_xq',
-                title: '郑州行权数',
+                field: 'created_at',
+                title: '创建时间',
                 align: 'center',
                 valign: 'middle'
             },{
-                field: 'from',
-                title: '来源',
+                field: 'isCtp',
+                title: '穿透状态',
                 align: 'center',
-                valign: 'middle'
+                valign: 'middle',
+                formatter:function(v){
+                    if(v == 2) {
+                        return "仅CTP穿透(已分配)";
+                    } else if(v == 1) {
+                        return "仅CTP穿透<button class='btn btn-primary btn-sm fp'>分配</button>";
+                    } else {
+                        return "无";
+                    }
+                },
+                events: {
+                    "click .fp":function (e, value, row, index){
+                        var id = row.id;
+                        fp(id);
+                    }
+                },
             }
         ],
         }

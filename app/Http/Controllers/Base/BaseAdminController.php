@@ -47,7 +47,6 @@ class BaseAdminController extends BaseController
         $yx = config('sms.YX');
         $url = $yx['url']['mult'];
         $statuses = $yx['status'];
-
         $form_params = [
             'CorpID' => $yx['account'],
             'Pwd' => $yx['password'],
@@ -56,19 +55,16 @@ class BaseAdminController extends BaseController
             "Cell" => '',
             "SendTime" => ''
         ];
-
         $guzzle = new Client();
         $response = $guzzle->post($url, [
             'form_params' => $form_params
         ]);
         $body = $response->getBody();
         $body = (string)$body;
-
         $data = [
             'status' => $body,
             'msg' => $statuses[$body]
         ];
-
         //短信日志
         $sms = [
             'type' => '优信',

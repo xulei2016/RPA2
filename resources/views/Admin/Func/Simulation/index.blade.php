@@ -23,19 +23,25 @@
 
                     @component('admin.widgets.search-group')
                     @slot('searchContent')
-                    <label class="control-label col-sm-1" for="startTime">开始时间</label>
                     <div class="col-sm-2">
-                        <input type="text" class="form-control" id="startTime">
+                        <input type="text" class="form-control" id="startTime" placeholder="开始时间">
                     </div>
 
-                    <label class="control-label col-sm-1" for="startTime">结束时间</label>
                     <div class="col-sm-2">
-                        <input type="text" class="form-control" id="endTime">
+                        <input type="text" class="form-control" id="endTime" placeholder="结束时间">
                     </div>
 
-                    <label class="control-label col-sm-1" for="name">姓名</label>
                     <div class="col-sm-2">
-                    <input type="text" class="form-control" id="name">
+                    <input type="text" class="form-control" id="name" placeholder="姓名">
+                    </div>
+                    
+                    <div class="col-sm-2">
+                        <select name="isCtp" id="isCtp" class="form-control">
+                            <option value="">ctp状态(全部)</option>
+                            <option value="0">无</option>
+                            <option value="1">仅ctp穿透</option>
+                            <option value="2">仅ctp穿透(已分配)</option>
+                        </select>
                     </div>
                     @endslot
                     @endcomponent

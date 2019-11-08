@@ -23,8 +23,9 @@ class ApplyController extends BaseController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request){
+        $id = $request->id;
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 插件申请 页");
-        return view($this->view_prefix.'index');
+        return view($this->view_prefix.'index', ['pid' => $id]);
     }
 
     /**
@@ -33,11 +34,11 @@ class ApplyController extends BaseController
      * @return mixed
      */
     public function pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['status']);
-        $condition = $this->getPagingList($selectInfo, ['status' => '=']);
+        $selectInfo = $this->get_params($request, ['status', 'pid']);
+        $condition = $this->getPagingList($selectInfo, ['status' => '=', 'pid' => '=']);
         $rows = $request->rows;
         $order = ($request->sort ?? 'id');
-        $sort = 'asc';
+        $sort = 'desc';
         $result = RpaPluginApply::where($condition)
             ->orderBy($order, $sort)
             ->paginate($rows);

@@ -32,7 +32,7 @@ class File implements ShouldQueue
     public function handle()
     {
         $customer = rpa_customer_videos::find($this->param['id']);
-        $filenewname = $customer->customer_zjzh . $customer->customer_name . $this->param['fileremark'] . ".".$this->param['ext'];
+        $filenewname = $customer->customer_name . $customer->customer_zjzh . $this->param['fileremark'] . ".".$this->param['ext'];
 
         for($i=0; $i<= $this->param['totalBlobNum']-1; $i++){
             $blob = file_get_contents($this->param['uploadPath'] . $this->param['filename'].'_'.$i);

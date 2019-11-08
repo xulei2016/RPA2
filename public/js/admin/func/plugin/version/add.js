@@ -23,7 +23,7 @@ $(function(){
             add($(this).parents('form'));
         });
 
-
+        
         //上传附件
         $('form input#zip').on('change', function(e){
             var file = document.getElementById("zip").files[0];

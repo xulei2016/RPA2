@@ -1,6 +1,8 @@
 $(function(){
     let url_prefix = '/admin/rpa_plugin/';
-    let url_prefix_verrsion = '/admin/rpa_plugin_version/plugin/';
+    let url_prefix_version = '/admin/rpa_plugin_version/plugin/';
+    let url_prefix_apply = '/admin/rpa_plugin_apply/';
+    let url_prefix_download = '/admin/rpa_plugin_download/';
     let selectInfo = [];
     /*
      * 初始化
@@ -139,7 +141,15 @@ $(function(){
                 field: 'desc',
                 title: '插件描述',
                 align: 'center',
-                valign: 'middle'
+                valign: 'middle',
+                formatter:function(val){
+                    var num = val.substr(50, 1);
+                    var t = val.substr(0,50);
+                    if(num) {
+                        t += '...'
+                    }
+                    return t
+                }
             },  {
                 field: 'status',
                 title: '状态',
@@ -157,15 +167,20 @@ $(function(){
                     "click #deleteOne":function (e, value, row, index){
                         var id = row.id;
                         Delete(id);
+                    },
+                    "click #showApply":function (e, value, row, index){
+                        var id = row.id;
+                        showApply(id);
                     }
                 },
                 formatter: function(value, row, index){
                     var id = value;
                     var result = "";
-                    // result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='"+url_prefix+id+"' title='查看'>查看</a>";
-                    result += " <a href='"+url_prefix_verrsion+id+"' class='btn btn-sm btn-info' title='查看'>插件管理</a>";
+                    result += " <a href='"+url_prefix_version+id+"' class='btn btn-sm btn-info' title='查看'>版本管理</a>";
                     result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='"+url_prefix + id+"/edit' title='编辑'>编辑</a>";
                     result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
+                    result += " <a href='"+url_prefix_apply+"?id="+id+"' class='btn btn-sm btn-success' title='查看申请'>查看申请</a>";
+                    result += " <a href='"+url_prefix_download+"?pid="+id+"' class='btn btn-sm btn-primary' title='查看申请'>查看下载</a>";
                     return result;
                 }
             }],

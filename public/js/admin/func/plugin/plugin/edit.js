@@ -7,6 +7,7 @@ $(function(){
      */
     function init(){
         bindEvent();
+        CKEDITOR.replace('editor_desc');
         //表单的JQueryValidater配置验证---jquery.validate插件验证法
         $(modal+" form").validate(validateInfo);
     }
@@ -15,6 +16,9 @@ $(function(){
     function bindEvent(){
         //表单提交
         $(modal+' form #save').click(function(){
+            for (instance in CKEDITOR.instances) {
+                CKEDITOR.instances[instance].updateElement();
+            }   
             add($(this).parents('form'));
         });
 

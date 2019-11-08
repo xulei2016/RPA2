@@ -342,7 +342,9 @@ $(function(){
                 align: 'center',
                 valign: 'middle',
                 formatter:function (value, row, index){
-                    if(value == 2) {
+                    if(value == 3) {
+                        return '特殊客户';
+                    } else if(value == 2){
                         return '自营';
                     } else if(value == 1) {
                         return '机构';

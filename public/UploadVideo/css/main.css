@@ -1,0 +1,530 @@
+body,
+div,
+ul,
+ol,
+li,
+p,
+i,
+em,
+h1,
+h2,
+h3,
+h4,
+a,
+strong,
+span,
+img,
+form,
+input,
+textarea,
+button {
+	padding: 0;
+	margin: 0
+}
+
+body {
+	font-family: microsoft yahei, simsun, Tahoma, Arial, helvetica neue, hiragino sans gb, sans-self;
+	font-size: 14px;
+	line-height: 24px
+}
+
+@font-face {
+	font-family: iconfont;
+	src: url(font/iconfont.eot);
+	src: url(font/iconfont.eot?#iefix) format('embedded-opentype'), url(font/iconfont.woff) format('woff'), url(font/iconfont.ttf) format('truetype'), url(font/iconfont.svg#iconfont) format('svg')
+}
+
+input,
+textarea {
+	outline: 0
+}
+
+li {
+	list-style: none
+}
+a {
+	text-decoration: none;
+	color: inherit
+}
+
+img {
+	border: 0
+}
+
+.pr {
+	position: relative
+}
+
+.pa {
+	position: absolute
+}
+
+.pf {
+	position: fixed
+}
+
+.f-l {
+	float: left
+}
+
+.f-r {
+	float: right
+}
+
+li,
+div,
+ul {
+	*zoom: 1
+}
+
+.container {
+	/*width: 100%;
+	height: auto;*/
+	clear: both;
+	overflow: hidden;
+	height: auto;
+    width: 100%;
+    /*position: absolute;
+    top: 0px;
+    bottom: 0px;*/
+
+}
+.header{
+	width: 300px;
+	margin: 0 auto;
+}
+.header h2{
+	text-align: center;
+	font-size: 14px;
+	margin: 10px 0;
+}
+.header img{
+	display: block;
+	width: 98px;
+	height: 98px;
+	border-radius:5px;
+	margin: 0 auto;
+	margin-top: 20px;
+}
+.form-content {
+	width: 300px;
+	margin: 0 auto;
+}
+
+.form-group {
+	margin-top: 20px;
+}
+
+.form-group input {
+	width: 300px;
+	height: 50px;
+	/* line-height: 48px; */
+	padding-left: 10px;
+	border: 1px #bbb solid;
+	border-radius: 5px;
+	font-size: 16px;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	transition: all .3s ease-out;
+	-webkit-transition: all .3s ease-out;
+	-moz-transition: all .3s ease-out;
+}
+
+.form-group input:focus{
+	border-color: #ff0000;
+	box-shadow: 0 0 15px #ff0000;
+	-webkit-box-shadow: 0 0 15px #ff0000;
+	-moz-box-shadow: 0 0 15px #ff0000
+}
+
+.form-content .has-error input:focus{
+	border-color: #f74343;
+	box-shadow: 0 0 15px #f74343;
+	-webkit-box-shadow: 0 0 15px #f74343;
+	-moz-box-shadow: 0 0 15px #f74343;
+}
+
+.form-group .help-block{
+	
+	
+	color: #ff0000;
+
+}
+.form-group button.tran{
+	width: 300px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 16px;
+    border: 0;
+    background-color: #f74343;
+    color: #fff;
+    border-radius: 5px;
+    outline: none;
+}
+
+.top{
+	border-bottom: 1px solid #ddd;
+	width: 100%;
+	height: 40px;
+/*	padding-top: 48px;*/
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-color: #fff;
+}
+.top a{
+	position: absolute;
+	left: 10px;
+	bottom: 2px;
+	float: left;
+}
+.top img{
+	width: 20px;
+}
+.top h2{
+	font-size: 14px;
+	text-align: center;
+	line-height: 40px;
+}
+.contentVideo{
+	width: 98%;
+	margin: 0 auto;
+	overflow: hidden;
+	height: 100%;
+    margin-top: 44px;
+    margin-bottom: 100px;
+}
+
+.model{
+	width: 100%;
+	height: 100%;
+	background-color: #00000069;
+	position: fixed;
+	top: 0;
+	left: 0;
+	display: none;
+}
+.model .remark{
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 0;
+	right: 0;
+	width: 300px;
+	min-height:200px;
+	margin: 0 auto;
+	border-radius: 5px;
+	background-color: #fff;
+	padding-bottom: 20px;
+}
+.model .marKDivName{
+	width: 94%;
+	height: 40px;
+	line-height: 40px;
+	margin: 0 auto;
+	/*border-bottom: 1px solid #ddd;*/
+}
+.marKDivName p{
+	/* float: left; */
+	font-size: 12px;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap
+}
+.model .marKDivCon textarea{
+	width: 200px;
+	height: 50px;
+	/* margin-top: 6px; */
+	/* margin-left: 8px; */
+}
+.remarkForm{
+	clear: both;
+	overflow: hidden;
+	border-bottom: 1px solid #ddd;
+}
+.model .remark label.title{
+	width: 70px;
+	height: 40px;
+	float: left;
+	text-align: right;
+	margin-right: 10px;
+}
+.model .marKDivCon label.title{
+	height: 80px;
+}
+.marKDivCon{
+	width: 94%;
+	margin: 0 auto;
+	margin-top: 2px;
+}
+.remark h2{
+	width: 100%;
+	height: 40px;
+	border-bottom: 1px solid #ddd;
+	text-align: center;
+	line-height: 40px;
+	font-size: 14px;
+}
+.markBtn {
+	width: 100%;
+	text-align: center;
+	margin-top: 10px;
+}
+.markBtn button{
+	padding: 10px;
+	margin: 0 5px;
+	background-color: #f74343;
+	border: none;
+	outline: none;
+	border-radius: 5px;
+	color: #fff;
+}
+.uploadBtn,#sureBtn,.conBtn{
+	display: block;
+	width: 300px;
+    height: 50px;
+    line-height: 50px;
+    font-size: 16px;
+    border: 0;
+    background-color: #f74343;
+    color: #fff;
+    border-radius: 5px;
+    outline: none;
+    margin: 0 auto;
+    margin-top: 26px;
+}
+
+#myFile,.conBtn,#conMyFile{
+	display: none;
+}
+#upload-list{
+	margin-top: 40px;
+	display: none;
+}
+.table-head,.table-body{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	font-weight: bold;
+	font-size: 14px;
+	text-align: center;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	overflow: hidden;
+}
+table tr{
+	width: 100%;
+	height: 50px;
+	line-height: 50px;
+	font-weight: bold;
+	font-size: 14px;
+	text-align: center;
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	overflow: hidden;
+}
+
+.table-body{
+	border-top: none;
+}
+.table-head div,.table-body div{
+	float: left;
+	width: 25%;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-align: center;
+	
+}
+/*.table-head .name,.table-body .name{
+	width: 200px;
+}*/
+td img{
+	display: block;
+	width: 24px;
+	margin: 0 auto;
+}
+
+table{
+	width: 100%;
+	border: 1px solid #ddd;
+	border-collapse: collapse;
+	margin-top: 40px;
+}
+table tr td{
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	text-align: center;
+}
+
+.footer{
+	width: 100%;
+	height: 60px;
+	/*line-height: 60px;*/
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	border-top: 1px solid #ddd;
+	background-color: #fff;
+}
+
+.footer ul li{
+	display: block;
+	float: left;
+	width: 49%;
+	height: 100%;
+	text-align: center;
+	
+}
+.footer .firstLi{
+	border-right: 1px solid #ddd;
+}
+
+.footer li>div{
+	width: 100%;
+	height: 30px;
+	margin-top: 6px;
+	
+}
+.footer li .backVideoPic{
+	
+	background:url(../images/upGP.png) no-repeat top center;
+	background-size: 30px 30px;
+}
+
+.footer li.active .backVideoPic{
+	
+	background:url(../images/uploadRedPic.png) no-repeat top center;
+	background-size: 30px 30px;
+}
+
+
+
+.footer li .recordPic{
+	
+	background:url(../images/recordPic.png) no-repeat top center;
+	background-size: 30px 30px;
+}
+
+.footer li.active .recordPic{
+	
+	background:url(../images/recordRedPic.png) no-repeat top center;
+	background-size: 30px 30px;
+}
+
+
+.footer li p{
+	display: block;
+	width: 100%;
+	font-size: 12px;
+	color: #666;
+	/*background-color: #FF0000;*/
+}
+.footer li.active p{
+	color: #bb2424;
+}
+
+
+
+.recordList{
+	width: 100%;
+	margin: 0 auto;
+	margin-top: 40px;
+	/*display: none;*/
+	padding-bottom: 66px;
+}
+.listhead{
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	margin: 0 auto;
+	/* border-bottom: 1px solid #ddd;
+	border-top: 1px solid #ddd; */
+	position: relative;
+	margin-top: 10px;
+}
+.down{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 20px;
+	height: 20px;
+	background: url(../images/down.png) no-repeat center center;
+	background-size: cover;
+}
+.controlDiv{
+	background-color: #aaa;
+	display: none;
+}
+.listhead h3{
+	width: 50%;
+	float: left;
+	text-align: center;
+	font-size: 14px;
+	background-color: #bbb;
+}
+.listCon ul{
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	margin: 0 auto;
+} 
+
+.listCon ul li:first-child{
+	width: 30%;
+    float: left;
+    text-align: center;
+    font-weight: bold;
+}
+.listCon ul li:last-child{
+	width: 66%;
+    float: left;
+	text-indent: 4px;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	white-space: nowrap
+}
+
+.noRecord{
+	width: 100%;
+	height: 300px;
+	overflow: hidden;
+	text-align: center;
+	color: #ddd;
+	position: absolute;
+	top: 20%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	font-size: 20px;
+	font-weight: bold;
+	display: none;
+}
+.noDataPic{
+	width: 100%;
+	height: 240px;
+	background:url(../images/noData.png) no-repeat center center;
+}
+.infoHead,.infoDet{
+	width: 98%;
+	height: 40px;
+	margin: 0 auto;
+	line-height: 40px;
+}
+.infoHead div.videoName,.infoDet div.upTime{
+	float: left;
+	width: 30%;
+	font-weight: bold;
+	text-align: center;
+}
+.infoHead div,.infoDet div{
+	float: left;
+	text-indent: 4px;
+}
+
+.tips{
+	margin-top: 20px;
+}

@@ -29,9 +29,6 @@ body::-webkit-scrollbar {
 body .content-wrapper{
     z-index: 1;
 }
-body .content-wrapper .header{
-    border-bottom: 1px solid #dee2e6;
-}
 .sidebar .nav-link {
     padding: 1.2rem;
 }
@@ -413,15 +410,15 @@ html.ios-fix body {
 }
 
 /*个人中心图片上传效果*/
-#pjax-container .profile-avatar-container{
+#pjax-container section.content .profile-avatar-container{
     position: relative;
     width: 100px;
     margin: 0 auto;
 }
-#pjax-container .profile-avatar-container .profile-avatar-text {
+#pjax-container section.content .profile-avatar-container .profile-avatar-text {
     display: none;
 }
-#pjax-container .profile-avatar-container:hover .profile-avatar-text {
+#pjax-container section.content .profile-avatar-container:hover .profile-avatar-text {
     display: block;
     position: absolute;
     height: 100px;
@@ -434,7 +431,7 @@ html.ios-fix body {
     line-height: 100px;
     text-align: center;
 }
-#pjax-container .profile-avatar-container button {
+#pjax-container section.content .profile-avatar-container button {
     position: absolute;
     top: 0;
     left: 0;
@@ -442,7 +439,7 @@ html.ios-fix body {
     height: 100px;
     opacity: 0;
 }
-#pjax-container .profile-avatar-container .profile-user-img {
+#pjax-container section.content .profile-avatar-container .profile-user-img {
     width: 100px;
     height: 100px;
 }
@@ -627,75 +624,3 @@ html.ios-fix body {
     cursor: pointer;
 }
 /*通知提示框结束*/
-
-/****************多菜单tabs start*******************/
-.tags-view-container{
-    height: 34px;
-    width: 100%;
-    background: #fff;
-    border-bottom: 1px solid #d8dce5;
-    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
-    overflow-y: hidden;
-    overflow-x: hidden;
-}
-.tags-warp{
-    white-space: nowrap;
-    position: relative;
-    overflow: scroll;
-    overflow-y: hidden;
-    width: 100%;
-}
-.tags-item{
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-    height: 26px;
-    line-height: 26px;
-    border: 1px solid #d8dce5;
-    color: #495060;
-    background: #fff;
-    padding: 0 8px;
-    font-size: 12px;
-    margin-left: 5px;
-    margin-top: 4px;
-}
-.tags-item.active{
-    background-color: #42b983;
-    color: #fff;
-    border-color: #42b983;
-}
-.tags-item.active:before{
-    content: '';
-    background: #fff;
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    position: relative;
-    margin-right: 2px;
-}
-.tags-item .tags-close{
-    margin-left: 5px;
-    height: 16px;
-    width: 16px;
-    vertical-align: 3px;
-    border-radius: 50%;
-    text-align: center;
-    -webkit-transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-    -webkit-transform-origin: 100% 50%;
-    transform-origin: 100% 50%;
-}
-.tags-item .tags-close:before{
-    -webkit-transform: scale(0.6);
-            transform: scale(0.6);
-    display: inline-block;
-    vertical-align: -3px;
-}
-.tags-item .tags-close:hover{
-    background-color: #b4bccc;
-    color: #fff;
-}
-
-/*****************************多菜单tabs end******************************/

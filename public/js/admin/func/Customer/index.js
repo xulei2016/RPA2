@@ -99,6 +99,7 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             customer : $("#pjax-container #search-group #customer").val(),
+            dept : $("#pjax-container #search-group #dept").val(),
             manager : $("#pjax-container #search-group #manager").val(),
             mediator : $("#pjax-container #search-group #mediator").val(),
             from_add_time : $("#pjax-container #search-group #startTime").val(),
@@ -207,7 +208,9 @@ $(function(){
                         }
                     },
                     formatter: function(value, row, index){
-                        var result = "<a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
+                        var id = row.id;
+                        var result = " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/rpa_customer/edit/"+id+"' title='编辑'>编辑</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
                         return result;
                     }
                 }],

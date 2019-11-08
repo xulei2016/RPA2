@@ -27,10 +27,19 @@
                             <input type="text" class="form-control" id="customer" placeholder="资金账号或客户姓名">
                         </div>
                         <div class="col-sm-2">
+                            <input type="text" class="form-control" id="dept" placeholder="部门名称">
+                        </div>
+                        <div class="col-sm-2">
                             <input type="text" class="form-control" id="manager" placeholder="经理姓名或经理编号">
                         </div>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="mediator" placeholder="居间姓名或居间编号">
+                        </div>
+                        <div class="col-sm-2">
+
+                        </div>
+                        <div class="col-sm-2">
+
                         </div>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="startTime" placeholder="开始时间">

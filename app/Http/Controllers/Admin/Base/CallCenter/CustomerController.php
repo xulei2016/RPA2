@@ -49,6 +49,8 @@ class CustomerController extends BaseController
         $this->customer_id = $request->post('customer_id');
         $this->noticeOnlineManager('customer_remove');
         $this->leaveOnlineVisitors($this->customer_id);
+        $data = $this->messagePackaging($this->customer_id, 0, 'manager', 'customer', '非常抱歉, 连接已断开, 请点击结束聊天后, 重新登录', 'message');
+        broadcast(new CallCenterCustomerEvent($data));
         return $this->ajax_return(200, 'success');
     }
 

@@ -12,7 +12,7 @@
             <div class="col-sm-10">
                 <select name="roleLists[]" id="select2-menu" class="form-control parent_id select2" multiple>
                     @foreach($roles as $role)
-                    <option value ="{{ $role['name'] }}">{{ $role['name'] }}</option>
+                    <option value ="{{ $role['name'] }}">{{ $role['desc'] }}</option>
                     @endforeach
                 </select>
             </div>

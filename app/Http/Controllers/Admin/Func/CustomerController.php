@@ -27,8 +27,9 @@ class CustomerController extends BaseAdminController{
     /**
      * add
      */
-    public function add()
+    public function add(Request $request)
     {
+        $this->log(__CLASS__, __FUNCTION__, $request, "新增 开户客户 页");
         return view('admin.func.Customer.add');
     }
 
@@ -37,11 +38,11 @@ class CustomerController extends BaseAdminController{
      */
     public function adddata(Request $request)
     {
+        $this->log(__CLASS__, __FUNCTION__, $request, "新增 开户客户");
         $data = $this->get_params($request, ['yyb','fundsNum','name','idCard','special','message','customerNum','jjr']);
         if($data['special']){
             $data['special'] = implode(",",$data['special']);
         }
-        
         $guzzle = new Client(['verify'=>false]);
         $host = "https://rpa.slave.haqh.com:8088";
         $token = $this->access_token($host);
@@ -57,9 +58,28 @@ class CustomerController extends BaseAdminController{
         return $this->ajax_return($result['status'], $result['msg']);
     }
 
+    /**
+     * edit
+     */
+    public function edit(Request $request)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 开户客户备注 页");
+        $id = $request->id;
+        $customer = rpa_customer_manager::where('id','=',$id)->first();
+        return view('admin.func.Customer.edit',['customer' => $customer]);
+    }
+
+    public function editdata(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 开户客户备注 页");
+        $id = $request->id;
+        $data = $this->get_params($request, [['message','']]);
+        rpa_customer_manager::where("id",$id)->update($data);
+        return $this->ajax_return(200, '操作成功！');
+    }
+
     //查询信息
     public function pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['customer','manager','mediator','from_add_time','to_add_time']);
+        $selectInfo = $this->get_params($request, ['customer','dept','manager','mediator','from_add_time','to_add_time']);
 
         $condition = $this->getPagingList($selectInfo, ['from_add_time'=>'>=','to_add_time'=>'<=']);
         $customer = $selectInfo['customer'];
@@ -67,6 +87,10 @@ class CustomerController extends BaseAdminController{
             array_push($condition,  array('fundsNum', 'like', "%".$customer."%"));
         }elseif(!empty( $customer )){
             array_push($condition,  array('name', 'like', "%".$customer."%"));
+        }
+        $dept = $selectInfo['dept'];
+        if($dept){
+            array_push($condition,  array('yybName', 'like', "%".$dept."%"));
         }
         $manager = $selectInfo['manager'];
         if($manager && is_numeric( $manager )){
@@ -120,6 +144,7 @@ class CustomerController extends BaseAdminController{
      * export
      */
     public function export(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "导出 开户客户");
         $selectInfo = $this->get_params($request, ['id','customer','manager','mediator','from_add_time','to_add_time']);
         $condition = $this->getPagingList($selectInfo, ['from_add_time'=>'>=','to_add_time'=>'<=']);
         $customer = $selectInfo['customer'];

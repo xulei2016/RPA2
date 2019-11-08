@@ -10,11 +10,13 @@
                     <tbody>
                     <tr>
                         <th>名称</th>
+                        <th>描述</th>
                         <th>版本号</th>
                     </tr>
                         @foreach($versions as $k => $v)
                             <tr>
                             <td>{{$v->show_name}}</td>
+                            <td>{{$v->desc}}</td>
                             <td>{{$v->version}}</td>
                             </tr>
                         @endforeach

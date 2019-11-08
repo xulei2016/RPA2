@@ -250,7 +250,7 @@ class ManagerController extends BaseController
      */
     public function updateOne(Request $request){
         $data = $this->get_params($request, ['id','key','value']);
-        SysManager::where('id', $data['id'])->update([
+        $result = SysManager::where('sys_admin_id', $data['id'])->update([
             $data['key'] => $data['value']
         ]);
         $manager = Redis::hGet(self::ONLINE_MANAGER_LIST, $data['id']);

@@ -32,17 +32,23 @@ class SimulationController extends BaseAdminController
      * @return
      */
     public function pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['name','startTime','endTime']);
+        $selectInfo = $this->get_params($request, ['name','startTime','endTime','isCtp']);
         $rows = $request->rows;
         $order = 'rb.'.($request->sort ?? 'id');
-        $sort = 'asc';
+        $sort = 'desc';
         $result = RpaSimulationAccount::from('rpa_simulation_account as rb');
         if($selectInfo['name']) {
             $result = $result->where('rb.name','like', "%{$selectInfo['name']}%");
         }
+
+        if($selectInfo['isCtp']) {
+            $result = $result->where('rb.name','=', "{$selectInfo['name']}");
+        }
+
         if($selectInfo['startTime']) {
             $result = $result->whereDate('rb.created_at','>=', $selectInfo['startTime']." 00:00:00");
         }
+
         if($selectInfo['endTime']) {
             $result = $result->whereDate('rb.created_at','<=', $selectInfo['endTime']. " 23:59:59");
         }
@@ -50,6 +56,32 @@ class SimulationController extends BaseAdminController
             ->orderBy($order, $sort)
             ->paginate($rows);
         return $result;
+    }
+
+    /**
+     * 设置资金账号
+     */
+    public function setZjzh(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "仿真开户 修改资金账号");
+        $has = RpaSimulationAccount::where('zjzh', $request->zjzh)->first();
+        if($has) return $this->ajax_return(500, '该资金账号已存在');
+        $account = RpaSimulationAccount::where('id', $request->id)->first();
+        if(!$account) return $this->ajax_return(500, '未找到对应记录');
+        if($account->zjzh) return $this->ajax_return(500, '该用户资金账号已经存在');
+        $account->zjzh = $request->zjzh;
+        $res = $account->save();
+        if($res){
+            $kh = RpaSimulationAccount::find($request->id);
+            $content = "尊敬的".$account->name."：您好，您的仿真期权账号为".$request->zjzh."，初始密码为身份证后六位，可于下一个交易日参与交易。请到华安期货官网-软件下载-其他及模拟仿真栏目下载软件，推荐下载“期权仿真恒生-5.0”";
+            $res = $this->yx_sms($account->phone,$content);
+            if($res['status'] == '0'){
+                return $this->ajax_return(200, '成功');
+            }else{
+                return $this->ajax_return(500, '数据更新成功，短信发送失败');
+            }
+        }else{
+            return $this->ajax_return(500, '数据更新失败');
+        }
     }
 
     /**
@@ -199,6 +231,23 @@ class SimulationController extends BaseAdminController
             'successCount' => $successCount,
             'failureCount' => $failureCount
         ]);
+    }
+
+    public function ctp(Request $request){
+        $this->log(__CLASS__, __FUNCTION__, $request, "仿真开户 分配ctp");
+        $result = RpaSimulationAccount::where('id', $request->id)->first();
+        if($result->isCtp != 1) {
+            return $this->ajax_return(500, '该记录无法修改ctp状态');
+        }
+        $result->isCtp = 2;
+        $result->ctp_person = auth()->guard('admin')->user()->realName;
+        $result->ctp_time = date('Y-m-d H:i:s');
+        $r = $result->save();
+        if($r) {
+            return $this->ajax_return(200, '成功');
+        } else {
+            return $this->ajax_return(500, '失败');
+        }
     }
 
     /**

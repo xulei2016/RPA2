@@ -370,10 +370,10 @@ RPA.prototype = {
                 uniqueId: "id",                     //每一行的唯一标识，一般为主键列
                 showToggle:false,                    //是否显示详细视图和列表视图的切换按钮
                 cardView: false,                    //是否显示详细视图
-                detailView: false,                   //是否显示父子表
+                detailView: param.detailView,                   //是否显示父子表
                 showFullscreen: false,               //全屏显示,无效勿用
                 maintainSelected: true,             //将记住checkbox的选择项
-    
+
                 columns: param.columns,
                 responseHandler: function(res){
                     res.rows = res.data;
@@ -383,6 +383,9 @@ RPA.prototype = {
                     var id = row.ID;
                     // EditViewById(id, 'view');
                 },
+                onExpandRow: function(index, row, $detail) {
+                    param.onExpandRow(index, row, $detail);
+                }
                 // onPostBody: function () {
                 //     //改变复选框样式
                 //     $(selector).find("input:checkbox").each(function (i) {

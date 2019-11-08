@@ -13,6 +13,12 @@
                                 <a class="btn btn-success btn-sm tree-ntstable-add" url="/admin/rpa_plugin/create" title="新增" onclick="operation($(this));">
                                     <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;新增</span>
                                 </a>
+                                <a class="btn btn-primary btn-sm tree-ntstable-add" href="/admin/rpa_plugin_apply" title="查看申请">
+                                    查看申请 
+                                    @if($applyCount)
+                                    <span class="badge badge-sm bg-danger">{{$applyCount}}</span>
+                                    @endif
+                                </a>
                             @endslot
                         @endcomponent
 
@@ -29,5 +35,6 @@
             </div>
         </div>
     </div>
+    <script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
     <script src="{{URL::asset('/js/admin/func/plugin/plugin/index.js')}}"></script>
 @endsection

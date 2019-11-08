@@ -104,7 +104,7 @@ $(function(){
         var temp = {
             version : $("#pjax-container #search-group #version").val(),
             name : $("#pjax-container #search-group #name").val(),
-            pid : $("#pjax-container #search-group #pid").val()
+            pid : $("#pid").val()
         };
         return temp;
     }
@@ -145,7 +145,15 @@ $(function(){
                 field: 'desc',
                 title: '描述',
                 align: 'center',
-                valign: 'middle'
+                valign: 'middle',
+                formatter:function(val){
+                    var num = val.substr(50, 1);
+                    var t = val.substr(0,50);
+                    if(num) {
+                        t += '...'
+                    }
+                    return t
+                }
             },  {
                 field: 'status',
                 title: '状态',

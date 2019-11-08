@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin\Func\Plugin;
 
 use App\Models\Admin\Func\Plugin\RpaPlugin;
 use App\Models\Admin\Func\Plugin\RpaPluginVersion;
+use App\Models\Admin\Func\Plugin\RpaPluginDownload;
 use Illuminate\Http\Request;
 
 /**
@@ -41,6 +42,9 @@ class VersionController extends BaseController
             ->select(['spv.*','sp.name'])
             ->orderBy($order, $sort)
             ->paginate($rows);
+        foreach($result as &$v) {
+            $v->downloadCount = RpaPluginDownload::where('version_id', $v->id)->count();
+        }    
         return $result;
     }
 
@@ -102,6 +106,12 @@ class VersionController extends BaseController
      */
     public function destroy(Request $request, $ids){
         $ids = explode(',', $ids);
+        $dir = base_path();
+        foreach($ids as $id) {
+            $version = RpaPluginVersion::where('id', $id)->first();
+            $filename = $dir."/storage/app/".$version->url;
+            unlink($filename);
+        }
         RpaPluginVersion::destroy($ids);
         $this->log(__CLASS__, __FUNCTION__, $request, "删除 插件版本");
         return $this->ajax_return('200', '操作成功');
@@ -117,7 +127,8 @@ class VersionController extends BaseController
         }
         $core_path = 'plugins/';
         $dir = storage_path('app/'.$core_path);
-        $filename = $name;
+        // $filename = $name;
+        $filename = date('YmdHis').rand(1000,9999).'.'.$ext;
         $file->move($dir, $filename);
         $real_path = $core_path . $filename;
         return $this->ajax_return(200,'success', [
