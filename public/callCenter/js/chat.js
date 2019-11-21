@@ -335,11 +335,11 @@ $(function () {
             window.location.href = '/call_center/login';
         }
         info = JSON.parse(info);
-        callCenterConfig = JSON.parse(callCenterConfig);
-        if(current - timestamp > callCenterConfig.leave_length) {
-            localStorage.removeItem('call_center_timestamp');
-            EchoClient.prototype.logout();
-        }
+        // callCenterConfig = JSON.parse(callCenterConfig);
+        // if(current - timestamp > callCenterConfig.leave_length) {
+        //     localStorage.removeItem('call_center_timestamp');
+        //     EchoClient.prototype.logout();
+        // }
     }
 
     // 清空输入框

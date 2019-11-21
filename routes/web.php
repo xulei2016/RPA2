@@ -27,12 +27,16 @@ Route::get('/', function () {
 
 });
 
+Route::get('test-broadcast', function(){
+    broadcast(new \App\Events\OnlineService(1));
+});
+
 //客服中心前台
 Route::group(['prefix' => 'call_center', 'namespace' => 'Admin\Base\CallCenter'], function(){
     Route::post('/login', 'CustomerController@doLogin');
     Route::post('/logout', 'CustomerController@logout');
     Route::post('/leave', 'ManagerController@leave');
-
+    
     Route::post("/send", 'CustomerController@sendByCustomer');
     Route::post("/updateOne", 'ManagerController@updateOne');
     Route::post("/sendByManager", 'ManagerController@sendByManager');
@@ -215,7 +219,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function(){
             });
 
             //客服中心后台
-            Route::group(['namespace' => 'CallCenter','middleware' => ['permission:sys_call_center']], function(){
+            Route::group(['namespace' => 'CallCenter'], function(){
                 //聊天室
                 Route::get("/sys_call_center_chat_room", 'ChatRoomController@index');
                 // 模板管理

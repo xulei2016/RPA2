@@ -23,9 +23,6 @@
                 </div>
             </div>
 
-            {{-- wrapper --}} 
-            @include('admin.layouts.wrapper')
-            
             {{-- wrapper content --}}
             @yield('wrapper-content')
             
