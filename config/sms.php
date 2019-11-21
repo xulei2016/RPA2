@@ -46,7 +46,7 @@ return [
             'mult' => 'http://www.106551.com/ws/Send.aspx',
         ],
         'account' => 'YX03941',
-        'password' => '123',
+        'password' => 'H@qhyx-956482',
         'status' => [
             '0' => '提交成功',
             '–1' => '账号未注册',

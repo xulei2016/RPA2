@@ -187,11 +187,13 @@ return [
         //passport
         Laravel\Passport\PassportServiceProvider::class,
         //oci8
-        Yajra\Oci8\Oci8ServiceProvider::class,
+        // Yajra\Oci8\Oci8ServiceProvider::class,
         //LaravelLogViewer
         Rap2hpoutre\LaravelLogViewer\LaravelLogViewerServiceProvider::class,
         //Cors
         Barryvdh\Cors\ServiceProvider::class,
+        //验证码
+        Mews\Captcha\CaptchaServiceProvider::class
     ],
 
     /*
@@ -243,6 +245,9 @@ return [
 
         //excel
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+
+        //验证码
+        'Captcha' => Mews\Captcha\Facades\Captcha::class
     ],
 
 ];
