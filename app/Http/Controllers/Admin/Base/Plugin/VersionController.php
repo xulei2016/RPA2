@@ -117,7 +117,7 @@ class VersionController extends BaseController
         }
         $core_path = 'plugins/';
         $dir = storage_path('app/'.$core_path);
-        $filename = $name;
+        $filename = date('YmdHis').rand(1000,9999).'.'.$ext;
         $file->move($dir, $filename);
         $real_path = $core_path . $filename;
         return $this->ajax_return(200,'success', [

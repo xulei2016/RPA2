@@ -111,6 +111,7 @@ EchoClient.prototype = {
             localStorage.removeItem(this.config.cache_key);
             localStorage.removeItem(this.config.cache_config_key);
             localStorage.removeItem(this.config.cache_manager_key);
+            localStorage.removeItem('call_center_timestamp');
             if(!flag) {
                 window.location.href = this.config.login_url;
                 return false
@@ -138,6 +139,8 @@ EchoClient.prototype = {
                 info.avatar = data.avatar;
                 localStorage.setItem(_this.config.cache_key, JSON.stringify(info));
                 localStorage.setItem(_this.config.cache_config_key, JSON.stringify(r.config));
+                var timestamp = (Date.parse(new Date()))/1000;
+                localStorage.setItem('call_center_timestamp', timestamp);
                 window.location.href = r.info.href;
             }
         })

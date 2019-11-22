@@ -56,6 +56,7 @@ class BaseController extends BaseAdminController
         if (!Cache::has($this->config_key)) {
             $this->setConfig();
         }
+        $config = [];
         $cache = Cache::get($this->config_key);
         foreach ($cache as $v) {
             $config[$v['name']] = $v['value'];
@@ -238,6 +239,8 @@ class BaseController extends BaseAdminController
 
     /**
      * 检测客户是否在redis中
+     * @param $customer_id
+     * @return bool
      */
     public function checkOnline($customer_id){
         $data = Redis::hGet(self::ONLINE_CUSTOMER_LIST, $customer_id);

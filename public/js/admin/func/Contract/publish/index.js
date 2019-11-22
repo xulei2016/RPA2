@@ -170,6 +170,7 @@ $(function(){
             jys_id : $("#pjax-container #search-group #jys_id").val(),
             type : $("#pjax-container #search-group #type").val(),
             date : $("#pjax-container #search-group #date").val(),
+            date_type:$("#pjax-container #search-group #date_type").val()
         };
         return temp;
     }
@@ -198,13 +199,15 @@ $(function(){
                 field: 'date',
                 title: '日期',
                 align: 'center',
-                valign: 'middle'
+                valign: 'middle',
+                sortable:true
             }, {
                 field: 'count',
                 title: '数量',
                 align: 'center',
                 valign: 'middle'
             }],
+            sortOrder:'asc',
             detailView: true,
             onExpandRow: function(index, row, $detail) {
                 var subTable = $detail.html('<table></table>').find('table');
@@ -253,8 +256,8 @@ $(function(){
                                     hydm_on = '-';
                                     hydm_off = '-';
                                     hydm_tz = item.hydm_on;
-                                    sxf_before = item.contract.xhy_jysxf;
-                                    rnfy_before = item.contract.xhy_rnfy;
+                                    sxf_before = item.contract.has_online == 1?item.contract.xhy_jysxf:item.contract.pzfy_jysxf;
+                                    rnfy_before = item.contract.has_online == 1?item.contract.xhy_rnfy:item.contract.pzfy_rnfy;
                                 }
                                 rnfy = rnfy == null ? '-' : rnfy;
                                 rnfy_before = rnfy_before == null ? '-' : rnfy_before;

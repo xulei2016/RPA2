@@ -6,7 +6,7 @@ $(function () {
     var myTimer;
     var initSecond = 0;
     var timeoutFlag = true;
-    var alert = false;
+    var alertMsg = false;
 
     function init(){
         checkLogin();
@@ -18,6 +18,12 @@ $(function () {
             manager_info =  JSON.parse(m);
             echoClient.saveManagerInfo(manager_info);
         }
+        console.log('订阅'+'App.Models.Admin.Base.CallCenter.SysCustomer.'+info.customer_id);
+        Echo.private('App.Models.Admin.Base.CallCenter.SysCustomer.'+info.customer_id).notification(function(r) {
+            console.log('notifacation');
+            console.log(r.content);
+        });
+
         timer();
         bindEvent();
     }
@@ -45,8 +51,8 @@ $(function () {
         }
         if(initSecond >= callCenterConfig.disconnect_length) { // 超时 断开连接
             timerClear();
-            if(!alert) {
-                alert = true;
+            if(!alertMsg) {
+                alertMsg = true;
                 alert('对不起, 聊天已经结束, 请重新登录');
             }
             echoClient.logout();
@@ -168,7 +174,7 @@ $(function () {
          */
         $('input').on('blur', function(){
             scrollBottom();
-        })
+        });
 
         //模糊查询
         $("#customer-chat-message-input").on("input  propertychange", function() {
@@ -320,32 +326,33 @@ $(function () {
             word = word.substr(0, word.length-1);
             word = word.substr(1, word.length-1);
             var clas = data['e_'+ word];
-            var i = '<i class="emot '+clas+'"></i>'
-            return i
+            return '<i class="emot ' + clas + '"></i>'
         });
         return newValue
     }
 
     // 检查登录信息
     function checkLogin() {
-        var timestamp = localStorage.getItem('call_center_timestamp');
-        var time = (Date.parse(new Date()))/1000;
-        if(!timestamp) {
-            timestamp = time;
-            localStorage.setItem('call_center_timestamp', time)
-        }
-        var current = time;
         info = localStorage.getItem('customer_info');
         callCenterConfig = localStorage.getItem('call_center_config');
         if(!info) {
-            window.location.href = '/call_center/login';
+            window.location.href = "/call_center/login";
+            return false;
         }
-        info = JSON.parse(info);
         callCenterConfig = JSON.parse(callCenterConfig);
-        if(current - timestamp > callCenterConfig.leave_length) {
+        var time = (Date.parse(new Date()))/1000;
+        var timestamp = localStorage.getItem('call_center_timestamp');
+        if(!timestamp) {
+            EchoClient.prototype.logout();
+            return false;
+        }
+        if(timestamp && (time - timestamp > callCenterConfig.leave_length)) {
             localStorage.removeItem('call_center_timestamp');
             EchoClient.prototype.logout();
+            return false;
         }
+        localStorage.setItem('call_center_timestamp', time);
+        info = JSON.parse(info);
     }
 
     // 清空输入框
@@ -355,23 +362,22 @@ $(function () {
 
     // 客户信息构建
     function buildCustomer(content){
-        var html = '<div class="mychatoperator chatWindow" data-id="1">' +
+        return '<div class="mychatoperator chatWindow" data-id="1">' +
             '<div class="myChatCon">' +
-            '<div class="mychatTime">'+getCurrentTime()+'</div>' +
+            '<div class="mychatTime">' + getCurrentTime() + '</div>' +
             '<div class="mychatAuthor">你自己</div>' +
             '<div class="mychatMess">' +
             '<div class="mychatMessDe">' + content + '</div>' +
             '</div>' +
             '</div>' +
-            '<div class="myChatHead"><img src="'+info.avatar+'" alt=""></div>' +
+            '<div class="myChatHead"><img src="' + info.avatar + '" alt=""></div>' +
             '<div class="clear-both"></div>' +
-            '</div>'
-        return html;
+            '</div>';
     }
 
     // 滚动到底部
     function scrollBottom() {
-        var getH = document.getElementById("mychat").offsetHeight
+        var getH = document.getElementById("mychat").offsetHeight;
         window.scrollTo(0, getH);
     }
 

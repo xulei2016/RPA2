@@ -44,7 +44,8 @@ class ApplyController extends BaseController
             ->paginate($rows);
         foreach ($result as &$v) {
             $v->pluginName = RpaPlugin::where('id', $v->pid)->first()->name;
-            $v->apply = SysAdmin::where('id', $v->uid)->first()->realName;
+            $admin = SysAdmin::where('id', $v->uid)->first();
+            $v->apply = $admin?$admin->realName:'暂无';
         }
         return $result;
     }

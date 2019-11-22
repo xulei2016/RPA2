@@ -217,5 +217,25 @@ EchoManager.prototype = {
         var ul = $('.template ul');
         var li = '<li template_id="'+item.id+'" id="template_'+item.id+'">'+item.content+'</li>';
         ul.append(li)
+    },
+    getManagerStatus:function() {
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: "/call_center/getManagerStatus",
+            timeout: 120,     //ajax请求超时时间80秒
+            data: {time: 120}, //40秒后无论结果服务器都返回数据
+            success: function (data, textStatus) {
+                console.log(data);
+                //EchoManager.prototype.getManagerStatus();
+            },
+            //Ajax请求超时，继续查询
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                if (textStatus == "timeout") {
+                   // EchoManager.prototype.getManagerStatus();
+                }
+            }
+
+        });
     }
 };

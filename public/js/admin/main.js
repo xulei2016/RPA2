@@ -354,7 +354,7 @@ RPA.prototype = {
                 sortable: true,                     //是否启用排序
                 silentSort: false,
                 sortStable: true,
-                sortOrder: "desc",                   //排序方式
+                sortOrder: param.sortOrder?param.sortOrder:'desc',                   //排序方式
                 queryParams: oTableInit.queryParams,//传递参数（*）
                 sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
                 pageNumber:1,                       //初始化加载第一页，默认第一页

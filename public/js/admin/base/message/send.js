@@ -8,19 +8,19 @@ $(function () {
     //绑定事件
     function bindEvent(){
         //发送事件
-        $('#pjax-container section.content button.submit').click(function(){
+        $('#pjax-container  button.submit').click(function(){
             for (instance in CKEDITOR.instances)
                 CKEDITOR.instances[instance].updateElement();
-            var project = $('#pjax-container section.content form input.title').val();
+            var project = $('#pjax-container  form input.title').val();
             if(!project){
                 return swal('Oops...', '请完善发送信息！！', 'warning');
             }
-            add($('#pjax-container section.content form'));
+            add($('#pjax-container  form'));
         });
         //重置事件
-        $('#pjax-container section.content button.reset').click(function(){
+        $('#pjax-container  button.reset').click(function(){
             let notice_type = $('#pjax-container form select#notice_type');
-            $('#pjax-container section.content form')[0].reset();
+            $('#pjax-container  form')[0].reset();
             mesNotice(notice_type);
         });
     }

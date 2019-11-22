@@ -261,7 +261,6 @@ class DetailController extends BaseController
         foreach($list as $k => $v) {
             $this->publish($v, $v['id']);
         }
-        return $this->ajax_return(200, '成功');
     }
 
     /**

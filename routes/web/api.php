@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 */
 Route::post('login', 'API\PassportController@login');
 
-Route::group(['namespace' => 'api'], function(){
 //    系统
     Route::group(['namespace' => 'Base'], function(){
         Route::middleware('auth:api')->post('/v1/sms', 'NoticeApiController@sms');
@@ -94,7 +93,3 @@ Route::group(['namespace' => 'api'], function(){
         });
     });
 //   掌上营业厅
-
-});
-
-

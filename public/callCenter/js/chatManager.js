@@ -249,7 +249,7 @@ $(function(){
                 return;
             }
             echoManager.transferService(active_id, manager_id);
-        })
+        });
 
         //常用操作
         //断开连接
@@ -266,7 +266,7 @@ $(function(){
             }).then(function(isConfirm) {
                 if (isConfirm.value) {
                     echoManager.axios(echoManager.logoutUrl, 'post', {customer_id:active_id}).then(r => {
-                        console.log(r);
+                        $('#tab_customer_'+active_id).click();
                     }).catch(error => {
                         console.log(error)
                     })
