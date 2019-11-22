@@ -10,20 +10,20 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
-class CallCenterCustomerEvent implements ShouldBroadcast
+class OnlineService implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private $data;
+    public $user;
 
     /**
      * Create a new event instance.
      *
+     * @return void
      */
-    public function __construct($data)
+    public function __construct($user)
     {
-
-        $this->data = $data;
+        $this->user = $user;
     }
 
     /**
@@ -33,10 +33,17 @@ class CallCenterCustomerEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel(("customer_{$this->data['customer_id']}"));
+        // return new PrivateChannel('channel-name');
+        // return new PrivateChannel('test-event');
+        return new Channel('user.1');
     }
 
-    public function broadcastWith(){
-        return $this->data;
+    public function broadcastWith()
+    {
+        return [
+            'data' => 'key'
+        ];
     }
 }
+
+

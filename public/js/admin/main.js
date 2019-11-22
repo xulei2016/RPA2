@@ -416,7 +416,7 @@ RPA.prototype = {
         init:function(model){
             var _this = this;
             //消息通知laravel-echo
-            Echo.private(model).notification(function(obj){
+            window.Echo.private(model).notification(function(obj){
                 _this.content(obj);
             });
         },
@@ -538,3 +538,7 @@ function getFormatDate() {
     return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
 }
 
+window.Echo.channel('user.1')
+    .listen('OnlineService', (e) => {
+        console.log(e);
+    });

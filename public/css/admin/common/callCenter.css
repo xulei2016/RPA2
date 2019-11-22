@@ -1,0 +1,323 @@
+/**
+* call Center css
+* @auther hus lay
+*/
+.content-wrapper #callCenter .chatroom{
+    display: flex;
+    flex-direction: row;
+}
+.content-wrapper #callCenter .chatroom section.chat-list{
+    width: 20%;
+    text-align: center;
+    background-color: #f3f3f4;
+    overflow-y: auto;
+}
+.content-wrapper #callCenter .chatroom section.chat-box{
+    width: 50%;
+}
+.content-wrapper #callCenter .chatroom section.chat-info{
+    width: 30%;
+    text-align: center;
+    background-color: #f3f3f4;
+}
+
+/*****************************************************************visiter part***********************************************************************/
+#callCenter .visiter{
+    width: 100%;
+    height: 70px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+#callCenter .visiter .del{
+    display: flex;
+    align-items: center;
+}
+#callCenter .visiter .del i{
+    font-size: 150%;
+    color: #ccc;
+}
+#callCenter .visiter .del i:hover{
+    color: #bbb;
+}
+#callCenter .visiter.active {
+    background-color: #BAC5D6 !important;
+}
+#callCenter .visiter:hover{
+    background-color: #e9ecef;
+}
+#callCenter .visit_content{
+    cursor: pointer;
+    display: flex;
+    flex-flow: row;
+    width: 90%;
+    height: 90%;
+    text-align: left;
+}
+#callCenter .visit_content>div{
+    display: flex;
+    flex-flow: column;
+    margin-left: 10px;
+}
+#callCenter .visit_content img{
+    border-radius: 2px;
+    width: 50px;
+    height: 50px;
+}
+#callCenter .visit_content .c_name{
+    margin-bottom: 0.2rem;
+    font-size: 15px;
+}
+#callCenter .visit_content .newmsg{
+    font-size: 14px;
+    color: #8D8D8D;
+    max-width: 150px;
+    height: 20px;
+    overflow: hidden;
+}
+.icon_gray {
+    -webkit-filter: grayscale(100%);
+    -ms-filter: grayscale(100%);
+    filter: grayscale(100%);
+    filter: gray;
+}
+.onclick {
+    background: #BAC5D6;
+}
+
+/**************************************************************chat part*************************************************************************/
+#callCenter .chat-box .conversation{
+    list-style: none;
+    padding: 12px;
+}
+#callCenter .chat-box .conversation pre{
+    white-space: pre-wrap;
+}
+#callCenter .chat-box .showtime{
+    color: #d2d2d2;
+    position: relative;
+    margin-bottom: 10px;
+    font-size: 12px;
+    text-align: center;
+    height: 17px;
+}
+#callCenter .chat-box .chatmsg{
+    margin-bottom: 25px;
+    position: relative;
+}
+#callCenter .chat-box .outer-right{
+    float: right;
+    width: 500px;
+    position: relative;
+    right: 10%;
+    top: 5px;
+    clear: both;
+    font-size: 14px;
+}
+#callCenter .chat-box .service{
+    margin-left: 10px;
+    margin-top: 5px;
+    *margin-top: 10px;
+    background-color: #5FB878;
+    display: inline-block;
+    padding: 10px 10px;
+    float: right;
+    word-break: break-all;
+    word-wrap: break-word;
+    color: #fff;
+    border-radius: 3px;
+    position: relative;
+    max-width: 100%;
+    min-height: 38px;
+}
+#callCenter .chat-box .img{
+    /* width: 50px;
+    height: 50px; */
+    max-width: 200px;
+    max-height: 200px;
+    cursor: pointer;
+}
+#callCenter .chat-box .outer-left{
+    float: left;
+    width: 500px;
+    position: relative;
+    left: 10%;
+    clear: both;
+    font-size: 14px;
+}
+#callCenter .chat-box .outer-left:before, .outer-left > i{
+    width: 0;
+    height: 1px;
+    border-width: 6px 7px;
+    border-style: dashed solid dashed solid;
+    border-color: transparent #eee transparent transparent;
+    _border-color: #fff #fff #fff #eee;
+    font-size: 0;
+    line-height: 0;
+    content: "";
+    position: absolute;
+    top: 15px;
+    left: -12px;
+    left: -11px \9;
+    *left: -11px;
+}
+#callCenter .chat-box .outer-right:before, .outer-right > i{
+    width: 0;
+    height: 1px;
+    border-width: 6px 7px;
+    border-style: dashed solid dashed solid;
+    border-color: transparent transparent transparent #5FB878;
+    _border-color: #fff #19caa6 #fff #eee;
+    font-size: 0;
+    line-height: 0;
+    content: "";
+    position: absolute;
+    top: 15px;
+    right: -12px;
+}
+#callCenter .chat-box .customer{
+    margin-right: 10px;
+    margin-top: 5px;
+    background-color: #eee;
+    display: inline-block;
+    padding: 10px 10px;
+    float: left;
+    word-break: break-all;
+    word-wrap: break-word;
+    color: #000;
+    border-radius: 3px;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-height: 38px;
+}
+#callCenter .chat-box .pre{
+    border: 0;
+    background: 0;
+    white-space: pre-line;
+    overflow: hidden;
+}
+#callCenter .chat-box .product_msg{
+    display: block;
+    width: 30rem;
+    height: 100%;
+    position: relative;
+}
+#callCenter .chat-box p{
+    margin: 0;
+    padding: 0;
+}
+#callCenter .chat-box .product_info{
+    display: flex;
+    flex-flow: wrap;
+}
+#callCenter .chat-box .product_msg img{
+    width: 6rem;
+    float: left;
+    padding: .4rem;
+    max-width: none;
+    max-height: none;
+}
+
+#callCenter .chat-box .product_msg .product_info .title {
+    color: #222;
+    font-size: 1rem;
+}
+#callCenter .chat-box .product_msg .product_info .info {
+    padding-top: .1rem;
+    color: #555;
+    font-size: .9rem;
+}
+#callCenter .chat-box .product_msg .product_info .price {
+    color: #999;
+    font-size: .9rem;
+    padding-top: .1rem;
+}
+#callCenter .chat-box .product_msg p {
+    clear: none;
+}
+.chatmsg:after, .chatmsg p {
+    content: "";
+    display: table;
+    clear: both;
+}
+#callCenter .chat-box .footer{
+    width: 100%;
+    height: 100px;
+    border-top: 1px solid #ddd;
+}
+#callCenter .chat-box .footer .msg-toolbar{
+    height: 34px;
+    background: #fff;
+    border: none;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+}
+#callCenter .chat-box .footer .msg-toolbar i.left{
+    font-size: 200%;
+}
+#callCenter .chat-box .footer .msg-toolbar div{
+    display: flex;
+}
+#callCenter .chat-box .footer .msg-toolbar a{
+    margin: 6px;
+}
+#callCenter .chat-box .footer .tool-box{
+    width: 272px;
+    height: 195px;
+    position: absolute;
+    border: 1px solid #ddd;
+    display: none;
+    background: #fff;
+}
+#callCenter .chat-box .footer .msg-input{
+    display: block;
+    width: 100%;
+    height: 150px;
+    background: #fff;
+}
+#callCenter .chat-box .footer .edit-ipt{
+    width: 99%;
+    height: 100%;
+    resize: none;
+    white-space: pre-wrap;
+}
+#callCenter .chat-box .msg-toolbar-footer{
+    position: absolute;
+    bottom: 10px;
+    right: 32%;
+    height: 46px;
+    width: 100px;
+    display: block;
+}
+#callCenter .chat-box .footer .am-form-file input[type=file] {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 50rem;
+}
+#callCenter .chat-box .footer .faces_content .faces_main ul{
+    margin: 5px 5px;
+    overflow: hidden;
+    border-top: 1px #CCC solid;
+    border-left: 1px #CCC solid;
+    width: 261px;
+    padding: 0;
+}
+#callCenter .chat-box .footer .faces_content .faces_main ul li{
+    float: left;
+    border-right: 1px #CCC solid;
+    border-bottom: 1px #CCC solid;
+    height: 30px;
+    width: 26px;
+    text-align: center;
+}
+#callCenter .chat-box .footer .faces_content .faces_main ul li img{
+    width: 22px;
+    height: 22px;
+    padding: 0px;
+}

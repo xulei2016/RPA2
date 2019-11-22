@@ -172,7 +172,7 @@ class MenuController extends BaseAdminController
     {
         // $user = auth()->guard('admin')->user()->syncRoles('superAdministrator');
         //判断缓存是否存在, 是否调试模式
-        if (!config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
+        if (config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
             $menu = self::AllMenus();
             session([config('admin.cache.menuList') => $menu]);
         }else{
@@ -183,6 +183,7 @@ class MenuController extends BaseAdminController
 
     //菜单列表视图
     public function initMenuList($menus){
+        
         if ($menus){
             $item = '';
             foreach ($menus as $v){
