@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin\Base\Flow;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\Flow\SysFlow;
+use App\Models\Admin\Base\Flow\SysFlowGroup;
 use App\Http\Controllers\Base\BaseAdminController;
 
 class FlowController extends BaseAdminController
 {
+
+    protected $flow = 'Admin.Base.Flow.';
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +19,7 @@ class FlowController extends BaseAdminController
      */
     public function index()
     {
-        return view('Admin.Base.Flow.flowList');
+        return view($this->flow.'flowList');
     }
 
     /**
@@ -25,7 +29,8 @@ class FlowController extends BaseAdminController
      */
     public function create()
     {
-        return view('Admin.Base.Flow.add');
+        $groups = SysFlowGroup::all();
+        return view($this->flow.'add', compact('groups'));
     }
 
     /**
@@ -36,10 +41,20 @@ class FlowController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['title', 'groupID', 'sort', 'description']);
+        $data = $this->get_params($request, ['title', 'flow_no', 'groupID', 'sort', 'description'], false);
         $result = SysFlow::create($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "添加 流程");
         return $this->ajax_return('200', '操作成功！');
+    }
+
+    /**
+     * design
+     * 
+     * @param
+     */
+    public function design($id){
+        $flow=SysFlow::findOrFail($id);
+        return view($this->flow.'design',compact('flow'));
     }
 
     /**
@@ -50,7 +65,9 @@ class FlowController extends BaseAdminController
      */
     public function show($id)
     {
-        //
+        // $data = SysFlow::findOrFail($id);
+        // $groups = SysFlowGroup::all();
+        // return view('Admin.Base.Flow.show', compact('groups', 'data'));
     }
 
     /**
@@ -61,7 +78,9 @@ class FlowController extends BaseAdminController
      */
     public function edit($id)
     {
-        //
+        $data = SysFlow::findOrFail($id);
+        $groups = SysFlowGroup::all();
+        return view($this->flow.'edit', compact('groups', 'data'));
     }
 
     /**
@@ -73,7 +92,10 @@ class FlowController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $this->get_params($request, ['title', 'flow_no', 'groupID', 'sort', 'description']);
+        $result = SysFlow::where('id', $id)->update($data);
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 流程");
+        return $this->ajax_return('200', '操作成功！');
     }
 
     /**
@@ -82,9 +104,11 @@ class FlowController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
-        //
+        SysFlow::destroy($id);
+        $this->log(__CLASS__, __FUNCTION__, $request, "删除 流程");
+        return $this->ajax_return('200', '操作成功！');
     }
 
     /**
@@ -92,11 +116,13 @@ class FlowController extends BaseAdminController
      */
     public function pagenation(Request $request){
         $rows = $request->rows;
-        $data = $this->get_params($request, ['name']);
-        $conditions = $this->getPagingList($data, ['name'=>'like']);
+        $data = $this->get_params($request, ['title']);
+        $conditions = $this->getPagingList($data, ['title'=>'like']);
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder;
-        $result = SysAdmin::where($conditions)
+        $result = SysFlow::where($conditions)
+            ->leftJoin('sys_flow_groups', 'sys_flows.groupID', '=', 'sys_flow_groups.id')
+            ->select(['sys_flows.*', 'sys_flow_groups.name'])
             ->orderBy($order, $sort)
             ->paginate($rows);
         return $result;

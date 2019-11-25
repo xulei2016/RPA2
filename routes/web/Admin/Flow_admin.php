@@ -19,8 +19,11 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
     Route::group(['namespace' => 'Base\Flow'], function(){
 
         //flow
-        Route::resource('/sys_flow', 'FlowController');
-        Route::get('/sys_flow/flowList', 'FlowController@pagenation');
+        Route::get('/flow/flowList', 'FlowController@pagenation');
+        Route::resource('/flow', 'FlowController');
+
+        //flow designs
+        Route::get('/flow/design/{id}', 'FlowController@design');
 
     });
 

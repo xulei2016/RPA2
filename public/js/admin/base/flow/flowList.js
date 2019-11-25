@@ -36,12 +36,12 @@ $(function(){
                 Delete(ids);
             }
         });
-
+        
         //导出全部
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/sys_flow/export?"+$url;
+            location.href="/admin/flow/export?"+$url;
         });
 
         //导出选中
@@ -49,7 +49,7 @@ $(function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href="/admin/sys_flow/export?"+$url+'&id='+ids;
+            location.href="/admin/flow/export?"+$url+'&id='+ids;
         });
     }
 
@@ -69,7 +69,7 @@ $(function(){
                 return new Promise(function(resolve, reject) {
                     $.ajax({
                         method: 'post',
-                        url: '/admin/sys_flow/'+id,
+                        url: '/admin/flow/'+id,
                         data: {
                             _method:'delete',
                             _token:LA.token,
@@ -98,7 +98,7 @@ $(function(){
     function getSearchGroup(){
         //特殊格式的条件处理
         var temp = {
-            account : $("#pjax-container #search-group #name").val(),
+            account : $("#pjax-container #search-group #title").val(),
         }
         return temp;
     }
@@ -123,16 +123,19 @@ $(function(){
         }
 
         var param = {
-            url: '/admin/sys_flow/flowList',
+            url: '/admin/flow/flowList',
             columns: [{
                     checkbox: true,
                 }, {
                     field: 'title',
                     title: '流程名称',
                     align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                    formatter: function(v,r){
+                        return " <a href='javascript:;' onclick=\"operation($(this));\" url='/admin/flow/"+r.id+"/edit' title='编辑'>"+v+"</a>"
+                    }
                 }, {
-                    field: 'groupID',
+                    field: 'name',
                     title: '分组',
                     align: 'center',
                     valign: 'middle'
@@ -140,7 +143,10 @@ $(function(){
                     field: 'status',
                     title: '状态',
                     align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                    formatter: function(values){
+                        return values ? '<span class="x-tag x-tag-sm x-tag-success">启用</span>' : '<span class="x-tag x-tag-sm x-tag-danger">禁用</span>';
+                    }
                 }, {
                     field: 'description',
                     title: '描述',
@@ -161,13 +167,18 @@ $(function(){
                         "click #deleteOne":function (e, value, row, index){
                             var id = row.id;
                             Delete(id);
+                        },
+                        "click #flowDesign":function (e, value, row, index){
+                            var id = row.id;
+                            window.open(`/admin/flow/design/${id}`, '流程设计', 'height='+window.innerHeight+', width='+window.innerWidth+', top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no');
                         }
                     },
                     formatter: function(value, row, index){
                         var id = value;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/sys_flow/"+id+"' title='查看流程'>查看流程</a>";
-                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/sys_flow/design/"+id+"' title='设计流程'>设计流程</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/flow/"+id+"/edit' title='编辑'>编辑</a>";
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' fid='"+id+"' id='flowDesign' title='设计流程'>设计流程</a>";
+                        // result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/flow/design/"+id+"' title='设计流程'>设计流程</a>";
                         result += " <a href='javascript:;' class='btn btn-sm btn-danger' id='deleteOne' title='删除'>删除</a>";
 
                         return result;

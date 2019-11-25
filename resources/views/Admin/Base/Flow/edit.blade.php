@@ -1,10 +1,10 @@
-@component('Admin.widgets.addForm')
+@component('Admin.widgets.editForm')
     @slot('formContent')
 
         <div class="form-group">
             <label for="title" class="col-sm-2 control-label"><span class="must-tag">*</span>标题</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="title" id="title" placeholder="流程标题">
+                <input type="text" class="form-control" name="title" id="title" value="{{$data['title']}}" placeholder="流程标题">
             </div>
         </div>
 
@@ -13,7 +13,7 @@
             <div class="col-sm-10">
                 <select name="groupID" class="form-control" id="groupID">
                     @foreach($groups as $group)
-                        <option value ="{{$group['id']}}">{{$group['name']}}</option>
+                        <option value ="{{$group['id']}}" @if($group['id'] == $data->groupID) selected @endif>{{$group['name']}}</option>
                     @endforeach
                 </select>
             </div>
@@ -22,27 +22,28 @@
         <div class="form-group">
             <label for="flow_no" class="col-sm-2 control-label"><span class="must-tag">*</span>流程代号</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="flow_no" id="flow_no" placeholder="代号(英文简称)">
+                <input type="text" class="form-control" name="flow_no" id="flow_no" value="{{$data['flow_no']}}" placeholder="代号(英文简称)">
             </div>
         </div>
 
         <div class="form-group">
             <label for="sort" class="col-sm-2 control-label"><span class="must-tag">*</span>排序</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="sort" id="sort" placeholder="排序">
+                <input type="text" class="form-control" name="sort" id="sort" value="{{$data['sort']}}" placeholder="排序">
             </div>
         </div>
 
         <div class="form-group">
             <label for="description" class="col-sm-2 control-label">描述</label>
             <div class="col-sm-10">
-                <input type="text" class="form-control" name="description" id="description" placeholder="描述">
+                <input type="text" class="form-control" name="description" id="description" value="{{$data['description']}}" placeholder="描述">
             </div>
         </div>
+        <input type="hidden" name="id" id="id" value="{{ $data->id }}">
 
     @endslot
 
     @slot('formScript')
-        <script src="{{URL::asset('/js/admin/base/flow/add.js')}}"></script>
+        <script src="{{URL::asset('/js/admin/base/flow/edit.js')}}"></script>
     @endslot
 @endcomponent

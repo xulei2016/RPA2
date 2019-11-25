@@ -16,14 +16,14 @@
                                 @endcan
                             @endslot
                             @slot('operation')
-                                <a class="btn btn-primary btn-sm" url="/admin/sys_flow/create" title="添加流程" onclick="operation($(this));">添加流程</a>
+                                <a class="btn btn-primary btn-sm" url="/admin/flow/create" title="添加流程" onclick="operation($(this));">添加流程</a>
                             @endslot
                         @endcomponent
 
                         @component('admin.widgets.search-group')
                             @slot('searchContent')
                                 <div class="col-sm-2">
-                                    <input type="text" class="form-control" id="name" placeholder="账号">
+                                    <input type="text" class="form-control" id="title" placeholder="名称">
                                 </div>
                             @endslot
                         @endcomponent

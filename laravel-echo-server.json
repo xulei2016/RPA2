@@ -1,10 +1,10 @@
 {
-	"authHost": "http://www.rpa2.com",
+	"authHost": "http://www.rpa.com",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [
 		{
-			"appId": "9dfb9f6850831ef5",
-			"key": "d74cac5dce7d58cc63a09a6ef2fc40dd"
+			"appId": "44331d450ace9efe",
+			"key": "a047168ce1e6b33b15594b2801d86db0"
 		}
 	],
 	"database": "redis",

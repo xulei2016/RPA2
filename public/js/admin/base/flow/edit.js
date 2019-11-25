@@ -27,8 +27,9 @@ $(function(){
     }
 
     //提交信息的表单配置
+    var id = $(modal+' #id').val();
     var FormOptions={
-        url:'/admin/flow',
+        url:'/admin/flow/'+id,
         success:function(json, xml){
             if(200 == json.code){
                 RPA.form.response();
