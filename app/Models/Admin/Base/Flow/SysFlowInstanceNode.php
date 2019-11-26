@@ -20,7 +20,7 @@ class SysFlowInstanceNode extends Model
      */
     public function getFlows()
     {
-        return $this->belongsTo('Models/Admin/Base/Flow/SysFlowInstance', 'flow_id');
+        return $this->belongsTo('App\Models\Admin\Base\Flow\SysFlowInstance', 'flow_id');
     }
 
     /**
@@ -28,6 +28,6 @@ class SysFlowInstanceNode extends Model
      */
     public function getFlowInstances()
     {
-        return $this->belongsTo('Models/Admin/Base/Flow/SysFlowInstance', 'flow_id');
+        return $this->belongsTo('App\Models\Admin\Base\Flow\SysFlowInstance', 'flow_id');
     }
 }

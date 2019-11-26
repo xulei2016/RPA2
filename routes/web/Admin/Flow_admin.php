@@ -24,6 +24,17 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
 
         //flow designs
         Route::get('/flow/design/{id}', 'FlowController@design');
+        Route::post('/flow/publish','FlowController@publish');
+
+        //nodes
+        Route::get('/node/attribute', 'NodeController@attribute');
+        Route::resource('/node', 'NodeController');
+
+        //flowlink
+        Route::get('/flowLink/auth/dept/{id}','FlowLinkController@dept');
+        Route::get('/flowLink/auth/role/{id}','FlowLinkController@role');
+        Route::get('/flowLink/auth/emp/{id}','FlowLinkController@emp');
+        Route::post('/flowLink/{id}','FlowLinkController@update');
 
     });
 

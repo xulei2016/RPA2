@@ -4,9 +4,17 @@ namespace App\Http\Controllers\Admin\Base\Flow;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\Base\Flow\SysFlow;
+use App\Models\Admin\Base\Flow\SysFlowLink;
 use App\Models\Admin\Base\Flow\SysFlowGroup;
 use App\Http\Controllers\Base\BaseAdminController;
 
+/**
+ * FlowController class
+ *
+ * @Description 流程中心
+ * @author Hsu Lay
+ * @since 20191126
+ */
 class FlowController extends BaseAdminController
 {
 
@@ -106,7 +114,20 @@ class FlowController extends BaseAdminController
      */
     public function destroy(Request $request, $id)
     {
-        SysFlow::destroy($id);
+        $flow=SysFlow::findOrFail($id);
+
+        if(Entry::where('flow_id',$flow->id)->first()){
+            return $this->ajax_return('500', '该流程已经被使用，不能删除！');
+        }
+
+        if(\Models\Admin\Base\Flow\SysFlowNode::where('child_flow_id',$flow->id)->first()){
+            return $this->ajax_return('500', '该流程已经被使用，不能删除！');
+        }
+
+        $flow->getNodes()->delete();
+        $flow->process_var()->delete();
+        $flow->delete();
+
         $this->log(__CLASS__, __FUNCTION__, $request, "删除 流程");
         return $this->ajax_return('200', '操作成功！');
     }
@@ -126,5 +147,61 @@ class FlowController extends BaseAdminController
             ->orderBy($order, $sort)
             ->paginate($rows);
         return $result;
+    }
+
+    /**
+     * publish function
+     *
+     * @param Request $request
+     * @return void
+     * @Description 发布
+     */
+    public function publish(Request $request){
+        try{
+            $flow_id=$request->input('flow_id',0);
+            $flow=SysFlow::findOrFail($flow_id);
+
+            if(SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition'])->count()<=1){
+                return $this->ajax_return(500, '发布失败，至少两个步骤');
+            }
+
+            if(SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition','next_node_id'=>-1])->count()>1){
+                return $this->ajax_return(500, '发布失败，有步骤没有连线');
+            }
+
+            if(!SysFlowLink::whereHas('node',function($query){
+                $query->where('position',0);
+            })->where('flow_id',$flow_id)->first()){
+                return $this->ajax_return(500, '发布失败，请设置起始步骤');
+            }
+
+            // if(!Flowlink::whereHas('process',function($query){
+            //     $query->where('position',9);
+            // })->first()){
+            //     return response()->json([
+            //         'status_code'=>1,
+            //         'message'=>'发布失败，请设置结束步骤'
+            //     ]);
+            // }
+
+            $flowlinks=SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition'])->whereHas('node',function($query){
+                $query->where('position','!=',0);
+            })->get();
+
+            foreach($flowlinks as $v){
+                if(!SysFlowLink::where(['flow_id'=>$flow->id,'node_id'=>$v->process_id])->where('type','!=','Condition')->whereHas('node',function($query){
+                    $query->where('position','!=',0);
+                })->first()){
+                    return $this->ajax_return(500, '发布失败，请给设置步骤审批权限');
+                }
+            }
+
+            $flow->is_publish=1;
+            $flow->save();
+            return $this->ajax_return(200, '发布成功！');
+
+        }catch(\Exception $e){
+            return redirect()->back()->with(['status_code'=>1,'message'=>$e->getMessage()]);
+        }
     }
 }

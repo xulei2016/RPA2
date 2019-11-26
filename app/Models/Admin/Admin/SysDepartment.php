@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Models\Admin\Base\Flow;
+namespace App\Models\Admin\Admin;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * SysFlowNode
+ * SysDepartment class
  *
- * @Description 流程节点
  */
-class SysFlowNode extends Model
+class SysDepartment extends Model
 {
     //黑名单，白名单
     protected $guarded = [];

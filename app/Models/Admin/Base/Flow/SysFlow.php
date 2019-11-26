@@ -19,7 +19,7 @@ class SysFlow extends Model
      */
     public function getNodes()
     {
-        return $this->hasMany('Models/Admin/Base/Flow/SysFlowNode', 'flow_id');
+        return $this->hasMany('App\Models\Admin\Base\Flow\SysFlowNode', 'flow_id');
     }
 
     /**
@@ -27,6 +27,34 @@ class SysFlow extends Model
      */
     public function getFlowInstances()
     {
-        return $this->hasMany('Models/Admin/Base/Flow/SysFlowInstance', 'flow_id');
+        return $this->hasMany('App\Models\Admin\Base\Flow\SysFlowInstance', 'flow_id');
+    }
+
+    /**
+     * template 模板
+     *
+     * @return void
+     */
+    public function template(){
+    	return $this->belongsTo('App\Models\Admin\Base\Flow\SysFlowTemplate','template_id');
+    }
+
+    /**
+     * 节点记录
+     *
+     * @return void
+     */
+    public function nodeRecords(){
+        return $this->hasMany('App\Models\Admin\Base\Flow\SysFlowRecords','node_id');
+    }
+
+    /**
+     * getGroups function
+     *
+     * @return void
+     * @Description
+     */
+    public function getGroups(){
+    	return $this->belongsTo('App\Models\Admin\Base\Flow\SysFlowGroup','groupID');
     }
 }

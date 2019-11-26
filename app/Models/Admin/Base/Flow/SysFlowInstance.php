@@ -19,6 +19,6 @@ class SysFlowInstance extends Model
      */
     public function getInstanceNodes()
     {
-        return $this->hasMany('Models/Admin/Base/Flow/SysFlowInstanceNode', 'flow_id');
+        return $this->hasMany('App\Models\Admin\Base\Flow\SysFlowInstanceNode', 'flow_id');
     }
 }
