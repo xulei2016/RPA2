@@ -193,7 +193,11 @@ return [
         //Cors
         Barryvdh\Cors\ServiceProvider::class,
         //验证码
-        Mews\Captcha\CaptchaServiceProvider::class
+        Mews\Captcha\CaptchaServiceProvider::class,
+
+        //flow
+        App\Providers\flowServiceProvider::class
+
     ],
 
     /*
@@ -242,6 +246,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'flow'=>flow\Facades\flow::class,
 
         //excel
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,

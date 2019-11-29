@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin\Base\Flow;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Admin\Admin\SysAdmin;
-use App\Models\Admin\Admin\SysDepartment as Dept;
+use App\Models\Admin\Base\Organization\SysDept as Dept;
 use App\Models\Admin\Base\Flow\SysFlow;
 use App\Models\Admin\Base\Flow\SysFlowNode;
 use App\Models\Admin\Base\Flow\SysFlowLink;
 use App\Models\Admin\Base\Flow\SysFlowTemplate;
+use App\Models\Admin\Base\Flow\SysFlowNodeCondition as NodeConf;
 use App\Http\Controllers\Base\BaseAdminController;
 
 class NodeController extends BaseAdminController
@@ -103,7 +104,7 @@ class NodeController extends BaseAdminController
     }
 
     /**
-     * attribute
+     * attribute 属性集合
      * 
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -239,15 +240,14 @@ class NodeController extends BaseAdminController
                             throw new \Exception("非法参数", 1);
                         }
 
-                        if(!nodeVar::where(['expression_field'=>$var,'node_id'=>$id])->first()){
-                            nodeVar::create([
+                        if(!NodeConf::where(['expression_field'=>$var,'node_id'=>$id])->first()){
+                            NodeConf::create([
                                 'node_id'=>$id,
                                 'flow_id'=>$flow->id,
                                 'expression_field'=>$var
                             ]);
                         }
                     }
-
 
                     //当前流转
                     $link=SysFlowLink::where(['flow_id'=>$flow->id,'node_id'=>$id,'next_node_id'=>$v])->firstOrFail();
@@ -341,10 +341,7 @@ class NodeController extends BaseAdminController
                 }
             }            
 
-
             DB::commit();
-
-            // return $this->ajax_return(200, '操作成功！');
             return redirect()->back();
         }catch(\Exception $e){
             DB::rollback();
@@ -358,8 +355,121 @@ class NodeController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        DB::beginTransaction();
+        try{
+            $data=$request->all();
+
+            $flow=SysFlow::findOrFail($data['flow_id']);
+
+            //删除流程连线
+            SysFlowLink::where(['flow_id'=>$data['flow_id'],'node_id'=>$id])->delete();
+
+            //更新引用节点
+            SysFlowLink::where(['flow_id'=>$data['flow_id'],'next_node_id'=>$id])->update([
+                'next_node_id'=>-1
+            ]);
+
+            //删除节点
+            $node=SysFlowNode::where(['flow_id'=>$data['flow_id']])->findOrFail($id);
+            $node->delete();
+
+            //修改缓存流程图
+            $jsplumb=json_decode($flow->jsplumb,true);
+            foreach($jsplumb['list'] as $k=>$v){
+                if($v['id']==$id){
+                    unset($jsplumb['list'][$k]);
+                }
+            }
+            $flow->jsplumb=json_encode($jsplumb);
+            $flow->is_publish=0;
+            $flow->save();
+
+            DB::commit();
+            $this->log(__CLASS__, __FUNCTION__, $request, "删除 流程节点");
+            return $this->ajax_return(200, '删除成功');
+        }catch(\Exception $e){
+            DB::rollback();
+            return redirect()->back()->with(['status_code'=>-1,'message'=>$e->getMessage()]);
+        }
+    }
+
+    /**
+     * 查找条件
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function condition(Request $request){
+        $flow_id=$request->input('flow_id');
+        $node_id=$request->input('node_id');
+        $next_node_id=$request->input('next_node_id');
+
+        //当前流转
+        $flowlink=SysFlowLink::where(['node_id'=>$node_id,'next_node_id'=>$next_node_id,'flow_id'=>$flow_id,'type'=>'Condition'])->firstOrFail();
+        
+        $data=[];
+
+        $fields=SysFlow::findOrFail($flow_id)->template->template_form;
+        $expression=str_replace($fields->pluck('field')->toArray(), $fields->pluck('field_name')->toArray(), str_replace('$','',$flowlink->expression));
+        
+        $data[$flowlink->next_node_id]=[
+            'desc'=>$expression,
+            'option'=>''
+        ];
+
+        return response()->json($data);
+    }
+
+    /**
+     * 修改为发起节点
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function setFirst(Request $request){
+        $flow_id=$request->input('flow_id',0);
+        $node_id=$request->input('node_id',0);
+
         //
+        if(SysFlowLink::where('node_id',$node_id)->where("type","Condition")->where('next_node_id','>','-1')->count() > 1){
+            return $this->ajax_return(500, '该节点是分支节点，不能设置为初始步骤！');
+        }
+
+        SysFlowNode::where(['flow_id'=>$flow_id,'position'=>0])->update([
+            'position'=>1
+        ]);
+
+        SysFlowNode::where(['flow_id'=>$flow_id,'id'=>$node_id])->update([
+            'position'=>0
+        ]);
+
+        return $this->ajax_return(200, 'success!');
+    }
+
+    /**
+     * 修改为结束节点
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function setLast(Request $request){
+        $flow_id=$request->input('flow_id',0);
+        $node_id=$request->input('node_id',0);
+
+        if(Flowlink::where('node_id',$node_id)->where("type","Condition")->where('next_node_id','>','-1')->count()>1){
+            return $this->ajax_return(500, '该节点是分支节点，不能设置为结束步骤！');
+        }
+
+        SysFlowNode::where(['flow_id'=>$flow_id,'position'=>0])->update([
+            'position'=>1
+        ]);
+
+        SysFlowNode::where(['flow_id'=>$flow_id,'id'=>$node_id])->update([
+            'position'=>9
+        ]);
+
+        return $this->ajax_return(200, 'success!');
     }
 }

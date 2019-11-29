@@ -30,4 +30,11 @@ class SysAdmin extends Authenticatable
     protected $hidden = [ 
         'password', 'remember_token', 
     ];
+
+    /**
+     * dept
+     */
+    public function dept(){
+        return $this->belongsTo('App\Models\Admin\Base\Organization\SysDepartment','dept_id');
+    }
 }

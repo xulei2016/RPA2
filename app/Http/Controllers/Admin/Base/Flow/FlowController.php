@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin\Base\Flow\SysFlow;
 use App\Models\Admin\Base\Flow\SysFlowLink;
 use App\Models\Admin\Base\Flow\SysFlowGroup;
+use App\Models\Admin\Base\Flow\SysFlowTemplate;
 use App\Http\Controllers\Base\BaseAdminController;
 
 /**
@@ -38,7 +39,8 @@ class FlowController extends BaseAdminController
     public function create()
     {
         $groups = SysFlowGroup::all();
-        return view($this->flow.'add', compact('groups'));
+        $temps = SysFlowTemplate::get();
+        return view($this->flow.'add', compact('groups', 'temps'));
     }
 
     /**
@@ -49,7 +51,7 @@ class FlowController extends BaseAdminController
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['title', 'flow_no', 'groupID', 'sort', 'description'], false);
+        $data = $this->get_params($request, ['title', 'flow_no', 'groupID', 'sort', 'description', 'template_id'], false);
         $result = SysFlow::create($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "添加 流程");
         return $this->ajax_return('200', '操作成功！');
@@ -88,7 +90,8 @@ class FlowController extends BaseAdminController
     {
         $data = SysFlow::findOrFail($id);
         $groups = SysFlowGroup::all();
-        return view($this->flow.'edit', compact('groups', 'data'));
+        $temps = SysFlowTemplate::get();
+        return view($this->flow.'edit', compact('groups', 'data', 'temps'));
     }
 
     /**
@@ -100,7 +103,7 @@ class FlowController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        $data = $this->get_params($request, ['title', 'flow_no', 'groupID', 'sort', 'description']);
+        $data = $this->get_params($request, ['title', 'flow_no', 'groupID', 'sort', 'description', 'template_id']);
         $result = SysFlow::where('id', $id)->update($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 流程");
         return $this->ajax_return('200', '操作成功！');
@@ -156,19 +159,24 @@ class FlowController extends BaseAdminController
      * @return void
      * @Description 发布
      */
-    public function publish(Request $request){
+    public function publish(Request $request)
+    {
         try{
+
             $flow_id=$request->input('flow_id',0);
             $flow=SysFlow::findOrFail($flow_id);
 
-            if(SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition'])->count()<=1){
+            //流程最短步骤数检测
+            if(SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition'])->count() <= 1){
                 return $this->ajax_return(500, '发布失败，至少两个步骤');
             }
 
-            if(SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition','next_node_id'=>-1])->count()>1){
+            //是否有无效节点
+            if(SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition','next_node_id'=>-1])->count() > 1){
                 return $this->ajax_return(500, '发布失败，有步骤没有连线');
             }
 
+            //确定起始步骤
             if(!SysFlowLink::whereHas('node',function($query){
                 $query->where('position',0);
             })->where('flow_id',$flow_id)->first()){
@@ -184,22 +192,22 @@ class FlowController extends BaseAdminController
             //     ]);
             // }
 
+            //是否指定审批对象
             $flowlinks=SysFlowLink::where(['flow_id'=>$flow->id,'type'=>'Condition'])->whereHas('node',function($query){
                 $query->where('position','!=',0);
             })->get();
-
             foreach($flowlinks as $v){
-                if(!SysFlowLink::where(['flow_id'=>$flow->id,'node_id'=>$v->process_id])->where('type','!=','Condition')->whereHas('node',function($query){
+                if(!SysFlowLink::where(['flow_id'=>$flow->id,'node_id'=>$v->node_id])->where('type','!=','Condition')->whereHas('node',function($query){
                     $query->where('position','!=',0);
                 })->first()){
                     return $this->ajax_return(500, '发布失败，请给设置步骤审批权限');
                 }
             }
-
             $flow->is_publish=1;
             $flow->save();
-            return $this->ajax_return(200, '发布成功！');
 
+            $this->log(__CLASS__, __FUNCTION__, $request, "删除 流程");
+            return $this->ajax_return(200, '发布成功！');
         }catch(\Exception $e){
             return redirect()->back()->with(['status_code'=>1,'message'=>$e->getMessage()]);
         }

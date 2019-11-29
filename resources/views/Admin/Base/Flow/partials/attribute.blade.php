@@ -8,7 +8,6 @@
     <li>
         <a href="#attrPower">权限</a>
     </li>
-    <!-- <li><a href="#attrOperate">操作</a></li> -->
     <li id="tab_attrJudge">
         <a href="#attrJudge">转出条件</a>
     </li>
@@ -35,9 +34,9 @@
                         <input type="radio" readonly name="position" value="1" @if($node->position==1) checked="checked" @endif>正常步骤
                     </label>
                     @if($can_child)
-                    <label class="radio inline">
-                        <input type="radio" name="position" value="2" @if($node->position==2) checked="checked" @endif>转入子流程
-                    </label>
+                        <label class="radio inline">
+                            <input type="radio" name="position" value="2" @if($node->position==2) checked="checked" @endif>转入子流程
+                        </label>
                     @endif
                     <label class="radio inline">
                         <input type="radio" readonly name="position" value="0" @if($node->position==0) checked="checked" @endif >第一步
@@ -68,7 +67,7 @@
                         <select name="child_id">
                             <option value="0">--请选择--</option>
                             @foreach($flows as $v)
-                            <option value="{{$v->id}}" @if($node->child_id==$v->id) selected="selected" @endif >{{$v->flow_name}}</option>
+                            <option value="{{$v->id}}" @if($node->child_id==$v->id) selected="selected" @endif >{{$v->title}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -100,23 +99,16 @@
                 </div>
 
             </div>
-
-
-
         </div>
+
         <!-- attrBasic end -->
-
         <div class="tab-pane" id="attrForm">
-
-
-
             <table class="table table-condensed table-bordered table-hover">
                 <tr>
                     <th style="text-align:center">字段名称</th>
                     <th style="text-align:center">控件类型</th>
                 </tr>
                 <tbody>
-
                     <!-- 这里是表单设计器的字段 start -->
                     @foreach($fields as $v)
                     <tr>
@@ -125,19 +117,12 @@
                     </tr>
                     @endforeach
                     <!-- 这里是表单设计器的字段 end -->
-
-
                 </tbody>
             </table>
-
-
-
         </div>
+
         <!-- attrForm end -->
-
-
         <div class="tab-pane" id="attrPower">
-
             <div class="control-group">
                 <label class="control-label">自动选人</label>
                 <div class="controls">
@@ -149,11 +134,6 @@
                     </select>
                     <span class="help-inline">预先设置自动选人，更方便转交工作</span>
                 </div>
-                <!-- <div class="controls hide" id="auto_unlock_id" >
-              <label class="checkbox">
-                <input type="checkbox" name="auto_unlock" value="1" checked="checked">允许更改
-              </label>
-            </div> -->
 
                 <div id="auto_person_4" class="hide">
                     <div class="control-group">
@@ -181,18 +161,18 @@
                     </div>
                 </div>
 
-
-
             </div>
+
             <hr/>
+
             <h4>授权范围</h4>
             <div class="control-group">
                 <label class="control-label">授权人员</label>
                 <div class="controls">
                     <input type="hidden" name="range_emp_ids" id="range_emp_ids" value="{{$select_emps->implode('id',',')}}">
                     <input class="input-xlarge" readonly="readonly" type="text" placeholder="选择人员" name="range_emp_text" id="range_emp_text"
-                        value="{{$select_emps->implode('name',',')}}">
-                    <a href="javascript:void(0);" class="btn" onclick="superDialog('/flowlink/auth/emp/{{$node->id}}','range_emp_text','range_emp_ids');">选择</a>
+                        value="{{$select_emps->implode('realName',',')}}">
+                    <a href="javascript:void(0);" class="btn" onclick="superDialog('/admin/flowLink/auth/emp/{{$node->id}}','range_emp_text','range_emp_ids');">选择</a>
                 </div>
             </div>
 
@@ -201,8 +181,8 @@
                 <div class="controls">
                     <input type="hidden" name="range_dept_ids" id="range_dept_ids" value="{{$select_depts->implode('id',',')}}">
                     <input class="input-xlarge" readonly="readonly" type="text" placeholder="选择部门" name="range_dept_text" id="range_dept_text"
-                        value="{{$select_depts->implode('dept_name',',')}}">
-                    <a href="javascript:void(0);" class="btn" onclick="superDialog('/flowlink/auth/dept/{{$node->id}}','range_dept_text','range_dept_ids');">选择</a>
+                        value="{{$select_depts->implode('name',',')}}">
+                    <a href="javascript:void(0);" class="btn" onclick="superDialog('/admin/flowLink/auth/dept/{{$node->id}}','range_dept_text','range_dept_ids');">选择</a>
                 </div>
             </div>
 
@@ -212,10 +192,9 @@
                     <input type="hidden" name="range_role_ids" id="range_role_ids" value="">
                     <input class="input-xlarge" readonly="readonly" type="text" placeholder="选择角色" name="range_role_text" id="range_role_text"
                         value="">
-                    <a href="javascript:void(0);" class="btn" onclick="superDialog('/flowlink/auth/role/{{$node->id}}','range_role_text','range_role_ids');">选择</a>
+                    <a href="javascript:void(0);" class="btn" onclick="superDialog('/admin/flowLink/auth/role/{{$node->id}}','range_role_text','range_role_ids');">选择</a>
                 </div>
             </div>
-
 
             <div class="control-group">
                 <div class="controls">
@@ -223,14 +202,10 @@
                 </div>
             </div>
 
-
-
         </div>
         <!-- attrPower end -->
 
-
         <div class="tab-pane hide" id="attrOperate">
-
             <div class="control-group">
                 <label class="control-label">交接方式</label>
                 <div class="controls">
@@ -248,6 +223,7 @@
                     </label>
                 </div>
             </div>
+
             <hr/>
 
             <div class="control-group">
@@ -273,7 +249,6 @@
                 </div>
             </div>
 
-
             <hr/>
 
             <div class="control-group">
@@ -287,14 +262,10 @@
                 </div>
             </div>
 
-
         </div>
         <!-- attrOperate end -->
 
-
-
         <div class="tab-pane" id="attrJudge">
-
 
             <table class="table">
                 <thead>
@@ -304,7 +275,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
 
                     <tr id="tpl" class="hide">
                         <td style="width: 100px;">@text</td>
@@ -370,7 +340,6 @@
                         </td>
                     </tr>
 
-
                 </tbody>
                 <tbody id="ctbody">
 
@@ -378,13 +347,9 @@
             </table>
             <input type="hidden" name="node_condition" id="node_condition">
 
-
-
-
-
-
         </div>
         <!-- attrJudge end -->
+
         <div class="tab-pane" id="attrStyle">
 
             <div class="control-group">
@@ -417,13 +382,12 @@
                 </div>
             </div>
 
-
-
             <div class="control-group">
                 <label class="control-label" for="node_title">
                     <span class="process-flag badge badge-inverse">
                         <i class="icon-star-empty icon-white" id="style_icon_preview"></i>
-                    </span> 图标</label>
+                    </span> 图标
+                </label>
                 <div class="controls">
                     <input type="text" class="input-medium" name="icon" id="style_icon" placeholder="icon" value="{{$node->icon}}">
                     <div class="colors" org-bind="style_icon">
@@ -477,13 +441,9 @@
           </div>
         </div> -->
 
-
-
-
         </div>
         <!-- attrStyle end -->
     </div>
-
 
     <div>
         <hr/>
@@ -496,21 +456,16 @@
 </form>
 <!-- <iframe id="hiddeniframe" style="display: none;" name="hiddeniframe"></iframe> -->
 
-
 <script type="text/javascript">
     var flow_id = {{ $node-> flow_id}};//流程ID
     var node_id = {{ $node-> id}};//步骤ID
-    // var get_con_url = "/index.php?s=/index/get_con";//获取条件
-    var get_con_url = "/node/con";//获取条件
+    var get_con_url = "/admin/node/condition";//获取条件
 
     /*确定保存时调用的方式*/
     function saveAttribute(msg) {
         $("#attributeModal").modal("hide");
         location.reload();
     }
-
-
-
 
     //-----条件设置--strat----------------
     function _id(id) {
@@ -520,8 +475,8 @@
         return (str + '').replace(/(\s+)$/g, '').replace(/^\s+/g, '');
     }
 
+    //检查公式
     function fnCheckExp(text) {
-        //检查公式
         if (text.indexOf("(") >= 0) {
             var num1 = text.split("(").length;
             var num2 = text.split(")").length;
@@ -531,6 +486,7 @@
         }
         return true;
     }
+
     /**
      * 增加左括号表达式，会断行
      */
@@ -568,16 +524,11 @@
         } else {
             sText = sText + " " + sRelation;
         }
-        oObj.options[current].text = sText;
-        // $('#conList_'+id+' option').eq(current).text(sText)
+        // oObj.options[current].text = sText;
+        $(oObj.options[current]).attr('value', sText).text(sText);
         $('#conList_' + id).append('<option value="( ">( </option>');
-
-        /* var oMyop = document.createElement('option');
-         oMyop.text = "( ";
-         var nPos = oObj.options.length;
-         oObj.appendChild(oMyop,nPos);*/
-
     }
+
     /**
      * 增加右括号表达式
      */
@@ -610,8 +561,10 @@
         if (!fnCheckExp(sText)) {
             sText = sText + ")";
         }
-        oObj.options[current].text = sText;
+        $(oObj.options[current]).attr('value', sText).text(sText);
     }
+
+    //添加条件
     function fnAddConditions(id) {
         var sField = $('#field_' + id).val(), sField_text = $('#field_' + id).find('option:selected').text(), sCon = $('#condition_' + id).val(), sValue = $('#item_value_' + id).val();
 
@@ -642,18 +595,13 @@
             var sRelation = $('#relation_' + id).val();
 
             if (bAdd) {
-                //var oMyop = document.createElement('option');
                 var nPos = oObj.options.length;
-                //oMyop.text = sNewText_text;
-                // oMyop.value = sNewText;
-                //oObj.appendChild(oMyop,nPos);
                 $('#conList_' + id).append('<option value="' + sNewText + '">' + sNewText_text + '</option>');
                 if (nPos > 0) {
                     oObj.options[nPos - 1].text += "  " + sRelation;
                     oObj.options[nPos - 1].value += "  " + sRelation;
                 }
             } else {
-
                 if (trim(oObj.options[sLength - 1].text).length == 1) {
                     oObj.options[sLength - 1].text += sNewText_text;
                     oObj.options[sLength - 1].value += sNewText;
@@ -667,6 +615,8 @@
             return;
         }
     }
+
+    //删除条件
     function fnDelCon(id) {
         var oObj = _id('conList_' + id);
         var maxOpt = oObj.options.length;
@@ -685,20 +635,22 @@
             }
         }
     }
+
+    //清空
     function fnClearCon(id) {
         $('#conList_' + id).html('');
     }
 
-
-
     //根据基本信息的下一步骤，设置《条件设置》tab的条件列表
     function fnSetCondition() {
+        //下一步骤选项
         if ($("#node_multiple option").length <= 0) {
             $('#tab_attrJudge').hide();
         } else {
             var ids = '';
             $('#ctbody').html('');
             $('#tab_attrJudge').show();
+            //下一步骤流转人数大于一人时，需要设置转出条件
             if ($("#node_multiple option:selected").length > 1) {
                 $("#node_multiple option").each(function () {
                     if ($(this).val() > 0 && $(this).attr("selected")) {
@@ -732,17 +684,12 @@
                     $("#node_condition").val(ids);
                 }
             }
-
-
         }
     }
-
-
     //-----条件设置--end----------------
 
 
     $(function () {
-
         //TAB
         $('#attributeTab a').click(function (e) {
             e.preventDefault();
@@ -751,10 +698,8 @@
                 //加载下一步数据 处理 决策项目 
             }
         })
-
         //步骤类型
         $('input[name="position"]').on('click', function () {
-
             if ($(this).val() == '2') {
                 $('#current_flow').hide();
                 $('#child_flow').show();
@@ -793,8 +738,6 @@
             } else {
                 $("#auto_person_5").hide();
             }
-
-
         });
 
         //步骤select 2
@@ -812,8 +755,6 @@
             autoSortAvailable: false,
             minSize: 7
         });
-
-
 
         /*---------表单字段 start---------*/
         //可写字段
@@ -948,9 +889,6 @@
                     }
                 }
             }
-
         });
-
-
     })
 </script>

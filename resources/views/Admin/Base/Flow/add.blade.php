@@ -20,6 +20,17 @@
         </div>
 
         <div class="form-group">
+            <label for="method" class="col-sm-2 control-label">选择模板</label>
+            <div class="col-sm-10">
+                <select name="template_id" class="form-control" id="template_id">
+                    @foreach($temps as $temp)
+                        <option value ="{{$temp['id']}}">{{$temp['template_name']}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label for="flow_no" class="col-sm-2 control-label"><span class="must-tag">*</span>流程代号</label>
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="flow_no" id="flow_no" placeholder="代号(英文简称)">

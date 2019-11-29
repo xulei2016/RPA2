@@ -28,6 +28,9 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
 
         //nodes
         Route::get('/node/attribute', 'NodeController@attribute');
+        Route::post('node/con','NodeController@condition');
+        Route::post('node/begin','NodeController@setFirst');
+        Route::post('node/stop','NodeController@setLast');
         Route::resource('/node', 'NodeController');
 
         //flowlink
