@@ -101,14 +101,13 @@
                 <input type="radio" checked="checked">指定员工
                 <!-- <input type="radio" >角色 -->
             </div>
-
         </div>
     </div>
     <!--end container-->
 
-
     <script type="text/javascript">
         $(function () {
+
             var emps = '{!!$emps_json!!}';
             emps = JSON.parse(emps);
 
@@ -191,5 +190,4 @@
     </script>
 
 </body>
-
 </html>

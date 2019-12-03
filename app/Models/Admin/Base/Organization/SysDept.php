@@ -28,7 +28,7 @@ class SysDept extends Model
     {
         $data=[];
         foreach($depts as $k=>$v){
-            if($v['parent_id']==$pid){
+            if($v['pid']==$pid){
                 $v['html']=str_repeat($html, $level);
                 $v['rank']=$level+1;
                 $data[]=$v;
@@ -39,9 +39,21 @@ class SysDept extends Model
         return $data;
     }
 
-    //中间表
-    function relation()
+    //部门岗位中间表
+    public function dept_post_relation()
     {
-        return $this->hasMany('App\Models\Admin\Base\Organization\SysDeptRelation', 'dept_id');
+        return $this->hasMany('App\Models\Admin\Base\Organization\SysDeptPostRelation', 'dept_id');
+    }
+
+    //部门岗位
+    public function dept_post()
+    {
+        return $this->hasManyThrough(
+            'App\Models\Admin\Base\Organization\SysDeptPost',
+            'App\Models\Admin\Base\Organization\SysDeptPostRelation',
+            'dept_id',
+            'id',
+            'id'
+        );
     }
 }

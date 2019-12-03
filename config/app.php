@@ -195,8 +195,8 @@ return [
         //验证码
         Mews\Captcha\CaptchaServiceProvider::class,
 
-        //flow
-        App\Providers\flowServiceProvider::class
+        //Flow
+        App\Providers\FlowServiceProvider::class
 
     ],
 
@@ -246,7 +246,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        'flow'=>flow\Facades\flow::class,
+        'Flow' => App\Services\Flow\Facades\Flow::class,
 
         //excel
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,

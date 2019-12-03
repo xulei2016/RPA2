@@ -1,5 +1,5 @@
 <?php
-namespace flow\Traits;
+namespace App\Services\Flow\Traits;
 
 use Auth,Request;
 use App\Models\Admin\Base\Flow\SysFlowInstanceRecords as Record;
@@ -11,7 +11,7 @@ use App\Models\Admin\Base\Flow\SysFlowInstanceRecords as Record;
  * @author Hsu Lay
  * @since 20191128
  */
-trait flowTrait{
+trait FlowTrait{
 
     /**
      * pass function
@@ -32,31 +32,33 @@ trait flowTrait{
      * @return void
      * @Description
      */
-	public function unpass($record_id){
+    public function unpass($record_id)
+    {
         $auth = Auth::guard('admin')->user();
-		$Record=Record::where(['emp_id'=>$auth->id])->where(["status"=>0])->findOrFail($record_id);
+		$Record=Record::where(['user_id'=>$auth->id])->where(["status"=>0])->findOrFail($record_id);
 
         //驳回
-        Record::where(['entry_id'=>$Record->entry_id,'node_id'=>$Record->node_id,'circle'=>$Record->instance->circle,'status'=>0])->update([
-            'status'=>-1,
-            'auditor_id'=>$auth->id,
-            'auditor_name'=>$auth->name,
-            'auditor_dept'=>$auth->dept->dept_name,
-            'content'=>Request::input('content',''),
+        Record::where(['instance_id'=>$Record->instance_id, 'node_id'=>$Record->node_id, 'circle'=>$Record->instance->circle, 'status'=>0])->update([
+            'status' => -1,
+            'user_id' => $auth->id,
+            'user_name' => $auth->name,
+            'dept_name' => $auth->dept->dept_name,
+            'content' => Request::input('content',''),
         ]);
 
-        $Record->entry()->update([
-            'status'=>-1
+        $Record->instance()->update([
+            'status' => -1
         ]);
 
         //判断是否存在父进程
-        if($Record->entry->pid>0){
-            $Record->entry->parent_entry->update([
-                'status'=>-1,
-                'child'=>$Record->node_id
+        if($Record->instance->pid>0){
+            $Record->instance->parent_instance->update([
+                'status' => -1,
+                'child' => $Record->node_id
             ]);
         }
 
-        $Record->entry->emp->notify(new \App\Notifications\Flowfy(Proc::find($Record->id)));
+        //消息通知，队列
+        // $Record->instance->user->notify(new \App\Notifications\Flowfy(Proc::find($Record->id)));
 	}
 }

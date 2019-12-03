@@ -13,24 +13,26 @@ class SysDeptRelation extends Model
 {
     protected $guarded = [];
 
+
     /**
-     * dept
+     * 用户
      */
-    public function dept(){
-        $this->belongsTo('App\Models\Admin\Base\Organization\SysDept', 'dept_id');
+    public function admin()
+    {
+        return $this->hasManyThrough(
+            'App\Models\Admin\Admin\SysAdmin',
+            'App\Models\Admin\Base\Organization\SysDeptRelation',
+            'post_relation_id',
+            'admin_id',
+            'id'
+        );
     }
 
     /**
-     * admin
+     * post
      */
-    public function admin(){
-        $this->hasMany('App\Models\Admin\Admin\SysAdmin', 'admin_id');
-    }
-
-    /**
-     * admin
-     */
-    public function post(){
-        $this->hasMany('App\Models\Admin\Base\Organization\SysDeptPost', 'post_id');
+    public function post()
+    {
+        return $this->hasMany('App\Models\Admin\Base\Organization\SysDeptRelation', 'post_relation_id');
     }
 }

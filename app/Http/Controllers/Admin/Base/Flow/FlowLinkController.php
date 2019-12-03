@@ -26,7 +26,8 @@ class FlowLinkController extends BaseAdminController
      * @return void
      * @Description 部门
      */
-    public function dept(Request $request){
+    public function dept(Request $request)
+    {
         $dept = Dept::all();
         $depts_json = json_encode($dept->toArray());
         $depts = Dept::recursion($dept);
@@ -34,7 +35,8 @@ class FlowLinkController extends BaseAdminController
     }
 
     //角色 TODO
-    public function role(Request $request){
+    public function role(Request $request)
+    {
         return view('Admin.Base.Flow.permission.role');
     }
 
@@ -45,7 +47,8 @@ class FlowLinkController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function emp(Request $request,$id){
+    public function emp(Request $request,$id)
+    {
         $depts=Dept::recursion(Dept::get());
         $posts = SysDeptPost::get();
         $emps=SysAdmin::get(['id', 'realName', 'dept_id']);

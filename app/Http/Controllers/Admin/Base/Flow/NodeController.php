@@ -115,7 +115,6 @@ class NodeController extends BaseAdminController
 
         //当前步骤的下一步操作
         $next_node=SysFlowLink::where(['node_id'=>$node->id,'flow_id'=>$node->flow_id,'type'=>'Condition'])->get();
-
         $beixuan_node=SysFlowLink::where(['flow_id'=>$node->flow_id,'type'=>'Condition'])->where('node_id','<>',$node->id)->whereNotIn('node_id',$next_node->pluck('next_node_id'))->get();
 
         //流程模板 表单字段

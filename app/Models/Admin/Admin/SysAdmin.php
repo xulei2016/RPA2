@@ -35,6 +35,19 @@ class SysAdmin extends Authenticatable
      * dept
      */
     public function dept(){
-        return $this->belongsTo('App\Models\Admin\Base\Organization\SysDepartment','dept_id');
+        return $this->belongsTo('App\Models\Admin\Base\Organization\SysDept','dept_id');
+    }
+
+    /**
+     * 岗位
+     */
+    public function relation(){
+        return $this->hasManyThrough(
+            'App\Models\Admin\Base\Organization\SysDeptPost',
+            'App\Models\Admin\Base\Organization\SysDeptRelation', 
+            'admin_id',
+            'id',
+            'id'
+        );
     }
 }

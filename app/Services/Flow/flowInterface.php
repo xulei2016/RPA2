@@ -1,14 +1,14 @@
 <?php
-namespace flow;
+namespace App\Services\Flow;
 
 /**
- * flowInterface interface
+ * FlowInterface interface
  *
  * @Description
  * @author Hsu Lay
  * @since
  */
-interface flowInterface{
+interface FlowInterface{
 
     /**
      * pass function

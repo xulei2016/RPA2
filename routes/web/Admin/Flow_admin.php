@@ -18,6 +18,11 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
     //Flow
     Route::group(['namespace' => 'Base\Flow'], function(){
 
+        //FlowTestController
+        Route::get('/flow/flowTest', 'FlowTextController@stores');
+        Route::get('/flow/pass/{id}', 'FlowTextController@pass');
+        Route::get('/flow/unpass/{id}', 'FlowTextController@unpass');
+
         //flow
         Route::get('/flow/flowList', 'FlowController@pagenation');
         Route::resource('/flow', 'FlowController');
@@ -28,7 +33,7 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
 
         //nodes
         Route::get('/node/attribute', 'NodeController@attribute');
-        Route::post('node/con','NodeController@condition');
+        Route::post('node/condition','NodeController@condition');
         Route::post('node/begin','NodeController@setFirst');
         Route::post('node/stop','NodeController@setLast');
         Route::resource('/node', 'NodeController');
@@ -38,7 +43,6 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
         Route::get('/flowLink/auth/role/{id}','FlowLinkController@role');
         Route::get('/flowLink/auth/emp/{id}','FlowLinkController@emp');
         Route::post('/flowLink/{id}','FlowLinkController@update');
-
     });
 
 

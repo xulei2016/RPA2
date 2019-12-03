@@ -1,5 +1,5 @@
 <?php
-namespace Flow\Facades;
+namespace App\Services\Flow\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

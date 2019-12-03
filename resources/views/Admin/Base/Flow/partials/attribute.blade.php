@@ -328,7 +328,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <input id="node_in_desc_@a" type="text" name="node_in_desc_@a" style="width:98%;">
+                                            <input id="node_in_desc_@a" type="text" name="node_in_desc_@a" value="" style="width:98%;">
                                             <input name="node_in_set_@a" id="node_in_set_@a" type="hidden">
                                         </td>
                                         <td>
@@ -457,9 +457,10 @@
 <!-- <iframe id="hiddeniframe" style="display: none;" name="hiddeniframe"></iframe> -->
 
 <script type="text/javascript">
-    var flow_id = {{ $node-> flow_id}};//流程ID
-    var node_id = {{ $node-> id}};//步骤ID
+    var flow_id = {{ $node->flow_id }};//流程ID
+    var node_id = {{ $node->id }};//步骤ID
     var get_con_url = "/admin/node/condition";//获取条件
+
 
     /*确定保存时调用的方式*/
     function saveAttribute(msg) {
