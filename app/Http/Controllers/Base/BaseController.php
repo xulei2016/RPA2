@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\base;
 
+use App\Models\Admin\Base\SysConfig;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Rpa\rpa_accesstoken;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\MessageBag;
 use GuzzleHttp\Client;
 
@@ -473,6 +475,43 @@ class BaseController extends Controller
         return $result;
     }
 
+    /**
+     * 获取配置
+     * @param $item_keys  需要的配置key
+     * @return array      ip对应的服务器名 或者配置key对应的value
+     */
+    public function get_config($item_keys = [])
+    {
+        $return = [];
+        //获取配置信息
+        if (!Cache::has("sysConfigs")) {
+            $sysConfigs = SysConfig::get();
+            Cache::add("sysConfigs",$sysConfigs,3600);
+        }else{
+            $sysConfigs = Cache::get("sysConfigs");
+        }
+
+        //不传值，代表获取当前服务器名
+        if(empty($item_keys)){
+            $ip = $_SERVER['LOCAL_ADDR'];
+            foreach($sysConfigs as $config){
+                if($ip == $config->item_value){
+                    $return = $config->item_key;
+                    break;
+                }
+            }
+            return $return;
+        }
+
+        foreach($sysConfigs as $config){
+            foreach($item_keys as $k){
+                if($config->item_key == $k){
+                    $return[$k] = $config->item_value;
+                }
+            }
+        }
+        return $return;
+    }
 
     /**
      * 获取api接口的access_token

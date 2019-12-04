@@ -292,6 +292,16 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::post('/rpa_profession_change_task/insertImmedtasks', 'ProfessionChangeController@insertImmedtasks');
             Route::resource('/rpa_profession_change_task', 'ProfessionChangeController');
         });
+        //线下客户档案收集
+        Route::group([], function () {
+            Route::post("/rpa_archives/selectVideo","ArchivesController@selectVideo");
+            Route::get("/rpa_archives/list","ArchivesController@pagenation");
+            Route::post("/rpa_archives/credit","ArchivesController@credit");
+            Route::post("/rpa_archives/uploadEnclosure","ArchivesController@uploadEnclosure");
+            Route::post("/rpa_archives/uploadAudio","ArchivesController@uploadAudio");
+            Route::post("/rpa_archives/changeStep","ArchivesController@changeStep");
+            Route::resource("/rpa_archives", 'ArchivesController');
+        });
         //rpa任务运行日志
         Route::get('/rpa_logs/log','StatisticsController@pagination');
         Route::get('/rpa_logs/show/{id}','StatisticsController@show');
@@ -512,11 +522,16 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
 
     //辅助功能
     Route::group(['namespace' => 'Auxiliary'],function(){
-        //客户失信查询
-        Route::get('/rpa_customer_discredit','DiscreditController@index');
-        Route::post('/rpa_customer_discredit/search','DiscreditController@search');
-
         //反洗钱查询
         Route::get('/rpa_fxq','FxqController@index')->middleware('permission:rpa_fxq');
+    });
+
+    //华安达摩院
+    Route::group(['namespace' => 'Hadmy'],function(){
+        //反洗钱查询
+        Route::get('/rpa_hadmy','HadmyController@index');
+        Route::get('/rpa_hadmy/list','HadmyController@pagination');
+        Route::get('/rpa_hadmy/statistics/{tzjh}','HadmyController@statistics');
+        Route::get('/rpa_hadmy/single_list','HadmyController@single_pagination');
     });
 });

@@ -86,6 +86,9 @@ Route::post('login', 'API\PassportController@login');
         Route::middleware('auth:api')->post('/v1/get_customer_jyls', 'TradeApiController@get_customer_jyls');
         Route::middleware('auth:api')->post('/v1/get_jyr', 'TradeApiController@get_jyr');
         Route::middleware('auth:api')->post('/v1/get_code_table', 'TradeApiController@get_code_table');
+        Route::middleware('auth:api')->post('/v1/get_trade_version', 'TradeApiController@get_trade_version');
+        Route::middleware('auth:api')->post('/v1/loginRecord', 'TradeApiController@loginRecord');
+        Route::middleware('auth:api')->post('/v1/update_version', 'TradeApiController@update_version');
 
         //  V2  
         Route::group(['namespace' => 'v2'], function(){

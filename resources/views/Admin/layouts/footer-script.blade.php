@@ -20,7 +20,7 @@
 <script src="{{URL::asset('/include/jquery-validate/jquery.validate.min.js')}}"></script>
 <script src="{{URL::asset('/include/jquery-validate/localization/messages_zh.min.js')}}"></script>
 <!-- Bootstrap4 -->
-<script src="{{URL::asset('/include/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap4/js/bootstrap.bundle.min.js')}}"></script>
 <!-- bootstrap-switch -->
 <script src="{{URL::asset('/include/bootstrap-switch/js/bootstrap-switch.min.js')}}"></script>
 {{-- bootstrap-table --}}

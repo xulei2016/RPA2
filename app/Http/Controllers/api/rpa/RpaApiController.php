@@ -77,6 +77,7 @@ class RpaApiController extends BaseApiController
             'created_at' => time()
         ];
         $re = rpa_clock_list::create($data);
+
         //主服务器往官网打卡
         if($host == 'H1_inner' || $host == 'H2_inner'){
             $guzzle = new Client();

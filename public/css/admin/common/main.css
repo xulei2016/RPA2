@@ -44,15 +44,21 @@ body .content-wrapper{
 .sidebar::-webkit-scrollbar {
     display: none;
 }
-@media (min-width: 576px) {
+/* @media (min-width: 576px) {
     .content-wrapper,.main-footer,.main-header {
         transition:margin-left .3s ease-in-out;
         margin-left: 210px;
     }
 }
-.main-sidebar, .main-sidebar::before {
+@media (min-width: 768px) {
+    body:not(.sidebar-mini-md) .content-wrapper, body:not(.sidebar-mini-md) .main-footer, body:not(.sidebar-mini-md) .main-header {
+        transition: margin-left .3s ease-in-out;
+        margin-left: 210px;
+    }
+} */
+/* .main-sidebar, .main-sidebar::before {
     width: 210px;
-}
+} */
 .navbar {
     font-size: 1rem;
 }
@@ -103,7 +109,7 @@ body .content-wrapper{
 }
 .table{
     color: #616161 !important;
-    font-size: 12px;
+    /* font-size: 12px; */
 }
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgb(255, 255, 255);
@@ -114,7 +120,7 @@ body .content-wrapper{
 .table-bordered thead td, .table-bordered thead th {
     border-bottom-width: 1px;
     line-height: 34px;
-    font-size: 14px;
+    /* font-size: 14px; */
 }
 .table-bordered td, .table-bordered th {
     border: 1px solid #dfe6ec
@@ -171,7 +177,7 @@ body .content-wrapper{
     padding: .25rem .75rem;
 }
 .btn-group-sm>.btn, .btn-sm {
-    font-size: 12px !important;
+    /* font-size: 12px !important; */
 }
 .fixed-table-toolbar .btn-group > .btn-group {
     display: flex;
@@ -304,10 +310,10 @@ html.ios-fix body {
         color: #444;
         width: 100px;
         height: 70px;
-        font-size: 13px;
+        /* font-size: 13px; */
     }
     body .sidebar .mobilenav a.btn-app i.fa {
-        font-size: 24px;
+        /* font-size: 24px; */
     }
     body .sidebar .mobilenav a.btn-app span {
         margin-top: 5px;
@@ -376,7 +382,7 @@ html.ios-fix body {
     padding: 0 10px;
     height: 32px;
     line-height: 30px;
-    font-size: 12px;
+    /* font-size: 12px; */
     color: #1890ff;
     border-radius: 4px;
     -webkit-box-sizing: border-box;
@@ -467,7 +473,7 @@ html.ios-fix body {
     color: #000;
     background-color: #fff;
     z-index: 1;
-    font-size: 12px;
+    /* font-size: 12px; */
     box-shadow: 0 1px 3px rgba(0,0,0,.2);
 }
 .wrapper .navbar .navbar-right .popup .menu{
@@ -570,7 +576,7 @@ html.ios-fix body {
 }
 .wrapper .navbar .navbar-right .popup .admin-info.message .body .body-tool-info{
     color: #444;
-    font-size: 12px;
+    /* font-size: 12px; */
     text-align: center;
     margin-top: 30px;
     margin-right: 20px;
@@ -603,7 +609,7 @@ html.ios-fix body {
     overflow: hidden;
     word-wrap: break-word;
     display: inline-block;
-    font-size: 12px;
+    /* font-size: 12px; */
 }
 
 /*通知提示框开始*/
@@ -630,3 +636,27 @@ html.ios-fix body {
     cursor: pointer;
 }
 /*通知提示框结束*/
+
+/**首页代办流程布局*/
+#pjax-container .card.flow .card-body .flow {
+    padding: 0 0 10px 0;
+}
+#pjax-container .card.flow .card-body .flow .title {
+    color: #007bff;
+    font-weight: 600;
+}
+#pjax-container .card.flow .card-body .flow .flow-body span {
+    color: #6c757d;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: 6px;
+}
+#pjax-container .card.flow .card-body .flow .flow-title:hover {
+    color: #bbb;
+}
+#pjax-container .card.flow .card-body .flow .flow-body {
+    display: flex;
+    justify-content: space-between;
+}

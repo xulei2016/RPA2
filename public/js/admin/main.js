@@ -537,8 +537,3 @@ function getFormatDate() {
     var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
     return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
 }
-
-window.Echo.channel('user.1')
-    .listen('OnlineService', (e) => {
-        console.log(e);
-    });

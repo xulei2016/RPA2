@@ -160,6 +160,8 @@ class FlowTextController extends BaseAdminController
             Flow::pass($id);
             
             DB::commit();
+
+            dd('success');
         }catch(\Exception $e){
             dd($e);
             DB::rollback();

@@ -45,8 +45,7 @@ class Flow implements FlowInterface
 					return $auditor_ids;
                 }
                 $post_ids = json_decode($Instance->user->dept->post_ids, true);
-                // $auditor_ids = isset($post_ids['BMZG']) ?? [];
-                $auditor_ids = ['85'];
+                $auditor_ids = isset($post_ids['BMZG']) ? implode(',', $post_ids['BMZG']) : [];
 			}
 
 			if($flowlink->auditor=='-1002'){
@@ -55,9 +54,8 @@ class Flow implements FlowInterface
 					return $auditor_ids;
 				}
 				$post_ids = json_decode($Instance->user->dept->post_ids, true);
-                // $auditor_ids = isset($post_ids['BMJL']) ?? [];
-                $auditor_ids = ['103'];
-			}
+                $auditor_ids = isset($post_ids['BMJL']) ? implode(',', $post_ids['BMZG']) : [];
+            }
 		}else{
             //查询节点
             if($flowLink = SysFlowLink::where('node_id',$node_id)->first())
@@ -87,7 +85,6 @@ class Flow implements FlowInterface
 		}
 
 		return array_unique($auditor_ids);
-
 	}
 
 	/**
@@ -95,6 +92,11 @@ class Flow implements FlowInterface
      * 
 	 * @param [type] $Instance    [流程实例]
 	 * @param [type] $flowlink [流程关联]
+     * @description 设置初始节点
+     * 
+     * @if 查询流程发起是否需要审核（是否设置审核人）
+     *     设置审核人，则对所有审核人发起一条待审核流程，任一用户审核通过即可
+     * @else 创建发起记录，创建下一节点待审核流程
 	 */
     public function setFirstNodeAuditor(SysFlowInstance $Instance, SysFlowLink $flowlink)
     {
@@ -117,16 +119,13 @@ class Flow implements FlowInterface
 	        ]);
 
 	        $auditor_ids=$this->getNodeAuditorIds($Instance,$flowlink->next_node_id);
-
 	        $node_id=$flowlink->next_node_id;
 	        $node_title=$flowlink->next_node->node_title;
 	        $Instance->node_id = $flowlink->next_node_id;
 	    }else{
 	        $auditor_ids=$this->getNodeAuditorIds($Instance,$flowlink->node_id);
-
 	        $node_id=$flowlink->node_id;
 	        $node_title=$flowlink->node->node_title;
-
 	        $Instance->node_id=$flowlink->node_id;
 	    }
 
@@ -150,7 +149,6 @@ class Flow implements FlowInterface
 	            // 'concurrence'=>$time
 	        ]);
 	    }
-
 	    $Instance->save();
 	}
 
@@ -158,7 +156,27 @@ class Flow implements FlowInterface
 	 * [flowlink 流转]
      * 
 	 * @param  [type] $node_id [description]
-	 * @return [type] [description]
+	 * @return [type] [description] 流程通过流转
+     * 
+     * @if 是否多路流转
+     * 
+     *      按照流转条件查找下一节点审核人，发起审核流程， 存在父流程则更新父流程中子流程进度字段
+     * 
+     * @else 是否存在子流程
+     * 
+     *      创建子流程，发起流程，更新父流程中子流程节点
+     * 
+     * @else 是否最后审核环节
+     * 
+     *      更新当前节点
+     *      @if 是否存在父流程
+     *          更新父流程，查看父流程模式是否同步结束或继续父流程步骤，进行操作
+     * 
+     *      @if 同时父流程是否最后环节，同理判断
+     * 
+     * @else 结束当前节点，创建下一节点审核人，是否存在父流程，更新父流程中子流程状态
+     * 
+     *      
 	 */
     public function flowlink($node_id)
     {
@@ -244,7 +262,7 @@ class Flow implements FlowInterface
 	        ]);
 
 	        //判断是否存在父进程
-	        if($Record->instance->pid > 0){
+	        if($Record->instance->parent_id > 0){
 	            $Record->instance->parent_instance->update([
 	                'child' => $flowlink->next_node_id
 	            ]);
@@ -290,7 +308,8 @@ class Flow implements FlowInterface
 
 	                //子流程结束
 	                if($Record->instance->parent_id > 0){
-	                    if($Record->instance->instance_node->child_after == 1){
+                        if($Record->instance->instance_node->child_after == 1)
+                        {
 	                        //同时结束父流程
 	                        $Record->instance->parent_instance->update([
 	                            'status'=>9,
@@ -306,14 +325,14 @@ class Flow implements FlowInterface
 	                        	$parent_flowlink=SysFlowLink::where(['node_id'=>$Record->instance->instance_node->id,"type"=>"Condition"])->first();
 
 	                        	//判断是否为最后一步
-	                        	if($parent_flowlink->next_node_id==-1){
+	                        	if($parent_flowlink->next_node_id == -1){
 	                        		$Record->instance->parent_instance->update([
 			                            'status'=>9,
 			                            'child'=>0,
 			                            'node_id'=>$Record->instance->enter_node->child_back_node
 			                        ]);
 			                        //流程结束通知
-	    							$Record->instance->emp->notify(new \App\Notifications\Flowfy(Record::find($Record->id)));
+	    							// $Record->instance->emp->notify(new \App\Notifications\Flowfy(Record::find($Record->id)));
 	                        	}else{
 	                        		$this->goToNode($Record->instance->parent_instance,$parent_flowlink->next_node_id);
 
@@ -362,7 +381,7 @@ class Flow implements FlowInterface
 	                ]);
 
 	                //判断是否存在父进程
-	                if($Record->instance->pid > 0){
+	                if($Record->instance->parent_id > 0){
 	                    $Record->instance->parent_instance->update([
 	                        'child'=>$flowlink->next_node_id
 	                    ]);
@@ -371,6 +390,7 @@ class Flow implements FlowInterface
 	        }
 	    }
 
+        //当前流程记录更新
 	    Record::where(['instance_id'=>$Record->instance_id, 'node_id'=>$Record->node_id, 'circle'=>$Record->instance->circle, 'status'=>0])->update([
 	        'status'=>9,
 	        'user_id'=>\Auth::guard('admin')->id(),
@@ -387,15 +407,17 @@ class Flow implements FlowInterface
 	 * @param  [type] $node_id [description]
 	 * @return [type]             [description]
 	 */
-	protected function goToNode(Entry $instance,$node_id){
+    protected function goToNode(SysFlowInstance $instance,$node_id)
+    {
 	    $auditor_ids=$this->getNodeAuditorIds($instance,$node_id);
 
-	    $auditors=Emp::whereIn('id',$auditor_ids)->get();
+	    $auditors=SysAdmin::whereIn('id',$auditor_ids)->get();
 
-	    if($auditors->count()<1){
+	    if($auditors->count() < 1){
 	        throw new \Exception("下一步骤未找到审核人", 1);
 	    }
-	    $time=time();
+        $time=time();
+        
 	    foreach($auditors as $v){
 	        Record::create([
 	            'instance_id'=>$instance->id,
@@ -411,5 +433,6 @@ class Flow implements FlowInterface
 	            'time'=>$time,
 	        ]);
 	    }
-	}
+    }
+    
 }
