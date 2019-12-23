@@ -48,6 +48,8 @@ $(function(){
         var temp = {
             zjzh : $("#pjax-container #search-group #zjzh").val(),
             tzjh_account : $("#pjax-container #search-group #tzjh_account").val(),
+            from_start_time : $("#pjax-container #search-group #startTime").val(),
+            to_start_time : $("#pjax-container #search-group #endTime").val(),
         };
         return temp;
     }
@@ -81,12 +83,17 @@ $(function(){
                     title: '投资江湖账号',
                     align: 'center',
                     valign: 'middle',
+                }, {
+                    field: 'online',
+                    title: '是否在线',
+                    align: 'center',
+                    valign: 'middle',
                     formatter: function(value, row, index){
                         var result = "";
                         if(row.online){
-                            result = "<span class='text text-success'>●</span> "+value;
+                            result = "<span class='x-tag x-tag-success'>是</span> ";
                         }else{
-                            result = "<span class='text text-gray'>●</span> "+value;
+                            result = "<span class='x-tag x-tag-info'>否</span> ";
                         }
                         return result;
                     }
@@ -117,7 +124,32 @@ $(function(){
                         return result;
                     }
                 }],
+            onLoadSuccess: function(data){
+               // 总
+               var total_count = $(".total_count").text();
+               var total_time = $(".total_time").text();
+               var total_login = $(".total_login").text();
+
+               // 搜
+               var search_count = data.data.length;
+               var search_time = 0;
+               var search_login = 0;
+               for (var i=0;i<search_count;i++){
+                   search_time += data.data[i].single_time;
+                   search_login += data.data[i].single_login;
+               }
+
+               $(".search-count").find("span").html("<b>"+search_count+"</b>/"+total_count);
+               $(".search-time").find("span").html("<b>"+search_time+"</b>/"+total_time);
+               $(".search-login").find("span").html("<b>"+search_login+"</b>/"+total_login);
+
+               console.log((total_count/search_count) * 100);
+               $(".search-count .progress-bar").css("width",(search_count/total_count)*100 + "%");
+               $(".search-time .progress-bar").css("width",(search_time/total_time)*100 + "%");
+               $(".search-login .progress-bar").css("width",(search_login/total_login)*100 + "%");
             }
+            };
+
 
         //初始化表格
         oTable.Init('#tb_departments', param);

@@ -16,18 +16,13 @@ class HadmyController extends BaseAdminController{
         //在线客户数
         $logout_limit = $this->get_config(['logout_limit']);
         $time = time()-$logout_limit['logout_limit']*60;
-        $now_count = RpaTradeLoginRecord::where([["end_time",">=",$time]])->groupBy('tzjh_account')->pluck('tzjh_account')->count();
+        $now_count = RpaTradeLoginRecord::where([["end_time",">=",$time]])->orWhere('end_time','')->groupBy('tzjh_account')->pluck('tzjh_account')->count();
         //总在线时长
         $total = RpaTradeLoginRecord::get();
         $total_time = 0;
         foreach($total as $v){
-            if($v->count_time == ''){
-                $total_time += 300;
-            }else{
-                $total_time += $v->count_time;
-            }
+            $total_time += ceil(($v->count_time / 60));
         }
-        $total_time = (int)($total_time / 60);
         //总登录次数
         $total_login = RpaTradeLoginRecord::count();
 
@@ -43,8 +38,9 @@ class HadmyController extends BaseAdminController{
     //总数信息
     public function pagination(Request $request)
     {
-        $selectInfo = $this->get_params($request, ['zjzh','tzjh_account']);
+        $selectInfo = $this->get_params($request, ['zjzh','tzjh_account','from_start_time','to_start_time']);
         $condition = [];
+
         //资金账号
         $zjzh = $selectInfo['zjzh'];
         if(!empty($zjzh)){
@@ -55,6 +51,15 @@ class HadmyController extends BaseAdminController{
         if(!empty( $tzjh_account )){
             array_push($condition,  array('tzjh_account', 'like', "%".$tzjh_account."%"));
         }
+        //日期
+        $st = $selectInfo['from_start_time'];
+        if(!empty($st)){
+            array_push($condition,array('start_time','>=',strtotime($st)));
+        }
+        $ed = $selectInfo['to_start_time'];
+        if(!empty($ed)){
+            array_push($condition,array('start_time','<=',strtotime($ed)));
+        }
 
         $rows = $request->rows;
         $order = $request->sort ?? 'id';
@@ -62,30 +67,25 @@ class HadmyController extends BaseAdminController{
         $data = RpaTradeLoginRecord::where($condition)
             ->groupBy('tzjh_account')
             ->paginate($rows,['tzjh_account']);
-
         //数据整理
         $limit = $this->get_config(['logout_limit']);
         $time = time() - $limit['logout_limit']*60;
         foreach($data as &$v){
             //获取总登录时长
-            $customer = RpaTradeLoginRecord::where('tzjh_account',$v->tzjh_account)->get();
+            $customer = RpaTradeLoginRecord::where('tzjh_account',$v->tzjh_account)->where($condition)->get();
             $single_time = 0;
             foreach($customer as $v1){
-                if($v1->count_time == ''){
-                    $single_time += 300;
-                }else{
-                    $single_time += $v1->count_time;
-                }
+                $single_time += ceil($v1->count_time / 60);
             }
-            $v->single_time = (int)($single_time / 60);
+            $v->single_time = $single_time;
             $v->zjzh = $customer[0]->zjzh;
 
             //获取总登录次数
-            $single_login = RpaTradeLoginRecord::where('tzjh_account',$v->tzjh_account)->count();
+            $single_login = RpaTradeLoginRecord::where('tzjh_account',$v->tzjh_account)->where($condition)->count();
             $v->single_login = $single_login;
 
             //判断是否在线
-            $last = RpaTradeLoginRecord::where('tzjh_account',$v->tzjh_account)->orderBy('start_time','desc')->first();
+            $last = RpaTradeLoginRecord::where('tzjh_account',$v->tzjh_account)->where($condition)->orderBy('start_time','desc')->first();
             if(empty($last->end_time) || $last->end_time > $time){
                 $v->online = true;
             }else{
@@ -105,25 +105,17 @@ class HadmyController extends BaseAdminController{
             $customer = RpaTradeLoginRecord::where('tzjh_account',$tzjh)->get();
             $single_time = 0;
             foreach($customer as $v){
-                if($v->count_time == ''){
-                    $single_time += 300;
-                }else{
-                    $single_time += $v->count_time;
-                }
+                $single_time += ceil($v->count_time / 60);
             }
             $total = RpaTradeLoginRecord::get();
             $total_time = 0;
             foreach($total as $v){
-                if($v->count_time == ''){
-                    $total_time += 300;
-                }else{
-                    $total_time += $v->count_time;
-                }
+                $total_time += ceil($v->count_time / 60);
             }
 
             $time = [
-                'total' => (int)($total_time / 60),
-                'single' => (int)($single_time / 60)
+                'total' => $total_time,
+                'single' => $single_time
             ];
             //3，统计登录次数
             $single_login = RpaTradeLoginRecord::where('tzjh_account',$tzjh)->count();
@@ -159,8 +151,11 @@ class HadmyController extends BaseAdminController{
         $limit = $this->get_config(['logout_limit']);
         $time = time() - $limit['logout_limit']*60;
         foreach($data as &$v){
-
-            $v->count_time = (int)($v->count_time / 60);
+            if($v->count_time){
+                $v->count_time = ceil($v->count_time / 60);
+            }else{
+                $v->count_time = "";
+            }
 
             //判断是否在线
             if(empty($v->end_time) || $v->end_time > $time){
@@ -171,7 +166,11 @@ class HadmyController extends BaseAdminController{
 
             //时间格式化
             $v->start_time = date("Y-m-d H:i:s",$v->start_time);
-            $v->end_time = date("Y-m-d H:i:s",$v->end_time);
+            if($v->end_time){
+                $v->end_time = date("Y-m-d H:i:s",$v->end_time);
+            }else{
+                $v->end_time = "";
+            }
         }
         return $data;
     }

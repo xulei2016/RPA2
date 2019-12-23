@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Base\Flow;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Admin\Admin\SysAdmin;
+use App\Models\Admin\Base\SysRole;
 use App\Models\Admin\Base\Flow\SysFlow;
 use App\Models\Admin\Base\Flow\SysFlowLink;
 use App\Models\Admin\Base\Flow\SysFlowNode;
@@ -26,18 +27,28 @@ class FlowLinkController extends BaseAdminController
      * @return void
      * @Description 部门
      */
-    public function dept(Request $request)
+    public function dept(Request $request, $id)
     {
-        $dept = Dept::all();
+        $dept = Dept::all(['id','name','pid']);
         $depts_json = json_encode($dept->toArray());
         $depts = Dept::recursion($dept);
-        return view('Admin.Base.Flow.permission.dept')->with(compact('depts','depts_json'));
+        //当前节点
+        $node=SysFlowNode::findOrFail($id);
+        //已选部门
+        $select_depts=Dept::whereIn('id',explode(',',SysFlowLink::where('type','Dept')->where('node_id',$node->id)->value('auditor')))->get();
+        return view('Admin.Base.Flow.permission.dept')->with(compact('depts','depts_json','select_depts'));
     }
 
     //角色 TODO
-    public function role(Request $request)
+    public function role(Request $request, $id)
     {
-        return view('Admin.Base.Flow.permission.role');
+        $roles = SysRole::where('type', 1)->get(['id','desc']);
+        $roles_json = json_encode($roles->toArray());
+        //当前节点
+        $node=SysFlowNode::findOrFail($id);
+        //已选角色
+        $select_roles=SysRole::whereIn('id',explode(',',SysFlowLink::where('type','Role')->where('node_id',$node->id)->value('auditor')))->get();
+        return view('Admin.Base.Flow.permission.role')->with(compact('roles','select_roles','roles_json'));
     }
 
     /**
@@ -47,17 +58,17 @@ class FlowLinkController extends BaseAdminController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function emp(Request $request,$id)
+    public function emp(Request $request, $id)
     {
-        $depts=Dept::recursion(Dept::get());
-        $posts = SysDeptPost::get();
+        $depts=Dept::recursion(Dept::get(['id','name','pid']));
+        // $posts = SysDeptPost::get();
         $emps=SysAdmin::get(['id', 'realName', 'dept_id']);
         $emps_json = json_encode($emps->toArray());
         //当前节点
         $node=SysFlowNode::findOrFail($id);
-        //当前选择员工
+        //已选员工
         $select_emps=SysAdmin::whereIn('id',explode(',',SysFlowLink::where('type','Emp')->where('node_id',$node->id)->value('auditor')))->get();
-        return view('Admin.Base.Flow.permission.emp')->with(compact('depts','emps','select_emps','posts', 'emps_json'));
+        return view('Admin.Base.Flow.permission.emp')->with(compact('depts','emps','select_emps','emps_json'));
     }
 
     /**

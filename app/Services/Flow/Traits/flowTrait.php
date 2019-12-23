@@ -38,12 +38,12 @@ trait FlowTrait{
 		$Record=Record::where(['user_id'=>$auth->id])->where(["status"=>0])->findOrFail($record_id);
 
         //驳回
-        Record::where(['instance_id'=>$Record->instance_id, 'node_id'=>$Record->node_id, 'circle'=>$Record->instance->circle, 'status'=>0])->update([
+        Record::where(['id'=>\Request::input('id'), 'instance_id'=>$Record->instance_id, 'node_id'=>$Record->node_id, 'circle'=>$Record->instance->circle, 'status'=>0])->update([
             'status' => -1,
             'user_id' => $auth->id,
-            'user_name' => $auth->name,
+            'user_name' => $auth->realName,
             'dept_name' => $auth->dept->dept_name,
-            'content' => Request::input('content',''),
+            'remark' => Request::input('remark',''),
         ]);
 
         $Record->instance()->update([

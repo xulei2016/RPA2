@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Base\Flow;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Admin\Admin\SysAdmin;
+use App\Models\Admin\Base\SysRole;
 use App\Models\Admin\Base\Organization\SysDept as Dept;
 use App\Models\Admin\Base\Flow\SysFlow;
 use App\Models\Admin\Base\Flow\SysFlowNode;
@@ -82,7 +83,7 @@ class NodeController extends BaseAdminController
                 'style'=>$node->style
             ];
 
-            $flow->jsplumb=json_encode($jsplumb);
+            $flow->jsplumb=json_encode($jsplumb, JSON_UNESCAPED_UNICODE);
             $flow->is_publish=0;
             $flow->save();
 
@@ -124,9 +125,11 @@ class NodeController extends BaseAdminController
         //当前选择员工
         $select_emps=SysAdmin::whereIn('id',explode(',',SysFlowLink::where('type','Emp')->where('node_id',$node->id)->value('auditor')))->get();
 
-        $sys=SysFlowLink::where(['node_id'=>$node->id,'flow_id'=>$node->flow_id,'type'=>'Sys'])->value('auditor');
-
         $select_depts=Dept::whereIn('id',explode(',',SysFlowLink::where('type','Dept')->where('node_id',$node->id)->value('auditor')))->get();
+        
+        $select_roles=SysRole::whereIn('id',explode(',',SysFlowLink::where('type','Role')->where('node_id',$node->id)->value('auditor')))->get();
+
+        $sys=SysFlowLink::where(['node_id'=>$node->id,'flow_id'=>$node->flow_id,'type'=>'Sys'])->value('auditor');
 
         $flows=SysFlow::where('is_publish',1)->where('id','<>',$node->flow_id)->get();
 
@@ -134,7 +137,7 @@ class NodeController extends BaseAdminController
 
         $can_child=SysFlowLink::where(['node_id'=>$node->id,"type"=>"Condition"])->count()==1;
 
-        return view('Admin.Base.Flow.partials.attribute')->with(compact('node','next_node','beixuan_node','fields','select_emps','sys','select_depts','flows','nodes','can_child'));
+        return view('Admin.Base.Flow.partials.attribute')->with(compact('node','next_node','beixuan_node','fields','select_emps','sys','select_depts','select_roles','flows','nodes','can_child'));
     }
 
     /**
@@ -211,7 +214,7 @@ class NodeController extends BaseAdminController
                 }
             }
 
-            $flow->jsplumb=json_encode($jsplumb);
+            $flow->jsplumb=json_encode($jsplumb, JSON_UNESCAPED_UNICODE);
             $flow->is_publish=0;
             $flow->save();
 
@@ -338,6 +341,8 @@ class NodeController extends BaseAdminController
                 }else{
                     SysFlowLink::where(['flow_id'=>$flow->id,'node_id'=>$id])->where('type','Emp')->delete();
                 }
+
+                SysFlowLink::where(['flow_id'=>$flow->id,'node_id'=>$id])->where('type','!=','Condition')->where('type', 'Sys')->delete();
             }            
 
             DB::commit();
@@ -381,7 +386,7 @@ class NodeController extends BaseAdminController
                     unset($jsplumb['list'][$k]);
                 }
             }
-            $flow->jsplumb=json_encode($jsplumb);
+            $flow->jsplumb=json_encode($jsplumb ,JSON_UNESCAPED_UNICODE);
             $flow->is_publish=0;
             $flow->save();
 

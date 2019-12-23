@@ -30,7 +30,7 @@ class Flow implements FlowInterface
      * @return void
      * @Description 获得下一步审批人员工id
      */
-	protected function getNodeAuditorIds(SysFlowInstance $Instance, $node_id){
+	public static function getNodeAuditorIds(SysFlowInstance $Instance, $node_id){
 		$auditor_ids=[];
 		//查看是否自动选人
 		if($flowlink = SysFlowLink::where('type','Sys')->where('node_id',$node_id)->first()){
@@ -45,7 +45,7 @@ class Flow implements FlowInterface
 					return $auditor_ids;
                 }
                 $post_ids = json_decode($Instance->user->dept->post_ids, true);
-                $auditor_ids = isset($post_ids['BMZG']) ? implode(',', $post_ids['BMZG']) : [];
+                $auditor_ids = isset($post_ids['BMZG']) ? $post_ids['BMZG'] : [];
 			}
 
 			if($flowlink->auditor=='-1002'){
@@ -54,30 +54,33 @@ class Flow implements FlowInterface
 					return $auditor_ids;
 				}
 				$post_ids = json_decode($Instance->user->dept->post_ids, true);
-                $auditor_ids = isset($post_ids['BMJL']) ? implode(',', $post_ids['BMZG']) : [];
+                $auditor_ids = isset($post_ids['BMJL']) ? $post_ids['BMZG'] : [];
             }
 		}else{
             //查询节点
-            if($flowLink = SysFlowLink::where('node_id',$node_id)->first())
+            if($flowLink = SysFlowLink::where('node_id',$node_id)->where('type','!=','Condition')->first())
             {
+                $ids=explode(',', $flowLink->auditor);
+
                 switch($flowLink->type)
                 {
-                    case 'Emp';     //指定员工
+                    case 'user';     //指定员工
 
-                        $auditor_ids=array_merge($auditor_ids, explode(',', $flowlink->auditor));
+                        $auditor_ids=array_merge($auditor_ids, $ids);
                         
                         break;
                     case 'Dept';    //指定部门
-
-                        $dept_ids=explode(',',$flowlink->auditor);
-
-                        $emp_ids=SysAdmin::whereIn('dept_id',$dept_ids)->get()->pluck('id')->toArray();
+                    
+                        $user_ids=SysAdmin::whereIn('dept_id', $ids)->get()->pluck('id')->toArray();
         
-                        $auditor_ids=array_merge($auditor_ids,$emp_ids);
+                        $auditor_ids=array_merge($auditor_ids,$user_ids);
 
                         break;
                     case 'Role';//角色
-                        //todo
+
+                        $auditor_ids = DB::table('sys_model_has_roles')->whereIn('role_id', $ids)->get(['model_id'])->unique('model_id')->pluck('model_id')->toArray();
+                        
+                        $auditor_ids=array_merge($auditor_ids,$user_ids);
 
                         break;
                 }
@@ -102,13 +105,14 @@ class Flow implements FlowInterface
     {
 		$node_id = $node_title = null;
 	    if(!SysFlowLink::where('type','!=','Condition')->where('node_id', $flowlink->node_id)->first()){
+            
 	        //第一步未指定审核人 自动进入下一步操作
 	        $Instance->records()->create([
 	            'user_id'=>$Instance->user_id,
-	            'user_name'=>$Instance->user->name,
+	            'user_name'=>$Instance->user->realName,
 	            'dept_name'=>$Instance->user->dept->name,
 	            'real_user_id'=>$Instance->user_id,
-	            'real_user_name'=>$Instance->user->name,
+	            'real_user_name'=>$Instance->user->realName,
 	            'real_user_dept'=>$Instance->user->dept->name,
 	            'flow_id'=>$Instance->flow_id,
 	            'node_id'=>$flowlink->node_id,
@@ -123,6 +127,7 @@ class Flow implements FlowInterface
 	        $node_title=$flowlink->next_node->node_title;
 	        $Instance->node_id = $flowlink->next_node_id;
 	    }else{
+
 	        $auditor_ids=$this->getNodeAuditorIds($Instance,$flowlink->node_id);
 	        $node_id=$flowlink->node_id;
 	        $node_title=$flowlink->node->node_title;
@@ -142,14 +147,14 @@ class Flow implements FlowInterface
 	            'node_id'=>$node_id,
 	            'node_title'=>$node_title,
 	            'user_id'=>$v->id,
-	            'user_name'=>$v->name,
+	            'user_name'=>$v->realName,
 	            'dept_name'=>$v->dept->name,
 	            'status'=>0,
 	            'circle'=>$Instance->circle,
 	            // 'concurrence'=>$time
 	        ]);
 	    }
-	    $Instance->save();
+	    return $Instance->save();
 	}
 
 	/**
@@ -181,7 +186,7 @@ class Flow implements FlowInterface
     public function flowlink($node_id)
     {
         //当前用户存在未审批流程
-	    $Record = Record::with('instance.user.dept')->where(['user_id'=>Auth::guard('admin')->id()])->where(["status"=>0])->findOrFail($node_id);
+	    $Record = Record::with('instance.user.dept')->where('user_id', Auth::guard('admin')->id())->where("status", 0)->findOrFail($node_id);
 
         //流程数据
         $flowlinks=SysFlowLink::where(['node_id'=>$Record->node_id,"type"=>"Condition"])->get();
@@ -194,8 +199,6 @@ class Flow implements FlowInterface
 	        //当前步骤判断的变量 需要根据 条件 去查当前工作流提交的表单数据 里的值
 	        $value=SysFlowInstanceData::where(['instance_id'=>$Record->instance_id,'field_name'=>$var->expression_field])->value('field_value');
 
-	        // $flowlinks=SysFlowLink::where(['node_id'=>$Record->node_id,"type"=>"Condition"])->get();
-	        // $$var->expression_field_value=$var->expression_field_value;
             $flowlink=null;
 
             //流转条件变量名
@@ -211,8 +214,8 @@ class Flow implements FlowInterface
 	            	break;
 	            }else{
                     //构造变量, 执行条件语句
-	            	$$field = $value;
-		            eval('$res='.$v->expression.';'); //$res = $day > 3 ;
+                    $$field = $value;
+                    eval('$res=('.$v->expression.');');
 		            if($res){
 		                $flowlink = $v;
 		                break;
@@ -223,8 +226,8 @@ class Flow implements FlowInterface
             //是否满足条件
 	        if(empty($flowlink)){
 	        	throw new \Exception('未满足流转条件，无法流转到下一步骤，请联系流程设置人员',1);
-	        }
-
+            }
+            
             //查找验证节点审核人
 	        $auditor_ids = $this->getNodeAuditorIds($Record->instance, $flowlink->next_node_id);
 	        if(empty($auditor_ids)){
@@ -247,7 +250,7 @@ class Flow implements FlowInterface
 	                'node_id'=>$flowlink->next_node_id,
 	                'node_title'=>$flowlink->next_node->node_title,
 	                'user_id'=>$v->id,
-	                'user_name'=>$v->name,
+	                'user_name'=>$v->realName,
 	                'dept_name'=>$v->dept->name,
 	                'circle'=>$Record->instance->circle,
 	                'status'=>0,
@@ -266,11 +269,13 @@ class Flow implements FlowInterface
 	            $Record->instance->parent_instance->update([
 	                'child' => $flowlink->next_node_id
 	            ]);
-	        }
+            }
+            
+            //通知队列
+            $this->flowNotify($Record, $auditor_ids);
 
 	    }else{
             $flowlink = $flowlinks->first();
-	        // $flowlink=SysFlowLink::where(['node_id'=>$Record->node_id, "type"=>"Condition"])->first();
 
 	        if($flowlink->node->child_id > 0){
 	            // 创建子流程
@@ -332,7 +337,7 @@ class Flow implements FlowInterface
 			                            'node_id'=>$Record->instance->enter_node->child_back_node
 			                        ]);
 			                        //流程结束通知
-	    							// $Record->instance->emp->notify(new \App\Notifications\Flowfy(Record::find($Record->id)));
+	    							// $Record->instance->user->notify(new \App\Notifications\Flowfy(Record::find($Record->id)));
 	                        	}else{
 	                        		$this->goToNode($Record->instance->parent_instance,$parent_flowlink->next_node_id);
 
@@ -349,11 +354,11 @@ class Flow implements FlowInterface
 	                }else{
                         //流程结束通知
                         //通知队列
-                        dd('通缉你啦');
-	    				// $Record->instance->emp->notify(new \App\Notifications\Flowfy(Proc::find($Record->id)));
+
+//                        dd('通缉你啦');
+//	    				 $Record->instance->user->notify(new \App\Notifications\Flowfy(Proc::find($Record->id)));
 	                }
 	            }else{
-	                //'instance_id','flow_id','node_id','emp_id','status','content','is_read'
 	                $auditor_ids=$this->getNodeAuditorIds($Record->instance, $flowlink->next_node_id);
 	                $auditors=SysAdmin::whereIn('id',$auditor_ids)->get();
 
@@ -367,13 +372,13 @@ class Flow implements FlowInterface
 	                        'flow_id'=>$Record->flow_id,
 	                        'node_id'=>$flowlink->next_node_id,
 	                        'node_title'=>$flowlink->next_node->node_title,
-	                        'emp_id'=>$v->id,
-	                        'emp_name'=>$v->name,
+	                        'user_id'=>$v->id,
+	                        'user_name'=>$v->realName,
 	                        'dept_name'=>$v->dept->name,
 	                        'circle'=>$Record->instance->circle,
 	                        'status'=>0,
 	                        'is_read'=>0
-	                    ]);
+                        ]);
 	                }
 
 	                $Record->instance->update([
@@ -385,19 +390,24 @@ class Flow implements FlowInterface
 	                    $Record->instance->parent_instance->update([
 	                        'child'=>$flowlink->next_node_id
 	                    ]);
-	                }
+                    }
+                    
+                    //通知队列
+                    $this->flowNotify($Record, $auditor_ids);
 	            }
 	        }
 	    }
 
         //当前流程记录更新
-	    Record::where(['instance_id'=>$Record->instance_id, 'node_id'=>$Record->node_id, 'circle'=>$Record->instance->circle, 'status'=>0])->update([
+	    Record::where(['id'=>\Request::input('id'), 'instance_id'=>$Record->instance_id, 'node_id'=>$Record->node_id, 'circle'=>$Record->instance->circle, 'status'=>0])->update([
 	        'status'=>9,
 	        'user_id'=>\Auth::guard('admin')->id(),
-	        'user_name'=>\Auth::guard('admin')->user()->name,
+	        'user_name'=>\Auth::guard('admin')->user()->realName,
 	        'dept_name'=>\Auth::guard('admin')->user()->dept->name,
-	        'content'=>\Request::input('content',''),
-	    ]);
+	        'remark'=>\Request::input('remark',''),
+        ]);
+        
+        return true;
 
 	}
 
@@ -424,15 +434,36 @@ class Flow implements FlowInterface
 	            'flow_id'=>$instance->flow_id,
 	            'node_id'=>$node_id,
 	            'node_title'=>SysFlowNode::find($node_id)->node_title,
-	            'emp_id'=>$v->id,
-	            'emp_name'=>$v->name,
+	            'user_id'=>$v->id,
+	            'user_name'=>$v->realName,
 	            'dept_name'=>$v->dept->name,
 	            'circle'=>$instance->circle,
 	            'status'=>0,
 	            'is_read'=>0,
 	            'time'=>$time,
 	        ]);
-	    }
+        }
+        
+        return true;
+    }
+
+    /**
+     * flowNotify function
+     *
+     * @param string $content
+     * @param array $ids
+     * @return void
+     * @Description
+     */
+    protected function flowNotify(Record $record, array $ids)
+    {
+        \App\Models\Admin\Base\SysMessage::create([
+            'title' => $record->flow->title,
+            'content' => $record->instance->title."<br/><a href='javascript:void(0);' url='/admin/sys_flow_mine/{$record->id}' onclick='operation($(this));'>您有新的流程等待审批，点击查看。</a>",
+            'type' => 4,
+            'mode' => 1,
+            'user' => implode(',', $ids)
+        ]);
     }
     
 }

@@ -28,7 +28,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">总客户数</span>
-                        <span class="info-box-number accumulated_time">{{ $data['total'] }}</span>
+                        <span class="info-box-number total_count">{{ $data['total'] }}</span>
                     </div>
                     <!-- /.info-box-content -->
                 </div>
@@ -46,8 +46,8 @@
                 </span>
 
                     <div class="info-box-content">
-                        <span class="info-box-text">总在线时长</span>
-                        <span class="info-box-number">{{ $data['total_time'] }} 分钟</span>
+                        <span class="info-box-text">总在线时长（分钟）</span>
+                        <span class="info-box-number total_time">{{ $data['total_time'] }}</span>
                     </div>
                     <!-- /.info-box-content -->
                 </div>
@@ -62,7 +62,7 @@
 
                     <div class="info-box-content">
                         <span class="info-box-text">总登录次数</span>
-                        <span class="info-box-number">{{ $data['total_login'] }}</span>
+                        <span class="info-box-number total_login">{{ $data['total_login'] }}</span>
                     </div>
                     <!-- /.info-box-content -->
                 </div>
@@ -91,10 +91,41 @@
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="tzjh_account" placeholder="投资江湖账号">
                                 </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="startTime" placeholder="开始时间">
+                                </div>
+                                <div style="float:left;">-</div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="endTime" placeholder="结束时间">
+                                </div>
                             @endslot
                         @endcomponent
                         <table id="tb_departments" class="table table-striped table-hover table-bordered"></table>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="progress-group search-count col-12 col-sm-8 col-md-4">
+                当前查询客户数
+                <span class="float-right"><b>0</b>/0</span>
+                <div class="progress progress-sm">
+                    <div class="progress-bar bg-primary"></div>
+                </div>
+            </div>
+            <div class="progress-group search-time col-12 col-sm-8 col-md-4">
+                当前查询在线时长
+                <span class="float-right"><b>0</b>/0</span>
+                <div class="progress progress-sm">
+                    <div class="progress-bar bg-danger"></div>
+                </div>
+            </div>
+            <div class="progress-group search-login col-12 col-sm-8 col-md-4">
+                当前查询登陆数
+                <span class="float-right"><b>0</b>/0</span>
+                <div class="progress progress-sm">
+                    <div class="progress-bar bg-warning"></div>
                 </div>
             </div>
         </div>

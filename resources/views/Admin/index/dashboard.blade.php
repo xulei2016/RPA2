@@ -84,26 +84,13 @@
                 </div>
             </div>
             <!-- /.card-header -->
-            <div class="card-body">
-                {{-- @foreach ($myFlow as $flow)
-                    
-                @endforeach --}}
-                @for ($i = 0; $i < 5; $i++)
-                    <div class="flow">
-                        <div class="title"><span class="fa fa-angle-right"></span> 身份证件变更申请</div>
-                        <div class="flow-body">
-                            <a href="javascript:void(0)" onclick="operation($(this));" url="/admin/sys_flow_mine/170">
-                                <span class="flow-title">02-保证金申请 - 归档 SXFSQ-201908625</span>
-                            </a>
-                            <span>2019-12-04</span>
-                        </div>
-                    </div>
-                @endfor
+            <div class="card-body" style="height: 288px;overflow-y: scroll;">
+
             </div>
             <!-- /.card-body -->
             <!-- /.card-body -->
             <div class="card-footer text-center">
-                <a href="javascript:void(0)" url="/admin/sys_flow_mine" onclick class="uppercase">查看更多</a>
+                <a href="/admin/sys_flow_mine" class="uppercase">查看更多</a>
             </div>
             <!-- /.card-footer -->
         </div>
@@ -160,34 +147,32 @@
                 <h5 class="card-title">我的活跃内容</h5>
 
                 <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fa fa-times"></i>
-                        </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fa fa-times"></i></button>
                 </div>
             </div>
             <!-- /.card-header -->
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="chart-responsive">
-                            <canvas id="pieChart" height="150"></canvas>
-                        </div>
-                        <!-- ./chart-responsive -->
-                    </div>
-                    <!-- /.col -->
-                    <div class="col-md-4">
-                        <ul class="chart-legend clearfix">
-                            @foreach($data['footprint'] as $footprint)
-                            <li><i class="fa fa-circle-o"></i> {{ $footprint->simple_desc }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    <!-- /.col -->
-                </div>
-                <!-- /.row -->
+                <canvas id="pieChart" height="150"></canvas>
             </div>
             <!-- /.card-body -->
+        </div>
+        {{-- 服务器磁盘状态 --}}
+        <div class="card hidden">
+            <div class="card-header">
+                <h5 class="card-title">服务器磁盘状态</h5>
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+            <div class="card-body">
+                {{-- @foreach(Cache::get('sys_disk')['DISK'] as $k => $disk)
+                    <canvas id="{{$k}}" height="60"></canvas>
+                @endforeach --}}
+            </div>
         </div>
         <div class="card">
             <div class="card-header">
@@ -204,20 +189,20 @@
             <div class="card-body">
                 <div class="ibox-content" style="display: block;">
                     <ul class="todo-list m-t small-list">
-                        <li>设备信息：{{ $data['sys']['PHP_OS'] }}</li>
-                        <li>服务：{{ $data['sys']['SERVER_INFO'] }}</li>
-                        <li>脚本版本：{{ $data['sys']['PHP_VERSION'] }}</li>
-                        <li>框架版本：{{ $data['sys']['Laravel_VERSION'] }}</li>
-                        <li>CGI：{{ $data['sys']['CGI'] }}</li>
-                        <li>时区：{{ $data['sys']['TIMEZONE'] }}</li>
-                        <li>协议：{{ $data['sys']['SERVER_PROTOCOL'] }}</li>
-                        <li>缓存驱动：{{ $data['sys']['CACHE'] }}</li>
-                        <li>session驱动：{{ $data['sys']['Session'] }}</li>
-                        <li>队列驱动：{{ $data['sys']['QUEUE'] }}</li>
-                        <li>允许文件上传最大尺寸：{{ $data['sys']['FILE_UPLOAD_MAX_SIZE'] }}</li>
-                        <li>MySQL允许持久连接：{{ $data['database']['ALLOW_PERSISTENT'] }}</li>
-                        <li>MySQL最大连接数：{{ $data['database']['ALLOW_PERSISTENT'] }}</li>
-                        <li>MySQL版本：{{ $data['database']['MYSQL_VERSION'] }}</li>
+                        <li>设备信息：{{ $data['SYS']['PHP_OS'] }}</li>
+                        <li>服务：{{ $data['SYS']['SERVER_INFO'] }}</li>
+                        <li>脚本版本：{{ $data['SYS']['PHP_VERSION'] }}</li>
+                        <li>框架版本：{{ $data['SYS']['Laravel_VERSION'] }}</li>
+                        <li>CGI：{{ $data['SYS']['CGI'] }}</li>
+                        <li>时区：{{ $data['SYS']['TIMEZONE'] }}</li>
+                        <li>协议：{{ $data['SYS']['SERVER_PROTOCOL'] }}</li>
+                        <li>缓存驱动：{{ $data['SYS']['CACHE'] }}</li>
+                        <li>session驱动：{{ $data['SYS']['Session'] }}</li>
+                        <li>队列驱动：{{ $data['SYS']['QUEUE'] }}</li>
+                        <li>允许文件上传最大尺寸：{{ $data['SYS']['FILE_UPLOAD_MAX_SIZE'] }}</li>
+                        <li>MySQL允许持久连接：{{ $data['DATABASE']['ALLOW_PERSISTENT'] }}</li>
+                        <li>MySQL最大连接数：{{ $data['DATABASE']['ALLOW_PERSISTENT'] }}</li>
+                        <li>MySQL版本：{{ $data['DATABASE']['MYSQL_VERSION'] }}</li>
                         <li>GD图形处理库：bundled (2.1.0 compatible)</li>
                     </ul>
                 </div>
@@ -229,8 +214,6 @@
 
 <script src="{{URL::asset('/include/charts/Chart.min.js')}}"></script>
 <script src="{{URL::asset('/js/admin/dashboard.js')}}"></script>
-<script>
 
-</script>
 </section>
 <!-- /.content -->

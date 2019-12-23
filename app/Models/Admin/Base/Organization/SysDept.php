@@ -3,15 +3,18 @@
 
 namespace App\Models\Admin\Base\Organization;
 
+use App\Models\Admin\Admin\SysAdmin;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * 组织架构-部门
- * Class SysDept
+ * Class SysDepartment
  * @package App\Models\Admin\Base\Organization
  */
 class SysDept extends Model
 {
+    protected $table = "sys_depts";
+
     protected $guarded = [];
 
     /**
@@ -55,5 +58,43 @@ class SysDept extends Model
             'id',
             'id'
         );
+    }
+
+    /**
+     * 获取所有菜单
+     * @return array
+     */
+    public static function getMenus(){
+        $menus = self::orderBy('order', 'asc')->get();
+        foreach ($menus as $v) {
+            $item = [
+                'id' => $v->id,
+                'pid' => $v->pid,
+                'name' => $v->name,
+                'type' => 'node'
+            ];
+            if(!$v->pid) {
+                $item['open'] = true;
+            }
+            $list[] = $item;
+        }
+        return $list;
+    }
+
+    /**
+     * 获取菜单+员工
+     */
+    public static function getAdmins(){
+        $list = self::getMenus();
+        $admins = SysAdmin::where('dept_id', '!=', 0)->get();
+        foreach ($admins as $v) {
+            $list[] = [
+                'id' => 'admin_'.$v->id,
+                'pid' => $v->dept_id,
+                'type' => 'person',
+                'name' => $v->realName
+            ];
+        }
+        return $list;
     }
 }

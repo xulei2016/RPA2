@@ -91,11 +91,11 @@ __webpack_require__(2);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-//Vue.component('example-component', require('./components/ExampleComponent.vue'));
-//
-//const app = new Vue({
+// Vue.component('example-component', require('./components/ExampleComponent.vue'));
+
+// const app = new Vue({
 //    el: '#app'
-//});
+// });
 
 /***/ }),
 /* 2 */
@@ -128,7 +128,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  */
 
 // window.axios = require('axios');
-
 
 // window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 

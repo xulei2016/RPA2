@@ -24,6 +24,9 @@ Route::post('login', 'API\PassportController@login');
         Route::middleware('auth:api')->post('/v1/sms_tpl', 'NoticeApiController@sms_tpl');
         Route::middleware('auth:api')->post('/v1/tpl_send', 'NoticeApiController@tpl_send');
         Route::middleware('auth:api')->post('/v1/code_distinguish', 'NoticeApiController@code_distinguish');
+
+        //账户系统
+        Route::middleware('auth:api')->post('/v1/getSdx', 'accountSysController@getSdx');
     });
 //    rpa系统
     Route::group(['namespace' => 'rpa'], function(){

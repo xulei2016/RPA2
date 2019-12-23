@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class SysDeptPost extends Model
 {
+    protected $table = 'sys_dept_posts';
+
     public $timestamps = false;
 
     protected $guarded = [];

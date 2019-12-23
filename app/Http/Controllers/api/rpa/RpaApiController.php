@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api\rpa;
 
+use App\Http\Controllers\Admin\Func\Contract\PublishController;
 use App\Http\Controllers\api\BaseApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -43,6 +44,24 @@ class RpaApiController extends BaseApiController
             'Process_p' => 'required|numeric',
             'Process_e' => 'required|numeric',
         ]);
+
+        //删除历史打卡记录
+        //获取上次删除时间
+        $file_path = public_path()."/punch_card.txt";
+        $del_date = "";
+        if(file_exists($file_path)){
+            $del_date = file_get_contents($file_path);
+        }
+        //如果删除时间不是今天，需要删除
+        if(date("Y-m-d",strtotime($del_date)) != date("Y-m-d")){
+            //获取保留打卡天数
+            $limit = $this->get_config(['punch_card_limit']);
+            rpa_clock_list::where("created_at","<",strtotime("- ".$limit['punch_card_limit']." days"))->destory();
+
+            file_put_contents($file_path,date("Y-m-d"));
+        }
+
+
         $ip = $request->getClientIp();
         //获取服务器信息
         if (!Cache::has("sysConfigs")) {
@@ -814,5 +833,21 @@ class RpaApiController extends BaseApiController
             'server' => '主服务器1'
         ];
         $res1 = rpa_immedtasks::create($data1);
+    }
+
+    /**
+     * 合约费用调整
+     */
+    public function contract_cost_change_remind(Request $request){
+        //ip检测
+        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+        if($res !== true){
+            return response()->json($res);
+        }
+        ini_set('max_execution_time', '0');
+        $re = (new PublishController())->publish();
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+        return response()->json($re);
     }
 }

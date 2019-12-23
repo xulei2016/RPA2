@@ -62,13 +62,15 @@
 
 <body>
 
-    <div class="container dialog_main">
+    <div class="dialog_main">
 
         <form class="form-search" id="dialog_search">
-            <select name="" class="input-small">
-                @foreach($posts as $post)
+            <select name="type" class="input-small">
+                {{-- @foreach($posts as $post)
                 <option value="{{$post->id}}">{{$post->name}}</option>
-                @endforeach
+                @endforeach --}}
+                <option value="1">员工</option>
+                {{-- <option value="2">部门</option> --}}
             </select>
             <input type="text">
             <button type="submit" class="btn">搜索</button>
@@ -120,8 +122,9 @@
                 //,autoSortAvailable: true
             });
 
-            //搜索用户
+            //搜索
             $("#dialog_search").on("submit", function (e, row) {
+                // let type = e.target[0].value;
                 let v = e.target[1].value;
                 var optionList = [];
                 let HTML = '';

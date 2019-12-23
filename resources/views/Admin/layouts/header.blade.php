@@ -18,10 +18,6 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{URL::asset('/include/font-awesome/css/font-awesome.min.css')}}">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- Tempusdominus Bbootstrap 4 -->
-    <link rel="stylesheet" href="{{URL::asset('/include/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css')}}">
     <!-- iCheck -->
     <link rel="stylesheet" href="{{URL::asset('/include/iCheck/all.css')}}">
     <!-- bootstrap -->
@@ -30,8 +26,6 @@
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-switch/css/bootstrap3/bootstrap-switch.min.css')}}">
     <!-- bootstrap-table -->
     <link rel="stylesheet" href="{{URL::asset('/include/bootstrap-table/bootstrap-table.css')}}">
-    <!-- JQVMap -->
-    <link rel="stylesheet" href="{{URL::asset('/include/jqvmap/jqvmap.min.css')}}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{URL::asset('/include/adminlte/css/adminlte.min.css')}}">
     <!-- sweetalert2 -->
@@ -40,13 +34,9 @@
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{URL::asset('/include/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
-    <!-- Daterange picker -->
-    <link rel="stylesheet" href="{{URL::asset('/include/daterangepicker/daterangepicker.css')}}">
-    <!-- summernote -->
-    <link rel="stylesheet" href="{{URL::asset('/include/summernote/summernote-bs4.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('/css/admin/common/main.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/include/select2/css/select2.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('/css/admin/common/main.css')}}">
 
     <script>
         function LA() {}

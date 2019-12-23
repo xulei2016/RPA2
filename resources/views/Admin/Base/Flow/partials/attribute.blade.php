@@ -186,12 +186,12 @@
                 </div>
             </div>
 
-            <div class="control-group hide">
+            <div class="control-group">
                 <label class="control-label">授权角色</label>
                 <div class="controls">
                     <input type="hidden" name="range_role_ids" id="range_role_ids" value="">
                     <input class="input-xlarge" readonly="readonly" type="text" placeholder="选择角色" name="range_role_text" id="range_role_text"
-                        value="">
+                        value="{{$select_roles->implode('desc',',')}}">
                     <a href="javascript:void(0);" class="btn" onclick="superDialog('/admin/flowLink/auth/role/{{$node->id}}','range_role_text','range_role_ids');">选择</a>
                 </div>
             </div>
@@ -525,8 +525,7 @@
         } else {
             sText = sText + " " + sRelation;
         }
-        // oObj.options[current].text = sText;
-        $(oObj.options[current]).attr('value', sText).text(sText);
+        $(oObj.options[current]).text(sText);
         $('#conList_' + id).append('<option value="( ">( </option>');
     }
 
@@ -551,6 +550,7 @@
             return;
         }
         var sText = oObj.options[current].text;
+        var sValue = oObj.options[current].value;
         if ((trim(sText).substr(-3, 3) == 'AND') || (trim(sText).substr(-2, 2) == 'OR')) {
             alert("无法编辑已经存在关系的条件");
             return;
@@ -561,8 +561,9 @@
         }
         if (!fnCheckExp(sText)) {
             sText = sText + ")";
+            sValue = sValue + ")";
         }
-        $(oObj.options[current]).attr('value', sText).text(sText);
+        $(oObj.options[current]).attr('value', sValue).text(sText);
     }
 
     //添加条件

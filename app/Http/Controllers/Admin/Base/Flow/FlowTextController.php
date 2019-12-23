@@ -42,10 +42,10 @@ class FlowTextController extends BaseAdminController
         //构造请求数据
         $data = [
             'flow_id' => 1,
-            'title' => '掌厅/流程/身份证变更流程-王二亮-2019-12-2',
+            'title' => '掌厅/流程/证件有效期变更流程-梁杰-2019-12-5',
             'tpl' => [
                 'address' => 'storage/zt/flow/zjbglc/123456.png',
-                'name' => '王二亮',
+                'name' => '梁杰',
                 'IDCard' => '342422199101212111',
                 'SFZ_ZM' => 'storage/zt/flow/zjbglc/SFZ_ZM.png',
                 'SFZ_FM' => 'storage/zt/flow/zjbglc/SFZ_FM.png',
@@ -58,17 +58,22 @@ class FlowTextController extends BaseAdminController
             DB::beginTransaction();
 
             $flow=SysFlow::where('is_publish',1)->findOrFail($data['flow_id']);
+
+            //当前实例流程数
+            $work_num_today = SysFlowInstance::where('created_at', '>=', date('Y-m-d'))->count();
+            $work_num_today += 1;
             
             $flowlink=SysFlowLink::where(['flow_id'=>$data['flow_id'],'type'=>'Condition'])->whereHas('node',function($query){
                 $query->where('position',0);
             })->orderBy("sort","ASC")->first();
 
             $instance=SysFlowInstance::create([
-                'title'=>$data['title'],
-                'flow_id'=>$data['flow_id'],
-                'user_id'=>auth()->guard('admin')->id(),
-                'circle'=>1,
-                'status'=>0
+                'title' => $data['title'],
+                'flow_id' => $data['flow_id'],
+                'work_num' => $flow->flow_no."-".date('Ymd')."00".$work_num_today,
+                'user_id' => auth()->guard('admin')->id(),
+                'circle' => 1,
+                'status' => 0
             ]);
             
             //进程初始化
@@ -76,7 +81,6 @@ class FlowTextController extends BaseAdminController
             
             Flow::setFirstNodeAuditor($instance,$flowlink);
 
-            // dd($data);
             //流程表单数据插入 TODO
             if(isset($data['tpl'])){
                 $res=[];
@@ -100,12 +104,15 @@ class FlowTextController extends BaseAdminController
             }
             $instance->save();
             DB::commit();
-            dd('success');
-            return redirect()->to('/');
+
+            $this->log(__CLASS__, __FUNCTION__, $request, "发起 流程");
+            return $this->ajax_return('200', '操作成功！');
+
         }catch(\Exception $e){
+
             DB::rollback();
-            dd($e);
-            return redirect()->back()->with(['success'=>-1,'message'=>$e->getMessage()]);
+            return $this->ajax_return('500', '操作失败！');
+
         }
     }
 
@@ -118,6 +125,7 @@ class FlowTextController extends BaseAdminController
     public function resend(Request $request)
     {
         $instance_id=$request->input('instance_id',0);
+        $instance_id = 184;
 
         try{
             DB::beginTransaction();
@@ -130,19 +138,20 @@ class FlowTextController extends BaseAdminController
             })->orderBy("sort","ASC")->first();
 
             $instance->circle=$instance->circle+1;
-            $instance->child=0;
+            $instance->child_node_id=0;
             $instance->status=0;
+
             $instance->save();
 
             //进程初始化
             Flow::setFirstNodeAuditor($instance,$flowlink);
-
+            
             DB::commit();
-            return redirect()->back();
-
+            $this->log(__CLASS__, __FUNCTION__, $request, "重新发起 流程");
+            return $this->ajax_return('200', '操作成功！');
         }catch(\Exception $e){
             DB::rollback();
-            return redirect()->back()->with(['success'=>-1,'message'=>$e->getMessage()]);
+            return $this->ajax_return('500', '操作失败！');
         }
     }
 
@@ -160,15 +169,13 @@ class FlowTextController extends BaseAdminController
             Flow::pass($id);
             
             DB::commit();
-
-            dd('success');
         }catch(\Exception $e){
-            dd($e);
             DB::rollback();
-            return response()->json(['status_code'=>0,'message'=>$e->getMessage()]);
+            return $this->ajax_return('500', '操作失败！', $e);
         }
         
-        return response()->json(['status_code'=>0]);
+        $this->log(__CLASS__, __FUNCTION__, $request, "流程 审批通过");
+        return $this->ajax_return('200', '操作成功！');
     }
 
     /**
@@ -187,9 +194,10 @@ class FlowTextController extends BaseAdminController
             DB::commit();
         }catch(\Exception $e){
             DB::rollback();
-            return redirect()->back()->with(['success'=>-1,'message'=>$e->getMessage()]);
+            return $this->ajax_return('500', '操作失败！', $e);
         }
         
-        return response()->json(['status_code'=>0]);
+        $this->log(__CLASS__, __FUNCTION__, $request, "流程 审批不通过");
+        return $this->ajax_return('200', '操作成功！');
     }
 }

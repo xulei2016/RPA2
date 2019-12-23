@@ -90,7 +90,12 @@ $(function(){
                     valign: 'middle'
                 },{
                     field: 'ip',
-                    title: 'IP',
+                    title: '本地IP',
+                    align: 'center',
+                    valign: 'middle'
+                },{
+                    field: 'ip2',
+                    title: '互联网IP',
                     align: 'center',
                     valign: 'middle'
                 },{
@@ -111,6 +116,11 @@ $(function(){
                 },{
                     field: 'count_time',
                     title: '登录时长',
+                    align: 'center',
+                    valign: 'middle'
+                },{
+                    field: 'version',
+                    title: '使用版本',
                     align: 'center',
                     valign: 'middle'
                 }],

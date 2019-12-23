@@ -35,7 +35,7 @@ $(function(){
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href= "/admin/rpa_profession_change/export?"+$url;
+            location.href = "/admin/rpa_profession_change/export?"+$url;
         });
 
         //导出选中
@@ -43,9 +43,8 @@ $(function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href= "/admin/rpa_profession_change/export?"+$url+'&id='+ids;
+            location.href =  "/admin/rpa_profession_change/export?"+$url+'&id='+ids;
         });
-
     }
 
     /**
@@ -72,7 +71,7 @@ $(function(){
                     success:function(r){
                         if(r.code == 200) {
                             swal('提示', '操作成功','success');
-                            // location.reload();
+                            location.reload();
                         } else {
                             swal('提示', r.info, 'error');
                         }}
@@ -175,7 +174,7 @@ $(function(){
                 },
                 formatter: function(value, row, index){
                     var result = '';
-                    if(row.status == 5 || row.status == 6) {
+                    if(row.status == 5) {
                         result = "<a href='javascript:;' class='btn btn-sm btn-primary confirmOne' item-id='"+value+"' onclick='confirmOne("+value+")' title='确认'>确认</a>";
                     }
                     return result;

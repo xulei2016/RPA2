@@ -105,8 +105,12 @@ class PublishController extends BaseController
      */
     public function publish()
     {
-        (new DetailController())->updateAll(); //先更新全部
+       (new DetailController())->updateAll(); //先更新全部
         $date = date('Y-m-d');
+        $newDate = $this->getDateAfter($date, 0, 'F1');
+        if($newDate) {
+            $date = $newDate;
+        }
         return $this->getData($date);
     }
 
@@ -115,6 +119,11 @@ class PublishController extends BaseController
      * 获取数据
      */
     public function getData($date) {
+        $this->dayList = $this->getAllDays();
+        $newDate = $this->getDateAfter($date, 0, 'F1');
+        if($newDate) {
+            $date = date('Y-m-d', strtotime($newDate));
+        }
         $today = $date;
         $extraList = RpaContractPublishExtra::where('date', $date)->select(['real_date', 'hydm', 'date'])->get();
         $hydmList = [];

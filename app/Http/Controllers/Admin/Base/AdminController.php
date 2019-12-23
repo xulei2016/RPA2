@@ -2,6 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Base;
 
+use App\Http\Controllers\Admin\Base\Organization\DeptController;
+use App\Models\Admin\Base\Organization\SysDept;
+use App\Models\Admin\Base\Organization\SysDeptFunctional;
+use App\Models\Admin\Base\Organization\SysDeptPost;
+use App\Models\Admin\Base\Organization\SysDeptPostRelation;
+use App\Models\Admin\Base\Organization\SysDeptRelation;
 use Hash;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -36,14 +42,75 @@ class AdminController extends BaseAdminController
     }
 
     /**
+     * 获取个人信息
+     * @param Request $request
+     * @return array
+     */
+    public function getById(Request $request){
+        $info = SysAdmin::where('id', $request->id)->first()->toArray();
+        $info['gender'] = $info['sex'] == 2?'女':'男';
+        $department = SysDept::where('id', $info['dept_id'])->first();
+        $info['department'] = $department?$department->name:'暂无';
+        $deptRelationList = SysDeptRelation::where('admin_id', $info['id'])->get();  //员工有的岗位
+
+        $postArr = [];
+        foreach ($deptRelationList as &$v) {
+            $deptPostRelation = SysDeptPostRelation::where('id', $v->post_relation_id)->first();
+            $postArr[] = $deptPostRelation->fullname;
+        }
+        $info['post'] = $postArr?implode(',', $postArr):'暂无';
+        switch ($info['status']) {
+            case 1:
+                $statusName = '正常';break;
+            case 2:
+                $statusName = '离职';break;
+            case 3:
+                $statusName = '冻结';break;
+            case 4:
+                $statusName = '注销';break;
+            default:
+                $statusName = '正常';
+        }
+        $info['statusName'] = $statusName;
+        return $this->ajax_return(200, '成功', $info);
+    }
+
+    /**
      * edit
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit(Request $request, $id){
         $info = SysAdmin::where('id', $id)->first();
         $groupList = SysAdminGroup::all();
         $roles = Role::where('id','!=','1')->get();
         $info['roleLists'] = explode(',', $info['roleLists']);
-        return view('admin.admin.edit', ['info' => $info, 'roles' => $roles, 'groupList' => $groupList]);
+        $departmentList = (new DeptController())->getTree();
+        $deptRelationList = SysDeptRelation::where('admin_id', $info->id)->get();  //员工有的岗位
+        $deptPostRelationList = SysDeptPostRelation::where('dept_id', $info->dept_id)->get(); // 部门有的岗位
+        $postArr = [];
+        foreach ($deptRelationList as &$v) {
+            $deptPostRelation = SysDeptPostRelation::where('id', $v->post_relation_id)->first();
+            $postArr[] = $deptPostRelation->id;
+        }
+        $info['posts'] = $postArr;
+        $leader = [];
+        if($info['leader_id']) {
+            $leader = SysAdmin::where('id', $info['leader_id'])->first();
+        }
+        $functionalList = SysDeptFunctional::get();
+        $department = SysDept::where('id', $info->dept_id)->first();
+        return view('admin.admin.edit', [
+            'info' => $info,
+            'roles' => $roles,
+            'groupList' => $groupList,
+            'departmentList' => $departmentList,
+            'functionalList' => $functionalList,
+            'department' => $department,
+            'deptPostRelationList' => $deptPostRelationList,
+            'leader' => $leader
+        ]);
     }
 
     /**
@@ -53,26 +120,52 @@ class AdminController extends BaseAdminController
         //客户分组
         $groupList = SysAdminGroup::all();
         $roles = Role::where('id','!=','1')->get();
-        return view('admin.admin.add', ['roles' => $roles, 'groupList' => $groupList]);
+        $deptId = $request->dept_id;
+        $department = [];
+        $postList = [];
+        if($deptId) {
+            $department = SysDept::where('id', $deptId)->first();
+            $postList = SysDeptPostRelation::where('dept_id', $deptId)->get();
+        }
+        $functionalList = SysDeptFunctional::get();
+        $departmentList = (new DeptController())->getTree();
+        return view('admin.admin.add',
+            [
+                'roles' => $roles,
+                'groupList' => $groupList,
+                'departmentList' => $departmentList,
+                'functionalList' => $functionalList,
+                'department' => $department,
+                'postList' => $postList,
+            ]);
     }
 
     /**
      * store
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID']);
+        $data = $this->get_params($request, ['name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID','dept_id','posts', 'func_id','leader_id']);
         $roles = $data['roleLists'];
+        $posts = $data['posts'];
+
         $data['roleLists'] = implode(',', $data['roleLists']);
+        $data['posts'] = implode(',', $data['posts']);
 
         //密码强度检测
         $result = self::check_pwd($data['password']);
         if(isset($result['code'])){
             return $result;
         };
-
         $data['password'] = bcrypt($data['password']);
         $result = SysAdmin::create($data);
 
+        foreach ($posts as $v) {
+            SysDeptRelation::create([
+                'admin_id' => $result->id,
+                'post_relation_id' => $v
+            ]);
+        }
+        $this->uploadPostIds($data['dept_id']);
         //同步角色
         $user = SysAdmin::find($result->id)->syncRoles($roles);
 
@@ -84,8 +177,9 @@ class AdminController extends BaseAdminController
      * update
      */
     public function update(Request $request){
-        $data = $this->get_params($request, ['id','name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID']);
+        $data = $this->get_params($request, ['id','name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID','dept_id', 'posts', 'func_id','leader_id']);
         $roles = $data['roleLists'];
+        $posts = $data['posts'];
         if(null == $data['password'] || '' == $data['password']){
             unset($data['password']);
         }else{
@@ -97,7 +191,18 @@ class AdminController extends BaseAdminController
             $data['password'] = bcrypt($data['password']);
         }
         $data['roleLists'] = implode(',', $data['roleLists']);
+        $data['posts'] = implode(',', $data['posts']);
         $result = SysAdmin::where('id', $data['id'])->update($data);
+        SysDeptRelation::where([
+            'admin_id' => $data['id'],
+        ])->delete();
+        foreach ($posts as $v) {
+            SysDeptRelation::create([
+                'admin_id' => $data['id'],
+                'post_relation_id' => $v
+            ]);
+        }
+        $this->uploadPostIds($data['dept_id']);
 
         //同步角色
         $user = SysAdmin::find($data['id'])->syncRoles($roles);
@@ -380,5 +485,26 @@ class AdminController extends BaseAdminController
             return ['code' => 500, 'info' => '密码强度不足，请确认至少需要数字、字母、字母大写小、特殊字符中的三个及以上组合。'];
         }
         return true;
+    }
+
+
+
+    /**
+     * 更新部门下的岗位
+     * @param $deptId
+     */
+    public function uploadPostIds($deptId){
+        $dept = SysDept::where('id', $deptId)->first();
+        $deptPostRelations = SysDeptPostRelation::where('dept_id', $deptId)->get(); // 部门岗位关系表
+        $list = [];
+        foreach ($deptPostRelations as $deptPostRelation) {
+            $post = SysDeptPost::where('id', $deptPostRelation->post_id)->first();
+            $deptRelations = SysDeptRelation::where('post_relation_id', $deptPostRelation->id)->get(['admin_id']);
+            foreach ($deptRelations as $deptRelation) {
+                $list[$post->unique_name][] = $deptRelation->admin_id;
+            }
+        }
+        $dept->post_ids = json_encode($list);
+        $dept->save();
     }
 }

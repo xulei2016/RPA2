@@ -6,6 +6,8 @@ $(function () {
     function init() {
 
         bindEvent();
+
+        showTodoList();
     }
 
     /**
@@ -13,7 +15,7 @@ $(function () {
      */
     function bindEvent() {
 
-        footprint();
+        pieChart();
 
         //计时
         let obj = $('');
@@ -31,36 +33,85 @@ $(function () {
             let accumulated_time = "<i>" + days + " </i>天<i> " + hours + " </i>时<i> " + minutes + " </i>分<i> " + seconds + " </i>秒";
             $('#pjax-container .accumulated_time').html(accumulated_time);
         }, 1000);
+
+        document.addEventListener('operationFlow', function(){
+            showTodoList();
+        })
+    }
+
+    function showTodoList(){
+        $.get('/admin/sys_flow_mine/todoList', function(res){
+            var html = '';
+            if(res.data.length ===  0) {
+                html = "暂无待办流程";
+                $('.flow .card-body').html(html);
+                return false;
+            }
+
+            $.each(res.data, function(index, item){
+                html += ' <div class="flow">\n' +
+                    '         <div class="title"><span class="fa fa-angle-right"></span> '+item.flow_title+'-'+item.node_title+'</div>\n' +
+                    '               <div class="flow-body">\n' +
+                    '                   <a href="javascript:void(0)" onclick="operation($(this));" url="/admin/sys_flow_mine/'+item.id+'">\n' +
+                    '                                <span class="flow-title">'+item.title+'</span>\n' +
+                    '                    </a>\n' +
+                    '                    <span>'+item.created_at+'</span>\n' +
+                    '          </div>\n' +
+                    '      </div>'
+            });
+            $('.flow .card-body').html(html);
+        })
     }
 
     /**
-     * 我的足迹
+     * 首页图表
      */
-    function footprint() {
+    function pieChart() {
+
+        //我的足迹
         $.post('/admin/sys_chart/footprint', function(json){
-            let label = json.pie_labels;
-            let count = json.pie_count;
-            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-            var pieData = {
-                labels: label,
-                datasets: [
-                    {
-                        data: count,
-                        backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de'],
-                    }
-                ]
-            };
-            var pieOptions = {
-                legend: {
-                    display: false,
-                },
-            };
-            var pieChart = new Chart(pieChartCanvas, {
+            var config = {
                 type: 'doughnut',
-                data: pieData,
-                options: pieOptions
-            });
+                data: {
+                    datasets: [{
+                        data: json.pie_count,
+                        backgroundColor: ['#f56954', '#3c8dbc', '#f39c12', '#00c0ef', '#2f2f2f', '#00a65a', '#d2d6de'],
+                        label: 'Dataset 1'
+                    }],
+                    labels: json.pie_labels
+                },
+                options: {
+                    responsive: true
+                }
+            };
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieChart = new Chart(pieChartCanvas, config);
         });
+
+        //磁盘
+        // $.post('/admin/sys_chart/disk', function(json){
+        //     let disks = json.DISK;
+        //     if(disks){
+        //         for(let k in disks){
+        //             let config = {
+        //                 type: 'pie',
+        //                 data: {
+        //                     datasets: [{
+        //                         data: [disks[k][1], disks[k][0]],
+        //                         backgroundColor: [ '#f56954', '#3c8dbc'],
+        //                         label: `${disks[k][0]} GB / ${disks[k][1]} GB; (${disks[k][2]})`
+        //                     }],
+        //                     labels: ['可用空间', '已用空间']
+        //                 },
+        //                 options: {
+        //                     responsive: true
+        //                 }
+        //             }
+        //             let pieChartCanvas = $(`#${k}`).get(0).getContext('2d')
+        //             new Chart(pieChartCanvas, config);
+        //         }
+        //     }
+        // });
     }
 
     init();
