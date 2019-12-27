@@ -42,21 +42,29 @@ Route::group(['prefix' => 'uploadVideo'], function(){
 
 Route::group(['prefix' => 'mediator'], function(){
     Route::get('/getCode', 'mediatorController@getCode');
+    Route::get('/getImageCode', 'mediatorController@getImageCode');
     Route::get('/login', 'mediatorController@login');
-    Route::get('/', 'MediatorController@index');
-	Route::get('/getImageCode', 'MediatorController@getImageCode');
-	Route::get('/login', 'MediatorController@login');
-	Route::post('/sendCode', 'MediatorController@sendCode');
-	Route::get('/IDCard', 'MediatorController@IDCard');
-	Route::get('/perfectInformation', 'MediatorController@perfectInformation');
-	Route::get('/sign', 'MediatorController@sign');
-	Route::get('/bankCard', 'MediatorController@bankCard');
-	Route::get('/handIdCard', 'MediatorController@handIdCard');
-	Route::get('/agreement', 'MediatorController@agreement');
-	Route::get('/rate', 'MediatorController@rate');
-	Route::get('/video', 'MediatorController@video');
-	Route::get('/review', 'MediatorController@review');
+    Route::get('/dologin', 'mediatorController@dologin');
+    Route::get('/', 'mediatorController@index');
+	Route::get('/IDCard', 'mediatorController@IDCard');
+    Route::get('/perfectInformation', 'MediatorController@perfectInformation');
+    Route::get('/sign', 'MediatorController@sign');
+    Route::get('/bankCard', 'MediatorController@bankCard');
+    Route::get('/handIdCard', 'MediatorController@handIdCard');
 
+    Route::get('/doinfo', 'MediatorController@doinfo');
+    Route::post('/upload', 'MediatorController@upload');
+
+    Route::get('/agreement', 'MediatorController@agreement');
+    Route::get('/rate', 'MediatorController@rate');
+    Route::get('/video', 'MediatorController@video');
+    Route::get('/review', 'MediatorController@review');
+
+    Route::get('/goNext', 'MediatorController@goNext');
+    Route::get('/getRealDept', 'MediatorController@getRealDept');
+    Route::get('/getPotic', 'MediatorController@getPotic');
+    Route::get('/checkPotic', 'MediatorController@checkPotic');
+    Route::get('/getDictionaries', 'MediatorController@getDictionaries');
 });
 
 

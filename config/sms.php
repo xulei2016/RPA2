@@ -65,27 +65,11 @@ return [
 
 
     'TX' => [
+        'app_id' => env('QCLOUD_SMS_APP_ID',''),
+        'app_key' => env('QCLOUD_SMS_APP_KEY',''),
+        'smsSign' => env('QCLOUD_SMS_SIGN',''),
+        'status' => [
 
-        
+        ],
     ],
-
-
-    'validate' => [
-
-        'ZZY' => [
-            'phone' => 'required',
-            'msg' => 'required'
-        ],
-
-        'YX' => [
-            'phone' => 'required',
-            'msg' => 'required',
-        ],
-
-        'TX' => [
-
-        ]
-
-    ]
-
 ];
