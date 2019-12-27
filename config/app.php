@@ -196,7 +196,10 @@ return [
         Mews\Captcha\CaptchaServiceProvider::class,
 
         //Flow
-        App\Providers\FlowServiceProvider::class
+        App\Providers\FlowServiceProvider::class,
+
+        //Agent tools
+        Jenssegers\Agent\AgentServiceProvider::class,
 
     ],
 
@@ -252,7 +255,10 @@ return [
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
 
         //验证码
-        'Captcha' => Mews\Captcha\Facades\Captcha::class
+        'Captcha' => Mews\Captcha\Facades\Captcha::class,
+
+        //Agent
+        'Agent' => Jenssegers\Agent\Facades\Agent::class
     ],
 
 ];

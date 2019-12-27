@@ -11,6 +11,9 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
+use App\Events\LoginEvent;  
+use Jenssegers\Agent\Agent;  
+
 
 class LoginController extends BaseAdminController
 {
@@ -41,9 +44,26 @@ class LoginController extends BaseAdminController
      */
     public function __construct(Request $request)
     {
-        // dd(__CLASS__, __FUNCTION__, $request);
         $this->middleware('guest:admin')->except('logout');
     }
+
+    /**
+     * login function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function login(Request $request)
+    {
+        //登录实现
+        if (auth()->attempt(['name' => $request->input('name'), 'password' => $request->input('password'), 'type' => 1], $request->input('remember'))) {
+
+            //登录成功，触发事件
+            event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime()));
+
+            return redirect()->intended($this->redirectTo);
+        }
+    } 
 
     /**
      * guard
@@ -68,7 +88,8 @@ class LoginController extends BaseAdminController
      * @param Request $request
      * @throws \Exception
      */
-    protected function validateLogin(Request $request){
+    protected function validateLogin(Request $request)
+    {
         $configs = SysConfig::where('item_key', 'verification_code')->first();
         $codeConfig = $configs->item_value;  //0 关闭  1 仅开启图片验证码  2仅开启滑动验证码 3全开
         $validateDetail = [

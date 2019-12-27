@@ -170,6 +170,12 @@ class MenuController extends BaseAdminController
     */
     public function getMenuList()
     {
+        //登录控制
+        if(!auth()->Guard('admin')->check()) {
+            header('Location: /admin/login');
+            exit;
+        }
+
         // $user = auth()->guard('admin')->user()->syncRoles('superAdministrator');
         //判断缓存是否存在, 是否调试模式
         if (config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
