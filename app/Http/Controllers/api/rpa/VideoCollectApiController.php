@@ -16,12 +16,6 @@ class VideoCollectApiController extends BaseApiController
      */
     public function login(Request $request)
     {
-        //ip检测
-//        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
-//        if($res !== true){
-//            return response()->json($res);
-//        }
-
         //表单验证
         $validatedData = $request->validate([
             'MNum' => 'required|numeric',

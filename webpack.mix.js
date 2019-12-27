@@ -51,21 +51,21 @@ let mix = require('laravel-mix');
     'public/include/laydate/theme/default/laydate.css',     //laydate
  ];
 
- mix.js(['resources/assets/js/app.js'], 'public/js')
-        .scripts(jspack, 'public/js/all.js')
+ mix.js(['resources/assets/js/app.js'], 'public/js');
+        // .scripts(jspack, 'public/js/all.js')
 
         // .sass('resources/assets/sass/app.scss', 'public/css')
-        .styles(csspack, 'public/css/all.css')
+        // .styles(csspack, 'public/css/all.css')
 
 
         //font-awesome fonts dir
-        .copyDirectory('public/include/font-awesome/fonts', 'public/fonts')
+        // .copyDirectory('public/include/font-awesome/fonts', 'public/fonts')
         //laydate theme
-        .copyDirectory('public/include/laydate/theme', 'public/js/theme')
+        // .copyDirectory('public/include/laydate/theme', 'public/js/theme')
         //ionicons fonts dir
       //   .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
-        .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
+        // .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
         //ickeck blue theme png
-        .copy('public/include/iCheck/minimal/blue.png', 'public/css/')
+        // .copy('public/include/iCheck/minimal/blue.png', 'public/css/')
         //boostrap fonts dir
-        .copyDirectory('public/include/bootstrap/fonts', 'public/fonts');
+        // .copyDirectory('public/include/bootstrap/fonts', 'public/fonts');

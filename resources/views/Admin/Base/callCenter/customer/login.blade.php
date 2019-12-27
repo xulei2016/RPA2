@@ -17,7 +17,7 @@
 				<a href="#" class="icon-white icon-left">
 					<i class="icon-chevron-left"></i>
 				</a>
-				<img src="{{asset('callCenter/img/a.png')}}" class="icon-pic"/>
+				<img src="callCenter/img/a.png" class="icon-pic"/>
 				<a href="#"  class="icon-white icon-right">
 					<i class="icon-chevron-right"></i>
 				</a>
@@ -56,12 +56,13 @@
 				}
 
 				function checkLogin(){
-					localStorage.removeItem('call_center_timestamp');
 					var info = localStorage.getItem('customer_info')
 					if(info) {
 						info = JSON.parse(info);
-						window.location.href = info.href
+						window.location.href = info.href;
+						return false;
 					}
+					localStorage.removeItem('call_center_timestamp');
 				}
 
 				function bindEvent(){

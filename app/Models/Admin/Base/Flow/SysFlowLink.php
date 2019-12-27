@@ -22,4 +22,23 @@ class SysFlowLink extends Model
     public function next_node(){
     	return $this->belongsTo('App\Models\Admin\Base\Flow\SysFlowNode','next_node_id');
     }
+
+    /**
+     * 获取下个节点id
+     * @param $flowId
+     * @param $nodeId
+     * @return int
+     */
+    public static function getNextNodes($flowId, $nodeId){
+        $result = self::where([
+            ['node_id', '=', $nodeId],
+            ['flow_id', '=', $flowId],
+            ['type', '=', 'Condition'],
+        ])->first();
+        if($result) {
+            return $result->next_node_id;
+        } else {
+            return 0;
+        }
+    }
 }

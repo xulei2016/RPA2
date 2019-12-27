@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\admin\base;
 
-use App\Models\Admin\Base\SysVersionUpdate;
 use DB;
+use App\Models\Admin\Base\SysVersionUpdate;
 use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Api\RpaApiLog;
@@ -56,6 +56,7 @@ class SysController extends BaseAdminController
             $data['pie_labels'] .= "'{$footprint->simple_desc}',";
             $data['pie_datas'] .= "{$footprint->c},";
         }
+
         $data['pie_labels'] = trim($data['pie_labels'],',');
         $data['pie_datas'] = trim($data['pie_datas'],',');
         
@@ -108,35 +109,44 @@ class SysController extends BaseAdminController
     * 系统
     */
     private function sys_info(){
-        $info['sys'] = [
-            'PHP_OS'      => php_uname() ,
-            'SERVER_PROTOCOL'          => $_SERVER['SERVER_PROTOCOL'] ,
-            'PHP_VERSION'      => 'PHP/'.PHP_VERSION ,
-            'Laravel_VERSION'  => app()->version().'LARAVEL' ,
-            'CGI'           => php_sapi_name() ,
-            'SERVER_INFO'          => array_get($_SERVER, 'SERVER_SOFTWARE') ,
-            'FILE_UPLOAD_MAX_SIZE'  => get_cfg_var ("upload_max_filesize")?get_cfg_var ("upload_max_filesize"):"不允许上传附件" ,
+		if(!Cache::has('sys_info')){
+			$info['SYS'] = [
+				'PHP_OS'      => php_uname() ,
+				'SERVER_PROTOCOL'          => $_SERVER['SERVER_PROTOCOL'] ,
+				'PHP_VERSION'      => 'PHP/'.PHP_VERSION ,
+				'Laravel_VERSION'  => app()->version().'LARAVEL' ,
+				'CGI'           => php_sapi_name() ,
+				'SERVER_INFO'          => array_get($_SERVER, 'SERVER_SOFTWARE') ,
+				'FILE_UPLOAD_MAX_SIZE'  => get_cfg_var ("upload_max_filesize")?get_cfg_var ("upload_max_filesize"):"不允许上传附件" ,
 
-            'CACHE'      => config('cache.default') ,
-            'Session'   => config('session.driver') ,
-            'QUEUE'      => config('queue.default') ,
+				'CACHE'      => config('cache.default') ,
+				'Session'   => config('session.driver') ,
+				'QUEUE'      => config('queue.default') ,
 
-            'TIMEZONE'          => config('app.timezone') ,
-            'Locale'        => config('app.locale') ,
-            'Env'           => config('app.env') ,
-            'URL'           => config('app.url') ,
-        ];
-        $con = mysqli_connect(env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_DATABASE'),env('DB_PORT'));
-        $info['database'] = [
-            'ALLOW_PERSISTENT' => @get_cfg_var("mysql.allow_persistent")?"是 ":"否",
-            'MAX_LINKS' => @get_cfg_var("mysql.max_links")==-1 ? "不限" : @get_cfg_var("mysql.max_links"),
-            'MYSQL_VERSION'    => mysqli_get_server_info($con),
-        ];
-        exec("wmic LOGICALDISK get name,Description,filesystem,size,freespace",$info['disk']);
+				'TIMEZONE'          => config('app.timezone') ,
+				'Locale'        => config('app.locale') ,
+				'Env'           => config('app.env') ,
+				'URL'           => config('app.url') ,
+			];
+			$con = mysqli_connect(env('DB_HOST'),env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_DATABASE'),env('DB_PORT'));
+			$info['DATABASE'] = [
+				'ALLOW_PERSISTENT' => @get_cfg_var("mysql.allow_persistent")?"是 ":"否",
+				'MAX_LINKS' => @get_cfg_var("mysql.max_links")==-1 ? "不限" : @get_cfg_var("mysql.max_links"),
+				'MYSQL_VERSION'    => mysqli_get_server_info($con),
+			];
+			$info['CACHE'] = [
+				'cache_time' => date('Y-m-d H:i:s')
+            ];
+            // $info['DISK'] = $this->get_spec_disk('all');
+            // $info['DISK_JSON'] = json_encode($info['DISK']);
 
-        return $info;
+            Cache::forget("sys_info");
+            Cache::add("sys_info", $info, 3600);
+		}
+
+        return Cache::get('sys_info');
     }
-
+	
     /**
      * 清除缓存
      */
@@ -210,6 +220,5 @@ class SysController extends BaseAdminController
     public function error500(Request $request){
         return view('errors.500');
     }
-
 
 }

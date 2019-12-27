@@ -2,8 +2,6 @@
 <script src="//{{ Request::getHost() }}:6001/socket.io/socket.io.js"></script>
 <!-- ChartJS -->
 {{-- <script src="{{URL::asset('/include/chart.js/Chart.min.js')}}"></script> --}}
-<!-- Sparkline -->
-<script src="{{URL::asset('/include/sparklines/sparkline.js')}}"></script>
 {{-- pjax --}}
 <script src="{{URL::asset('/include/jquery-pjax/JQuery.pjax.js')}}"></script>
 {{-- toastr --}}
@@ -28,12 +26,6 @@
 <script src="{{URL::asset('/include/bootstrap-table/local/bootstrap-table-zh-CN.js')}}"></script>
 {{-- laydate --}}
 <script src="{{URL::asset('/include/laydate/laydate.js')}}"></script>
-{{-- plupload --}}
-<script src="{{URL::asset('/include/plupload/js/plupload.full.min.js')}}"></script>
-<!-- daterangepicker -->
-<script src="{{URL::asset('/include/moment/moment.min.js')}}"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="{{URL::asset('/include/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
 <!-- FastClick -->
 <script src="{{URL::asset('/include/fastclick/fastclick.js')}}"></script>
 <!-- AdminLTE App -->
@@ -41,6 +33,11 @@
 <!-- select2 -->
 <script src="{{URL::asset('/include/select2/js/select2.js')}}"></script>
 <script src="{{URL::asset('/js/app.js')}}"></script>
+{{--bootstrap-fileinput--}}
+<script src="{{URL::asset('/include/bootstrap-fileinput/js/fileinput.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-fileinput/themes/fas/theme.js')}}"></script><script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
+
 <script>
     //消息通知laravel-echo
     let socket = {

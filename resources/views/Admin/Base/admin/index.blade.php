@@ -159,6 +159,9 @@
         </div>
     </div>
 </div>
+
+{{-- plupload --}}
+<script src="{{URL::asset('/include/plupload/js/plupload.full.min.js')}}"></script>
 <script src="{{URL::asset('/js/admin/base/admin/index.js')}}"></script>
 
 @endsection

@@ -16,8 +16,57 @@ $(function(){
             "allowClear":true,
             "placeholder":"角色选择",
         });
+
+        $("#dept_id").select2({
+            "allowClear":true,
+            "placeholder":"部门选择",
+        });
+
+        $("#posts").select2({
+            "allowClear":true,
+            "placeholder":"岗位",
+        });
+
         $(modal+' form .switch input#sex').bootstrapSwitch({onText:"男", offText:"女"});
         $(modal+' form .switch input#type').bootstrapSwitch({onText:"启用", offText:"禁用"});
+
+        //部门更新
+        $(modal+ ' #dept_id').on('change', function(){
+            var dept_id = $(this).val();
+            getPostsByDepartmentId(dept_id);
+        });
+
+        // 搜索员工
+        $('.searchUser').on('click', function(e){
+            $('#modal-sm .modal-content').text('').load('/admin/sys_dept/searchAdmins');
+            $('#modal-sm').modal('show');
+            e.preventDefault();
+            e.stopPropagation()
+        });
+
+        //监听事件
+        document.addEventListener('searchAdmin', function(e){
+            var id = e.detail.id.replace('admin_', '');
+            var name = e.detail.oldname?e.detail.oldname:e.detail.name;
+            $('#leader_id').html("<option value='"+id+"'>"+name+"</option>");
+            $('#'+e.detail.parentId).modal('hide');
+        })
+    }
+
+    /**
+     * 根据部门id获取岗位
+     * @param id
+     */
+    function getPostsByDepartmentId(id){
+        $.post('/admin/sys_dept_post_relation/getByDeptId', {dept_id: id}, function(res){
+            var html = "<option>未选择</option>";
+            if(res.code == 200) {
+                $.each(res.data, function(index, item){
+                    html += "<option value='"+item.id+"'>"+item.postName+"</option>";
+                });
+            }
+            $(modal+ ' #posts').html(html);
+        });
     }
     //添加
     function add(e){
@@ -30,6 +79,9 @@ $(function(){
         success:function(json, xml){
             if(200 == json.code){
                 RPA.form.response();
+                var newEvent = document.createEvent("HTMLEvents");
+                newEvent.initEvent("updateUser",true,true);
+                document.dispatchEvent(newEvent);
             }else{
                 toastr.error(json.info);
             }
@@ -46,6 +98,15 @@ $(function(){
                 required:true
             },
             realName:{
+                required:true
+            },
+            dept_id:{
+                required:true
+            },
+            post_id:{
+                required:true
+            },
+            func_id:{
                 required:true
             },
             groupID:{

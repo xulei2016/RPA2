@@ -60,7 +60,7 @@
 
 <body>
 
-    <div class="container dialog_main">
+    <div class="dialog_main">
 
         <form class="form-search" id="dialog_search">
             <select name="" class="input-small">
@@ -82,7 +82,7 @@
             <div class="span6">
                 <select name="dialog_searchable" id="dialog_searchable" multiple="multiple" style="display:none;">
                     @foreach($depts as $v)
-                        <option value="{{$v['id']}}">{{$v['name']}}</option>
+                        <option value="{{$v['id']}}" @if(in_array($v->id,$select_depts->pluck('id')->toArray())) selected="selected" @endif >{{$v['name']}}</option>
                     @endforeach
                 </select>
             </div>

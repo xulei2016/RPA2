@@ -18,10 +18,9 @@ class SysAdmin extends Authenticatable
      * 
      * @var array 
      */ 
-    protected $fillable = [ 
-        'name', 'email', 'password', 'desc', 'sex', 'type','phone', 'realName','roleLists','groupID'
-    ]; 
- 
+
+    //'name', 'email', 'password', 'desc', 'sex', 'type','phone', 'realName','roleLists','groupID', 'dep_id', 'job_id'
+    protected $guarded = [];
     /** 
      * The attributes that should be hidden for arrays. 
      * 
@@ -50,4 +49,5 @@ class SysAdmin extends Authenticatable
             'id'
         );
     }
+
 }

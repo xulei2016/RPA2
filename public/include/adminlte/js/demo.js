@@ -56,13 +56,13 @@
     var $text_sm_body_checkbox = $('<input />', {
         type: 'checkbox',
         value: 1,
-        checked: $('body').hasClass('text-sm'),
+        checked: $('.content-wrapper').hasClass('text-sm'),
         'class': 'mr-1'
     }).on('click', function () {
         if ($(this).is(':checked')) {
-            $('body').addClass('text-sm')
+            $('.content-wrapper').addClass('text-sm')
         } else {
-            $('body').removeClass('text-sm')
+            $('.content-wrapper').removeClass('text-sm')
         }
     })
     var $text_sm_body_container = $('<div />', { 'class': 'mb-1' }).append($text_sm_body_checkbox).append('<span>页面小号字体</span>')

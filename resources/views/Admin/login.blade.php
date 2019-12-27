@@ -12,7 +12,7 @@
     <!-- Favicons -->
     <link rel="icon" href="./themes/image/favicon.ico" sizes="16x16 32x32">
 
-    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap/dist/css/bootstrap.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('/include/bootstrap3/css/bootstrap.css')}}">
 
 
     <!-- Styles -->
@@ -59,7 +59,7 @@
             <dd>
                 @if($codeConfig == 1 || $codeConfig == 3)
                     <div class="input-group" style="height: 40px;" id="code-div">
-                        <input autocomplete="off" style="height: 100%" type="text" id="captcha" name="captcha"
+                        <input autocomplete="off" style="height: 40px;line-height: 28px;" type="text" id="captcha" name="captcha"
                                class="form-control" placeholder="请输入验证码" aria-describedby="basic-addon2">
                         @if($codeConfig == 1)
                             <span class="input-group-addon" id="code-img" style="padding: 0 0;">
@@ -119,7 +119,7 @@
     </div>
 </div>
 
-<script src="{{URL::asset('/include/bootstrap/dist/js/bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="{{URL::asset('/include/bootstrap3/js/bootstrap.js')}}" type="text/javascript"></script>
 <script src="{{URL::asset('/include/jigsaw/img_ver.min.js')}}" type="text/javascript"></script>
 <script>
     function handle(func) {

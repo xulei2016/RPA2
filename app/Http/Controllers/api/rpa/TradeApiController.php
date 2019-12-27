@@ -26,9 +26,10 @@ class TradeApiController extends BaseApiController
     {
         //表单验证
         $validatedData = $request->validate([
-            'khh' => 'required|numeric'
+            'khh' => 'required'
         ]);
 
+        $zjzh = $this->decrypt($request->khh,"H@!qh2019dmy==,.");
         //根据资金账号查找客户号
         $post_data = [
             'type' => 'common',
@@ -36,7 +37,7 @@ class TradeApiController extends BaseApiController
             'param' => [
                 'table' => 'KHXX',
                 'by' => [
-                    ['ZJZH','=',$request->khh]
+                    ['ZJZH','=',$zjzh]
                 ]
             ]
         ];
@@ -63,8 +64,10 @@ class TradeApiController extends BaseApiController
             ];
             $result = $this->getCrmData($post_data);
             if($result){
+                $len = strlen($zjzh);
                 $re = [
                     'status' => 200,
+                    'zjzh' => substr_replace($zjzh,str_repeat("*",(int)($len/2)),(int)($len/4),(int)($len/2)),
                     'msg' => $result
                 ];
             }else{
@@ -230,19 +233,22 @@ class TradeApiController extends BaseApiController
         $validatedData = $request->validate([
             'type' => 'required|in:start,end'
         ]);
-
         if($request->type == 'start'){
+            $addr = $this->getAddress($request->getClientIp());
             $add = [
-                'zjzh' => $request->zjzh,
+                'zjzh' => $this->decrypt($request->zjzh,"H@!qh2019dmy==,."),
                 'tzjh_account' => $request->tzjh_account,
                 'ip' => $request->ip,
+                'ip2' => $request->getClientIp(),
+                'province' => $addr['province'],
+                'city' => $addr['city'],
                 'mac' => $request->mac,
                 'version' => $request->version,
                 'start_time' => time(),
+                'end_time' => time() + 1,
+                'count_time' => 1
             ];
-
             $record = RpaTradeLoginRecord::create($add);
-
             $return = [
                 'status' => 200,
                 'msg' => $record->id
@@ -293,8 +299,6 @@ class TradeApiController extends BaseApiController
         ]);
         //根据版本号查询是否启用
         $ver = RpaHadmyVersion::where('version',$request->version)->first();
-
-
         // 获取最新版本
         $hadmyversion = RpaHadmyVersion::orderBy('version', 'desc')->first();
         if($request->type == 1){
@@ -302,13 +306,85 @@ class TradeApiController extends BaseApiController
                 'status' => 200,
                 'msg' => [
                     'new_version' => $hadmyversion->version,
-                    'old_use' => $ver->status ?? "0"
+                    'old_use' => $ver->status ?? 0
                 ]
             ];
+            //api日志
+            $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+
             return response()->json($re);
         }else{
             //下载
+
+            //api日志
+            $this->apiLog(__FUNCTION__,$request,'',$request->getClientIp());
             return response()->download($hadmyversion->url);
+        }
+    }
+
+    /**
+     * 解密程序
+     */
+    private function decrypt($data, $key)
+    {
+        $key = md5($key);
+        $x = 0;
+        $data = base64_decode($data);
+        $len = strlen($data);
+        $l = strlen($key);
+        $char=$str='';
+        for ($i = 0; $i < $len; $i++)
+        {
+            if ($x == $l)
+            {
+                $x = 0;
+            }
+            $char .= substr($key, $x, 1);
+            $x++;
+        }
+        for ($i = 0; $i < $len; $i++)
+        {
+            if (ord(substr($data, $i, 1)) < ord(substr($char, $i, 1)))
+            {
+                $str .= chr((ord(substr($data, $i, 1)) + 256) - ord(substr($char, $i, 1)));
+            }
+            else
+            {
+                $str .= chr(ord(substr($data, $i, 1)) - ord(substr($char, $i, 1)));
+            }
+        }
+        return $str;
+    }
+
+    /**
+     * 根据ip获取地址
+     * @param $ip
+     * @return array
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    private function getAddress($ip){
+        $guzzle = new Client();
+        $url = config('baidu_api.ip_location.url');
+        $ak = config('baidu_api.ak');
+        $response = $guzzle->request('POST',$url,[
+            'form_params' => [
+                'ip' => $ip,
+                'ak' => $ak
+            ]
+        ]);
+
+        $body = $response->getBody();
+        $body = json_decode((string)($body),true);
+        if($body['status'] == 0){
+            return [
+                'province' => $body['content']['address_detail']['province'],
+                'city' => $body['content']['address_detail']['city']
+            ];
+        }else{
+            return [
+                'province' => '',
+                'city' => ''
+            ];
         }
     }
 

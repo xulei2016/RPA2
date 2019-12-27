@@ -58,6 +58,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         Route::group(['middleware' => ['permission:sys_board']], function () {
             //用户管理
             Route::group(['middleware' => ['permission:sys_admin']], function () {
+                Route::get('/sys_admin/getById', 'AdminController@getById');
                 Route::get('/sys_admin/export', 'AdminController@export')->middleware('permission:sys_admin_export');
                 Route::get('/sys_admin/list', 'AdminController@pagenation');
                 Route::get('/sys_admin', 'AdminController@index');
@@ -98,6 +99,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         });
             //统计中心
             Route::group([ 'namespace' => 'Chart'], function(){
+            Route::post('/sys_chart/disk', 'ChartController@disk');
             Route::post('/sys_chart/footprint', 'ChartController@footprint');
         });
         //通知中心
@@ -157,30 +159,29 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::resource('/sys_api', 'ApiController');
         });
 
-        //客服中心后台
-        Route::group(['namespace' => 'CallCenter','middleware' => ['permission:sys_call_center']], function(){
-            //聊天室
-            Route::get("/sys_call_center_chat_room", 'ChatRoomController@index');
-            // 模板管理
-            Route::get("/sys_call_center_template/list", 'TemplateController@pagination');
-            Route::get("/sys_call_center_template/export", 'TemplateController@export');
-            Route::resource("/sys_call_center_template", 'TemplateController')->middleware('permission:sys_call_center_template');
-            // 客服管理
-            Route::get("/sys_call_center_manager/list", 'ManagerController@pagination');
-            Route::get("/sys_call_center_manager/export", 'ManagerController@export');
-            Route::resource("/sys_call_center_manager", 'ManagerController')->middleware('permission:sys_call_center_manager');
-            // 聊天记录
-            Route::get("/sys_call_center_record", 'RecordController@index')->middleware('permission:sys_call_center_record');
-            Route::get("/sys_call_center_record/list", 'RecordController@pagination');
-            Route::get("/sys_call_center_record/export", 'RecordController@export');
-            // 聊天记录详细
-            Route::get("/sys_call_center_record_detail", 'RecordDetailController@index')->middleware('permission:sys_call_center_record_detail');
-            Route::get("/sys_call_center_record_detail/list", 'RecordDetailController@pagination');
-            //设置
-            Route::get("/sys_call_center_setting", 'SettingController@index')->middleware('permission:sys_call_center_setting');
-            Route::post("/sys_call_center_setting", 'SettingController@store')->middleware('permission:sys_call_center_setting');
-            
+        //公司组织架构
+        Route::group(['namespace' => 'Organization','middleware' => ['permission:sys_dept']], function () {
+            //部门
+            Route::group([], function () {
+                Route::get('/sys_dept/detail', 'DeptController@detail');
+                Route::get('/sys_dept/getDetailById', 'DeptController@getDetailById');
+                Route::get('/sys_dept/getMenus', 'DeptController@getMenus');
+                Route::get('/sys_dept/searchAdmins', 'DeptController@searchAdmins');
+                Route::resource('/sys_dept', 'DeptController');
+            });
+            //岗位
+            Route::group([], function (){
+                Route::post('/sys_post/getPostsByDeptId', 'PostController@getPostsByDeptId');
+                Route::resource('/sys_post', 'PostController');
+            });
+            //部门岗位中间表
+            Route::group([], function (){
+                Route::post('/sys_dept_post_relation/getByDeptId', 'DeptPostRelationController@getByDeptId');
+                Route::resource('/sys_dept_post_relation', 'DeptPostRelationController');
+            });
         });
+
+
     });
     //RPA 任务中心
     Route::group(['namespace' => 'Rpa'], function(){
@@ -292,16 +293,6 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::post('/rpa_profession_change_task/insertImmedtasks', 'ProfessionChangeController@insertImmedtasks');
             Route::resource('/rpa_profession_change_task', 'ProfessionChangeController');
         });
-        //线下客户档案收集
-        Route::group([], function () {
-            Route::post("/rpa_archives/selectVideo","ArchivesController@selectVideo");
-            Route::get("/rpa_archives/list","ArchivesController@pagenation");
-            Route::post("/rpa_archives/credit","ArchivesController@credit");
-            Route::post("/rpa_archives/uploadEnclosure","ArchivesController@uploadEnclosure");
-            Route::post("/rpa_archives/uploadAudio","ArchivesController@uploadAudio");
-            Route::post("/rpa_archives/changeStep","ArchivesController@changeStep");
-            Route::resource("/rpa_archives", 'ArchivesController');
-        });
         //rpa任务运行日志
         Route::get('/rpa_logs/log','StatisticsController@pagination');
         Route::get('/rpa_logs/show/{id}','StatisticsController@show');
@@ -398,6 +389,18 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::post('/rpa_customer/delete','CustomerController@delete')->middleware('permission:rpa_customer_delete');
         });
 
+        //线下客户档案收集
+        Route::group([], function () {
+            Route::post("/rpa_archives/selectVideo","ArchivesController@selectVideo");
+            Route::get("/rpa_archives/list","ArchivesController@pagenation");
+            Route::post("/rpa_archives/credit","ArchivesController@credit");
+            Route::post("/rpa_archives/selectSdxLevel","ArchivesController@selectSdxLevel");
+            Route::post("/rpa_archives/uploadEnclosure","ArchivesController@uploadEnclosure");
+            Route::post("/rpa_archives/uploadAudio","ArchivesController@uploadAudio");
+            Route::post("/rpa_archives/changeStep","ArchivesController@changeStep");
+            Route::resource("/rpa_archives", 'ArchivesController');
+        });
+
         //线下客户视频收集
         Route::group(['middleware' => ['permission:rpa_customer_video_collect']], function () {
             Route::get('/rpa_customer_video_collect/export', 'VideoCollectController@export');
@@ -474,7 +477,6 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::get('/rpa_sxf/list', 'SxfController@pagination');
         });
 
-
         //职业变更
         Route::get('/rpa_profession_change','ProfessionChangeController@index');
         Route::get('/rpa_profession_change/list','ProfessionChangeController@pagination');
@@ -526,12 +528,52 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         Route::get('/rpa_fxq','FxqController@index')->middleware('permission:rpa_fxq');
     });
 
+    //客服中心后台
+    Route::group(['namespace' => 'Func\CallCenter','middleware' => ['permission:sys_call_center']], function(){
+        //聊天室
+        Route::get("/sys_call_center_chat_room", 'ChatRoomController@index');
+        //客户管理
+        Route::post('/sys_call_center_customer/getCustomerInfo', 'CustomerController@getById');
+
+        Route::get("/sys_call_center_customer/getOnlineCustomerList", 'CustomerController@getOnlineCustomerList');
+        // 模板管理
+        Route::get("/sys_call_center_template/list", 'TemplateController@pagination');
+        Route::get("/sys_call_center_template/export", 'TemplateController@export');
+        Route::get("/sys_call_center_template/template_list_background", 'TemplateController@getTemplateList');
+        Route::resource("/sys_call_center_template", 'TemplateController')->middleware('permission:sys_call_center_template');
+        // 客服管理
+        Route::post("/sys_call_center_manager/connect", 'ManagerController@connect');
+        Route::post("/sys_call_center_manager/leave", 'ManagerController@leave');
+        Route::post("/sys_call_center_manager/transfer", 'ManagerController@transfer');
+        Route::get("/sys_call_center_manager/list", 'ManagerController@pagination');
+        Route::get("/sys_call_center_manager/export", 'ManagerController@export');
+        Route::get("/sys_call_center_manager/getOnlineManagerList", 'ManagerController@getOnlineManagerList');
+        Route::post("/sys_call_center_manager/updateOne", 'ManagerController@updateOne');
+        Route::post("/sys_call_center_manager/sendByManager", 'ManagerController@sendByManager');
+
+        Route::resource("/sys_call_center_manager", 'ManagerController')->middleware('permission:sys_call_center_manager');
+        // 聊天记录
+        Route::get("/sys_call_center_record", 'RecordController@index')->middleware('permission:sys_call_center_record');
+        Route::get("/sys_call_center_record/list", 'RecordController@pagination');
+        Route::get("/sys_call_center_record/export", 'RecordController@export');
+        // 聊天记录详细
+        Route::get("/sys_call_center_record_detail/getRecordById", 'RecordDetailController@getRecordById');
+        Route::get("/sys_call_center_record_detail/getRecordList", 'RecordDetailController@getRecordList');
+        Route::get("/sys_call_center_record_detail", 'RecordDetailController@index')->middleware('permission:sys_call_center_record_detail');
+        Route::get("/sys_call_center_record_detail/list", 'RecordDetailController@pagination');
+        //设置
+        Route::get("/sys_call_center_setting", 'SettingController@index')->middleware('permission:sys_call_center_setting');
+        Route::post("/sys_call_center_setting", 'SettingController@store')->middleware('permission:sys_call_center_setting');
+
+    });
+
+
     //华安达摩院
     Route::group(['namespace' => 'Hadmy'],function(){
-        //反洗钱查询
         Route::get('/rpa_hadmy','HadmyController@index');
         Route::get('/rpa_hadmy/list','HadmyController@pagination');
         Route::get('/rpa_hadmy/statistics/{tzjh}','HadmyController@statistics');
         Route::get('/rpa_hadmy/single_list','HadmyController@single_pagination');
     });
+
 });
