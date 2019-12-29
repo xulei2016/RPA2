@@ -86,7 +86,6 @@ class Handler extends ExceptionHandler
             ];
             return response()->json($info);
         } else {
-            dd($exception->getMessage());
             header('Location: /admin/403.extend');exit;
         }
     }

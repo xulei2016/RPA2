@@ -57,7 +57,7 @@ class LoginEvent
     }
 
     /**
-     * @return obj 获取用户
+     * @return User 获取用户
      */
     public function getUser()
     {
@@ -65,7 +65,7 @@ class LoginEvent
     }
 
     /**
-     * @return obj 获取代理信息
+     * @return Agent 获取代理信息
      */
     public function getAgent()
     {
@@ -73,7 +73,7 @@ class LoginEvent
     }
 
     /**
-     * @return obj 获取IP
+     * @return ip 获取IP
      */
     public function getIp()
     {
@@ -81,7 +81,7 @@ class LoginEvent
     }
 
     /**
-     * @return obj 获取时间戳
+     * @return int 获取时间戳
      */
     public function getTimestamp()
     {

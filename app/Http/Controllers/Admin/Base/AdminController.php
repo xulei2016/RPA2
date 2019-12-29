@@ -9,7 +9,9 @@ use App\Models\Admin\Base\Organization\SysDeptPost;
 use App\Models\Admin\Base\Organization\SysDeptPostRelation;
 use App\Models\Admin\Base\Organization\SysDeptRelation;
 use Hash;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Admin\Admin\SysAdmin;
@@ -36,6 +38,8 @@ class AdminController extends BaseAdminController
 
     /**
      * show
+     * @param Request $request
+     * @return Factory|View
      */
     public function show(Request $request){
         return view('admin.admin.index');
@@ -79,7 +83,7 @@ class AdminController extends BaseAdminController
      * edit
      * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function edit(Request $request, $id){
         $info = SysAdmin::where('id', $id)->first();
@@ -115,6 +119,8 @@ class AdminController extends BaseAdminController
 
     /**
      * create
+     * @param Request $request
+     * @return Factory|View
      */
     public function create(Request $request){
         //客户分组
@@ -142,6 +148,8 @@ class AdminController extends BaseAdminController
 
     /**
      * store
+     * @param Request $request
+     * @return array|bool
      */
     public function store(Request $request){
         $data = $this->get_params($request, ['name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID','dept_id','posts', 'func_id','leader_id']);
@@ -175,6 +183,8 @@ class AdminController extends BaseAdminController
 
     /**
      * update
+     * @param Request $request
+     * @return array|bool
      */
     public function update(Request $request){
         $data = $this->get_params($request, ['id','name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID','dept_id', 'posts', 'func_id','leader_id']);
@@ -213,6 +223,9 @@ class AdminController extends BaseAdminController
 
     /**
      * destroy
+     * @param Request $request
+     * @param $ids
+     * @return array
      */
     public function destroy(Request $request, $ids){
         $ids = explode(',', $ids);
@@ -227,6 +240,8 @@ class AdminController extends BaseAdminController
 
     /**
      * destroyAll
+     * @param Request $request
+     * @return Factory|View
      */
     public function destroyAll(Request $request){
         $this->log(__CLASS__, __FUNCTION__, $request, "删除所有 用户");
@@ -235,6 +250,8 @@ class AdminController extends BaseAdminController
 
     /**
      * show
+     * @param Request $request
+     * @return
      */
     public function pagenation(Request $request){
         $rows = $request->rows;
@@ -260,6 +277,7 @@ class AdminController extends BaseAdminController
 
     /**
      * export
+     * @param Request $request
      */
     public function export(Request $request){
         $param = $this->get_params($request, ['name', 'type', 'id']);
@@ -284,8 +302,11 @@ class AdminController extends BaseAdminController
     }
 
     ////////////////////////////////////////////////////////////个人中心///////////////////////////////////////////////
+
     /**
      * 个人中心
+     * @param Request $request
+     * @return Factory|View
      */
     public function userCenter(Request $request){
         $info = auth()->guard()->user();
@@ -295,6 +316,8 @@ class AdminController extends BaseAdminController
 
     /**
      * 信息修改
+     * @param Request $request
+     * @return array|bool
      */
     public function updateUser(Request $request){
         //表单类型
@@ -311,6 +334,9 @@ class AdminController extends BaseAdminController
             case 'file':
                 return self::changeHeadImg($request);
                 break;
+            case 'another':
+                return self::another($request);
+                break;
             default:
                 return $this->ajax_return('500', '操作失败，未匹配到操作类型！！');
                 break;
@@ -319,6 +345,8 @@ class AdminController extends BaseAdminController
 
     /**
      * rpasetting
+     * @param Request $request
+     * @return array
      */
     private function rpasetting(Request $request){
         $data = $this->get_params($request, ['accept_mes_info', 'accept_mes_type']);
@@ -349,6 +377,8 @@ class AdminController extends BaseAdminController
 
     /**
      * 修改密码
+     * @param Request $request
+     * @return array|bool
      */
     private function changePWD(Request $request){
         $data = $this->get_params($request, ['oriPWD', 'password', 'rePWD']);
@@ -378,8 +408,23 @@ class AdminController extends BaseAdminController
     }
 
     /**
+     * 其他设置
+     * @param Request $request
+     * @return array
+     */
+    private function another(Request $request){
+        $data = $this->get_params($request, ['single_login', 'login_protected']);
+
+        $user = session('sys_admin');
+        $this->log(__CLASS__, __FUNCTION__, $request, "修改 rpa 设置");
+        SysAdmin::where('id', $user['id'])->update($data);
+        return [ 'code' => '200', 'info' => '设置成功！！'];
+    }
+
+    /**
      * 初次登陆修改密码页面
      * @param Request $request
+     * @return Factory|View
      */
     public function firstLogin(Request $request){
         return view("admin.base.admin.first");
@@ -388,6 +433,7 @@ class AdminController extends BaseAdminController
     /**
      * 清空错误次数
      * @param Request $request
+     * @return array
      */
     public function clearCount(Request $request){
         $admin = SysAdmin::where('id', $request->id)->first();
@@ -403,6 +449,8 @@ class AdminController extends BaseAdminController
 
     /**
      * 个人信息修改
+     * @param Request $request
+     * @return array
      */
     private function changeInfo(Request $request){
         $data = $this->get_params($request, ['realName', 'phone', 'email', 'desc']);
@@ -415,6 +463,8 @@ class AdminController extends BaseAdminController
 
     /**
      * 修改头像
+     * @param Request $request
+     * @return array
      */
     private function changeHeadImg(Request $request){
         //显示的属性更多
@@ -442,6 +492,8 @@ class AdminController extends BaseAdminController
 
     /**
      * 检查原密码
+     * @param $pwd
+     * @return bool
      */
     private function check_ori_pwd($pwd){
         $user = auth()->guard('admin')->user();
@@ -456,6 +508,8 @@ class AdminController extends BaseAdminController
      * 不包含当前用户名
      * 不小于8位
      * 数字/字母/大小写字母/特殊字符
+     * @param $str
+     * @return array|bool
      */
     private function check_pwd($str){
         $score = 0;

@@ -41,16 +41,9 @@ class AuthAdmin
     public function handle(Request $request, Closure $next, $guard = null)
     {
         $this->guard = Auth::guard($guard);
-        if(!$this->guard->check()) {
+        if(!$this->guard->check() || !self::singleLogin()) {
 
             return redirect()->guest('admin/login');
-        }
-
-        //单用户登录
-        if(!self::singleLogin()){
-            dd($this->guard->check());
-            header('Location: /admin/403.extend');exit;
-            return redirect()->guest('admin/errors.404_extend');
         }
 
         //缓存当前路由

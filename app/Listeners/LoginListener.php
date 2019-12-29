@@ -29,8 +29,10 @@ class LoginListener// implements ShouldQueue
     /**
      * Handle the event.
      *
-     * @param  Event  $event
+     * @param LoginEvent $event
      * @return void
+     * @throws \GeoIp2\Exception\AddressNotFoundException
+     * @throws \MaxMind\Db\Reader\InvalidDatabaseException
      */
     public function handle(LoginEvent $event)
     {

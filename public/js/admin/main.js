@@ -71,7 +71,7 @@ RPA.prototype = {
             _this.config.sidebar.activeBar = sessionStorage.activeBar = $(this).attr('href');
             if (!$(this).parents('li').hasClass('active')) {
                 $(this).parents('li').siblings('.active').removeClass('active');
-                // $(this).addClass('active');
+                // $(this).parents('li').addClass('active');
             }
             _this.tags.addTags(_this, event);
         });
