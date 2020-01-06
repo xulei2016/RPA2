@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 //admin user login or logout operation 
 Route::group(['prefix' => 'admin', 'namespace' => 'admin\Base'], function(){
-
+    
     Route::get('/login', 'LoginController@showLoginForm')->name('admin.login');
     Route::post('/login', 'LoginController@login');
     Route::any('/logout', 'LoginController@logout')->name('logout');

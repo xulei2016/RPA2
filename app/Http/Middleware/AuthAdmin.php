@@ -8,6 +8,29 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthAdmin
 {
+
+    /**
+     * @var obj
+     */
+    protected $request;
+
+    /**
+     * @var obj
+     */
+    protected $guard;
+
+
+    /**
+     * Admin Middleware
+     *
+     * @param Request $request
+     */
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
+
     /**
      * Handle an incoming request.
      *
@@ -15,29 +38,31 @@ class AuthAdmin
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $guard = null)
+    public function handle(Request $request, Closure $next, $guard = null)
     {
-        if(!Auth::guard($guard)->check()) {
+        $this->guard = Auth::guard($guard);
+        if(!$this->guard->check() || !self::singleLogin()) {
 
-            return redirect('admin/login');
+            return redirect()->guest('admin/login');
         }
 
         //缓存当前路由
-        $pathInfo = explode('/', $request->path());
+        $pathInfo = explode('/', $this->request->path());
         $permission = end($pathInfo);
         if(session('menuList') && $route = self::cacheKeepRoute(session('menuList'), $permission)){
             session(['keepMenu' => $route]);
         }else{
-            $request->session()->forget('keepMenu');
+            $this->request->session()->forget('keepMenu');
         }
-
+        
         return $next($request);
     }
 
     /**
      * cacheKeepRoute
      */
-    public function cacheKeepRoute($routeList, $permission){
+    public function cacheKeepRoute($routeList, $permission)
+    {
         $route = '';
         
         foreach($routeList as $list){
@@ -51,5 +76,34 @@ class AuthAdmin
             }
         }
         return $route;
+    }
+
+    /**
+     * singleLogin function 单用户登录
+     *
+     * @return void
+     */
+    private function singleLogin()
+    {
+        if($this->guard->user()->login_protected)
+        {
+            $token = $this->request->session()->get('_token');
+            if($token != $this->guard->user()->last_session)
+            {
+
+                if(auth()->Guard('admin')->check())
+                {
+                    //退出登录
+                    auth()->Guard('admin')->logout();
+                }
+
+                //清除缓存
+                $this->request->session()->flush();
+
+                return false;
+            }
+        }
+
+        return true;
     }
 }

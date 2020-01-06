@@ -26,6 +26,11 @@ class SysController extends BaseAdminController
      */
     public function index(Request $request)
     {
+        if(!auth()->Guard('admin')->check())
+        {
+            return redirect('/');
+        }
+
         //用户数
         $data['countUser'] = SysAdmin::where('type', 1)->count();
         //日活

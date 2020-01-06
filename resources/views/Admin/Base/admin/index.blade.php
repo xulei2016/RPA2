@@ -149,7 +149,30 @@
 
                         <!-- /.tab-pane -->
                         <div class="tab-pane" id="another">
-                            <div class="text-center">正在开发中。。。</div>
+                            <form class="form-horizontal">
+                                <div class="form-group row">
+                                    <label for="single_login" class="col-sm-2 control-label">是否开启单用户登录保护</label>
+                                    <div class="col-sm-10">
+                                        <div class="switch">
+                                            <input type="checkbox" name="single_login" id="single_login" value="1" @if($info->single_login) checked @endif/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="login_protected" class="col-sm-2 control-label">是否开启异地登录保护（未完成）</label>
+                                    <div class="col-sm-10">
+                                        <div class="switch">
+                                            <input type="checkbox" name="login_protected" id="login_protected" value="1" @if($info->login_protected) checked @endif/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <input type="hidden" name="type" value="another">
+                                        <button type="button" class="btn btn-danger submit">提交</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                         <!-- /.tab-pane -->
                     </div>
