@@ -13,13 +13,10 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Admin\SysAdminGroup;
 use App\Http\Controllers\Base\BaseAdminController;
 use Excel;
-
-use App\user;
 
 /**
  * AdminController

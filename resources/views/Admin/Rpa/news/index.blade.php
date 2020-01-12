@@ -6,7 +6,6 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-primary card-outline">
-
                     <div class="card-body">
             
                         @component('admin.widgets.toolbar', ['operation_show' => false])

@@ -23,7 +23,7 @@
                 {{--</div>--}}
             {{--</div>--}}
 
-
+            @include('admin.layouts.alerts')
             
             {{-- wrapper content --}}
             @yield('wrapper-content')
@@ -32,6 +32,9 @@
         
         {{-- footer --}}
         @include('admin.layouts.footer')
+
+        {{-- drawerPanel --}}
+        @include('admin.layouts.drawerPanel')
 
         {{-- model --}} 
         @include('admin.layouts.model')
@@ -47,5 +50,5 @@
     {{-- foot script --}}
     @include('admin.layouts.footer-script')
 </body>
-<script src="{{URL::asset('/include/adminlte/js/demo.js')}}"></script>
+<script src="{{URL::asset('/js/admin/skin.js')}}"></script>
 </html>

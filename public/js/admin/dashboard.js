@@ -88,30 +88,6 @@ $(function () {
             var pieChart = new Chart(pieChartCanvas, config);
         });
 
-        //磁盘
-        // $.post('/admin/sys_chart/disk', function(json){
-        //     let disks = json.DISK;
-        //     if(disks){
-        //         for(let k in disks){
-        //             let config = {
-        //                 type: 'pie',
-        //                 data: {
-        //                     datasets: [{
-        //                         data: [disks[k][1], disks[k][0]],
-        //                         backgroundColor: [ '#f56954', '#3c8dbc'],
-        //                         label: `${disks[k][0]} GB / ${disks[k][1]} GB; (${disks[k][2]})`
-        //                     }],
-        //                     labels: ['可用空间', '已用空间']
-        //                 },
-        //                 options: {
-        //                     responsive: true
-        //                 }
-        //             }
-        //             let pieChartCanvas = $(`#${k}`).get(0).getContext('2d')
-        //             new Chart(pieChartCanvas, config);
-        //         }
-        //     }
-        // });
     }
 
     init();

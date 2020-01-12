@@ -33,7 +33,12 @@ RPA.prototype = {
         },
         tags: {
             obj: $('.wrapper .tags-warp'),
-        }
+        },
+        //drawerPanel
+        drawerPanel: {
+            obj: $('.drawerPanel-container .drawerPanel .handle-button')
+        },
+        alerts: $('.alerts .close'),
     },
     bind: function () {
         var _this = this;
@@ -52,11 +57,11 @@ RPA.prototype = {
         toastr.options = _this.toastOptions;
 
         // //moprogress
-        NProgress.configure({ parent: '.content-wrapper' });
+        NProgress.configure({parent: '.content-wrapper'});
 
         //异步请求csrf头
         $.ajaxSetup({
-            headers: { 'X-CSRF-TOKEN': LA.token }
+            headers: {'X-CSRF-TOKEN': LA.token}
         });
 
         //快捷菜单
@@ -76,9 +81,24 @@ RPA.prototype = {
             _this.tags.addTags(_this, event);
         });
 
+        //关闭alerts
+        _this.config.alerts.on('click', function(){
+            $.get(`/admin/closeAlert/${$(this).data('id')}`);
+            $(this).parent().remove();
+        });
+
         //初始化tags
         _this.tags.initTags.call(_this);
 
+        //drawerPanel
+        _this.config.drawerPanel.obj.bind('click', function (e) {
+            let d = $(this).parents('.drawerPanel-container');
+            if (d.hasClass('show')) {
+                d.removeClass('show');
+            } else {
+                d.addClass('show');
+            }
+        });
     },
     tags: {
         initTags: function (e) {
@@ -108,7 +128,7 @@ RPA.prototype = {
                     uri: href,
                     title: obj[0].innerText
                 };
-                let array = { [obj[0].innerText]: data };
+                let array = {[obj[0].innerText]: data};
                 if (tagsList = localStorage.getItem('tagsList')) {
                     tagsList = JSON.parse(tagsList);
                     for (item in tagsList) {
@@ -120,7 +140,8 @@ RPA.prototype = {
                         tagsList[obj[0].innerText.trim()] = data;
                     }
                     array = tagsList;
-                };
+                }
+                ;
                 localStorage.setItem('tagsList', JSON.stringify(array));
                 _this.tags.setHtml(_this, tagsList);
             }
@@ -139,7 +160,7 @@ RPA.prototype = {
                     }
                     tagsList[obj].type = true;
                     uri = tagsList[obj].uri;
-                    $.pjax.reload(RPA.config.pjax.container, { url: uri })
+                    $.pjax.reload(RPA.config.pjax.container, {url: uri})
                 } else {
                     delete tagsList[_this.parent().text().trim()];
                 }
@@ -171,7 +192,7 @@ RPA.prototype = {
                 uri: href,
                 title: obj[0].innerText
             };
-            let array = { [obj[0].innerText]: data };
+            let array = {[obj[0].innerText]: data};
             if (tagsList = localStorage.getItem('tagsList')) {
                 tagsList = JSON.parse(tagsList);
                 for (item in tagsList) {
@@ -183,7 +204,8 @@ RPA.prototype = {
                 }
                 tagsList[obj[0].innerText] = data;
                 array = tagsList;
-            };
+            }
+            ;
             localStorage.setItem('tagsList', JSON.stringify(array));
             html = `<a href="${data.uri}"><span class="tags-item active">${data.title} <span class="fa fa-remove tags-close" onclick="RPA.delTags(event);"></span></span></a>`;
 
@@ -255,7 +277,7 @@ RPA.prototype = {
             $(document).on('click', e._search, function (event) {
                 let v = $(`${s} input`).val();
                 let url = $(`${s} datalist option[value="${v}"]`).attr('href');
-                $.pjax({url: url, container: e.container });
+                $.pjax({url: url, container: e.container});
             });
 
             $(document).on("pjax:popstate", function () {
@@ -337,12 +359,19 @@ RPA.prototype = {
             // $.pjax.reload('#pjax-container');
             $('#tb_departments').bootstrapTable('refresh');
             if ($(obj + ' #form-continue').length > 0) {
-                $(obj + ' #form-continue').is(':checked') ? RPA.form.reset(obj + ' #form') : $(obj).modal('hide');;
+                $(obj + ' #form-continue').is(':checked') ? RPA.form.reset(obj + ' #form') : $(obj).modal('hide');
+                ;
             }
             callback ? callback() : '';
         },
         ajaxSubmit: function (e, FormOptions) {
-            e.ajaxSubmit($.extend(true, {}, { beforeSubmit: this.formValidation, type: 'post', dataType: 'json', clearForm: false, resetForm: false }, FormOptions));
+            e.ajaxSubmit($.extend(true, {}, {
+                beforeSubmit: this.formValidation,
+                type: 'post',
+                dataType: 'json',
+                clearForm: false,
+                resetForm: false
+            }, FormOptions));
         },
         formValidation: function (arr, $form, options) {
             // 如果JQuery.Validate检测不通过则返回false
@@ -557,12 +586,12 @@ $.fn.serializeJsonObject = function () {
     return json;
 }
 
-/** 
- * param 将要转为URL参数字符串的对象 
- * key URL参数字符串的前缀 
- * encode true/false 是否进行URL编码,默认为true 
- *  
- * return URL参数字符串 
+/**
+ * param 将要转为URL参数字符串的对象
+ * key URL参数字符串的前缀
+ * encode true/false 是否进行URL编码,默认为true
+ *
+ * return URL参数字符串
  */
 var urlEncode = function (param, key, encode) {
     if (param == null) return '';

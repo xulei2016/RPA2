@@ -44,11 +44,13 @@ class LoginListener// implements ShouldQueue
         $login_info = [
             'ip' => $ip,
             'login_time' => $event->getTimestamp(),
-            'user_id' => $event->getUser()->id
+            'user_id' => $event->getStatus() ? $event->getUser()->id : '',
+            'account' => $event->request->name,
+            'status' => $event->getStatus()
         ];
 
         //单客户登录
-        if($event->getUser()->login_protected){
+        if($event->getStatus() && $event->getUser()->login_protected){
             $event->cacheToken();
         }
 

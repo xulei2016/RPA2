@@ -1,11 +1,12 @@
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary">
+<aside class="main-sidebar">
     <!-- Brand Logo -->
-    <a href="/admin" class="brand-link">
-        <img src="{{URL::asset('/common/images/default_head.png')}}" alt="{!! config('admin.name') !!}" class="brand-image img-circle elevation-3"
-            style="opacity: .8">
-        <span class="brand-text font-weight-light">{!! config('admin.logo') !!}</span>
-    </a>
+    <div class="logo">
+        <a href="/admin">
+            <img src="{{URL::asset('/common/images/logo.png')}}" alt="{!! config('admin.name') !!}" class="img-circle elevation-3">
+            <h1>{!! config('admin.logo') !!}</h1>
+        </a>
+    </div>
     <div class="sidebar">
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">

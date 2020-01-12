@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         // 首页
         Route::get('/', 'SysController@index');
         Route::get('/index', 'SysController@index')->name('index');
+        Route::get('/closeAlert/{id}', 'SysController@closeAlert');
         Route::post('/index', 'SysController@index');
         Route::post('/clearCache', 'SysController@clearCache');
         Route::post('/dashboard', 'SysController@get_index');

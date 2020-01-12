@@ -20,24 +20,22 @@
     <link rel="stylesheet" type="text/css" href="{{URL::asset('/include/iCheck/futurico/futurico.css')}}"/>
     <link rel="stylesheet" type="text/css" href="{{URL::asset('/include/jigsaw/style.css')}}"/>
 
-
-    <!-- Scripts -->
-    <script src="{{URL::asset('/include/jquery/jquery-3.3.1.min.js')}}"></script>
-    <script src="{{URL::asset('/include/iCheck/icheck.js')}}"></script>
 </head>
 
 <body>
 <div id="container">
-    <dl class="admin_login login-area" style="width: 380px;">
+    <dl class="admin_login login-area">
         <dt>
-            <strong>RPA 自动化程序管理系统</strong>
-            <em>Management System</em>
+            <img src="/common/images/logo.png">
+            <strong>综合期货业务自动管理平台</strong>
+            <em>RPA Management System</em>
         </dt>
 
         <form method="POST" action="{{ route('admin.login') }}">
             {{ csrf_field() }}
 
             <dd class="user_icon">
+                <span class="glyphicon glyphicon-user"></span>
                 <input type="text" id="name" name="name" placeholder="账号" value="{{ old('name') }}" class="login_txtbx"
                        autocomplete="on"/>
                 @if ($errors->has('name'))
@@ -48,8 +46,9 @@
             </dd>
 
             <dd class="pwd_icon">
+                <span class="glyphicon glyphicon-lock"></span>
                 <input type="password" id="password" name="password" placeholder="密码" class="login_txtbx"
-                       autocomplete="on"/>
+                       autocomplete="new-password"/>
                 @if ($errors->has('password'))
                     <span class="invalid-feedback ">
                         <strong>{{ $errors->first('password') }}</strong>
@@ -59,7 +58,9 @@
             <dd>
                 @if($codeConfig == 1 || $codeConfig == 3)
                     <div class="input-group" style="height: 40px;" id="code-div">
-                        <input autocomplete="off" style="height: 40px;line-height: 28px;" type="text" id="captcha" name="captcha"
+                        <span class="glyphicon glyphicon-earphone"></span>
+                        <input autocomplete="off" style="height: 40px;line-height: 28px;" type="text" id="captcha"
+                               name="captcha"
                                class="form-control" placeholder="请输入验证码" aria-describedby="basic-addon2">
                         @if($codeConfig == 1)
                             <span class="input-group-addon" id="code-img" style="padding: 0 0;">
@@ -99,17 +100,21 @@
             </dd>
 
             <dd>
-                <a href="javascript:;" class="btn btn-primary submit_btn">
+                <a href="javascript:void(0)" class="btn btn-primary submit_btn">
                     立即登陆
                 </a>
             </dd>
 
-            {{-- <dd>
-                <p>© 2015-2018 HAQH 软件工程部</p>
-                <p>皖ICP备17018938号</p>
-            </dd> --}}
+            {{--            <dd>--}}
+            {{--                <p>© 2015-2018 HAQH 软件工程部</p>--}}
+            {{--                <p>皖ICP备17018938号</p>--}}
+            {{--            </dd>--}}
         </form>
+
     </dl>
+    <div class="footer">
+        <div class="copyright"> Copyright © 2017 HA-金融科技部</div>
+    </div>
 </div>
 <div class="bg">
     <div class="logo-box">
@@ -119,6 +124,9 @@
     </div>
 </div>
 
+<!-- Scripts -->
+<script src="{{URL::asset('/include/jquery/jquery-3.3.1.min.js')}}"></script>
+<script src="{{URL::asset('/include/iCheck/icheck.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap3/js/bootstrap.js')}}" type="text/javascript"></script>
 <script src="{{URL::asset('/include/jigsaw/img_ver.min.js')}}" type="text/javascript"></script>
 <script>
@@ -135,6 +143,10 @@
         });
     }
 
+    function throwError(e, error){
+
+    }
+
     function clear() {
         $(".bg").fadeOut(300);
     }
@@ -142,8 +154,14 @@
     function show() {
         $(".bg").fadeIn(100);
     }
-</script>
-<script>
+
+    $("input").keydown(function(event){
+        event = event ? event: window.event;
+        if(event.keyCode == 13){
+            $('form').submit();
+        }
+    });
+
     $("input.remember").iCheck({
         checkboxClass: "icheckbox_futurico",
         cursor: true
@@ -175,7 +193,21 @@
         } else {
             $('form').submit();
         }
-    })
+    });
+
+    function checkLogin(){
+        if(!$('#name').val()){
+            return throwError($('#name'), '请输入姓名！')
+        }
+        if($('#password').val()){
+            return throwError($('#password'), '请输入密码！')
+        }
+        if($('#captcha')){
+            if(!$('#captcha').val()){
+                return throwError($('#captcha'), '请输入验证码！')
+            }
+        }
+    }
 </script>
 </body>
 </html>

@@ -1,13 +1,10 @@
 <!-- Navbar -->
-<nav class="main-header navbar navbar-expand navbar-white navbar-light">
+<nav class="main-header navbar navbar-expand navbar-light">
     <!-- Left navbar links -->
-    <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
-        </li>
-    </ul>
+    <i data-widget="pushmenu" class="menu-fold fa fa-bars"></i>
+
     <!-- SEARCH FORM -->
-    <div class="search ml-3">
+    <div class="search ml-3 hidden-xs">
         <div class="input-group input-group-sm">
             <input class="form-control form-control-navbar" list="searchList" type="search" placeholder="Search" aria-label="Search" onkeydown="RPA.search(event);" onchange="RPA.search(event);" autocomplete="off">
             <datalist id="searchList">
@@ -61,9 +58,9 @@
             </div>
         </li>
         <!-- Notifications Menu -->
-        <li class="user-panel d-flex admin-info-list navbar-right">
-            <a class="nav-link" href="#" style="padding:0 1rem;">
-                <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" onerror="this.src='{{URL::asset('/common/images/default_head.png')}}'" class="img-circle elevation-2" alt="User Image">
+        <li class="d-flex admin-info-list navbar-right">
+            <a class="nav-link" href="#">
+                <img src="{{ URL::asset(session('sys_admin')['headImg']) }}" onerror="this.src='{{URL::asset('/common/images/default_head.png')}}'" class="img-circle" alt="User Image"> {{ session('sys_admin')['name'] }}
             </a>
             {{--  popup page  --}}
             <div class="hidden popup">
@@ -103,11 +100,6 @@
                     </div>
                 </div>
             </div>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
-            <i class="fa fa-th-large"></i>
-          </a>
         </li>
     </ul>
 </nav>
