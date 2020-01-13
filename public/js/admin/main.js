@@ -30,6 +30,7 @@ RPA.prototype = {
         search: {//全局搜索框
             _sidebar: 'body aside .sidebar',
             _search: 'body nav .search',
+            _search1: $('body nav .search input'),
         },
         tags: {
             obj: $('.wrapper .tags-warp'),
@@ -38,6 +39,10 @@ RPA.prototype = {
     bind: function () {
         var _this = this;
         var sidebarList = _this.initList();
+
+        //search
+        _this.config.search._search1.bind('keyup', _this.tools.throttle(_this.search, 1000));
+
         //pjax
         _this.initPage();
         _this.pjaxOperation.init.call(this);
@@ -52,11 +57,11 @@ RPA.prototype = {
         toastr.options = _this.toastOptions;
 
         // //moprogress
-        NProgress.configure({ parent: '.content-wrapper' });
+        NProgress.configure({parent: '.content-wrapper'});
 
         //异步请求csrf头
         $.ajaxSetup({
-            headers: { 'X-CSRF-TOKEN': LA.token }
+            headers: {'X-CSRF-TOKEN': LA.token}
         });
 
         //快捷菜单
@@ -108,7 +113,7 @@ RPA.prototype = {
                     uri: href,
                     title: obj[0].innerText
                 };
-                let array = { [obj[0].innerText]: data };
+                let array = {[obj[0].innerText]: data};
                 if (tagsList = localStorage.getItem('tagsList')) {
                     tagsList = JSON.parse(tagsList);
                     for (item in tagsList) {
@@ -120,7 +125,8 @@ RPA.prototype = {
                         tagsList[obj[0].innerText.trim()] = data;
                     }
                     array = tagsList;
-                };
+                }
+                ;
                 localStorage.setItem('tagsList', JSON.stringify(array));
                 _this.tags.setHtml(_this, tagsList);
             }
@@ -139,7 +145,7 @@ RPA.prototype = {
                     }
                     tagsList[obj].type = true;
                     uri = tagsList[obj].uri;
-                    $.pjax.reload(RPA.config.pjax.container, { url: uri })
+                    $.pjax.reload(RPA.config.pjax.container, {url: uri})
                 } else {
                     delete tagsList[_this.parent().text().trim()];
                 }
@@ -171,7 +177,7 @@ RPA.prototype = {
                 uri: href,
                 title: obj[0].innerText
             };
-            let array = { [obj[0].innerText]: data };
+            let array = {[obj[0].innerText]: data};
             if (tagsList = localStorage.getItem('tagsList')) {
                 tagsList = JSON.parse(tagsList);
                 for (item in tagsList) {
@@ -183,7 +189,8 @@ RPA.prototype = {
                 }
                 tagsList[obj[0].innerText] = data;
                 array = tagsList;
-            };
+            }
+            ;
             localStorage.setItem('tagsList', JSON.stringify(array));
             html = `<a href="${data.uri}"><span class="tags-item active">${data.title} <span class="fa fa-remove tags-close" onclick="RPA.delTags(event);"></span></span></a>`;
 
@@ -254,8 +261,8 @@ RPA.prototype = {
 
             $(document).on('click', e._search, function (event) {
                 let v = $(`${s} input`).val();
-                let url = $(`${s} datalist option[value="${v}"]`).attr('href');
-                $.pjax({url: url, container: e.container });
+                let url = $(`${s} datalist option[value="${v}"]`).data('href');
+                $.pjax({url: url, container: e.container});
             });
 
             $(document).on("pjax:popstate", function () {
@@ -320,6 +327,20 @@ RPA.prototype = {
         }
         return sidebarList;
     },
+    ///////////////////////////////////////////////////////// tools func /////////////////////////////////////////////////////////////
+    tools: {
+        throttle : function(fn, delay){
+            let canRun = true;
+            return function() {
+                if (!canRun) return;
+                canRun = false;
+                setTimeout(() => {
+                    fn.apply(this, arguments);
+                    canRun = true;
+                }, delay);
+            }
+        }
+    },
 
     ///////////////////////////////////////////////////////// form start///////////////////////////////////////////////////////////
 
@@ -337,12 +358,19 @@ RPA.prototype = {
             // $.pjax.reload('#pjax-container');
             $('#tb_departments').bootstrapTable('refresh');
             if ($(obj + ' #form-continue').length > 0) {
-                $(obj + ' #form-continue').is(':checked') ? RPA.form.reset(obj + ' #form') : $(obj).modal('hide');;
+                $(obj + ' #form-continue').is(':checked') ? RPA.form.reset(obj + ' #form') : $(obj).modal('hide');
+                ;
             }
             callback ? callback() : '';
         },
         ajaxSubmit: function (e, FormOptions) {
-            e.ajaxSubmit($.extend(true, {}, { beforeSubmit: this.formValidation, type: 'post', dataType: 'json', clearForm: false, resetForm: false }, FormOptions));
+            e.ajaxSubmit($.extend(true, {}, {
+                beforeSubmit: this.formValidation,
+                type: 'post',
+                dataType: 'json',
+                clearForm: false,
+                resetForm: false
+            }, FormOptions));
         },
         formValidation: function (arr, $form, options) {
             // 如果JQuery.Validate检测不通过则返回false
@@ -513,17 +541,18 @@ RPA.prototype = {
         if (sidebarList) {
             let options = '';
             let value = e.target.value;
+            console.log(value);
             sidebarList = JSON.parse(sidebarList);
             sidebarList = sidebarList.filter(function (v, i, e) {
                 return (v[0].indexOf(value) || v[1].indexOf(value)) ? true : false;
             });
             sidebarList.forEach(function (e) {
-                options += `<option value="${e[1]}" href="${e[0]}">${e[0]}</option>`;
+                options += `<option value="${e[1]}" data-href="${e[0]}">${e[0]}</option>`;
             });
-            $(`${this.config.search._search} datalist`).html(options);
+            $(this).next().html(options);
         }
     }
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -533,12 +562,12 @@ RPA.init(window);
 
 var operation = (e) => {
     RPA.pjaxOperation.modelLoad(e);
-}
+};
 
 //socket
 if (socket.userId) {
     RPA.Echo.init('App.Models.Admin.Admin.SysAdmin.' + socket.userId);
-}
+};
 
 //自定义函数处理queryParams的批量增加
 $.fn.serializeJsonObject = function () {
@@ -555,14 +584,14 @@ $.fn.serializeJsonObject = function () {
         }
     });
     return json;
-}
+};
 
-/** 
- * param 将要转为URL参数字符串的对象 
- * key URL参数字符串的前缀 
- * encode true/false 是否进行URL编码,默认为true 
- *  
- * return URL参数字符串 
+/**
+ * param 将要转为URL参数字符串的对象
+ * key URL参数字符串的前缀
+ * encode true/false 是否进行URL编码,默认为true
+ *
+ * return URL参数字符串
  */
 var urlEncode = function (param, key, encode) {
     if (param == null) return '';
@@ -590,4 +619,4 @@ function getFormatDate() {
     var minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
     var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
     return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
-}
+};

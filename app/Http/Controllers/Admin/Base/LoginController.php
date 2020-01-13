@@ -51,7 +51,7 @@ class LoginController extends BaseAdminController
      * login function
      *
      * @param Request $request
-     * @return void
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function login(Request $request)
     {

@@ -5,7 +5,9 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class Handler extends ExceptionHandler
 {
@@ -44,7 +46,7 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @param  \Exception  $exception
      * @return \Illuminate\Http\Response
      */
@@ -108,14 +110,22 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      * @param AuthenticationException $exception
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Http\Response
+     * @return Response
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-        if ($request) {
-            return response()->json(['status' => '401','msg' => 'token失效']);
+        if ($request->ajax() || $request->wantsJson()) {
+            $info = [
+                'code' => '500',
+                'info' => config('app.debug') ? $exception->getMessage() : '操作失败！',
+                'data' => []
+            ];
+            return response()->json($info);
+        } else {
+//            return redirect('/passport/login');
+            return parent::render($request, $exception);
         }
     }
 }

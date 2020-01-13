@@ -1,5 +1,6 @@
 <?php
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,3 +46,24 @@ Route::group(['prefix' => 'admin', 'namespace' => 'admin\Base'], function(){
 //     return view('errors.404');
 // });
 
+Route::get('/redirect', function (Request $request) {
+    $request->session()->put('state', $state = Str::random(40));
+
+    $query = http_build_query([
+        'client_id' => '7',
+        'redirect_uri' => 'http://www.rpa.com/auth/callback',
+        'response_type' => 'code',
+        'scope' => '',
+        'state' => $state,
+    ]);
+
+    return redirect('http://www.rpa.com/oauth/authorize?'.$query);
+});
+
+Route::get('/auth/callback', function (\Illuminate\Http\Request $request){
+    if ($request->get('code')) {
+        return 'Login Success';
+    } else {
+        return 'Access Denied';
+    }
+});
