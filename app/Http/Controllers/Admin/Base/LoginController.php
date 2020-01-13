@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin\Base;
 use App\Models\Admin\Admin\SysAdmin;
 
 use App\Models\Admin\Base\SysConfig;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
-use App\Events\LoginEvent;  
-use Jenssegers\Agent\Agent;  
+use App\Events\LoginEvent;
+use Jenssegers\Agent\Agent;
 
 
 class LoginController extends BaseAdminController
@@ -51,23 +52,36 @@ class LoginController extends BaseAdminController
      * login function
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function login(Request $request)
     {
+        $this->validateLogin($request);
+
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+
+            return $this->sendLockoutResponse($request);
+        }
+
         //登录实现
         if (auth()->attempt(['name' => $request->input('name'), 'password' => $request->input('password'), 'type' => 1], $request->input('remember'))) {
 
-            //登录成功，触发事件
-            event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime()));
+            event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), true));
 
             return redirect()->intended($this->redirectTo);
         }
-    } 
+
+        $this->incrementLoginAttempts($request);
+
+        event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), false));
+
+        return $this->sendFailedLoginResponse($request);
+    }
 
     /**
      * guard
-     * 
+     *
      * @return Auth
      */
     protected function guard()
@@ -97,8 +111,8 @@ class LoginController extends BaseAdminController
             'password' => 'required|string',
         ];
         $validateStr = [];
-        if($codeConfig == 1 || $codeConfig == 3) {
-            $validateDetail['captcha'] =  'required|captcha';
+        if ($codeConfig == 1 || $codeConfig == 3) {
+            $validateDetail['captcha'] = 'required|captcha';
             $validateStr = [
                 'captcha.required' => trans('validation.required'),
                 'captcha.captcha' => trans('validation.captcha'),
@@ -108,7 +122,7 @@ class LoginController extends BaseAdminController
             $validate = $this->getValidationFactory()->make($request->all(), $validateDetail, $validateStr);
             $validate->validate();
             $admin = SysAdmin::where($this->username(), $request->name)->first();
-            if($admin->error_count >= 10) {
+            if ($admin->error_count >= 10) {
                 $validate->errors()->add('account', '错误次数过多,账号被锁定');
                 throw new ValidationException($validate);
             } else {
@@ -117,7 +131,7 @@ class LoginController extends BaseAdminController
             }
         } catch (\Exception $e) {
             $admin = SysAdmin::where($this->username(), $request->name)->first();
-            if($admin) {
+            if ($admin) {
                 $admin->error_count++;
                 $admin->save();
             }
@@ -149,11 +163,11 @@ class LoginController extends BaseAdminController
      */
     public function logout(Request $request)
     {
-        if(auth()->Guard('admin')->check()){
+        if (auth()->Guard('admin')->check()) {
             auth()->Guard('admin')->logout();
         }
         $request->session()->flush();
         return redirect('/');
     }
-    
+
 }

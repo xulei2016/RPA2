@@ -30,7 +30,7 @@ class ChartController extends Controller
      * 
      */
     public function disk(){
-        if(Cache::get('sys_disk')){
+        if(!Cache::get('sys_disk')){
             // $info['DISK'] = $this->get_spec_disk('all');
             $info['DISK'] = $this->get_spec_disk('all');
 

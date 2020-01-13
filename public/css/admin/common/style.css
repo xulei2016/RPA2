@@ -6,6 +6,8 @@ html {
 body {
     margin: 0;
     height: 100%;
+    font-family: '-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol';
+    /*font-family: 'Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Arial,sans-serif';*/
 }
 
 a:active,
@@ -266,22 +268,8 @@ weak {
 
 
 /*other public*/
-
 .iconfont {
     font-family: 'adminthemesregular';
-}
-
-.add_icon:before {
-    content: "a";
-    margin: 0 5px;
-    font-family: 'adminthemesregular';
-}
-
-.money_icon:before {
-    content: "$";
-    margin: 0 5px;
-    font-family: 'adminthemesregular';
-    font-size: 20px;
 }
 
 .ellipsis {
@@ -313,12 +301,26 @@ weak {
 }
 
 .admin_login {
-    width: 300px;
+    position: relative;
+    max-width: 368px;
     height: auto;
     overflow: hidden;
-    margin: 10% auto 0 auto;
-    padding: 40px;
+    margin: 0 auto;
     border-radius: 5px;
+    padding: 110px 0 144px;
+}
+
+.footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    margin: 48px 0 24px;
+    text-align: center;
+}
+
+.footer .copyright{
+    color: rgba(254, 254, 254, 0.45);
+    font-size: 14px;
 }
 
 .admin_login dt {
@@ -329,6 +331,13 @@ weak {
     margin-bottom: 15px;
 }
 
+.admin_login dt img {
+    width: 80px;
+    border-radius: 12%;
+    position: relative;
+    bottom: 15px;
+}
+
 .admin_login dt strong {
     display: block;
 }
@@ -336,14 +345,24 @@ weak {
 .admin_login dt em {
     display: block;
     font-size: 12px;
-    margin-top: 8px;
+    margin-top: 12px;
+    margin-bottom: 40px;
 }
 
 .admin_login dd {
-    margin: 5px 0;
-    overflow: hidden;
     position: relative;
     color: #fff;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0;
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5;
+    list-style: none;
+    -webkit-font-feature-settings: "tnum";
+    font-feature-settings: "tnum";
+    margin-bottom: 24px;
+    vertical-align: top;
 }
 
 .admin_login dd .login_txtbx {
@@ -356,20 +375,26 @@ weak {
     border: none;
     background: #ffffff;
     color: #000;
+    border-radius: 2px;
 }
 
 .admin_login dd .login_txtbx::-webkit-input-placeholder {
-    color: #f4f4f4;
+    color: #979797;
     line-height: inherit;
 }
 
 .admin_login dd .login_txtbx:-moz-placeholder {
-    color: #f4f4f4;
+    color: #979797;
     line-height: inherit;
 }
 
 .admin_login dd .login_txtbx::-moz-placeholder {
-    color: #f4f4f4;
+    color: #979797;
+    line-height: inherit;
+}
+
+.admin_login dd .login_txtbx:-ms-input-placeholder {
+    color: #979797;
     line-height: inherit;
 }
 
@@ -377,23 +402,21 @@ weak {
     background: #ccc;
 }
 
-.admin_login dd:before {
-    font-family: 'adminthemesregular';
+.admin_login dd .glyphicon {
+    left: 15px;
     position: absolute;
-    top: 0;
-    left: 10px;
-    height: 42px;
-    line-height: 42px;
-    font-size: 20px;
-    color: #000000;
-}
-
-.admin_login dd.user_icon:before {
-    content: "u";
-}
-
-.admin_login dd.pwd_icon:before {
-    content: "p";
+    top: 20px;
+    z-index: 2;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    color: rgba(95, 95, 95, 0.65);
+    line-height: 0;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 
 .admin_login dd.val_icon:before {
@@ -428,7 +451,7 @@ weak {
 
 .admin_login dd .submit_btn {
     width: 100%;
-    height: 42px;
+    height: 40px;
     line-height: 30px;
     border: none;
     font-size: 16px;
@@ -466,7 +489,7 @@ weak {
 }
 #code-div input{
     height: 100%;
-    border-radius: 0;
+    border-radius: 2px 0 0 2px;
 }
 .bg{
     display: none;

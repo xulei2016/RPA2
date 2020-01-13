@@ -33,7 +33,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '<b>RPA</b> Center',
+    'logo' => 'RPA Center',
 
     /*
     |--------------------------------------------------------------------------

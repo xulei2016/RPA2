@@ -34,7 +34,12 @@ RPA.prototype = {
         },
         tags: {
             obj: $('.wrapper .tags-warp'),
-        }
+        },
+        //drawerPanel
+        drawerPanel: {
+            obj: $('.drawerPanel-container .drawerPanel .handle-button')
+        },
+        alerts: $('.alerts .close'),
     },
     bind: function () {
         var _this = this;
@@ -81,9 +86,24 @@ RPA.prototype = {
             _this.tags.addTags(_this, event);
         });
 
+        //关闭alerts
+        _this.config.alerts.on('click', function(){
+            $.get(`/admin/closeAlert/${$(this).data('id')}`);
+            $(this).parent().remove();
+        });
+
         //初始化tags
         _this.tags.initTags.call(_this);
 
+        //drawerPanel
+        _this.config.drawerPanel.obj.bind('click', function (e) {
+            let d = $(this).parents('.drawerPanel-container');
+            if (d.hasClass('show')) {
+                d.removeClass('show');
+            } else {
+                d.addClass('show');
+            }
+        });
     },
     tags: {
         initTags: function (e) {
@@ -261,7 +281,11 @@ RPA.prototype = {
 
             $(document).on('click', e._search, function (event) {
                 let v = $(`${s} input`).val();
+<<<<<<< HEAD
                 let url = $(`${s} datalist option[value="${v}"]`).data('href');
+=======
+                let url = $(`${s} datalist option[value="${v}"]`).attr('href');
+>>>>>>> a4fba8dcbdd9c13b6e3300a5e5d57aa30d256c63
                 $.pjax({url: url, container: e.container});
             });
 
@@ -584,7 +608,11 @@ $.fn.serializeJsonObject = function () {
         }
     });
     return json;
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> a4fba8dcbdd9c13b6e3300a5e5d57aa30d256c63
 
 /**
  * param 将要转为URL参数字符串的对象

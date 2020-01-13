@@ -34,14 +34,14 @@ class AuthAdmin
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next, $guard = null)
     {
         $this->guard = Auth::guard($guard);
-        if(!$this->guard->check() || !self::singleLogin()) {
+        if (!$this->guard->check() || !self::singleLogin()) {
 
             return redirect()->guest('admin/login');
         }
@@ -49,12 +49,12 @@ class AuthAdmin
         //缓存当前路由
         $pathInfo = explode('/', $this->request->path());
         $permission = end($pathInfo);
-        if(session('menuList') && $route = self::cacheKeepRoute(session('menuList'), $permission)){
+        if (session('menuList') && $route = self::cacheKeepRoute(session('menuList'), $permission)) {
             session(['keepMenu' => $route]);
-        }else{
+        } else {
             $this->request->session()->forget('keepMenu');
         }
-        
+
         return $next($request);
     }
 
@@ -64,13 +64,13 @@ class AuthAdmin
     public function cacheKeepRoute($routeList, $permission)
     {
         $route = '';
-        
-        foreach($routeList as $list){
-            if(trim(strrchr($list['uri'], '/'),'/') == $permission){
+
+        foreach ($routeList as $list) {
+            if (trim(strrchr($list['uri'], '/'), '/') == $permission) {
                 return $route = $list;
             }
-            if(isset($list['child'])){
-                if($route = self::cacheKeepRoute($list['child'], $permission)){
+            if (isset($list['child'])) {
+                if ($route = self::cacheKeepRoute($list['child'], $permission)) {
                     return $route;
                 }
             }
@@ -85,14 +85,11 @@ class AuthAdmin
      */
     private function singleLogin()
     {
-        if($this->guard->user()->login_protected)
-        {
+        if ($this->guard->user()->login_protected) {
             $token = $this->request->session()->get('_token');
-            if($token != $this->guard->user()->last_session)
-            {
+            if ($token != $this->guard->user()->last_session) {
 
-                if(auth()->Guard('admin')->check())
-                {
+                if (auth()->Guard('admin')->check()) {
                     //退出登录
                     auth()->Guard('admin')->logout();
                 }

@@ -20,7 +20,7 @@ class LoginEvent
     /**
     * @var request request
     */
-    protected $request;
+    public $request;
 
     /**
     * @var User 用户模型
@@ -41,16 +41,22 @@ class LoginEvent
     * @var int 登录时间戳
     */
     protected $timestamp;
-    
+
+    /**
+    * @var int 登录状态
+    */
+    protected $status;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($request, $user, $agent, $timestamp)
+    public function __construct($request, $user, $agent, $timestamp, $status)
     {
         $this->user = $user;
         $this->agent = $agent;
+        $this->status = $status;
         $this->request = $request;
         $this->timestamp = $timestamp;
         $this->ip = $request->getClientIp();
@@ -89,6 +95,22 @@ class LoginEvent
     }
 
     /**
+     * @return int 获取登录状态
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return request
+     */
+    public function request()
+    {
+        return $this->request;
+    }
+
+    /**
      * @return void obj 缓存session
      */
     public function cacheToken()
@@ -107,4 +129,5 @@ class LoginEvent
     {
         return new PrivateChannel('channel-name');
     }
+
 }

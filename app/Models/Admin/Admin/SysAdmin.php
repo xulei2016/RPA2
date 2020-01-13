@@ -50,4 +50,11 @@ class SysAdmin extends Authenticatable
         );
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function alerts(){
+        return $this->hasMany('App\Models\Admin\Admin\SysAdminAlert', 'user_id');
+    }
+
 }

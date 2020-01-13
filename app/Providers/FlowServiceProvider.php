@@ -27,10 +27,5 @@ class FlowServiceProvider extends ServiceProvider
         $this->app->bind('Flow', function ($app) {
             return new Flow();
         });
-
-        //使用bind绑定实例到接口以便依赖注入
-        // $this->app->bind('App\Contracts\TestContract',function(){
-        //     return new TestService();
-        // });
     }
 }
