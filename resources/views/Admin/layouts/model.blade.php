@@ -1,5 +1,5 @@
 {{-- modal-default --}}
-<div class="modal fade" id="modal-default">
+<div class="modal fade" id="modal-default" data-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
         </div>
@@ -7,7 +7,7 @@
 </div>
 
 {{-- modal-lg --}}
-<div class="modal fade" id="modal-lg">
+<div class="modal fade" id="modal-lg" data-backdrop="static">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
         </div>

@@ -1,7 +1,8 @@
-<div class="modal-header">
+<div class="modal-header move">
     <h3 class="modal-title">
         {{ $title or '添加操作' }}
     </h3>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 </div>
 
 <form class="form-horizontal" id="form">

@@ -27,6 +27,9 @@
             
             {{-- wrapper content --}}
             @yield('wrapper-content')
+
+            {{-- model --}}
+            @include('admin.layouts.model')
             
         </div>
         
@@ -35,9 +38,6 @@
 
         {{-- drawerPanel --}}
         @include('admin.layouts.drawerPanel')
-
-        {{-- model --}} 
-        @include('admin.layouts.model')
 
 
         <!-- Control Sidebar -->

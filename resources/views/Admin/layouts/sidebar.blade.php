@@ -1,5 +1,5 @@
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar">
+<aside class="main-sidebar fixed">
     <!-- Brand Logo -->
     <div class="logo">
         <a href="/admin">

@@ -14,6 +14,7 @@
             sidebarSkin: '',
             linkSkin: '',
             size: '',
+            fixedSidebar: true,
         },
 
         //main-header
@@ -36,6 +37,9 @@
 
             //font size font-size
             fontSize: $('.drawerPanel-container .drawer-item .font-size select'),
+
+            //fixed sidebar
+            fixedSidebar: $('.drawerPanel-container .drawer-item .fixed-siderbar input'),
         }
     };
 
@@ -86,6 +90,21 @@
         }
     });
 
+    //font size
+    obj.drawerPanel.fixedSidebar.on('change', function () {
+        let v = $(this).is(':checked');
+        if (obj.current.fixedSidebar !== v) {
+            v ? obj.sidebar.container.addClass(`fixed`) : obj.sidebar.container.removeClass(`fixed`);
+
+            obj.current.fixedSidebar = v;
+            saveSkin();
+        }
+    });
+
+
+    /**
+     * init
+     */
     function init() {
         let current = localStorage.getItem('current');
 
@@ -96,15 +115,17 @@
             let defaultSkin = 'primary';
             let defaultSize = 'md';
             let skinType = 'dark';
+            let fixedSidebar = true;
             current.skin = current.linkSkin = defaultSkin;
             current.size = defaultSize;
             current.sidebarSkin = skinType;
+            current.fixedSidebar = fixedSidebar;
 
             obj.current = current;
 
             saveSkin();
         } else {
-            current = JSON.parse(current);
+            obj.current = current = JSON.parse(current);
         }
 
         obj.drawerPanel.skinType.each(function(){
@@ -115,15 +136,21 @@
 
         obj.drawerPanel.fontSize.find("option[value="+current.size+"]").selected();
 
-        obj.current = current;
-
         obj.sidebar.container.addClass(`sidebar-${current.sidebarSkin}-`);
 
         obj.mainHeader.addClass(`navbar-${current.skin}`);
 
+        if(!current.fixedSidebar){
+            obj.sidebar.container.removeClass('fixed');
+            obj.drawerPanel.fixedSidebar.attr("checked", false);
+        }
+
         $('body').addClass(`accent-${current.linkSkin} text-${current.size}`);
     }
 
+    /**
+     * saveSkin
+     */
     function saveSkin() {
         let current = obj.current;
         localStorage.setItem('current', JSON.stringify(current));

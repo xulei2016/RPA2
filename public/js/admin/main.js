@@ -12,7 +12,10 @@ RPA.prototype = {
         this.bind.call(this);
     },
     config: {
-        modal: '#modal-lg',
+        modal: {
+            obj: '#modal-lg',
+            canMove: '.modal-header.move'
+        },
         pjax: {
             container: '#pjax-container', //pjax 容器
             element: 'a:not(a[target="_blank"])', //pjax 监听对象
@@ -42,10 +45,14 @@ RPA.prototype = {
     },
     bind: function () {
         var _this = this;
-        var sidebarList = _this.initList();
+        _this.initList();
+
         //pjax
         _this.initPage();
         _this.pjaxOperation.init.call(this);
+
+        //modal move
+        _this.modalMove(this);
 
         //is or not scroll
         var screen_operation_obj = $('body .main-header.navbar a[data-toggle="fullscreen"]');
@@ -82,7 +89,7 @@ RPA.prototype = {
         });
 
         //关闭alerts
-        _this.config.alerts.on('click', function(){
+        _this.config.alerts.on('click', function () {
             $.get(`/admin/closeAlert/${$(this).data('id')}`);
             $(this).parent().remove();
         });
@@ -99,6 +106,7 @@ RPA.prototype = {
                 d.addClass('show');
             }
         });
+
     },
     tags: {
         initTags: function (e) {
@@ -310,11 +318,47 @@ RPA.prototype = {
             });
         },
         modelLoad: function operation(_this) {
-            let e = RPA.config.modal;
+            let e = RPA.config.modal.obj;
             let url = _this.attr('url');
             $(e + ' .modal-content').text('').load(url);
             $(e).modal('show');
         }
+    },
+    modalMove: _this => {
+        let mouseStartPoint = {"left": 0, "top": 0};
+        let mouseEndPoint = {"left": 0, "top": 0};
+        let mouseDragDown = false;
+        let oldP = {"left": 0, "top": 0};
+        let moveTarget;
+        $(document).ready(function () {
+            $(document).on("mousedown", _this.config.modal.canMove, function (e) {
+                if ($(e.target).hasClass("close"))//点关闭按钮不能移动对话框
+                    return;
+                mouseDragDown = true;
+                moveTarget = $(this).parent();
+                mouseStartPoint = {"left": e.clientX, "top": e.clientY};
+                oldP = moveTarget.offset();
+            });
+            $(document).on("mouseup", function (e) {
+                mouseDragDown = false;
+                moveTarget = undefined;
+                mouseStartPoint = {"left": 0, "top": 0};
+                oldP = {"left": 0, "top": 0};
+            });
+            $(document).on("mousemove", function (e) {
+                if (!mouseDragDown || moveTarget === undefined) return;
+                let mousX = e.clientX;
+                let mousY = e.clientY;
+                if (mousX < 0) mousX = 0;
+                if (mousY < 0) mousY = 25;
+                mouseEndPoint = {"left": mousX, "top": mousY};
+                const width = moveTarget.width();
+                const height = moveTarget.height();
+                mouseEndPoint.left = mouseEndPoint.left - (mouseStartPoint.left - oldP.left);//移动修正，更平滑
+                mouseEndPoint.top = mouseEndPoint.top - (mouseStartPoint.top - oldP.top);
+                moveTarget.offset(mouseEndPoint);
+            });
+        });
     },
     initPage: function () {
         selectedMenu = RPA.config.sidebar.activeBar;
@@ -522,9 +566,10 @@ RPA.prototype = {
                 $('.notifications-menu').html(html1);
             }
 
-            $(".notify-wrap:last").slideDown(2000);
+            let lastNotify = $(".notify-wrap:last");
+            lastNotify.delay(2000).slideDown(1000);
             setTimeout(function () {
-                $(".notify-wrap:last").slideUp(2000);
+                lastNotify.slideUp(1000);
             }, 8000);
         }
     },

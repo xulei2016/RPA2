@@ -63,6 +63,16 @@
                             </select>
                         </div>
                     </div>
+                    <div class="drawer-item"><span>固定左侧菜单</span>
+                        <div class="fixed-siderbar drawer-switch">
+                            <input type="checkbox" checked>
+                        </div>
+                    </div>
+                    <div class="drawer-item"><span>固定顶部菜单</span>
+                        <div class="drawer-switch">
+                            <input type="checkbox" disabled>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

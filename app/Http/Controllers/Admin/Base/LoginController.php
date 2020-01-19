@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
-use App\Events\LoginEvent;
+use App\Events\Login\LoginEvent;
 use Jenssegers\Agent\Agent;
 
 

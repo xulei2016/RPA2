@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Login;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;

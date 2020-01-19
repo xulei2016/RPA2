@@ -257,6 +257,10 @@ body .content-wrapper {
     background-color: #f2f4f6;
 }
 
+.modal-header.move{
+    cursor: move;
+}
+
 /************************************************ fixed end ************************************************************/
 
 .alerts {
@@ -296,6 +300,10 @@ body .content-wrapper {
 .wrapper .main-sidebar {
     -webkit-box-shadow: 2px 0 6px rgba(0, 21, 41, .35);
     min-height: 100vh;
+}
+
+.wrapper .main-sidebar.fixed{
+    position: fixed;
 }
 
 .wrapper .main-sidebar .logo {

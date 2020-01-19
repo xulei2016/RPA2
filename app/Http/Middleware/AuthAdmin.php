@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Admin\Admin\SysAdminAlert;
+use App\Models\Admin\Base\SysMessage;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -90,6 +92,22 @@ class AuthAdmin
             if ($token != $this->guard->user()->last_session) {
 
                 if (auth()->Guard('admin')->check()) {
+
+                    //异常通知
+                    SysMessage::create([
+                        'title' => '系统通知 - 账号异常行为通知',
+                        'content' => '您的账号已在其他设备登录，若不是本人操作，请立即修改密码！！！',
+                        'user' => $this->guard->user()->id,
+                        'mode' => 1,
+                        'type' => 1
+                    ]);
+
+                    SysAdminAlert::create([
+                        'user_id' => $this->guard->user()->id,
+                        'title' => '账号异常提醒',
+                        'content' => '',
+                    ]);
+
                     //退出登录
                     auth()->Guard('admin')->logout();
                 }
