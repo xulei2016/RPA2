@@ -10,7 +10,7 @@ use App\Models\Admin\Func\Plugin\RpaPluginVersion;
 use App\Models\Admin\Func\Plugin\RpaPluginApply;
 use App\Models\Admin\Func\Plugin\RpaPluginDownload;
 use App\Models\Admin\Base\Document\SysDocumentContent;
-use App\User;
+use App\Models\Admin\Base\SysApiUser AS User;
 use Illuminate\Http\Request;
 
 /**

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Base\BaseController;
 use GuzzleHttp\Client;
 use App\Models\Admin\Base\SysSmsLog;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * 基础控制器
@@ -168,4 +169,5 @@ class BaseAdminController extends BaseController
         $log->setAttribute('agent', $admin['lastAbbAgent']);
         $log->save();
     }
+
 }

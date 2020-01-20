@@ -21,6 +21,13 @@ class VideoCollectApiController extends BaseApiController
             'MNum' => 'required|numeric',
             'MName' => 'required',
         ]);
+        /* 测试代码 */
+        $re = [
+            'status' => 200,
+            'data' => "芜湖营业部",
+        ];
+        return response()->json($re);
+
 
         //crm登录验证
         $post_data = [
@@ -63,8 +70,9 @@ class VideoCollectApiController extends BaseApiController
     }
 
     /**
-     * 上传的客户信息
+     * 上传客户信息
      * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function customer(Request $request)
     {
@@ -76,11 +84,13 @@ class VideoCollectApiController extends BaseApiController
             'FundAccount' => 'required|numeric',
             'CName' => 'required',
             'CidCard' => 'required',
+            'btype' => 'required',
         ]);
 
         $customer = rpa_customer_videos::where("customer_zjzh",$request->FundAccount)->first();
         if(!$customer){
         //  新客户
+            /*
         //  crm验证客户信息
             $post_data = [
                 'type' => 'common',
@@ -92,9 +102,11 @@ class VideoCollectApiController extends BaseApiController
                         ['KHXM','=',$request->CName],
                         ['ZJBH','=',$request->CidCard]
                     ]
-                ]
+            ]
             ];
             $customer = $this->getCrmData($post_data);
+            */
+            $customer = 1;
             if($customer){
                 $data = [
                     'yyb' => $request->yyb,
@@ -103,6 +115,7 @@ class VideoCollectApiController extends BaseApiController
                     'customer_name' => $request->CName,
                     'customer_sfzh' => $request->CidCard,
                     'customer_zjzh' => $request->FundAccount,
+                    'btype' => $request->btype,
                 ];
     
                 $res = rpa_customer_videos::create($data);
@@ -142,6 +155,11 @@ class VideoCollectApiController extends BaseApiController
 
     }
 
+    /**
+     * 获取备注
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getRemark(Request $request){
         //表单验证
         $validatedData = $request->validate([
@@ -163,7 +181,6 @@ class VideoCollectApiController extends BaseApiController
      */
     public function upload(Request $request)
     {
-
         //表单验证
         $validatedData = $request->validate([
             'id' => 'required|numeric',
@@ -173,22 +190,20 @@ class VideoCollectApiController extends BaseApiController
             'filename' => 'required',
             'filesize' => 'required|numeric',
         ]);
-
-        $id = $request->id;//id
-        $uploadPath = public_path()."/uploads/Customer_video/".$id."/"; //上传目录
-        $uploadPath2 = "/uploads/Customer_video/".$id."/";
+        $id = $request->id;
+        $customer = rpa_customer_videos::where('id',$id)->first();
+        $uploadPath = public_path()."/uploads/线下客户档案/".$customer->customer_zjzh."/".$customer->btype."/视频/";
+        $uploadPath2 = "/uploads/线下客户档案/".$customer->customer_zjzh."/".$customer->btype."/视频/";
         //接收参数
         $blobNum = $request->blobNum;//第几个文件块
         $totalBlobNum = $request->totalBlobNum; //文件块总数
         $filename = $request->filename;//文件名
         $fileremark = $request->remark; //文件备注
+        $filetype = $request->type; //业务类型
         $filesize = $request->filesize;//文件大小
         //生成文件名
         $file = $request->file("video");
-        //移动文件
-        if(!is_dir($uploadPath)){
-            mkdir($uploadPath,0777);
-        }
+
         $tempfilename =  $filename.'_'.$blobNum;
         $ext = substr($filename, strrpos($filename, '.')+1);
         $file->move($uploadPath,$tempfilename);
@@ -197,6 +212,7 @@ class VideoCollectApiController extends BaseApiController
             $param = [
                 'id' => $id,
                 'fileremark' => $fileremark,
+                'filetype' => $filetype,
                 'ext' => $ext,
                 'totalBlobNum' => $totalBlobNum,
                 'filename' => $filename,

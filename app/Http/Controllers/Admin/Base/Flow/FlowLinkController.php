@@ -158,7 +158,7 @@ class FlowLinkController extends BaseAdminController
                         }
                     }
                 }
-                $flow->jsplumb=json_encode($jsplumb);
+                $flow->jsplumb=json_encode($jsplumb, JSON_UNESCAPED_UNICODE);
                 $flow->is_publish=0;
                 $flow->save();
             }

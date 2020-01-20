@@ -36,12 +36,22 @@
                                 </div>
 
                                 <div class="form-group row">
+                                    <label for="customer_zjzh" class="col-sm-2 control-label">资金账户</label>
+                                    <div class="col-sm-8">
+                                        <input id="customer_zjzh" type="text" class="form-control" placeholder="请输入资金账户">
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <button type="button" class="btn btn-primary selectZJZH">查询资金账户</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
                                     <label for="business_type" class="col-sm-2 control-label">业务类型</label>
                                     <div class="col-sm-10">
                                         <select class="form-control" id="business_type">
-                                            <option value="新开户">新开户</option>
-                                            <option value="开金融户">开金融户</option>
-                                            <option value="激活">激活</option>
+                                            <option value="新开账户">新开账户</option>
+                                            <option value="二次金融">二次金融</option>
+                                            <option value="账户激活">账户激活</option>
                                             <option value="适当性权限申请">适当性权限申请</option>
                                         </select>
                                     </div>
@@ -68,9 +78,10 @@
                                             <th>证券业失信</th>
                                             <th>期货业失信</th>
                                             <th>恒生黑名单</th>
+                                            <th>信用中国黑名单</th>
                                         </tr>
                                         <tr class="selecting">
-                                            <td colspan="5"></td>
+                                            <td colspan="6"></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -117,9 +128,10 @@
                                             <th>证券业失信</th>
                                             <th>期货业失信</th>
                                             <th>恒生黑名单</th>
+                                            <th>信用中国黑名单</th>
                                         </tr>
                                         <tr class="selecting">
-                                            <td colspan="5"></td>
+                                            <td colspan="6"></td>
                                         </tr>
                                     </table>
                                 </div>

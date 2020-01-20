@@ -129,12 +129,14 @@ $(function(){
                         }
                         return res;
                     }
-                },{
+                },
+                {
                     field: 'tel',
                     title: '电话',
                     align: 'center',
                     valign: 'middle'
-                },{
+                },
+                {
                     field: 'rate',
                     title: '比例(%)',
                     align: 'center',

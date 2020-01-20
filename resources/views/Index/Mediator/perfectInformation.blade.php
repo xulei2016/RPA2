@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <perfect-information></perfect-information>
+    <perfect-information data="{{ json_encode($data, true) }}"></perfect-information>
 
 @endsection

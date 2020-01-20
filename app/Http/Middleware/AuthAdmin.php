@@ -42,7 +42,6 @@ class AuthAdmin
     {
         $this->guard = Auth::guard($guard);
         if (!$this->guard->check() || !self::singleLogin()) {
-
             return redirect()->guest('admin/login');
         }
 

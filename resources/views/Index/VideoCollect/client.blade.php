@@ -24,10 +24,17 @@
 						</div>
 						<div class="form-group">
 							<input type="text" name="name" placeholder="姓名" class="cName">
-
 						</div>
 						<div class="form-group">
 							<input type="text" name="cIdCard" placeholder="身份证号" class="cIdCard">
+						</div>
+						<div class="form-group">
+							<select name="btype" class="btype">
+								<option value="新开账号">新开账号</option>
+								<option value="二次金融">二次金融</option>
+								<option value="账户激活">账户激活</option>
+								<option value="适当性权限申请">适当性权限申请</option>
+							</select>
 						</div>
 
 						<div class="form-group">
@@ -76,15 +83,14 @@
 					
 					// 获取客户经理信息
 					var sData = JSON.parse(window.localStorage.getItem("mIfo"));
-					console.log(sData)
-
 					var account = $(".cAccount").val(),
 						personName = $(".cName").val(),
-						IDCard = $(".cIdCard").val();
+						IDCard = $(".cIdCard").val(),
+						btype = $(".btype").val();
 					sData.FundAccount = account;
 					sData.CName = personName;
 					sData.CidCard = IDCard;
-
+					sData.btype = btype;
 					$.ajax({
 						url: "/api/v1/customer",
 						type: 'post',

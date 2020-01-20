@@ -103,9 +103,6 @@
 					
 					
 				}
-					
-				else alert(2)
-
 			});
 		</script>
 	</body>

@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <rate></rate>
+    <rate data="{{ json_encode($data, true) }}"></rate>
 
 @endsection

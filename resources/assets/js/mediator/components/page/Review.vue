@@ -15,37 +15,29 @@
             </div>
 
             <div style="text-align:center">
-                <van-button style="margin-top: 30px;width: 94%" type="info" @click="nextReview()">下一题</van-button>
+                <van-button v-if="!showNext" style="margin-top: 30px;width: 94%" type="info" @click="nextReview()">下一题</van-button>
+                <van-button v-if="showNext" style="margin-top: 30px;width: 94%" type="info" @click="next()">下一步</van-button>
             </div>
         </div>
     </layout>
 </template>
 
 <script>
+    import {Dialog} from 'vant';
     export default {
         data() {
             return {
                 total:12,
                 current:1,
                 answer:"",
-                result:{},
-                list: [
-                    {id:11,title:"1.当客户发生纠纷时,居间人应当()", data:[
-                        {key:"A",value:'告知客户改问题与自己无关'},
-                        {key:"B",value:'刻意隐瞒事实真相'},
-                        {key:"C",value:'配合期货公司解决纠纷'},
-                        {key:"D",value:'逃避、拒绝与期货公司的联系'}
-                        ]
-                    },
-                    {id:12,title:"2.当客户发生纠纷时,居间人应当()", data:[
-                            {key:"A",value:'告知客户改问题与自己无关'},
-                            {key:"B",value:'刻意隐瞒事实真相'},
-                            {key:"C",value:'配合期货公司解决纠纷'},
-                            {key:"D",value:'逃避、拒绝与期货公司的联系'}
-                        ]
-                    },
-                ]
+                result:[],
+                list: [],
+                showNext:false,
+                form:{
+                    func:'review',
+                    is_answer: 1
 
+                }
             }
         },
         methods:{
@@ -56,20 +48,51 @@
                 }
 
                 let id = this.$refs.list[0].getAttribute('itemid');
-
-                if(this.current === this.total) {
-                    console.log('结束');
-                    return false;
+                this.result.push({id:id,option:this.answer});
+                if(this.current === this.total-1) {
+                    this.showNext = true;
                 }
                 this.current++;
                 this.answer = '';
+
             },
             next(){
+                if(!this.answer) {
+                    this.$toast('请选择一项答案');
+                    return false;
+                }
+                if(this.result.length !== this.total) {
+                    let id = this.$refs.list[0].getAttribute('itemid');
+                    this.result.push({id:id,option:this.answer});
+                }
 
+                Vue.api.checkReview({data:JSON.stringify(this.result)}).then(res => {
+                    if(res.length) {
+                        Dialog.alert({
+                            title: '提示',
+                            message: '第'+res.join(', ')+'题回答错误,请重新答题!',
+                        }).then(() => {
+                            window.location.reload();
+                        });
+
+                        return false;
+                    } else {
+                        Vue.api.doInfo(this.form).then(res => {
+                            this.$toast.success('保存成功');
+                            Vue.utils.next();
+                        }).catch(error => this.$toast(error));
+                    }
+
+                }).catch(error => {this.$toast(error)})
             }
         },
         created: function () {
-            this.total = this.list.length;
+            Vue.api.getReviewList().then(res => {
+                this.list = res;
+                this.total = this.list.length;
+            }).catch(error => {
+                this.$toast(error);
+            })
         }
     }
 </script>

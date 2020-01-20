@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\base;
 
+use App\Models\Admin\Base\Organization\SysDept;
 use App\Models\Admin\Base\SysConfig;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Rpa\rpa_accesstoken;
@@ -412,10 +413,13 @@ class BaseController extends Controller
         }
         return false;
     }
-        
+
     /**
      * ajax返回值信息
-     * @return array [code 状态码 200/500/ info 提示信息 data 返回数据] 
+     * @param $code
+     * @param null $info
+     * @param array $data
+     * @return array [code 状态码 200/500/ info 提示信息 data 返回数据]
      */
     public function ajax_return($code, $info = null, $data = []){
         return array(
@@ -478,7 +482,7 @@ class BaseController extends Controller
 
     /**
      * 获取配置
-     * @param $item_keys  需要的配置key
+     * @param array $item_keys 需要的配置key
      * @return array      ip对应的服务器名 或者配置key对应的value
      */
     public function get_config($item_keys = [])
@@ -617,5 +621,18 @@ class BaseController extends Controller
         $image_data = fread(fopen($image_file, 'r'), filesize($image_file));
         $base64_image = 'data:' . $image_info['mime'] . ';base64,' . chunk_split(base64_encode($image_data));
         return $base64_image;
+    }
+
+    /**
+     * 获取所有业务部门
+     * @return mixed
+     */
+    public function getDept()
+    {
+        $dept = SysDept::where('is_business',1)
+            ->orderBy('order','desc')
+            ->orderBy('id','desc')
+            ->get(['id','name']);
+        return $dept;
     }
 }

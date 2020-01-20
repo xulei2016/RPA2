@@ -281,11 +281,7 @@ RPA.prototype = {
 
             $(document).on('click', e._search, function (event) {
                 let v = $(`${s} input`).val();
-<<<<<<< HEAD
                 let url = $(`${s} datalist option[value="${v}"]`).data('href');
-=======
-                let url = $(`${s} datalist option[value="${v}"]`).attr('href');
->>>>>>> a4fba8dcbdd9c13b6e3300a5e5d57aa30d256c63
                 $.pjax({url: url, container: e.container});
             });
 
@@ -608,11 +604,7 @@ $.fn.serializeJsonObject = function () {
         }
     });
     return json;
-<<<<<<< HEAD
 };
-=======
-}
->>>>>>> a4fba8dcbdd9c13b6e3300a5e5d57aa30d256c63
 
 /**
  * param 将要转为URL参数字符串的对象

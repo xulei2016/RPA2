@@ -51,6 +51,8 @@ Route::group(['middleware' => ['auth.admin:admin','web']], function(){
         Route::get('/sys_flow_mine/todoList', 'FlowMineController@todoList');
         Route::get('/sys_flow_mine/getMenuTree', 'FlowMineController@getMenuTree');
         Route::get('/sys_flow_mine/operation', 'FlowMineController@operation');
+        Route::get('/sys_flow_mine/design/{id}', 'FlowMineController@design');
+        Route::get('/sys_flow_mine/downloadFile', 'FlowMineController@downloadFile');
         Route::resource('/sys_flow_mine', 'FlowMineController');
     });
 

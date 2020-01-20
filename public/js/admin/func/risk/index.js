@@ -331,12 +331,14 @@ $(function(){
                 title: '客户姓名',
                 align: 'center',
                 valign: 'middle'
-            }, {
+            }
+            , {
                 field: 'phone',
                 title: '手机号',
                 align: 'center',
                 valign: 'middle'
-            },{
+            }
+            ,{
                 field: 'jgbz',
                 title: '客户类型',
                 align: 'center',

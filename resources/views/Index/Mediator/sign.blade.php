@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <sign></sign>
+    <sign data="{{ json_encode($data, true) }}"></sign>
 
 @endsection

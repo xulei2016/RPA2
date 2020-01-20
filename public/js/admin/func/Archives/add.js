@@ -1,3 +1,34 @@
+//查询视频审核
+function reselect(id){
+    $.ajax({
+        method: 'post',
+        url: '/admin/rpa_archives/selectVideo',
+        data:{
+            vid:id
+        },
+        dataType:'json',
+        success: function (json) {
+            if(json.status == 200){
+                text = "视频审核通过,请直接点击下一步！";
+                $('.checkVideo i').removeClass().addClass('fa fa-check-circle-o');
+                $('.checkVideo i').css('color','green');
+
+            }else if(json.status == 501){
+                var id = json.msg;
+                text = "审批还未审核，请<a href='javascript:;' style='margin-left: 20px;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_video_collect/"+id+"/edit' title='点击审核'>点击审核</a> 或 <button type='button' class='btn btn-sm btn-success' onclick='reselect("+id+");'>重新查询</button>"
+                $('.checkVideo i').removeClass().addClass('fa fa-exclamation-circle');
+                $('.checkVideo i').css('color','orange');
+
+            }else{
+                text = "未上传视频，请先上传!";
+                $('.checkVideo i').removeClass().addClass('fa fa-times-circle-o');
+                $('.checkVideo i').css('color','red');
+
+            }
+            $('.checkVideo span').html(text);
+        }
+    });
+}
 $(function(){
     let modal = '#wizard';
     let result = true;
@@ -28,9 +59,10 @@ $(function(){
                 var business_type = $('#business_type').val();
                 var customer_zjbh = $('#customer_zjbh').val();
                 var customer_name = $('#customer_name').val();
+                var customer_zjzh = $('#customer_zjzh').val();
 
-                if(customer_name == '' || customer_zjbh == ''){
-                    toastr.error('客户名称和证件编号不能为空');
+                if(customer_name == '' || customer_zjbh == '' || customer_zjzh == ''){
+                    toastr.error('客户名称、证件编号、资金账号不能为空');
                     return false;
                 }
 
@@ -51,6 +83,7 @@ $(function(){
                         zjbh:customer_zjbh,
                         type:customer_type,
                         btype:business_type,
+                        zjzh:customer_zjzh,
                         user_id:user_id,
                     },
                     dataType:'json',
@@ -95,7 +128,7 @@ $(function(){
                     data:{
                         customer_name:customer_name,
                         customer_sfzh:customer_zjbh,
-                        business_type:business_type
+                        btype:business_type
                     },
                     dataType:'json',
                     success: function (json) {
@@ -106,7 +139,7 @@ $(function(){
 
                         }else if(json.status == 501){
                             var id = json.msg;
-                            text = "审批还未审核，请<a href='javascript:;' style='margin-left: 20px;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_video_collect/"+id+"/edit' title='点击审核'>点击审核</a>"
+                            text = "审批还未审核，请<a href='javascript:;' style='margin-left: 20px;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_video_collect/"+id+"/edit' title='点击审核'>点击审核</a> 或 <button type='button' class='btn btn-sm btn-success' onclick='reselect("+id+");'>重新查询</button>"
                             $('.checkVideo i').removeClass().addClass('fa fa-exclamation-circle');
                             $('.checkVideo i').css('color','orange');
 
@@ -138,84 +171,68 @@ $(function(){
                 //判断客户类型
                 var customer_zjbh = $('#customer_zjbh').val();
                 var customer_name = $('#customer_name').val();
+                var customer_type = $('#customer_type').val();
 
                 //失信查询
-                var flag = false;
+                var flag = 0;
                 $.ajax({
                     url:'/admin/rpa_archives/credit',
                     data:{
                         name:customer_name,
                         idCard:customer_zjbh,
+                        customer_type:customer_type,
+                        tid:user_id,
                         type:1
                     },
                     type:'POST',
                     dataType:"json",
                     success:function(_data){
-
-                        $(".credit table tbody tr.selecting td").html('正在查询...');
-
                         if(_data.status == 200){
-                            var timer = setInterval(function () {
-                                if(flag){
-                                    clearInterval(timer);
-                                }else{
-                                    $.ajax({
-                                        url:'/admin/rpa_archives/credit',
-                                        data:{
-                                            name:customer_name,
-                                            idCard:customer_zjbh,
-                                            type:2
-                                        },
-                                        type:'POST',
-                                        dataType:"json",
-                                        success:function(_data){
-                                            if(_data.status == 200){
-                                                var zq = '';
-                                                var qh = '';
-                                                var hs = '';
-                                                //证券
-                                                if(_data.zq == 1){
-                                                    result = false;
-                                                    zq = '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
+                            if(customer_type == '个人'){
+                                $(".credit table tbody tr.selecting td").html('正在查询...');
+                                var timer = setInterval(function () {
+                                    if(flag >= 10){
+                                        clearInterval(timer);
+                                    }else{
+                                        $.ajax({
+                                            url:'/admin/rpa_archives/credit',
+                                            data:{
+                                                tid:user_id,
+                                                type:2
+                                            },
+                                            type:'POST',
+                                            dataType:"json",
+                                            success:function(_data){
+                                                if(_data.status == 200){
+                                                    var html = "";
+                                                    for(let i=0;i < _data.msg.length;i++){
+                                                        html += '<tr>' +
+                                                            '<td>'+_data.msg[i].name+'</td>' +
+                                                            '<td>'+_data.msg[i].idCard+'</td>' +
+                                                            '<td>'+getSpan(_data.msg[i].sfstate)+'</td>' +
+                                                            '<td>'+getSpan(_data.msg[i].cfastate)+'</td>' +
+                                                            '<td>'+getSpan(_data.msg[i].hsstate)+'</td>' +
+                                                            '<td>'+getSpan(_data.msg[i].xyzgstate)+'</td>' +
+                                                            '</tr>';
+                                                    }
+                                                    console.log(html);
+                                                    $(".selecting").after(html);
+                                                    $(".selecting").remove();
+                                                    flag = 10;
                                                 }else{
-                                                    zq = '<span class="x-tag x-tag-primary x-tag-sm">否</span>'
-                                                }
-                                                //期货
-                                                if(_data.qh == 1){
-                                                    result = false;
-                                                    qh = '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
-                                                }else{
-                                                    qh = '<span class="x-tag x-tag-primary x-tag-sm">否</span>'
-                                                }
-                                                //恒生黑名单
-                                                if(_data.hs == 1){
-                                                    result = false;
-                                                    hs = '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
-                                                }else{
-                                                    hs = '<span class="x-tag x-tag-primary x-tag-sm">否</span>'
+                                                    flag++;
+                                                    toastr.error(_data.msg);
                                                 }
 
-                                                var html = '<tr>' +
-                                                    '<td>'+customer_name+'</td>' +
-                                                    '<td>'+customer_zjbh+'</td>' +
-                                                    '<td>'+zq+'</td>' +
-                                                    '<td>'+qh+'</td>' +
-                                                    '<td>'+hs+'</td>' +
-                                                    '</tr>';
-                                                $(".selecting").after(html);
-                                                $(".selecting").remove();
-                                                flag = true
-                                            }else{
-                                                toastr.error(_data.msg);
+                                            },
+                                            error: function () {
+                                                flag = 10;
+                                                toastr.error('网络错误');
                                             }
-                                        },
-                                        error: function () {
-                                            flag = true;
-                                            toastr.error('网络错误');
-                                        }
-                                    })
-                                }
-                            },3000);
+                                        })
+                                    }
+                                },3000);
+                            }
                         }else{
                             toastr.error(_data.msg);
                         }
@@ -305,68 +322,69 @@ $(function(){
                         step:4
                     },
                     type:'POST',
-                    dataType:"json"
-                });
+                    dataType:"json",
+                    success: function () {
+                        //下一步判断
+                        var business_type = $('#business_type').val();
+                        if(business_type == '适当性权限申请'){
+                            //下一步是适当性
+                            //发送请求，查询适当性情况
+                            var customer_type = $('#customer_type').val();
+                            var customer_zjbh = $('#customer_zjbh').val();
+                            $.ajax({
+                                url:'/admin/rpa_archives/selectSdxLevel',
+                                data:{
+                                    customer_type:customer_type,
+                                    customer_zjbh:customer_zjbh
+                                },
+                                type:'POST',
+                                dataType:"json",
+                                success:function(json){
+                                    if(json.status == 200){
+                                        text = "适当性测评开始时间："+json.msg.corpBeginDate+"，适当性测评结束时间："+json.msg.corpEndDate+"，风险等级："+json.msg.corpRiskLevel;
+                                        $('.sdx i').removeClass().addClass('fa fa-check-circle-o');
+                                        $('.sdx i').css('color','green');
 
-                //下一步判断
-                var business_type = $('#business_type').val();
-                if(business_type == '适当性权限申请'){
-                    //下一步是适当性
-                    //发送请求，查询适当性情况
-                    var customer_type = $('#customer_type').val();
-                    var customer_zjbh = $('#customer_zjbh').val();
-                    $.ajax({
-                        url:'/admin/rpa_archives/selectSdxLevel',
-                        data:{
-                            customer_type:customer_type,
-                            customer_zjbh:customer_zjbh
-                        },
-                        type:'POST',
-                        dataType:"json",
-                        success:function(json){
-                            if(json.status == 200){
-                                text = "适当性测评开始时间："+json.msg.corpBeginDate+"，适当性测评结束时间："+json.msg.corpEndDate+"，风险等级："+json.msg.corpRiskLevel;
-                                $('.sdx i').removeClass().addClass('fa fa-check-circle-o');
-                                $('.sdx i').css('color','green');
+                                    }else{
+                                        text = "未进行适当性测评！";
+                                        $('.sdx i').removeClass().addClass('fa fa-times-circle-o');
+                                        $('.sdx i').css('color','red');
 
-                            }else{
-                                text = "未进行适当性测评！";
-                                $('.sdx i').removeClass().addClass('fa fa-times-circle-o');
-                                $('.sdx i').css('color','red');
-
-                            }
-                            $('.sdx span').html(text);
+                                    }
+                                    $('.sdx span').html(text);
+                                }
+                            });
+                        }else if(business_type == '激活'){
+                            /**
+                             * 下一步是音频上传
+                             * 音频上传
+                             */
+                            $('#file-0b').fileinput({
+                                theme: 'fa',
+                                language: 'zh',
+                                minFileCount: 1,
+                                allowedFileExtensions : [ 'mp3','wav' ],
+                                uploadUrl: '/admin/rpa_archives/uploadAudio',
+                                uploadAsync: true,   //异步上传
+                                uploadExtraData: {    //上传额外数据
+                                    id: user_id,
+                                },
+                            });
+                        }else{
+                            // 下一步结束
+                            //结束，修改step
+                            $.ajax({
+                                url:'/admin/rpa_archives/changeStep',
+                                data:{
+                                    id:user_id,
+                                    step:5
+                                },
+                                type:'POST',
+                                dataType:"json"
+                            });
                         }
-                    });
-                }else if(business_type == '激活'){
-                    /**
-                     * 下一步是音频上传
-                     * 音频上传
-                     */
-                    $('#file-0b').fileinput({
-                        theme: 'fa',
-                        language: 'zh',
-                        minFileCount: 1,
-                        allowedFileExtensions : [ 'mp3','wav' ],
-                        uploadUrl: '/admin/rpa_archives/uploadAudio',
-                        uploadAsync: true,   //异步上传
-                        uploadExtraData: {    //上传额外数据
-                            id: user_id,
-                        },
-                    });
-                }else{
-                    // 下一步结束
-                    //结束，修改step
-                    $.ajax({
-                        url:'/admin/rpa_archives/changeStep',
-                        data:{
-                            id:user_id,
-                            step:5
-                        },
-                        type:'POST',
-                        dataType:"json"
-                    });
-                }
+                    }
+                });
             }
             else{
                 //结束，修改step
@@ -388,6 +406,27 @@ $(function(){
             window.location.href = '/admin/rpa_archives';
             return true;
         },
+    });
+
+    //查询资金账户
+    $(".selectZJZH").click(function(){
+        var customer_zjbh = $('#customer_zjbh').val();
+        var customer_name = $('#customer_name').val();
+
+        $.ajax({
+            url:'/admin/rpa_archives/selectZJZH',
+            data:{
+                customer_zjbh: customer_zjbh,
+                customer_name: customer_name
+            },
+            type:'POST',
+            dataType:"json",
+            success: function(json){
+                if(json.status == 200){
+                    $('#customer_zjzh').val(json.msg);
+                }
+            }
+        });
     });
 
     //任务类型
@@ -470,7 +509,7 @@ $(function(){
            }
 
            var regIdNo = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-           if(!regIdNo.test(customer_zjbh)) {
+           if(!regIdNo.test(zjbh)) {
                toastr.error('证件编号有误！');
                return false;
            }
@@ -488,95 +527,36 @@ $(function(){
 
        //查询失信
        for (var i=0;i<namelist.length;i++){
-
-           var data1 = {
+           var data = {
+               tid:user_id,
                name:namelist[i].name,
                idCard:namelist[i].zjbh,
+               customer_type:"个人",
                type:1
            };
-           var data2 = {
-               name:namelist[i].name,
-               idCard:namelist[i].zjbh,
-               type:2
-           };
-
-           credit(data1,data2);
+           credit(data);
        }
+       selectCredit(user_id);
     });
 
-    //失信查询
-    function credit(data1,data2){
-        var flag = false;
+    //获取返回span
+    function getSpan(type){
+        if(type === '否'){
+           return  '<span class="x-tag x-tag-primary x-tag-sm">否</span>';
+        }else if(type === '是'){
+            return '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
+        }else{
+            return '<span class="x-tag x-tag-danger x-tag-sm">查询错误</span>';
+        }
+    }
+    //保存5类人
+    function credit(data){
         $.ajax({
             url:'/admin/rpa_archives/credit',
-            data:data1,
+            data:data,
             type:'POST',
             dataType:"json",
             success:function(_data){
-
-                $(".creditSelect").text('正在查询...');
-                $(".creditSelect").addClass('disabled');
-
-                if(_data.status == 200){
-                    var timer = setInterval(function () {
-                        if(flag){
-                            clearInterval(timer);
-                        }else{
-                            $.ajax({
-                                url:'/admin/rpa_archives/credit',
-                                data:data2,
-                                type:'POST',
-                                dataType:"json",
-                                success:function(_data){
-                                    if(_data.status == 200){
-                                        var zq = '';
-                                        var qh = '';
-                                        var hs = '';
-                                        //证券
-                                        if(_data.zq == 1){
-                                            zq = '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
-                                        }else{
-                                            zq = '<span class="x-tag x-tag-primary x-tag-sm">否</span>'
-                                        }
-                                        //期货
-                                        if(_data.qh == 1){
-                                            qh = '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
-                                        }else{
-                                            qh = '<span class="x-tag x-tag-primary x-tag-sm">否</span>'
-                                        }
-                                        //恒生黑名单
-                                        if(_data.hs == 1){
-                                            hs = '<span class="x-tag x-tag-danger x-tag-sm">是</span>';
-                                        }else{
-                                            hs = '<span class="x-tag x-tag-primary x-tag-sm">否</span>'
-                                        }
-
-                                        var html = '<tr>' +
-                                            '<td>'+data1.name+'</td>' +
-                                            '<td>'+data1.idCard+'</td>' +
-                                            '<td>'+zq+'</td>' +
-                                            '<td>'+qh+'</td>' +
-                                            '<td>'+hs+'</td>' +
-                                            '</tr>';
-                                        $(".company table tbody").append(html);
-                                        $(".creditSelect").text('查询失信记录');
-                                        $(".creditSelect").removeClass('disabled');
-
-                                        flag = true
-                                    }else{
-                                        toastr.error(_data.msg);
-                                    }
-                                },
-                                error: function () {
-                                    flag = true;
-                                    toastr.error('网络错误');
-                                }
-                            })
-                        }
-                    },3000);
-                }else{
-                    toastr.error(_data.msg);
-                }
             },
             error: function () {
                 toastr.error('网络错误');
@@ -584,8 +564,52 @@ $(function(){
         });
     }
 
+    //查询失信
+    function selectCredit(uid){
+        var flag = 0;
+        var timer = setInterval(function () {
+            if(flag >= 10){
+                clearInterval(timer);
+            }else{
+                $.ajax({
+                    url:'/admin/rpa_archives/credit',
+                    data:{
+                        tid:uid,
+                        type:2
+                    },
+                    type:'POST',
+                    dataType:"json",
+                    success:function(_data){
+                        if(_data.status == 200){
+                            var html = "";
+                            for(let i=0;i < _data.msg.length;i++){
+                                html += '<tr>' +
+                                    '<td>'+_data.msg[i].name+'</td>' +
+                                    '<td>'+_data.msg[i].idCard+'</td>' +
+                                    '<td>'+getSpan(_data.msg[i].sfstate)+'</td>' +
+                                    '<td>'+getSpan(_data.msg[i].cfastate)+'</td>' +
+                                    '<td>'+getSpan(_data.msg[i].hsstate)+'</td>' +
+                                    '<td>'+getSpan(_data.msg[i].xyzgstate)+'</td>' +
+                                    '</tr>';
+                            }
+                            console.log(html);
+                            $(".selecting").after(html);
+                            $(".selecting").remove();
+                            flag = 10;
+                        }else{
+                            flag++;
+                            toastr.error(_data.msg);
+                        }
 
-
+                    },
+                    error: function () {
+                        flag = 10;
+                        toastr.error('网络错误');
+                    }
+                })
+            }
+        },3000);
+    }
 });
 
 

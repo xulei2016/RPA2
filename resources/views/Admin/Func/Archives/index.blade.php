@@ -11,6 +11,7 @@
                             @endslot
 
                             @slot('operation')
+                                    <a class="btn btn-primary btn-sm" href="/admin/rpa_archives/create">新增</a>
                             @endslot
                         @endcomponent
 

@@ -17,6 +17,7 @@ use App\Models\Admin\Base\Flow\SysFlowTemplateForm;
 use App\Services\Flow\Flow;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class FlowMineController extends BaseAdminController
 {
@@ -151,7 +152,13 @@ class FlowMineController extends BaseAdminController
         $formList = SysFlowInstanceData::where('instance_id', $id)->get();
         foreach ($formList as &$v) {
             $v->field_showname = $fieldNameList[$v->field_name];
-            $v->field_type = $fieldTypeList[$v->field_name];
+            $fieldType = $fieldTypeList[$v->field_name];
+            if($fieldType == 'image') {
+                $v->field_value = image2base64($v->field_value);
+            } elseif($fieldType == 'file') {
+                $v->field_value = customEncode($v->field_value);
+            }
+            $v->field_type = $fieldType;
         }
         $instance = SysFlowInstance::where('id', $id)->first();
         $records = SysFlowInstanceRecords::where([
@@ -239,6 +246,26 @@ class FlowMineController extends BaseAdminController
                 $statusName = '暂无';
         }
         return $statusName;
+    }
+
+
+    /**
+     * 流程图
+     * @param Request $request
+     * @param $id
+     * @return array
+     */
+    public function design(Request $request, $id){
+        $result = SysFlowInstance::where('id', $id)->first();
+        return view($this->view_prefix.'design', ['info' => $result]);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function downloadFile(Request $request){
+        $url = $request->url;
+        return Storage::disk('local')->download(customDecode($url));
     }
 
 }

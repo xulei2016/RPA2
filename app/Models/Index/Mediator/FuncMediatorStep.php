@@ -12,4 +12,5 @@ class FuncMediatorStep extends Model
 
     //黑名单，白名单
     protected $guarded = [];
+
 }

@@ -61,6 +61,15 @@ class HadmyController extends BaseAdminController{
             array_push($condition,array('start_time','<=',strtotime($ed)));
         }
 
+        //获取当次查询的统计
+        $serach_count = RpaTradeLoginRecord::where($condition)->groupBy('tzjh_account')->get()->count();
+        $list = RpaTradeLoginRecord::where($condition)->get();
+        $serach_time = 0;
+        foreach($list as $v){
+            $serach_time += ceil($v->count_time / 60);
+        }
+        $serach_login = RpaTradeLoginRecord::where($condition)->count('*');
+
         $rows = $request->rows;
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder ?? 'asc';
@@ -92,6 +101,12 @@ class HadmyController extends BaseAdminController{
                 $v->online = false;
             }
         }
+        $append_data = collect([
+            'serach_count'=>$serach_count,
+            'serach_time'=>$serach_time,
+            'serach_login'=>$serach_login,
+        ]);
+        $data = $append_data->merge($data);
         return $data;
     }
 

@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <id-card></id-card>
+    <id-card data="{{ json_encode($data, true) }}"></id-card>
 
 @endsection

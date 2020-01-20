@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\rpa;
 
 use App\Http\Controllers\api\BaseApiController;
+use App\Models\Admin\Func\Archives\func_archives;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Models\Admin\Api\RpaHaLcztcx;
@@ -183,7 +184,6 @@ class OtherApiController extends BaseApiController
         }
         return $re;
     }
-
 
     /**
      * 居间新增流程

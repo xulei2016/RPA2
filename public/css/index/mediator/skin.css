@@ -1,0 +1,61 @@
+/*
+nav-bar 标题
+*/
+/*.van-nav-bar__title{*/
+/*    font-weight: bold !important;*/
+/*    color: white !important;*/
+/*}*/
+
+
+.general-title{
+    color: rgba(21, 35, 41, 0.6);
+}
+
+.mb4{
+    margin-bottom: 4px;
+}
+
+.mr4{
+    margin-right: 4px;
+}
+
+.mt10 {
+    margin-top: 10px;
+}
+
+.tr{
+    text-align: right;
+}
+
+.tl{
+    text-align: left;
+}
+
+/*文章*/
+.article {
+    padding: 8px 8px;
+}
+
+.article p{
+    text-align: left;
+}
+
+.article .article-footer {
+    text-align: right;
+}
+
+.article .article-footer span{
+    margin-right: 10px;
+}
+.article .article-title {
+    text-align: center;
+}
+
+.doc{
+    margin: 0;
+    padding: 24px 8px 16px;
+    color: #969799;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 16px;
+}

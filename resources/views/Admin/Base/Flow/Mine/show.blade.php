@@ -16,7 +16,7 @@
     </div>
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
-            <li class="nav-item"><a class="nav-link active" href="#flowForm" data-toggle="tab">流程表单</a></li>
+            <li class="nav-item"><a class="nav-link active flowForm" href="#flowForm" data-toggle="tab">流程表单</a></li>
             <li class="nav-item"><a class="nav-link flowPic" href="#flowPic" data-toggle="tab">流程图</a></li>
 {{--            <li class="nav-item"><a class="nav-link" href="#flowResource" data-toggle="tab">相关资源</a></li>--}}
         </ul>
@@ -54,51 +54,51 @@
                         <input type="hidden" name="id" id="id" value="{{$info->id}}">
                     </form>
                 </div>
+                <div class="card">
+                    <div class="card-header">
+                        流转意见
+                    </div>
+                    <div class="card-body">
+                        <ul class="products-list product-list-in-card">
+                            @foreach($recordList as $v)
+                                <li class="item">
+                                    <div class="product-img">
+                                        <img src="/{{$v->headImg}}" alt="">
+                                    </div>
+                                    <div class="product-info">
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <div class="product-title">{{$v->user_name}}</div>
+                                                <span class="product-description">{{$v->dept_name}}</span>
+                                            </div>
+                                            <div class="col-sm-7">
+                                                <div class="product-title">@if($v->remark) {!! $v->remark !!} @else 无 @endif</div>
+                                                <span class="product-description">接收者:{{$v->nextAdminNames}}</span>
+                                            </div>
+                                            <div class="col-sm-3">
+                                                <div class="product-title">{{$v->nodeName}} / {{$v->statusName}}</div>
+                                                <span class="product-description">{{$v->bl_time}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            @endforeach
+
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="flowPic">
-                <div>流程图</div>
+                <iframe id="flowIframe" src="" frameborder="0" height="500" width="100%">
+                    <div>流程加载中,请稍后</div>
+                </iframe>
             </div>
 {{--            <div class="tab-pane" id="flowResource">--}}
 {{--                <div>相关资源</div>--}}
 {{--            </div>--}}
         </div>
     </div>
-    <div class="card-footer">
-        <div class="card">
-            <div class="card-header">
-                流转意见
-            </div>
-            <div class="card-body">
-                <ul class="products-list product-list-in-card">
-                    @foreach($recordList as $v)
-                        <li class="item">
-                            <div class="product-img">
-                                <img src="/{{$v->headImg}}" alt="">
-                            </div>
-                            <div class="product-info">
-                                <div class="row">
-                                    <div class="col-sm-2">
-                                        <div class="product-title">{{$v->user_name}}</div>
-                                        <span class="product-description">{{$v->dept_name}}</span>
-                                    </div>
-                                    <div class="col-sm-7">
-                                        <div class="product-title">@if($v->remark) {!! $v->remark !!} @else 无 @endif</div>
-                                        <span class="product-description">接收者:{{$v->nextAdminNames}}</span>
-                                    </div>
-                                    <div class="col-sm-3">
-                                        <div class="product-title">{{$v->nodeName}} / {{$v->statusName}}</div>
-                                        <span class="product-description">{{$v->bl_time}}</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </li>
-                    @endforeach
-
-                </ul>
-            </div>
-        </div>
-    </div>
 </div>
 <script src="{{URL::asset('/include/ckeditor/ckeditor.js')}}"></script>
+
 <script src="{{URL::asset('js/admin/base/flow/mine/show.js')}}"></script>
