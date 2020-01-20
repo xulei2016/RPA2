@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\base;
 
 use App\Models\Admin\Base\SysConfig;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Rpa\rpa_accesstoken;
 use Illuminate\Support\Facades\Cache;
@@ -427,10 +426,12 @@ class BaseController extends Controller
     }
 
     /**
-     * @param $file 文件
-     * @param $folder 文件夹
-     * @param $allowed_ext 允许上传类型
-     * @param bool $old_filename 是否用原文件名
+     * 文件上传
+     * @param $file  文件
+     * @param $folder  文件夹
+     * @param $allowed_ext   允许上传类型
+     * @param bool $old_filename  是否用原文件名
+     * @return bool|string
      */
     public function uploadFile($file, $folder, $allowed_ext,$old_filename = true)
     {

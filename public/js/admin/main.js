@@ -33,6 +33,7 @@ RPA.prototype = {
         search: {//全局搜索框
             _sidebar: 'body aside .sidebar',
             _search: 'body nav .search',
+            _search1: $('body nav .search input'),
         },
         tags: {
             obj: $('.wrapper .tags-warp'),
@@ -46,6 +47,9 @@ RPA.prototype = {
     bind: function () {
         var _this = this;
         _this.initList();
+
+        //search
+        _this.config.search._search1.bind('keyup', _this.tools.throttle(_this.search, 1000));
 
         //pjax
         _this.initPage();
@@ -284,7 +288,8 @@ RPA.prototype = {
 
             $(document).on('click', e._search, function (event) {
                 let v = $(`${s} input`).val();
-                let url = $(`${s} datalist option[value="${v}"]`).attr('href');
+                let url = $(`${s} datalist option[value="${v}"]`).data('href');
+
                 $.pjax({url: url, container: e.container});
             });
 
@@ -385,6 +390,20 @@ RPA.prototype = {
             localStorage.setItem("sidebarList", JSON.stringify(data));
         }
         return sidebarList;
+    },
+    ///////////////////////////////////////////////////////// tools func /////////////////////////////////////////////////////////////
+    tools: {
+        throttle: function (fn, delay) {
+            let canRun = true;
+            return function () {
+                if (!canRun) return;
+                canRun = false;
+                setTimeout(() => {
+                    fn.apply(this, arguments);
+                    canRun = true;
+                }, delay);
+            }
+        }
     },
 
     ///////////////////////////////////////////////////////// form start///////////////////////////////////////////////////////////
@@ -587,37 +606,39 @@ RPA.prototype = {
         if (sidebarList) {
             let options = '';
             let value = e.target.value;
+            console.log(value);
             sidebarList = JSON.parse(sidebarList);
             sidebarList = sidebarList.filter(function (v, i, e) {
                 return (v[0].indexOf(value) || v[1].indexOf(value)) ? true : false;
             });
             sidebarList.forEach(function (e) {
-                options += `<option value="${e[1]}" href="${e[0]}">${e[0]}</option>`;
+                options += `<option value="${e[1]}" data-href="${e[0]}">${e[0]}</option>`;
             });
-            $(`${this.config.search._search} datalist`).html(options);
+            $(this).next().html(options);
         }
     }
-}
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-var RPA = RPA.prototype;
+RPA = RPA.prototype;
 RPA.init(window);
 
-var operation = (e) => {
+let operation = (e) => {
     RPA.pjaxOperation.modelLoad(e);
-}
+};
 
 //socket
 if (socket.userId) {
     RPA.Echo.init('App.Models.Admin.Admin.SysAdmin.' + socket.userId);
 }
+;
 
 //自定义函数处理queryParams的批量增加
 $.fn.serializeJsonObject = function () {
-    var json = {};
-    var form = this.serializeArray();
+    let json = {};
+    let form = this.serializeArray();
     $.each(form, function () {
         if (json[this.name]) {
             if (!json[this.name].push) {
@@ -629,7 +650,7 @@ $.fn.serializeJsonObject = function () {
         }
     });
     return json;
-}
+};
 
 /**
  * param 将要转为URL参数字符串的对象
@@ -638,30 +659,30 @@ $.fn.serializeJsonObject = function () {
  *
  * return URL参数字符串
  */
-var urlEncode = function (param, key, encode) {
+const urlEncode = function (param, key, encode) {
     if (param == null) return '';
-    var paramStr = '';
-    var t = typeof (param);
-    if (t == 'string' || t == 'number' || t == 'boolean') {
+    let paramStr = '';
+    let t = typeof (param);
+    if (t === 'string' || t === 'number' || t === 'boolean') {
         paramStr += '&' + key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param);
     } else {
-        for (var i in param) {
-            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+        for (let i in param) {
+            let k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
             paramStr += urlEncode(param[i], k, encode);
         }
     }
     return paramStr;
-    // return paramStr.slice(1);  
+    // return paramStr.slice(1);
 };
 
 //datetime
 function getFormatDate() {
-    var nowDate = new Date();
-    var year = nowDate.getFullYear();
-    var month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
-    var date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
-    var hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
-    var minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
-    var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
+    let nowDate = new Date();
+    let year = nowDate.getFullYear();
+    let month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
+    let date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
+    let hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
+    let minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
+    let second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
     return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
-}
+};

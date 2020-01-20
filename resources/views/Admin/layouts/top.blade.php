@@ -6,7 +6,7 @@
     <!-- SEARCH FORM -->
     <div class="search ml-3 hidden-xs">
         <div class="input-group input-group-sm">
-            <input class="form-control form-control-navbar" list="searchList" type="search" placeholder="Search" aria-label="Search" onkeydown="RPA.search(event);" onchange="RPA.search(event);" autocomplete="off">
+            <input class="form-control form-control-navbar" list="searchList" type="search" placeholder="Search" aria-label="Search" autocomplete="off">
             <datalist id="searchList">
                 <option value="首页" href="/">首页</option>
             </datalist>

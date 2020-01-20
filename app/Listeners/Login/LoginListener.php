@@ -2,7 +2,7 @@
 
 namespace App\Listeners\Login;
 
-use App\Events\LoginEvent;
+use App\Events\Login\LoginEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use GeoIp2\Database\Reader;
@@ -10,7 +10,7 @@ use App\Models\Admin\Base\Sys\SysLoginRecord;
 
 /**
  * LoginListener class
- * 
+ *
  * @author hsyLay
  * @since 1.0.0
  */
@@ -56,7 +56,7 @@ class LoginListener// implements ShouldQueue
 
         //geoip
         $geoip = [];
-        if(!in_array($ip, ['127.0.0.1', '::1'])){
+        if (!in_array($ip, ['127.0.0.1', '::1'])) {
             $reader = new Reader('GeoLite2-City.mmdb');
             $record = $reader->city($ip);
             $geoip = [
@@ -72,16 +72,21 @@ class LoginListener// implements ShouldQueue
         }
 
         //taobao ip
-        $address = file_get_contents('http://ip.taobao.com/service/getIpInfo.php?ip='.$ip);
-        $address = $address ? json_decode($address, true) : [] ;
+        try {
+            $address = file_get_contents('http://ip.taobao.com/service/getIpInfo.php?ip=' . $ip);
+        } catch (\Exception $e) {
+            $address = false;
+        } finally {
+            $address = $address ? json_decode($address, true)['data'] : [];
+        }
 
         // jenssegers/agent 的方法来提取agent信息
         //设备名称
         $login_info['device'] = $agent->device();
         //浏览器
-        $browser = $agent->browser();        
+        $browser = $agent->browser();
         $login_info['browser'] = $browser . ' ' . $agent->version($browser);
-        
+
         //操作系统
         $platform = $agent->platform();
         $login_info['platform'] = $platform . ' ' . $agent->version($platform);
@@ -92,10 +97,10 @@ class LoginListener// implements ShouldQueue
         //设备信息
         $info = array_merge($login_info, self::deviceType($agent));
         //地址信息1--淘宝
-        $info = array_merge($info, $address['data']);
+        $info = array_merge($info, $address);
         //地址信息1--geoip
         $info = array_merge($info, $geoip);
-        
+
         SysLoginRecord::create($info);
     }
 

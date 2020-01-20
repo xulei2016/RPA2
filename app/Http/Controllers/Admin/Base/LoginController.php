@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Base;
 use App\Models\Admin\Admin\SysAdmin;
 
 use App\Models\Admin\Base\SysConfig;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -51,8 +52,7 @@ class LoginController extends BaseAdminController
      * login function
      *
      * @param Request $request
-     * @return void
-     * @throws ValidationException
+     * @return RedirectResponse
      */
     public function login(Request $request)
     {

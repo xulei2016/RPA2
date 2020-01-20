@@ -8,3 +8,4 @@ vendor
  ##filter databfile、sln file##
  .env
  .gitignore
+  .idea
