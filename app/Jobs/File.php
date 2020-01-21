@@ -45,6 +45,7 @@ class File implements ShouldQueue
             'remark' => $this->param['fileremark'],
             'path' => $this->param['uploadPath2'] . $filenewname,
             'filename' => $filenewname,
+            'business_type' => $this->param['filetype'],
             'state' => 1,
             'add_time' => date("Y-m-d H:i:s",time())
         ];

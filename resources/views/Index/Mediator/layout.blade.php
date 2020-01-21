@@ -13,6 +13,6 @@
 </div>
 </body>
 
-<script src="{{mix('js/mediator.js')}}"></script>
+<script src="{{asset('js/mediator.js')}}"></script>
 
 </html>

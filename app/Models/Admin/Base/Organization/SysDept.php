@@ -34,6 +34,7 @@ class SysDept extends Model
             if($v['pid']==$pid){
                 $v['html']=str_repeat($html, $level);
                 $v['rank']=$level+1;
+                $v['post_ids'] = json_decode($v['post_ids'], true);
                 $data[]=$v;
                 unset($depts[$k]);
                 $data=array_merge($data,self::recursion($depts,$html,$v['id'],$level+1));

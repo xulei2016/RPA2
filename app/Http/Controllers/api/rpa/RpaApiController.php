@@ -14,7 +14,9 @@ use App\Models\Admin\Rpa\rpa_clock_list;
 use App\Models\Admin\Api\RpaDtuSms;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Func\RpaSimulationAccount;
-use App\Models\Admin\Func\rpa_customer_jkzx; 
+use App\Models\Admin\Func\rpa_customer_jkzx;
+
+use App\Events\Sync\SyncOfflineCustomer;
 
 class RpaApiController extends BaseApiController
 {
@@ -416,11 +418,17 @@ class RpaApiController extends BaseApiController
                 'date' => $date
             ]
         ];
-        $result = $this->getCrmData($post_data);
+        $result = [];
+//        $result = $this->getCrmData($post_data);
         $return = [
             'status' => 200,
             'msg' => $result
         ];
+
+        //event sync 同步开户客户回访列表 -- （2020-01-13 hsu lay）
+        if(2 == $request->type){
+            event(new SyncOfflineCustomer($result, 2));
+        }
 
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
@@ -648,7 +656,6 @@ class RpaApiController extends BaseApiController
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-
     public function monitor_kh(Request $request){
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());

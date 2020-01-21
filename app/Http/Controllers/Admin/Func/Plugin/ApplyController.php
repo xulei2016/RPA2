@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin\Func\Plugin;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Func\Plugin\RpaPlugin;
 use App\Models\Admin\Func\Plugin\RpaPluginApply;
-use App\User;
+use App\Models\Admin\Base\SysApiUser AS User;
 use Illuminate\Http\Request;
 
 /**

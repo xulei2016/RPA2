@@ -40,6 +40,7 @@ class Message extends Notification implements ShouldQueue
     public function toBroadcast($notifiable)
     {
         return new BroadcastMessage([
+            'notifi_type' => 'message',
             'message_id' => $this->data['id'],
             'title' =>$this->data['title'],
             'content' => $this->data['content'],

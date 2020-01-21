@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <login data="{{json_encode($list)}}"></login>
+    <index status="{{$status}}"></index>
 
 @endsection

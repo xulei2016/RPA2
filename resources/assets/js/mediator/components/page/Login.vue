@@ -1,7 +1,8 @@
 <template>
     <div>
-        <layout title="居间人认证" >
-            <div style="margin-top: 100px;">
+        <layout title="登录" >
+            <div style="margin-top: 60px;">
+                <van-divider>居间人登录</van-divider>
                 <van-cell-group :border="fieldBorder">
                     <van-field  placeholder="请输入手机号" error-message="" v-model="phone" :error-message="errors['phone']" />
                 </van-cell-group>
@@ -19,11 +20,13 @@
                 <br>
                 <van-cell-group :border="fieldBorder">
                     <van-field  placeholder="请输入手机验证码"  error-message="" v-model="phoneCode" :error-message="errors['phoneCode']"  >
-                        <van-button slot="button" size="small" type="primary" @click="sendCode()">发送验证码</van-button>
+
+                        <van-button v-if="codeTime === 0" slot="button" size="small" type="primary" @click="sendCode()">发送验证码</van-button>
+                        <van-button v-if="codeTime > 0" slot="button" size="small" type="primary">剩余 {{ codeTime }} 秒</van-button>
                     </van-field>
                 </van-cell-group>
                 <div style="text-align: center">
-                    <van-button style="margin-top: 60px;width: 94%" type="info" @click="login()">手机校验</van-button>
+                    <van-button style="margin-top: 60px;width: 94%" type="info" @click="login()">登录</van-button>
                 </div>
             </div>
 
@@ -45,6 +48,8 @@
                 phone:'',
                 imageCode:'',
                 phoneCode:'',
+                codeTime:0,
+                codeTimer:''
             };
         },
         vuerify: {
@@ -80,6 +85,18 @@
                     this.$toast("短信发送失败!");
                     return false;
                 }
+                Vue.api.sendCode({phone:this.phone,img_code:this.imageCode}).then(res=>{
+                    this.$toast("短信发送成功");
+                    this.codeTime = 60;
+                    this.timer = setInterval(() => {
+                        if(this.codeTime > 0) {
+                            this.codeTime--;
+                        }
+                        if(this.codeTime < 0) {
+                            clearInterval(this.timer);
+                        }
+                    }, 1000);
+                }).catch(error => this.$toast(error))
             },
             getImageCode(){
                 Vue.api.getImageCode().then((res) => {
@@ -87,13 +104,18 @@
                 }).catch(error => this.$toast(error))
             },
             login(){
-                window.location.href = "/index/mediator/IDCard";return false;
-                let verifyList = ['phone', 'imageCode', 'phoneCode'];
+                // window.location.href = "/index/mediator/IDCard";return false;
+                let verifyList = ['phone', 'phoneCode'];
                 // check() 校验所有规则，参数可以设置需要校验的数组
                 if(!this.$vuerify.check(verifyList)){
                     this.$toast("登录失败");
                     return false;
                 }
+                Vue.api.doLogin({phone:this.phone,vcode:this.phoneCode}).then(res=>{
+                    this.$toast('登录成功');
+                    Vue.utils.next();
+                }).catch(error => this.$toast(error))
+
 
             }
         },

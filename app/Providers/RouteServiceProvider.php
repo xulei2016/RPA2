@@ -96,8 +96,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapIndexRoutes()
     {
-        Route::prefix('index')
-             ->middleware('web')
+        Route::middleware('web')
              ->namespace($this->Index)
              ->group(base_path('routes/web/Front/front.php'));
     }

@@ -94,12 +94,14 @@ $(function(){
                     title: '资金账号',
                     align: 'center',
                     valign: 'middle'
-                }, {
-                    field: 'phone',
-                    title: '电话',
-                    align: 'center',
-                    valign: 'middle'
-                }, {
+                },
+                // {
+                //     field: 'phone',
+                //     title: '电话',
+                //     align: 'center',
+                //     valign: 'middle'
+                // },
+                {
                     field: 'yyb',
                     title: '营业部',
                     align: 'center',

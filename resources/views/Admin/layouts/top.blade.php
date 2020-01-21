@@ -43,7 +43,7 @@
                             <ul class="menu" id="notification_list">
                                 @foreach(Auth::user()->unreadNotifications as $v)
                                     @if($loop->index < 5)
-                                        <li><a href="javascript:;" onclick="operation($(this));readEvent($(this));"  url="/admin/sys_message_list/view/{{$v->id}}"><i class="fa fa-users text-aqua"></i> {{$v->data['title']}}</a></li>
+                                        <li><a href="javascript:void(0);" onclick="operation($(this));"  url="/admin/sys_message_list/view/{{$v->id}}"><i class="fa fa-users text-aqua"></i> {{$v->data['title']}}</a></li>
                                     @endif
                                 @endforeach
                             </ul>

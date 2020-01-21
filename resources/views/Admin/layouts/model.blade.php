@@ -14,7 +14,7 @@
     </div>
 </div>
 {{-- modal-xl --}}
-<div class="modal fade" id="modal-xl">
+<div class="modal fade" id="modal-xl" data-backdrop="static">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
         </div>
@@ -22,7 +22,7 @@
 </div>
 
 {{-- modal-sm 最下面的层级最高 --}}
-<div class="modal fade" id="modal-sm">
+<div class="modal fade" id="modal-sm" data-backdrop="static">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
         </div>

@@ -148,6 +148,11 @@ $(function(){
                     align: 'center',
                     valign: 'middle'
                 }, {
+                    field: 'btype',
+                    title: '业务类型',
+                    align: 'center',
+                    valign: 'middle'
+                }, {
                     field: 'status',
                     title: '状态',
                     align: 'center',

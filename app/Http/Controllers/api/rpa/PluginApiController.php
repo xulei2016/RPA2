@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Func\rpa_cotton_entrys;
 
+use App\Events\Sync\SyncOfflineCustomer;
+
 class PluginApiController extends BaseApiController
 {
     /**
@@ -978,6 +980,13 @@ class PluginApiController extends BaseApiController
         //写入rpa
         $result2 = DB::table("rpa_customer_manager")->insertGetId($data);
         if($result1 && $result2){
+
+            //event sync 同步开户客户回访列表 -- （2020-01-13 hsu lay）
+            $event_customer = $data;
+            $event_customer['id'] = $result2;
+            event(new SyncOfflineCustomer($event_customer, 1));
+
+
             //开户插件同步居间关系到crm系统
             //增加二次股指、激活、更新判断，以上客户不同步到crm
             if(!$data['special']){

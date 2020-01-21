@@ -298,6 +298,17 @@ class OfficialApiController extends BaseApiController
                 'status' => 200,
                 'msg' => '成功'
             ];
+            //15:10-8：50不调程序
+            $current = date('Y-m-d');
+            $currentTime = time();
+            if($currentTime > strtotime($current.' 08:50:00')
+                &&  $currentTime < strtotime($current.' 15:10:00') ) {
+                rpa_immedtasks::create([
+                    'name' => 'ProfessionChange',
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            } 
+
         } else {
             $re = [
                 'status' => 500,

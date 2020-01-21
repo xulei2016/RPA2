@@ -184,10 +184,15 @@ class SysController extends BaseAdminController
      * @param Request $request
      * @return mixed
      */
-    public function closeAlert(Request $request, $id){
-        return auth()->guard('admin')->user()->alerts()->where('id', $id)->update(['state'=>1]);
+    public function closeAlert(Request $request, $id)
+    {
+        return auth()->guard('admin')->user()->alerts()->where('id', $id)->update(['state' => 1]);
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     public function update_config(Request $request)
     {
         $data = $request->all();
@@ -196,6 +201,25 @@ class SysController extends BaseAdminController
         }
         Cache::forget('sysConfigs');
         return $this->ajax_return(200, '配置更新成功！');
+    }
+
+    /**
+     * @return array
+     */
+    public function keepAlive()
+    {
+        if (auth()->guard('admin')->check()) {
+            return $this->ajax_return(200, 'success');
+        }
+        return $this->ajax_return(500, 'fail');
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function singleOut(Request $request)
+    {
+        return view('admin.singleOut');
     }
 
     /**

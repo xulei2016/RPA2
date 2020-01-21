@@ -289,7 +289,6 @@ RPA.prototype = {
             $(document).on('click', e._search, function (event) {
                 let v = $(`${s} input`).val();
                 let url = $(`${s} datalist option[value="${v}"]`).data('href');
-
                 $.pjax({url: url, container: e.container});
             });
 
@@ -541,19 +540,30 @@ RPA.prototype = {
     },
     Echo: {
         init: function (model) {
-            var _this = this;
+            let _this = this;
             //消息通知laravel-echo
-            window.Echo.private(model).notification(function (obj) {
-                _this.content(obj);
-            });
+            if (window.hasOwnProperty('Echo')) {
+                window.Echo.private(model).notification(function (obj) {
+                    switch (obj.notifi_type) {
+                        case 'message':
+                            _this.content(obj);
+                            break;
+                        case 'event':
+                            _this.event(obj);
+                            break;
+                    }
+                });
+                return;
+            }
+            console.log('未启用即时消息服务，请联系管理员开启！');
         },
         content: function (obj) {
             let typeName = "";
-            if (obj.typeName == 1) {
+            if (1 === obj.typeName) {
                 typeName = "系统公告";
-            } else if (obj.typeName == 2) {
+            } else if (2 === obj.typeName) {
                 typeName = "RPA通知";
-            } else if (obj.typeName == 3) {
+            } else if (3 === obj.typeName) {
                 typeName = "管理员通知";
             } else {
                 typeName = "RPA流程通知";
@@ -568,20 +578,20 @@ RPA.prototype = {
             $("body").append(html);
 
             //播放消息提醒音乐
-            var au = document.createElement("audio");
+            let au = document.createElement("audio");
             au.preload = "auto";
             au.src = "/common/voice/qipao.mp3";
             au.play();
 
             //更新右上角
             if ($("#notification_count span").length > 0) {
-                var count = $("#notification_count span").text();
+                let count = $("#notification_count span").text();
                 $('#notification_count span').text(1 + parseInt(count));
-                var html1 = '<li><a href="javascript:;" onclick="operation($(this));readEvent($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li>';
+                let html1 = '<li><a href="javascript:void(0);" onclick="operation($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li>';
                 $("#notification_list").prepend(html1);
             } else {
-                $("#notification_count").append('<span class="badge badge-warning navbar-badge">1</span>')
-                var html1 = '<ul class="menu" id="notification_list"><li><a href="javascript:;" onclick="operation($(this));readEvent($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li></ul>'
+                $("#notification_count").append('<span class="badge badge-warning navbar-badge">1</span>');
+                let html1 = '<ul class="menu" id="notification_list"><li><a href="javascript:;" onclick="operation($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li></ul>'
                 $('.notifications-menu').html(html1);
             }
 
@@ -590,6 +600,23 @@ RPA.prototype = {
             setTimeout(function () {
                 lastNotify.slideUp(1000);
             }, 8000);
+        },
+        event: obj => {
+            switch(obj.event_type){
+                case 'single_login':
+                    keepAlive();
+                    break;
+            }
+
+            function keepAlive(){
+                $.get('./keepAlive', function(json){
+                    if(200 !== json.code && 'fail' === json.code){
+                        //登出
+                        $('#modal-sm .modal-content').text('').load('/admin/singleOut');
+                        $('#modal-sm').modal('show');
+                    }
+                });
+            }
         }
     },
     Alert: {
@@ -631,7 +658,7 @@ let operation = (e) => {
 
 //socket
 if (socket.userId) {
-    RPA.Echo.init('App.Models.Admin.Admin.SysAdmin.' + socket.userId);
+    RPA.Echo.init(`App.Models.Admin.Admin.SysAdmin.${socket.userId}`);
 }
 ;
 

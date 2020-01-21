@@ -128,4 +128,11 @@ class Handler extends ExceptionHandler
             return parent::render($request, $exception);
         }
     }
+
+//    protected function unauthenticated($request, AuthenticationException $exception)
+//    {
+//        if ($request) {
+//            return response()->json(['status' => '401','msg' => 'token失效']);
+//        }
+//    }
 }

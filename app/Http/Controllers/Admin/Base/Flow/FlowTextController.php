@@ -120,7 +120,7 @@ class FlowTextController extends BaseAdminController
      * resend a flow which is canceled
      *
      * @param Request $request 重新发起流程
-     * @return void
+     * @return array
      */
     public function resend(Request $request)
     {
@@ -160,7 +160,7 @@ class FlowTextController extends BaseAdminController
      *
      * @param Request $request
      * @param [type] $id
-     * @return void
+     * @return array
      */
     public function pass(Request $request, $id)
     {
@@ -183,7 +183,7 @@ class FlowTextController extends BaseAdminController
      *
      * @param Request $request
      * @param [type] $id
-     * @return void
+     * @return array
      */
     public function unpass(Request $request, $id)
     {

@@ -147,6 +147,8 @@ class ProfessionChangeController extends BaseAdminController
 
     /**
      * 导出
+     * @param Request $request
+     * @return
      */
     public function export(Request $request){
         $params = $this->get_params($request, ['status', 'name', 'zjzh']);
@@ -199,7 +201,7 @@ class ProfessionChangeController extends BaseAdminController
             ->get()->toArray();
         foreach($result as &$v) {
             $v['statusName'] = $statusNameList[$v['status']];
-            $v['professionName'] = $professionList[$v['profession_code']];
+            $v['professionName'] = isset($professionList[$v['profession_code']])?:'';
 
 
             $item = [];

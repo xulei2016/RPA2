@@ -31,6 +31,9 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
 
     //Base
     Route::group(['namespace' => 'Base'], function(){
+        //keepAlive
+        Route::get('/keepAlive', 'SysController@keepAlive');
+
         //Bugs
         Route::resource('/Bugs', 'BugsController');
 
@@ -396,6 +399,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::get("/rpa_archives/list","ArchivesController@pagenation");
             Route::post("/rpa_archives/credit","ArchivesController@credit");
             Route::post("/rpa_archives/selectSdxLevel","ArchivesController@selectSdxLevel");
+            Route::post("/rpa_archives/selectZJZH","ArchivesController@selectZJZH");
             Route::post("/rpa_archives/uploadEnclosure","ArchivesController@uploadEnclosure");
             Route::post("/rpa_archives/uploadAudio","ArchivesController@uploadAudio");
             Route::post("/rpa_archives/changeStep","ArchivesController@changeStep");
@@ -403,7 +407,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         });
 
         //线下客户视频收集
-        Route::group(['middleware' => ['permission:rpa_customer_video_collect']], function () {
+        Route::group([], function () {
             Route::get('/rpa_customer_video_collect/export', 'VideoCollectController@export');
             Route::get('/rpa_customer_video_collect/list', 'VideoCollectController@pagenation');
             Route::resource('/rpa_customer_video_collect', 'VideoCollectController');
@@ -428,7 +432,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
             Route::resource("/rpa_address_recognition", 'RecognitionController');
         });
 
-        /**
+        /**rpa_customer
          * 插件下载
          */
         Route::group([], function(){
@@ -483,7 +487,6 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         Route::get('/rpa_profession_change/list','ProfessionChangeController@pagination');
         Route::get('/rpa_profession_change/export','ProfessionChangeController@export');
         Route::post('/rpa_profession_change/confirmOne','ProfessionChangeController@confirmOne');
-        
 
         //风险指标
         // Route::group(['middleware' => ['permission:rpa_risk_center']], function () {    
@@ -493,6 +496,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         //     Route::post('/rpa_risk/getData','FuncRiskDegreeController@getData');
         //     Route::get('/rpa_risk/getQueryDay','FuncRiskDegreeController@getQueryDay');
         // });
+
         //合约提醒
         Route::group(['middleware' => ['permission:rpa_contract_detail'], 'namespace' => 'Contract'], function () {
             //交易所管理
@@ -568,7 +572,6 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
 
     });
 
-
     //华安达摩院
     Route::group(['namespace' => 'Hadmy'],function(){
         Route::get('/rpa_hadmy','HadmyController@index');
@@ -577,4 +580,24 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         Route::get('/rpa_hadmy/single_list','HadmyController@single_pagination');
     });
 
+    //居间人系统
+    Route::group(['namespace' => 'Mediator'],function(){
+        Route::get('/mediator','MediatorController@index');
+        Route::get('/mediator/list','MediatorController@pagination');
+        Route::get('/mediator/info/{id}','MediatorController@info');
+
+        Route::get('/mediator/history/{id}','MediatorController@history');
+        Route::get('/mediator/history_list','MediatorController@history_list');
+        Route::get('/mediator/flow_info/{id}','MediatorController@flow_info');
+        Route::get('/mediator/check/{id}','MediatorController@check');
+        Route::patch('/mediator/check_data/{id}','MediatorController@check_data');
+    });
+
+
+    //居间人客户回访系统
+    Route::group(['namespace' => 'Revisit', 'middleware' => ['permission:rpa_customer_revisit']], function () {
+        Route::get("/rpa_customer_revisit/list", 'CustomerRevisitController@pagination');
+        Route::get("/rpa_customer_revisit/export", 'CustomerRevisitController@export');
+        Route::resource("/rpa_customer_revisit", 'CustomerRevisitController');
+    });
 });

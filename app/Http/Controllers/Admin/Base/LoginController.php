@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
@@ -52,7 +53,9 @@ class LoginController extends BaseAdminController
      * login function
      *
      * @param Request $request
-     * @return RedirectResponse
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws ValidationException
+     * @throws \Exception
      */
     public function login(Request $request)
     {
@@ -64,8 +67,14 @@ class LoginController extends BaseAdminController
             return $this->sendLockoutResponse($request);
         }
 
+        $credit = [
+            'name' => $request->input('name'),
+            'password' => $request->input('password'),
+            'type' => 1
+        ];
+
         //登录实现
-        if (auth()->attempt(['name' => $request->input('name'), 'password' => $request->input('password'), 'type' => 1], $request->input('remember'))) {
+        if (auth()->attempt($credit, $request->input('remember'))) {
 
             event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), true));
 
@@ -169,5 +178,4 @@ class LoginController extends BaseAdminController
         $request->session()->flush();
         return redirect('/');
     }
-
 }

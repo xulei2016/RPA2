@@ -26,72 +26,45 @@ $(document).on("click", ".remarkSure", function() {
 	//判断备注是否正确
 	
 	//1.备注不能为空
+	let flag = true;
 	$("#temDiv .remarkForm").each(function(){
-		if($(this).find(".videoMark:checked").length == 0){
-			alert("视频备注不能为空！")
-			return;
+		if($(this).find(".videoMark").val() == ''){
+			flag = false;
 		}
-	})
-	
-	//2.不能选择相同备注
-	var ks = $("#temDiv .remarkForm .marKDivCon").find(".ks:checked").length;
-	var cjd = $("#temDiv .remarkForm .marKDivCon").find(".cjd:checked").length;
-	var sms = $("#temDiv .remarkForm .marKDivCon").find(".sms:checked").length;
-	var qt = $("#temDiv .remarkForm .marKDivCon").find(".qt:checked").length;
-
-	if(ks >= 2 || cjd >= 2 || sms >= 2 || qt >=2){
-		alert("视频备注不能相同");
+	});
+	if(!flag){
+		alert("视频备注不能为空！")
 		return;
 	}
 
-	//3.已经上传过的备注不能再次上传
+	//2.已经上传过的备注不能再次上传
 	var getStroage =JSON.parse(window.localStorage.getItem("mIfo"));
 	var id = window.localStorage.getItem("setId");
-	$.ajax({
-		url: "/api/v1/getRemark",
-		type: 'post',
-		async: true,
-		data: {
-			id: id
-		},
-		dataType: 'json',
-		success: function(_data) {
-			if(ks >= 1 && _data.indexOf("股指考试") > -1){
-				alert("股指考试视频已经上传过了");
-				return;
-			}
-			if(cjd >= 1 && _data.indexOf("股指成绩单签署") > -1){
-				alert("股指成绩单签署视频已经上传过了");
-				return;
-			}
-			if(sms >= 1 && _data.indexOf("股指期货风险说明书签署") > -1){
-				alert("股指期货风险说明书签署视频已经上传过了");
-				return;
-			}
-			if(qt >= 1 && _data.indexOf("其他") > -1){
-				alert("其他视频已经上传过了");
-				return;
-			}
-		}
-
-	})
+	// $.ajax({
+	// 	url: "/api/v1/getRemark",
+	// 	type: 'post',
+	// 	async: true,
+	// 	data: {
+	// 		id: id
+	// 	},
+	// 	dataType: 'json',
+	// 	success: function(_data) {
+	//
+	// 	}
+	//
+	// })
 
 	$(".videoName").each(function() {
 		var videoName = $(this).text();
-		var remarkContent = "";
-		$(this).parent().parent(".remarkForm").find(".videoMark:checked").each(function(){
-			remarkContent += $(this).val() + ","; 
-		})
-		remarkContent = remarkContent.substring(0,remarkContent.length-1);
-
+		var remarkContent = $(this).parent().parent(".remarkForm").find(".videoMark").val();
 		$(".upload-item-btn").each(function() {
 			var dataName = $(this).attr("data-name");
 			if(videoName == dataName) {
-				$(this).attr("data-remark", remarkContent)
+				$(this).attr("data-remark", remarkContent);
 			}
 		})
 
-	})
+	});
 
 	$(".model").hide()
 
@@ -193,11 +166,8 @@ $('#myFile,#conMyFile').change(function(e) {
 				'<p class="videoName">' + sfile.name + '</p>' +
 				'</div>' +
 				'<div class="marKDivCon">' +
-				'<label class="title">视频内容:</label>' +
-				'<input id="ks'+time+'" class="videoMark ks" type="checkbox" value="股指考试" /> <label for="ks'+time+'">股指考试</label><br/>' +
-				'<input id="cjd'+time+'" class="videoMark cjd" type="checkbox" value="股指成绩单签署" /> <label for="cjd'+time+'">股指成绩单签署</label><br/>' +
-				'<input id="sms'+time+'" class="videoMark sms" type="checkbox" value="股指期货风险说明书签署" /> <label for="sms'+time+'">股指期货风险说明书签署</label><br/>' +
-				'<input id="qt'+time+'" class="videoMark qt" type="checkbox" value="其他" /> <label for="qt'+time+'">其他</label>' +
+				'<label class="title">视频描述:</label>' +
+				'<textarea class="videoMark"></textarea>' +
 				'</div>' +
 				'</div>');
 			$(".model").show();
@@ -333,15 +303,15 @@ $(document).on('click', '.upload-item-btn', function() {
 				timeout = 5000, // 超时时间
 				videoFile = findTheFile(fileName, setId).slice(blobFrom, blobTo), // 分段的视频 
 				fd = new FormData($('#myForm')[0]);
-
 			fd.append('video', videoFile); // 视频
-			fd.append("blobNum", chunk) //当前的分段数
-			fd.append("totalBlobNum", chunks) //分段总数
-			fd.append("eachSize",videoFile.size)
+			fd.append("blobNum", chunk); //当前的分段数
+			fd.append("totalBlobNum", chunks); //分段总数
+			fd.append("eachSize",videoFile.size);
 			fd.append('filename', random + fileName); // 文件名
 			fd.append('filesize', totalSize); // 文件总大小
 			fd.append('remark', remark); // 视频备注
 			fd.append('id', getId); // 关联的id
+
 			// 上传
 			currentAjax = $.ajax({
 				type: 'post',
@@ -351,7 +321,6 @@ $(document).on('click', '.upload-item-btn', function() {
 				contentType: false,
 				timeout: timeout,
 				success: function(rs) {
-					//console.log(rs)
 
 					// 上传成功
 					if(rs.status === 200) {

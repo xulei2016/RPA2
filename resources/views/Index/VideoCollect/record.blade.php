@@ -66,6 +66,13 @@
 							<li>{#$value.customer_sfzh#}</li>
 						</ul>
 					</div>
+
+					<div class="listCon">
+						<ul>
+							<li>业务类型</li>
+							<li>{#$value.btype#}</li>
+						</ul>
+					</div>
 					
 					<div class="listCon">
 						<ul>

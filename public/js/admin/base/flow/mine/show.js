@@ -28,7 +28,7 @@ $(function(){
 
             var remark = $('#flowForm #remark').val();
             if( !remark){
-                return swal('Oops...', '请完善发送信息！！', 'warning');
+                return swal('Oops...', '请添加审批意见！！', 'warning');
             }
 
             $.ajax({
@@ -66,19 +66,28 @@ $(function(){
                 Swal.fire({
                     title: name,
                     text: '',
-                    imageUrl: '/'+url,
+                    imageUrl: url,
                     imageAlt: 'Custom image',
                     imageWidth: 600,
                 })
             } else if(type == 'file') {
-                window.location.href = '/'+url;
+                window.location.href = '/admin/sys_flow_mine/downloadFile?url='+url;
             }
 
         });
 
+        //流程表单
+        $('a.flowForm').on('click', function(){
+            $('#flowIframe').hide()
+        });
+
         //流程图
         $('a.flowPic').on('click', function(){
-            console.log("流程图事件");
+            var iframe = $('#flowIframe');
+            if(!iframe.attr('src')) {
+                iframe.attr('src', '/admin/sys_flow_mine/design/'+id)
+            }
+            iframe.show();
         })
     }
 

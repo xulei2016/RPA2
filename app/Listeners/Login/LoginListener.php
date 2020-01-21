@@ -14,7 +14,7 @@ use App\Models\Admin\Base\Sys\SysLoginRecord;
  * @author hsyLay
  * @since 1.0.0
  */
-class LoginListener// implements ShouldQueue 
+class LoginListener
 {
     /**
      * Create the event listener.
@@ -52,11 +52,13 @@ class LoginListener// implements ShouldQueue
         //单客户登录
         if($event->getStatus() && $event->getUser()->login_protected){
             $event->cacheToken();
+            $event->rememberLogin();
         }
 
         //geoip
         $geoip = [];
-        if (!in_array($ip, ['127.0.0.1', '::1'])) {
+        $mode = '((127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3}))';
+        if(!preg_match($mode, $ip)){
             $reader = new Reader('GeoLite2-City.mmdb');
             $record = $reader->city($ip);
             $geoip = [

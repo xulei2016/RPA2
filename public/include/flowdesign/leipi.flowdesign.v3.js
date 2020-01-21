@@ -34,6 +34,7 @@ Q 群：143263697
         nodeMenus: {
             "one": function (t) { alert('步骤右键') }
         },
+        onlyShow:false,
         /*右键菜单样式*/
         menuStyle: {
             border: '1px solid #5a6377',
@@ -194,7 +195,6 @@ Q 群：143263697
                 lastNodeId = row.id;
             });//each
         }
-
         var timeout = null;
         //点击或双击事件,这里进行了一个单击事件延迟，因为同时绑定了双击事件
         $(".node-step").live('click', function () {
@@ -208,23 +208,27 @@ Q 群：143263697
             defaults.fnDbClick();
         });
 
+        console.log(defaults);
         //使之可拖动
-        jsPlumb.draggable(jsPlumb.getSelector(".node-step"));
+        if(!defaults.onlyShow) {
+            jsPlumb.draggable(jsPlumb.getSelector(".node-step"), { containment: "parent" });
+            //绑定添加连接操作。画线-input text值  拒绝重复连接
+            jsPlumb.bind("jsPlumbConnection", function (info) {
+                setConnections(info.connection)
+            });
+            //绑定删除connection事件
+            jsPlumb.bind("jsPlumbConnectionDetached", function (info) {
+                setConnections(info.connection, true);
+            });
+            //绑定删除确认操作
+            jsPlumb.bind("click", function (c) {
+                if (confirm("你确定取消连接吗?"))
+                    jsPlumb.detach(c);
+            });
+        }
         initEndPoints();
 
-        //绑定添加连接操作。画线-input text值  拒绝重复连接
-        jsPlumb.bind("jsPlumbConnection", function (info) {
-            setConnections(info.connection)
-        });
-        //绑定删除connection事件
-        jsPlumb.bind("jsPlumbConnectionDetached", function (info) {
-            setConnections(info.connection, true);
-        });
-        //绑定删除确认操作
-        jsPlumb.bind("click", function (c) {
-            if (confirm("你确定取消连接吗?"))
-                jsPlumb.detach(c);
-        });
+
 
         //连接成功回调函数
         function mtAfterDrop(params) {
@@ -259,9 +263,10 @@ Q 群：143263697
                 }
             }
         });
+
+
         //reset  start
         var _canvas_design = function () {
-
             //连接关联的步骤
             $('.node-step').each(function (i) {
                 var sourceId = $(this).attr('node_id');
@@ -296,10 +301,11 @@ Q 群：143263697
                     }
                 })
             });
+
         }//_canvas_design end reset 
         _canvas_design();
-
         //-----外部调用----------------------
+
 
         var Flowdesign = {
 
@@ -434,6 +440,8 @@ Q 群：143263697
                 }
             }
         };
+
+
         return Flowdesign;
 
 

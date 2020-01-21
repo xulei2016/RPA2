@@ -651,7 +651,8 @@ html.ios-fix body {
 .navbar-badge {
     padding: 2px 3px;
     right: 8px;
-    top: 2px;
+    top: -10px;
+    position: relative;
 }
 
 .wrapper .navbar .navbar-right .popup {

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\Func;
 use App\Http\Controllers\Base\BaseAdminController;
 use App\Models\Admin\Func\Archives\func_archives;
 use App\Models\Admin\Func\Archives\func_archives_files;
+use App\Models\Admin\Func\Archives\func_archives_sxstates;
 use App\Models\Admin\Func\rpa_customer_videos;
+use App\Models\Admin\Rpa\rpa_immedtasks;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 
@@ -29,7 +31,7 @@ class ArchivesController extends BaseAdminController{
 
     public function store(Request $request)
     {
-        $data = $this->get_params($request, ['user_id','name','zjbh','type','btype']);
+        $data = $this->get_params($request, ['user_id','name','zjbh','zjzh','type','btype']);
         $data['step'] = 1;
         $uid = isset($data['user_id']) ? $data['user_id'] : '';
         unset($data['user_id']);
@@ -68,9 +70,13 @@ class ArchivesController extends BaseAdminController{
      */
     public function selectVideo(Request $request)
     {
-        $selectInfo = $this->get_params($request,["customer_name","customer_sfzh","business_type"]);
-        $condition = $this->getPagingList($selectInfo, ['customer_name'=>'=','customer_sfzh'=>'=','business_type'=>'=']);
-        $video = rpa_customer_videos::where($condition)->first();
+        if($request->vid){
+            $video = rpa_customer_videos::where('id',$request->vid)->first();
+        }else{
+            $selectInfo = $this->get_params($request,["customer_name","customer_sfzh","btype"]);
+            $condition = $this->getPagingList($selectInfo, ['customer_name'=>'=','customer_sfzh'=>'=','btype'=>'=']);
+            $video = rpa_customer_videos::where($condition)->first();
+        }
         if($video){
             if($video->status == 1){
                 $re = [
@@ -93,31 +99,78 @@ class ArchivesController extends BaseAdminController{
     }
 
     /**
+     * 查询资金账户
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function selectZJZH(Request $request)
+    {
+        //去crm查询资金账户
+
+        $re = [
+            'status' => '200',
+            'msg' => '123456'
+        ];
+        return response()->json($re);
+    }
+    /**
      * 失信查询
      * @param Request $request
      * @return mixed
      */
     public function credit(Request $request)
     {
-        $data = [
-            'name' => $request->name,
-            'idCard' => $request->idCard,
-            'type' => $request->type
-        ];
-        $guzzle = new Client(['verify'=>false]);
-        $host = "https://rpa.slave.haqh.com:8088";
-        //$host = $request->getHttpHost();
-        $token = $this->access_token($host);
-        $response = $guzzle->post($host.'/api/v2/credit',[
-            'headers'=>[
-                'Accept' => 'application/json',
-                'Authorization' => $token
-            ],
-            'form_params' => $data
-        ]);
-        $body = $response->getBody();
-        $result = json_decode((String)$body,true);
-        return $result;
+        if($request->type == 1){
+            $add = [
+                'tid' => $request->tid,
+                'name' => $request->name,
+                'idCard' => $request->idCard,
+                'type' => $request->customer_type
+            ];
+            $sxs = func_archives_sxstates::where([
+                ['tid',$request->tid],
+                ['name',$request->name],
+                ['idCard',$request->idCard],
+                ['type',$request->customer_type],
+            ])->first();
+            if(!$sxs){
+                func_archives_sxstates::create($add);
+            }
+            if($request->customer_type == '个人'){
+                //发布立即任务
+                $add = [
+                    'name' => 'Supervision_Uline',
+                    'jsondata' => "{'id':'".$request->tid."'}"
+                ];
+                rpa_immedtasks::create($add);
+            }
+            $re = [
+                'status' => 200,
+                'msg' => '任务发布成功'
+            ];
+        }else{
+            $res = func_archives_sxstates::where("tid",$request->tid)->get();
+            $flag = true;
+            foreach($res as $v){
+                if($v->xyzgstate == null || $v->sfstate == null || $v->cfastate == null || $v->hsstate == null){
+                    $flag = false;
+                }
+            }
+            if($flag){
+                $re = [
+                    'status' => 200,
+                    'msg' => $res
+                ];
+            }else{
+                $re = [
+                    'status' => 500,
+                    'msg' => 'rpa任务正在运行'
+                ];
+            }
+
+        }
+
+        return response()->json($re);
     }
 
     /**
@@ -134,18 +187,12 @@ class ArchivesController extends BaseAdminController{
         //文件名称增加日期时间
         $name = date("Y_m_d_His") . "_" . $name;
 
-        $dir = 'D:/uploadFile/Archives/'.$id."/enclosure/";
+        $customer = func_archives::where('id',$id)->first();
+        $dir = public_path()."/uploads/线下客户档案/".$customer->zjzh."/".$customer->btype."/附件/";
         if(!is_dir($dir)){
             mkdir($dir,0777,true);
         }
         $file->move($dir, $name);
-
-        $add = [
-            'archives_id' => $id,
-            'type' => '附件',
-            'path' => $dir.$name
-        ];
-        func_archives_files::create($add);
 
         $re = [
             'status' => 200,
@@ -169,18 +216,12 @@ class ArchivesController extends BaseAdminController{
         //文件名称增加日期时间
         $name = date("Y_m_d_His") . "_" . $name;
 
-        $dir = 'D:/uploadFile/Archives/'.$id."/audio/";
+        $customer = func_archives::where('id',$id)->first();
+        $dir = public_path()."/uploads/线下客户档案/".$customer->zjzh."/".$customer->btype."/音频/";
         if(!is_dir($dir)){
             mkdir($dir,0777,true);
         }
         $file->move($dir, $name);
-
-        $add = [
-            'archives_id' => $id,
-            'type' => '音频',
-            'path' => $dir.$name
-        ];
-        func_archives_files::create($add);
 
         $re = [
             'status' => 200,
@@ -252,5 +293,12 @@ class ArchivesController extends BaseAdminController{
         }
 
         func_archives::where('id',$id)->update($update);
+
+        $re = [
+            'status' => 200,
+            'msg' => '成功'
+        ];
+
+        return response()->json($re);
     }
 }

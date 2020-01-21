@@ -131,13 +131,10 @@ $(function(){
                var total_login = $(".total_login").text();
 
                // 搜
-               var search_count = data.data.length;
-               var search_time = 0;
-               var search_login = 0;
-               for (var i=0;i<search_count;i++){
-                   search_time += data.data[i].single_time;
-                   search_login += data.data[i].single_login;
-               }
+               var search_count = data.serach_count;
+               var search_time = data.serach_time;
+               var search_login = data.serach_login;
+
 
                $(".search-count").find("span").html("<b>"+search_count+"</b>/"+total_count);
                $(".search-time").find("span").html("<b>"+search_time+"</b>/"+total_time);

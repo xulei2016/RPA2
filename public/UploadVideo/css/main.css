@@ -115,7 +115,7 @@ ul {
 	margin-top: 20px;
 }
 
-.form-group input {
+.form-group input,.form-group select{
 	width: 300px;
 	height: 50px;
 	/* line-height: 48px; */
@@ -218,7 +218,7 @@ ul {
 	background-color: #fff;
 	padding-bottom: 20px;
 }
-.model .marKDivName{
+.model .marKDivName,.model .marKDivDesc{
 	width: 94%;
 	height: 40px;
 	line-height: 40px;
@@ -233,8 +233,9 @@ ul {
 	white-space: nowrap
 }
 .model .marKDivCon textarea{
-	width: 200px;
+	width: 160px;
 	height: 50px;
+	border: 1px solid #ccc;
 	/* margin-top: 6px; */
 	/* margin-left: 8px; */
 }

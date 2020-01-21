@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\Login\SingleLoginEvent' => [
             'App\Listeners\Login\SingleLoginListener',
         ],
+        'App\Events\Sync\SyncOfflineCustomer' => [
+            'App\Listeners\sync\syncOfflineCustomerListener',
+        ],
     ];
 
     /**
