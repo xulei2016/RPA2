@@ -1,6 +1,6 @@
 <div class="modal-header with-border">
     <h3 class="modal-title">
-        {{ $title or '修改' }}操作
+        {{ $title or '修改操作' }}
     </h3>
 </div>
 

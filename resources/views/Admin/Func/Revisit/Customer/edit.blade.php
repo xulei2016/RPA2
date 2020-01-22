@@ -1,4 +1,4 @@
-@component('admin.widgets.editForm')
+@component('admin.widgets.editForm', ['title' => '录音审核'])
     @slot('formContent')
 
         <div class="form-group row">
@@ -6,12 +6,18 @@
             <div class="col-sm-10">
                 <input type="checkbox" class="my-switch" id="implement_type" name="status" value="1" checked>
             </div>
+        </div>
+        <div class="form-group">
             <div class="row">
-                <label for="khyj" class="col-sm-2 control-label">录音文件</label>
-                <div class="col-sm-10">
-                    <audio id="aaa" src="">播放</audio>
+                <label class="col-sm-2 control-label">播放录音</label>
+                <div class="col-sm-10" id="audioDiv">
+                    <audio id="audio" controls="controls" src="" type="audio/mpeg">
+{{--                        <source />--}}
+                        设置不支持音频文件
+                    </audio>
                 </div>
-
+            </div>
+            <div class="row hidden">
                 <label for="khyj" class="col-sm-2 control-label">备注</label>
                 <div class="col-sm-10">
                     <textarea id="bz" name="bz" cols="60" rows="3"></textarea>
@@ -19,10 +25,14 @@
             </div>
         </div>
         {{ method_field('PATCH') }}
-        <input type="hidden" class="form-control" id="id" name="id" value="{{$data->id}}">
+        <input type="hidden" class="form-control" id="id" name="id" value="{{$id}}">
     @endslot
 
     @slot('formScript')
-        <script src="{{URL::asset('/js/Admin/Func/Reviewtables/edit.js')}}"></script>
+        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <script src="{{URL::asset('/js/Admin/Func/Revisit/customer/edit.js')}}"></script>
+        <script>
+
+        </script>
     @endslot
 @endcomponent

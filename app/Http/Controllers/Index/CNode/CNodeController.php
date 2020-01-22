@@ -30,6 +30,12 @@ class CNodeController extends BaseWebController
             return $this->ajax_return(500, '请至少填写一个姓名或手机号！');
         }
 
+        $array = ['Sunday', 'Saturday'];
+        $date = date('H:i:s');
+        if(in_array(getdate()['weekday'], $array) || ('17:30:00' < $date || $date < '08:30:00')){
+            return $this->ajax_return(500, '请注意，查询时间为工作日的8:30 ~ 17:30！');
+        }
+
 //        if(!isset($data['mname']) || !isset($data['mnum'])){
 //            return $this->ajax_return(500, '请填写您的姓名和工号！');
 //        }

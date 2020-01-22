@@ -64,6 +64,10 @@
         </table>
 
     </div>
+    <hr>
+    <div class="notice" style="text-align: center">
+        <span class="text-danger">*</span>请注意，查询时间为工作日的08：30 ~ 17:30。
+    </div>
 </div>
 </body>
 

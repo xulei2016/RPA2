@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Revisit;
 
-use App\Http\Controllers\base\BaseAdminController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
+use App\Http\Controllers\base\BaseAdminController;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomers;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomerRecords as Records;
-use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
 class CustomerRevisitController extends BaseAdminController
@@ -15,7 +15,7 @@ class CustomerRevisitController extends BaseAdminController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index()
     {
@@ -47,23 +47,27 @@ class CustomerRevisitController extends BaseAdminController
      * Display the specified resource.
      *
      * @param int $id
-     * @return array
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function show($id)
     {
-        //
+        return view('Admin.Func.Revisit.Customer.edit', compact('id'));
+    }
+
+    /**
+     * @param $id
+     * @return array|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function getAudio($id)
+    {
         try {
             $data = Records::where('record_id', $id)->orderBy('created_at', 'desc')->firstOrFail();
-            if(!Storage::disk('local')->exists($data->record_voice)){
+            if (!Storage::disk('local')->exists($data->record_voice)) {
                 return $this->ajax_return(500, '回访文件不存在！');
             }
             $file = Storage::disk('local')->get($data->record_voice);
-
-            $file = 'F:\projects\02.Projects\02.RPA\02.Trunk\01.Web\RPA2\storage\app\rpa\revisit\customer\110003616\fmdhLebqE0qE4uICgd0zokYMdeqh6CZU2XqUSBKn.wav';
-            dd(stat($file));
             return $file;
-            return view('Admin.Func.Revisit.Customer.edit', compact('data', 'file'));
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             return $this->ajax_return(500, '回访记录不存在！');
         }
     }
@@ -72,11 +76,12 @@ class CustomerRevisitController extends BaseAdminController
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id)
     {
         //
+        return view('Admin.Func.Revisit.Customer.edit', compact('id'));
     }
 
     /**
@@ -89,6 +94,12 @@ class CustomerRevisitController extends BaseAdminController
     public function update(Request $request, $id)
     {
         //
+        $data = $this->get_params($request, [['status', 0], 'bz']);
+
+        //更新record/ revisit customer
+        RpaRevisitCustomers::where([['id', '=', $id], ['status','<','3']])->updateOrFail(['status'=>1]);
+        Records::where('');
+
     }
 
     /**
@@ -113,14 +124,14 @@ class CustomerRevisitController extends BaseAdminController
         $data = $this->get_params($request, ['yybName', 'status', 'name'], false);
 //        $conditions = $this->getPagingList($data, ['yybName' => 'like', 'status' => '=', 'customer' => 'like']);
         $conditions = [];
-        if(isset($data['yybName'])){
-            $conditions[] = ['rpa_customer_managers.yybName', 'like', "%".$data['yybName']."%"];
+        if (isset($data['yybName'])) {
+            $conditions[] = ['rpa_customer_managers.yybName', 'like', "%" . $data['yybName'] . "%"];
         }
-        if(isset($data['status'])){
+        if (isset($data['status'])) {
             $conditions[] = ['rpa_revisit_customers.status', '=', $data['status']];
         }
-        if(isset($data['name'])){
-            $conditions[] = ['rpa_customer_managers.name', 'like', "%".$data['name']."%"];
+        if (isset($data['name'])) {
+            $conditions[] = ['rpa_customer_managers.name', 'like', "%" . $data['name'] . "%"];
         }
         $order = $request->sort ?? 'rpa_revisit_customers.status';
         $sort = $request->sortOrder;

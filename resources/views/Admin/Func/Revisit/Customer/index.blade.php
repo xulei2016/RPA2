@@ -47,5 +47,5 @@
     </div>
 
 
-    <script src="{{URL::asset('/js/admin/Revisit/customer/index.js')}}"></script>
+    <script src="{{URL::asset('/js/admin/Func/Revisit/customer/index.js')}}"></script>
 @endsection

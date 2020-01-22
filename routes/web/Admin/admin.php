@@ -595,6 +595,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
     Route::group(['namespace' => 'Revisit', 'middleware' => ['permission:rpa_customer_revisit']], function () {
         Route::get("/rpa_customer_revisit/list", 'CustomerRevisitController@pagination');
         Route::get("/rpa_customer_revisit/export", 'CustomerRevisitController@export');
+        Route::get("/rpa_customer_revisit/getAudio/{id}", 'CustomerRevisitController@getAudio');
         Route::resource("/rpa_customer_revisit", 'CustomerRevisitController');
     });
 });

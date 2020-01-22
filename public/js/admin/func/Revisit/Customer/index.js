@@ -76,7 +76,7 @@ $(function () {
                 temp[i] = obj[i];
             }
             return temp;
-        }
+        };
 
 
         var param = {
@@ -138,9 +138,8 @@ $(function () {
                     var id = value;
                     var result = "";
                     if (2 === row.status) {
-                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_revisit/" + id + "' title='审核'>审核</a><br/>";
-                    }
-                    ;
+                        result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_revisit/" + id + "/edit' title='审核'>审核</a><br/>";
+                    };
                     return result;
                 }
             }],
