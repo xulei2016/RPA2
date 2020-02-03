@@ -1,9 +1,10 @@
-
+@component('Admin.widgets.viewForm')
+    @slot('title')
+        查看
+    @endslot
+    @slot('formContent')
 <link rel="stylesheet" href="{{ URL::asset('/include/fancybox/fancybox.css')}}">
 <div class="card card-primary card-outline">
-    <div class="card-header">
-        <h3 class="card-title">查看操作</h3>
-    </div>
     <div class="card-body">
         <div class="nav-tabs-custom">
             <ul class="nav nav-pills">
@@ -171,3 +172,8 @@
         })
     }
 </script>
+    @endslot
+
+    @slot('formScript')
+    @endslot
+@endcomponent

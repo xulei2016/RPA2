@@ -1,7 +1,9 @@
-<div class="card card-primary card-outline">
-    <div class="card-header">
-        <h3 class="card-title">查看操作</h3>
-    </div>
+@component('Admin.widgets.viewForm')
+    @slot('title')
+        查看
+    @endslot
+    @slot('formContent')
+        <div class="card card-primary card-outline">
     <div class="card-body">
         <div class="nav-tabs-custom">
             <ul class="nav nav-pills">
@@ -67,7 +69,9 @@
                             <th>从业资格证</th>
                             <td>
                                 @if($info->is_exam)
-                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格证"  title="从业资格证">
+                                    <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}">
+                                        <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格证"  title="从业资格证">
+                                    </div>
                                 @endif
                             </td>
                         </tr>
@@ -99,17 +103,23 @@
                         <tr>
                             <th>身份证正面照</th>
                             <td>
-                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_zm_img) }}" alt="身份证正面照" title="身份证正面照">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_zm_img) }}">
+                                    <img  width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_zm_img) }}" alt="身份证正面照" title="身份证正面照">
+                                </div>
                             </td>
                             <th>身份证反面照</th>
                             <td>
-                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_fm_img) }}" alt="身份证反面照" title="身份证反面照">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_fm_img) }}">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_fm_img) }}" alt="身份证反面照" title="身份证反面照">
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <th>手持身份证照</th>
                             <td>
-                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}" alt="手持身份证照"  title="手持身份证照">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}" alt="手持身份证照"  title="手持身份证照">
+                                </div>
                             </td>
                             <th>身份证地址</th>
                             <td>{{ $info->sfz_address }}</td>
@@ -133,7 +143,9 @@
                         <tr>
                             <th>银行卡照片</th>
                             <td colspan="3">
-                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->bank_img) }}" alt="银行卡照片"  title="银行卡照片">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->bank_img) }}">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->bank_img) }}" alt="银行卡照片"  title="银行卡照片">
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -149,7 +161,9 @@
                         <tr>
                             <th>签字照片</th>
                             <td colspan="3">
-                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}" alt="签字照片"  title="签字照片">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}">
+                                    <img id="sign_img" width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}" alt="签字照片"  title="签字照片">
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -158,17 +172,8 @@
         </div>
     </div>
 </div>
-<script>
-    $("img").click(function () {
-        var src = $(this).attr('src');
-        var title = $(this).attr('title');
-        var alt = $(this).attr('alt');
-        Swal.fire({
-            title: title,
-            text: '',
-            imageUrl: src,
-            imageAlt: alt,
-            imageWidth: 1000,
-        });
-    })
-</script>
+    @endslot
+
+    @slot('formScript')
+    @endslot
+@endcomponent

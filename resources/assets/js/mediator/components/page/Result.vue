@@ -10,7 +10,7 @@
             <div v-if="status === '2'" style="text-align: center;font-size: 1.2rem;font-weight: bold;">
                 申请被打回<br><br>
                 {{ back }}
-                <br><br>有误
+                <br><br>步骤有误
                 <div style="text-align: center">
                     <van-button style="margin-top: 40px;width: 94%" type="info" @click="handle()">点击处理</van-button>
                 </div>

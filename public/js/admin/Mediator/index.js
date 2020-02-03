@@ -138,6 +138,8 @@ $(function(){
                                 }else{
                                     result = '<span class="x-tag x-tag-sm">正在办理</span>';
                                 }
+                            }else if(row.flow.is_sure == -1){
+                                result = '<span class="x-tag x-tag-sm x-tag-danger">拒绝比例</span>'
                             }else{
                                 result = '<span class="x-tag x-tag-sm x-tag-success">已审核，未确认比例</span>'
                             }
