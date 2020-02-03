@@ -28,6 +28,8 @@ $(function(){
             }
             time_type = state;
         }});
+
+        $(modal+' form input#is_send').bootstrapSwitch({"onColor":"info","offColor":"danger",'onText':"发送",'offText':"不发送"});
     }
     //添加
     function add(e){
@@ -59,4 +61,15 @@ $(function(){
     };
 
     init();
+
+    //生成打回模板
+    $(modal+" form input.back_step").click(function(){
+       var step = "";
+        $(modal+" form input.back_step:checked").each(function(){
+           step += $(this).attr('data-name')+",";
+       });
+        step = step.substring(0,step.length-1);
+        var text = "温馨提示：由于您的如下信息没有按照要求提交（"+ step +"），请及时重新登录网签居间系统进行修改。详情请咨询400-8820-628";
+        $(modal+" form #send_tpl").val(text);
+    });
 });

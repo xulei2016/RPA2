@@ -47,7 +47,6 @@
                     this.$toast.success('保存成功');
                     Vue.utils.next();
                 }).catch(error => this.$toast(error));
-                window.location.href = "/index/mediator/review";return false;
             },
         },
         mounted:function(){

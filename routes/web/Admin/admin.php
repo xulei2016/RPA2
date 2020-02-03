@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
 
     //Base
     Route::group(['namespace' => 'Base'], function(){
+
         //Bugs
         Route::resource('/Bugs', 'BugsController');
 
@@ -486,13 +487,13 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         Route::post('/rpa_profession_change/confirmOne','ProfessionChangeController@confirmOne');
 
         //风险指标
-        // Route::group(['middleware' => ['permission:rpa_risk_center']], function () {    
-        //     Route::get('/rpa_risk','FuncRiskDegreeController@index');
-        //     Route::get('/rpa_risk/list','FuncRiskDegreeController@pagination');
-        //     Route::get('/rpa_risk/export','FuncRiskDegreeController@export');
-        //     Route::post('/rpa_risk/getData','FuncRiskDegreeController@getData');
-        //     Route::get('/rpa_risk/getQueryDay','FuncRiskDegreeController@getQueryDay');
-        // });
+         Route::group(['middleware' => ['permission:rpa_risk_center']], function () {
+             Route::get('/rpa_risk','FuncRiskDegreeController@index');
+             Route::get('/rpa_risk/list','FuncRiskDegreeController@pagination');
+             Route::get('/rpa_risk/export','FuncRiskDegreeController@export');
+             Route::post('/rpa_risk/getData','FuncRiskDegreeController@getData');
+             Route::get('/rpa_risk/getQueryDay','FuncRiskDegreeController@getQueryDay');
+         });
 
         //合约提醒
         Route::group(['middleware' => ['permission:rpa_contract_detail'], 'namespace' => 'Contract'], function () {
@@ -587,6 +588,9 @@ Route::group(['middleware' => ['auth.admin:admin','web'], ], function(){
         Route::get('/mediator/history_list','MediatorController@history_list');
         Route::get('/mediator/flow_info/{id}','MediatorController@flow_info');
         Route::get('/mediator/check/{id}','MediatorController@check');
+        Route::get('/showImage','MediatorController@showImage');
+        Route::post('/mediator/rotateImg','MediatorController@rotateImg');
+        Route::get('/mediator/download/{id}','MediatorController@download');
         Route::patch('/mediator/check_data/{id}','MediatorController@check_data');
     });
 

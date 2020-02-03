@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Listeners\Login;
 
-use App\Events\LoginEvent;
+use App\Events\Login\LoginEvent;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use GeoIp2\Database\Reader;
@@ -50,8 +50,9 @@ class LoginListener
         ];
 
         //单客户登录
-        if($event->getStatus() && $event->getUser()->login_protected){
+        if($event->getStatus() && $event->getUser()->single_login){
             $event->cacheToken();
+            $event->rememberLogin();
         }
 
         //geoip

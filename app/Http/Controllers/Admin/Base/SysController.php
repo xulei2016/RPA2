@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Base\BaseAdminController;
 
+use App\Models\Admin\Admin\SysAdminAlert;
+use App\Models\Admin\Base\SysMessage;
+
 /**
  * SysController
  * @author lay
@@ -184,10 +187,15 @@ class SysController extends BaseAdminController
      * @param Request $request
      * @return mixed
      */
-    public function closeAlert(Request $request, $id){
-        return auth()->guard('admin')->user()->alerts()->where('id', $id)->update(['state'=>1]);
+    public function closeAlert(Request $request, $id)
+    {
+        return auth()->guard('admin')->user()->alerts()->where('id', $id)->update(['state' => 1]);
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     public function update_config(Request $request)
     {
         $data = $request->all();
@@ -196,6 +204,43 @@ class SysController extends BaseAdminController
         }
         Cache::forget('sysConfigs');
         return $this->ajax_return(200, '配置更新成功！');
+    }
+
+    /**
+     * @return array
+     */
+    public function keepAlive(Request $request)
+    {
+        $token = $request->session()->get('_token');
+        if ($token === auth()->guard('admin')->user()->last_session) {
+            return $this->ajax_return(200, 'success');
+        }
+
+        //异常通知
+        SysMessage::create([
+            'title' => '系统通知 - 账号异常行为通知',
+            'content' => '您的账号已在其他设备登录，若不是本人操作，请立即修改密码！！！',
+            'user' => auth()->guard('admin')->user()->id,
+            'mode' => 1,
+            'type' => 1
+        ]);
+
+        SysAdminAlert::create([
+            'user_id' => auth()->guard('admin')->user()->id,
+            'title' => '账号异常提醒',
+            'content' => '您的账号近期存在登录异常行为，为保障您的账号安全，请及时修改密码。有问题请咨询金融科技部',
+            'type' => 'danger'
+        ]);
+
+        return $this->ajax_return(500, 'fail');
+    }
+
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function singleOut(Request $request)
+    {
+        return view('admin.singleOut');
     }
 
     /**

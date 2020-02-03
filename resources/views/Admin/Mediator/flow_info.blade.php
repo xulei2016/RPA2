@@ -1,3 +1,5 @@
+
+<link rel="stylesheet" href="{{ URL::asset('/include/fancybox/fancybox.css')}}">
 <div class="card card-primary card-outline">
     <div class="card-header">
         <h3 class="card-title">查看操作</h3>
@@ -51,7 +53,9 @@
                         </tr>
                         <tr>
                             <th>职业</th>
-                            <td colspan="3">{{ $info->profession }}</td>
+                            <td>{{ $info->profession }}</td>
+                            <th>从业资格证号</th>
+                            <td>{{ $info->exam_number }}</td>
                         </tr>
                         <tr>
                             <th>是否通过从业资格考试</th>
@@ -65,7 +69,9 @@
                             <th>从业资格证</th>
                             <td>
                                 @if($info->is_exam)
-                                    <img width="40" height="40" src="/{{ $info->从业资格证 }}" alt="银行卡照片"  title="从业资格证">
+                                    <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}">
+                                        <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格证"  title="从业资格证">
+                                    </div>
                                 @endif
                             </td>
                         </tr>
@@ -82,17 +88,23 @@
                         <tr>
                             <th>身份证正面照</th>
                             <td>
-                                <img width="40" height="40" src="/{{ $info->sfz_zm_img }}" alt="身份证正面照" title="身份证正面照">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_zm_img) }}">
+                                    <img  width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_zm_img) }}" alt="身份证正面照" title="身份证正面照">
+                                </div>
                             </td>
                             <th>身份证反面照</th>
                             <td>
-                                <img width="40" height="40" src="/{{ $info->sfz_fm_img }}" alt="身份证反面照" title="身份证反面照">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_fm_img) }}">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_fm_img) }}" alt="身份证反面照" title="身份证反面照">
+                                </div>
                             </td>
                         </tr>
                         <tr>
                             <th>手持身份证照</th>
                             <td>
-                                <img width="40" height="40" src="/{{ $info->sfz_sc_img }}" alt="手持身份证照"  title="手持身份证照">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}" alt="手持身份证照"  title="手持身份证照">
+                                </div>
                             </td>
                             <th>身份证地址</th>
                             <td>{{ $info->sfz_address }}</td>
@@ -116,7 +128,9 @@
                         <tr>
                             <th>银行卡照片</th>
                             <td colspan="3">
-                                <img width="40" height="40" src="/{{ $info->bank_img }}" alt="银行卡照片"  title="银行卡照片">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->bank_img) }}">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->bank_img) }}" alt="银行卡照片"  title="银行卡照片">
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -130,9 +144,11 @@
                             <td>{{ $info->jr_rate }}</td>
                         </tr>
                         <tr>
-                            <th>签字照片</th>
+                            <th>签字照片  <button type="button" class="btn btn-sm btn-success" data-title="{{ $info->id }}" onclick="rotate($(this));"><i class="fa fa-rotate-right"></i></button></th>
                             <td colspan="3">
-                                <img width="40" height="40" src="/{{ $info->sign_img }}" alt="签字照片"  title="签字照片">
+                                <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}">
+                                    <img id="sign_img" width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}" alt="签字照片"  title="签字照片">
+                                </div>
                             </td>
                         </tr>
                     </table>
@@ -141,17 +157,17 @@
         </div>
     </div>
 </div>
+{{--<script src="{{ URL::asset('/include/jquery/jquery-3.3.1.min.js')}} "></script>--}}
+<script src=" {{ URL::asset('/include/fancybox/fancybox.js')}} "></script>
 <script>
-    $("img").click(function () {
-        var src = $(this).attr('src');
-        var title = $(this).attr('title');
-        var alt = $(this).attr('alt');
-        Swal.fire({
-            title: title,
-            text: '',
-            imageUrl: src,
-            imageAlt: alt,
-            imageWidth: 1000,
-        });
-    })
+    function rotate(obj){
+        var url = "/admin/mediator/rotateImg";
+        var id = obj.attr('data-title');
+        $.post(url,{id:id},function(re){
+            if(re.status == 200){
+                var src = $("#sign_img").attr('src')+"&"+Math.random();
+                $("#sign_img").attr('src',src);
+            }
+        })
+    }
 </script>

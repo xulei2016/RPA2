@@ -11,6 +11,7 @@
                         @endslot
 
                         @slot('operation')
+                                <a class="btn btn-primary btn-sm" href="/admin/mediator">返回</a>
                         @endslot
                         @endcomponent
 
@@ -18,24 +19,22 @@
                         @slot('searchContent')
                         <input type="hidden" id="uid" value="{{ $id }}">
                         <div class="col-sm-2">
-
-                        </div>
-                        <div class="col-sm-2">
-                            <select name="status" id="status" class="form-control">
-                                <option value="" selected>状态:全部</option>
-                                <option value="1">已回访</option>
-                                <option value="0">未回访</option>
-                                <option value="-1">回访失败</option>
+                            <select name="flow_status" id="flow_status" class="form-control">
+                                <option value="" selected>审核状态:全部</option>
+                                <option value="1">待审核</option>
+                                <option value="2">待确认比例</option>
+                                <option value="3">正在办理</option>
+                                <option value="4">办理完成</option>
                             </select>
                         </div>
                         <div class="col-sm-2">
-                            <input type="text" class="form-control" id="dept" placeholder="部门名称">
-                        </div>
-                        <div class="col-sm-2">
-                            <input type="text" class="form-control" id="customer" placeholder="居间姓名或居间编号">
-                        </div>
-                        <div  class="col-sm-2">
-
+                            <select name="type" id="type" class="form-control">
+                                <option value="" selected>类型:全部</option>
+                                <option value="0">新签</option>
+                                <option value="1">续签</option>
+                                <option value="2">变更</option>
+                                <option value="3">注销</option>
+                            </select>
                         </div>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="startTime" placeholder="开始时间">

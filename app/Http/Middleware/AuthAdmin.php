@@ -84,11 +84,12 @@ class AuthAdmin
      */
     private function singleLogin()
     {
-        if ($this->guard->user()->login_protected) {
+        if ($this->guard->user()->single_login) {
             $token = $this->request->session()->get('_token');
-            if ($token != $this->guard->user()->last_session) {
+            if ($token !== $this->guard->user()->last_session) {
 
                 if (auth()->Guard('admin')->check()) {
+
                     //退出登录
                     auth()->Guard('admin')->logout();
                 }

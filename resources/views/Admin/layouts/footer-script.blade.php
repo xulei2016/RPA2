@@ -44,5 +44,5 @@
         userId : {{ Auth::user()->id }}
     }
 </script>
-<script src="{{URL::asset('/js/app.js')}}"></script>
+{{--<script src="{{URL::asset('/js/app.js')}}"></script>--}}
 <script src="{{URL::asset('/js/admin/main.js')}}"></script>

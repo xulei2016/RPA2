@@ -37,7 +37,8 @@
     <link rel="stylesheet" href="{{URL::asset('/include/select2/css/select2.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/main.css')}}">
-
+    {{--  simple cale  --}}
+    <link rel="stylesheet" href="{{URL::asset('/include/simple-calendar/stylesheets/simple-calendar.css')}}">
     <script>
         function LA() {}
         LA.token = '{{ csrf_token() }}';

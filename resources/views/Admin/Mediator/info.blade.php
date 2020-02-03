@@ -52,19 +52,8 @@
                         <tr>
                             <th>职业</th>
                             <td>{{ $info->profession }}</td>
-                            <th>居间人状态</th>
-                            <td>
-                                @if($info->status == 0)
-                                    <span class="x-tag x-tag-sm x-tag-info">未完成</span>
-                                @elseif($info->status == 1)
-                                    <span class="x-tag x-tag-sm">正常</span>
-                                @elseif($info->status == 2)
-                                    <span class="x-tag x-tag-sm x-tag-danger">过期</span>
-                                @elseif($info->status == 3)
-                                    <span class="x-tag x-tag-sm x-tag-danger">注销</span>
-                                @else
-                                @endif
-                            </td>
+                            <th>从业资格证号</th>
+                            <td>{{ $info->exam_number }}</td>
                         </tr>
                         <tr>
                             <th>是否通过从业资格考试</th>
@@ -78,7 +67,22 @@
                             <th>从业资格证</th>
                             <td>
                                 @if($info->is_exam)
-                                    <img width="40" height="40" src="/{{ $info->从业资格证 }}" alt="银行卡照片"  title="从业资格证">
+                                    <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格证"  title="从业资格证">
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>居间人状态</th>
+                            <td>
+                                @if($info->status == 0)
+                                    <span class="x-tag x-tag-sm x-tag-info">未完成</span>
+                                @elseif($info->status == 1)
+                                    <span class="x-tag x-tag-sm">正常</span>
+                                @elseif($info->status == 2)
+                                    <span class="x-tag x-tag-sm x-tag-danger">过期</span>
+                                @elseif($info->status == 3)
+                                    <span class="x-tag x-tag-sm x-tag-danger">注销</span>
+                                @else
                                 @endif
                             </td>
                         </tr>
@@ -95,17 +99,17 @@
                         <tr>
                             <th>身份证正面照</th>
                             <td>
-                                <img width="40" height="40" src="/{{ $info->sfz_zm_img }}" alt="身份证正面照" title="身份证正面照">
+                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_zm_img) }}" alt="身份证正面照" title="身份证正面照">
                             </td>
                             <th>身份证反面照</th>
                             <td>
-                                <img width="40" height="40" src="/{{ $info->sfz_fm_img }}" alt="身份证反面照" title="身份证反面照">
+                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_fm_img) }}" alt="身份证反面照" title="身份证反面照">
                             </td>
                         </tr>
                         <tr>
                             <th>手持身份证照</th>
                             <td>
-                                <img width="40" height="40" src="/{{ $info->sfz_sc_img }}" alt="手持身份证照"  title="手持身份证照">
+                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}" alt="手持身份证照"  title="手持身份证照">
                             </td>
                             <th>身份证地址</th>
                             <td>{{ $info->sfz_address }}</td>
@@ -129,7 +133,7 @@
                         <tr>
                             <th>银行卡照片</th>
                             <td colspan="3">
-                                <img width="40" height="40" src="/{{ $info->bank_img }}" alt="银行卡照片"  title="银行卡照片">
+                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->bank_img) }}" alt="银行卡照片"  title="银行卡照片">
                             </td>
                         </tr>
                     </table>
@@ -145,7 +149,7 @@
                         <tr>
                             <th>签字照片</th>
                             <td colspan="3">
-                                <img width="40" height="40" src="/{{ $info->sign_img }}" alt="签字照片"  title="签字照片">
+                                <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}" alt="签字照片"  title="签字照片">
                             </td>
                         </tr>
                     </table>

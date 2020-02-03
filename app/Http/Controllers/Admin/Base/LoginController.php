@@ -9,10 +9,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Validation\ValidationException;
 
-use App\Events\LoginEvent;
+use App\Events\Login\LoginEvent;
 use Jenssegers\Agent\Agent;
 
 
@@ -75,14 +76,14 @@ class LoginController extends BaseAdminController
         //登录实现
         if (auth()->attempt($credit, $request->input('remember'))) {
 
-            event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), true));
+            event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), $request->getClientIp(), true));
 
             return redirect()->intended($this->redirectTo);
         }
 
         $this->incrementLoginAttempts($request);
 
-        event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), false));
+        event(new LoginEvent($request, auth()->Guard('admin')->user(), new Agent(), $this->getTime(), $request->getClientIp(), false));
 
         return $this->sendFailedLoginResponse($request);
     }
@@ -177,5 +178,4 @@ class LoginController extends BaseAdminController
         $request->session()->flush();
         return redirect('/');
     }
-
 }

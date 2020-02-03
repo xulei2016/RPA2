@@ -4,7 +4,7 @@
         <div class="form-group row">
             <label for="implement_type" class="col-sm-2 control-label"><span class="must-tag">*</span>回访状态</label>
             <div class="col-sm-10">
-                <input type="checkbox" class="my-switch" id="implement_type" name="status" value="1" checked>
+                <input type="checkbox" class="my-switch" id="implement_type" name="status" value="3" checked>
             </div>
         </div>
         <div class="form-group">

@@ -8,5 +8,7 @@ return [
 
     //短信发送
     'sms_func' => 'yx_sms',  //短信平台  可选：zzy_sms,yx_sms
-    'file_root' => '/app/mediator'
+
+    //文件根目录
+    'file_root' => '/app/mediator',
 ];

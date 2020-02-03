@@ -10,6 +10,8 @@ use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomers;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomerRecords as Records;
 use Mockery\Exception;
 
+use Illuminate\Support\Facades\DB;
+
 class CustomerRevisitController extends BaseAdminController
 {
     /**
@@ -89,17 +91,24 @@ class CustomerRevisitController extends BaseAdminController
      *
      * @param \Illuminate\Http\Request $request
      * @param int $id
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function update(Request $request, $id)
     {
         //
-        $data = $this->get_params($request, [['status', 0], 'bz']);
+        $data = $this->get_params($request, [['status', 1], ['bz','']]);
 
         //更新record/ revisit customer
-        RpaRevisitCustomers::where([['id', '=', $id], ['status','<','3']])->updateOrFail(['status'=>1]);
-        Records::where('');
-
+        DB::beginTransaction();
+        try{
+            RpaRevisitCustomers::where([['id', '=', $id], ['status','<','3']])->update(['status'=>$data['status']]);
+            Records::where([['record_id', '=', $id], ['status','=','0']])->update(['status'=>$data['status'], 'desc'=>$data['bz']]);
+            DB::commit();
+            return $this->ajax_return(200, '操作成功！');
+        } catch(\Exception $e){
+            DB::rollBack();
+            return $this->ajax_return(500, '操作失败！', $e->getMessage());
+        }
     }
 
     /**

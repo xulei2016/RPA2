@@ -1,16 +1,20 @@
 <?php
 
-namespace App\Events;
+namespace App\Events\Login;
 
 use Illuminate\Broadcasting\Channel;
+use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Crypt;
 
 use App\Models\Admin\Admin\SysAdmin;
+use App\Notifications\Login\SingleLogin;
 use Jenssegers\Agent\Agent;
 
 class LoginEvent
@@ -52,14 +56,14 @@ class LoginEvent
      *
      * @return void
      */
-    public function __construct($request, $user, $agent, $timestamp, $status)
+    public function __construct($request, $user, $agent, $timestamp, $ip, $status)
     {
         $this->user = $user;
         $this->agent = $agent;
         $this->status = $status;
         $this->request = $request;
         $this->timestamp = $timestamp;
-        $this->ip = $request->getClientIp();
+        $this->ip = $ip;
     }
 
     /**
@@ -79,7 +83,7 @@ class LoginEvent
     }
 
     /**
-     * @return ip 获取IP
+     * @return string
      */
     public function getIp()
     {
@@ -118,6 +122,14 @@ class LoginEvent
         $token['last_session'] = $this->request->session()->get('_token');
         $id = self::getUser()->id;
         return SysAdmin::where('id', $id)->update($token);
+    }
+
+    public function rememberLogin(){
+        $user = auth()->guard('admin')->user();
+        $token = $this->request->session()->get('_token');
+        $token = Crypt::encryptString($token);
+        $user->notify(new SingleLogin($token));
+//        Notification::send($user, new SingleLogin($token));
     }
 
     /**

@@ -1,7 +1,8 @@
-<div class="modal-header">
+<div class="modal-header move">
     <h3 class="modal-title">
         {{ $title or '添加操作' }}
     </h3>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 </div>
 
 <form class="form-horizontal" id="form">
@@ -22,9 +23,9 @@
 <script>
     //iCheck for checkbox and radio inputs
     $(document).ready(function(){
-        $('#modal input.minimal').iCheck({
-            checkboxClass: 'icheckbox_minimal-blue',
-            radioClass: 'iradio_minimal-blue',
-        });
+        // $('#modal input.minimal').iCheck({
+        //     checkboxClass: 'icheckbox_minimal-blue',
+        //     radioClass: 'iradio_minimal-blue',
+        // });
     });
 </script>

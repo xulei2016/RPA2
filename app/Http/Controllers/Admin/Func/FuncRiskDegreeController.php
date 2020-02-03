@@ -29,7 +29,6 @@ class FuncRiskDegreeController extends BaseAdminController
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request){
-        dd('功能已下线');
         $result = FuncRiskDegree::orderBy('rq', 'desc')->first();
         if($result) {
             $date = date('Y-m-d', strtotime($result->rq));
@@ -43,6 +42,7 @@ class FuncRiskDegreeController extends BaseAdminController
     /**
      * 数据页
      * @param Request $request
+     * @return mixed
      */
     public function pagination(Request $request){
         $result = $this->getCondition($request);
@@ -50,6 +50,9 @@ class FuncRiskDegreeController extends BaseAdminController
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder ?? 'asc';
         $list = $result->orderBy($order, $sort)->paginate($rows);
+        foreach($list as &$v) {
+            $v->phone = substr_replace($v->phone,'****',3,4);
+        }
         return $list;
     }
 

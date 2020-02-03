@@ -410,8 +410,7 @@ class AdminController extends BaseAdminController
      * @return array
      */
     private function another(Request $request){
-        $data = $this->get_params($request, ['single_login', 'login_protected']);
-
+        $data = $this->get_params($request, [['single_login', 0], ['login_protected', 0]]);
         $user = session('sys_admin');
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 rpa 设置");
         SysAdmin::where('id', $user['id'])->update($data);

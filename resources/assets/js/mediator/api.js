@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-var prefix = "/index/mediator/";
+var prefix = "/mediator/";
 /**
  * request请求
  * @param url

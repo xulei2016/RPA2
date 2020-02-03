@@ -1,6 +1,5 @@
 $(function () {
     let modal = RPA.config.modal;
-    let media = $('#audio');
     let id = $(modal + ' form #id').val();
 
     /**

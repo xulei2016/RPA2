@@ -13,6 +13,7 @@ RPA.prototype = {
     },
     config: {
         modal: '#modal-lg',
+        canMove: '.modal-header.move',
         pjax: {
             container: '#pjax-container', //pjax 容器
             element: 'a:not(a[target="_blank"])', //pjax 监听对象
@@ -43,7 +44,7 @@ RPA.prototype = {
     },
     bind: function () {
         var _this = this;
-        var sidebarList = _this.initList();
+        _this.initList();
 
         //search
         _this.config.search._search1.bind('keyup', _this.tools.throttle(_this.search, 1000));
@@ -51,6 +52,9 @@ RPA.prototype = {
         //pjax
         _this.initPage();
         _this.pjaxOperation.init.call(this);
+
+        //modal move
+        _this.modalMove(this);
 
         //is or not scroll
         var screen_operation_obj = $('body .main-header.navbar a[data-toggle="fullscreen"]');
@@ -87,7 +91,7 @@ RPA.prototype = {
         });
 
         //关闭alerts
-        _this.config.alerts.on('click', function(){
+        _this.config.alerts.on('click', function () {
             $.get(`/admin/closeAlert/${$(this).data('id')}`);
             $(this).parent().remove();
         });
@@ -104,6 +108,7 @@ RPA.prototype = {
                 d.addClass('show');
             }
         });
+
     },
     tags: {
         initTags: function (e) {
@@ -321,6 +326,42 @@ RPA.prototype = {
             $(e).modal('show');
         }
     },
+    modalMove: _this => {
+        let mouseStartPoint = {"left": 0, "top": 0};
+        let mouseEndPoint = {"left": 0, "top": 0};
+        let mouseDragDown = false;
+        let oldP = {"left": 0, "top": 0};
+        let moveTarget;
+        $(document).ready(function () {
+            $(document).on("mousedown", _this.config.canMove, function (e) {
+                if ($(e.target).hasClass("close"))//点关闭按钮不能移动对话框
+                    return;
+                mouseDragDown = true;
+                moveTarget = $(this).parent();
+                mouseStartPoint = {"left": e.clientX, "top": e.clientY};
+                oldP = moveTarget.offset();
+            });
+            $(document).on("mouseup", function (e) {
+                mouseDragDown = false;
+                moveTarget = undefined;
+                mouseStartPoint = {"left": 0, "top": 0};
+                oldP = {"left": 0, "top": 0};
+            });
+            $(document).on("mousemove", function (e) {
+                if (!mouseDragDown || moveTarget === undefined) return;
+                let mousX = e.clientX;
+                let mousY = e.clientY;
+                if (mousX < 0) mousX = 0;
+                if (mousY < 0) mousY = 25;
+                mouseEndPoint = {"left": mousX, "top": mousY};
+                const width = moveTarget.width();
+                const height = moveTarget.height();
+                mouseEndPoint.left = mouseEndPoint.left - (mouseStartPoint.left - oldP.left);//移动修正，更平滑
+                mouseEndPoint.top = mouseEndPoint.top - (mouseStartPoint.top - oldP.top);
+                moveTarget.offset(mouseEndPoint);
+            });
+        });
+    },
     initPage: function () {
         selectedMenu = RPA.config.sidebar.activeBar;
         selectedMenu = selectedMenu == '#' ? '/admin' : selectedMenu;
@@ -349,9 +390,9 @@ RPA.prototype = {
     },
     ///////////////////////////////////////////////////////// tools func /////////////////////////////////////////////////////////////
     tools: {
-        throttle : function(fn, delay){
+        throttle: function (fn, delay) {
             let canRun = true;
-            return function() {
+            return function () {
                 if (!canRun) return;
                 canRun = false;
                 setTimeout(() => {
@@ -497,19 +538,30 @@ RPA.prototype = {
     },
     Echo: {
         init: function (model) {
-            var _this = this;
+            let _this = this;
             //消息通知laravel-echo
-            window.Echo.private(model).notification(function (obj) {
-                _this.content(obj);
-            });
+            if (window.hasOwnProperty('Echo')) {
+                window.Echo.private(model).notification(function (obj) {
+                    switch (obj.notifi_type) {
+                        case 'message':
+                            _this.content(obj);
+                            break;
+                        case 'event':
+                            _this.event(obj);
+                            break;
+                    }
+                });
+                return;
+            }
+            console.log('未启用即时消息服务，请联系管理员开启！');
         },
         content: function (obj) {
             let typeName = "";
-            if (obj.typeName == 1) {
+            if (1 === obj.typeName) {
                 typeName = "系统公告";
-            } else if (obj.typeName == 2) {
+            } else if (2 === obj.typeName) {
                 typeName = "RPA通知";
-            } else if (obj.typeName == 3) {
+            } else if (3 === obj.typeName) {
                 typeName = "管理员通知";
             } else {
                 typeName = "RPA流程通知";
@@ -524,27 +576,45 @@ RPA.prototype = {
             $("body").append(html);
 
             //播放消息提醒音乐
-            var au = document.createElement("audio");
+            let au = document.createElement("audio");
             au.preload = "auto";
             au.src = "/common/voice/qipao.mp3";
             au.play();
 
             //更新右上角
             if ($("#notification_count span").length > 0) {
-                var count = $("#notification_count span").text();
+                let count = $("#notification_count span").text();
                 $('#notification_count span').text(1 + parseInt(count));
-                var html1 = '<li><a href="javascript:;" onclick="operation($(this));readEvent($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li>';
+                let html1 = '<li><a href="javascript:void(0);" onclick="operation($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li>';
                 $("#notification_list").prepend(html1);
             } else {
-                $("#notification_count").append('<span class="badge badge-warning navbar-badge">1</span>')
-                var html1 = '<ul class="menu" id="notification_list"><li><a href="javascript:;" onclick="operation($(this));readEvent($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li></ul>'
+                $("#notification_count").append('<span class="badge badge-warning navbar-badge">1</span>');
+                let html1 = '<ul class="menu" id="notification_list"><li><a href="javascript:;" onclick="operation($(this));" url="/admin/sys_message_list/view/' + obj.id + '"><i class="fa fa-users text-aqua"></i>' + obj.title + '</a></li></ul>'
                 $('.notifications-menu').html(html1);
             }
 
-            $(".notify-wrap:last").slideDown(2000);
+            let lastNotify = $(".notify-wrap:last");
+            lastNotify.delay(2000).slideDown(1000);
             setTimeout(function () {
-                $(".notify-wrap:last").slideUp(2000);
+                lastNotify.slideUp(1000);
             }, 8000);
+        },
+        event: obj => {
+            switch(obj.event_type){
+                case 'single_login':
+                    keepAlive();
+                    break;
+            }
+
+            function keepAlive(){
+                $.get('/admin/keepAlive', function(json){
+                    if(200 !== json.code && 'fail' === json.info){
+                        //登出
+                        $('#modal-sm .modal-content').text('').load('/admin/singleOut');
+                        $('#modal-sm').modal('show');
+                    }
+                });
+            }
         }
     },
     Alert: {
@@ -577,22 +647,23 @@ RPA.prototype = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-var RPA = RPA.prototype;
+RPA = RPA.prototype;
 RPA.init(window);
 
-var operation = (e) => {
+let operation = (e) => {
     RPA.pjaxOperation.modelLoad(e);
 };
 
 //socket
 if (socket.userId) {
-    RPA.Echo.init('App.Models.Admin.Admin.SysAdmin.' + socket.userId);
-};
+    RPA.Echo.init(`App.Models.Admin.Admin.SysAdmin.${socket.userId}`);
+}
+;
 
 //自定义函数处理queryParams的批量增加
 $.fn.serializeJsonObject = function () {
-    var json = {};
-    var form = this.serializeArray();
+    let json = {};
+    let form = this.serializeArray();
     $.each(form, function () {
         if (json[this.name]) {
             if (!json[this.name].push) {
@@ -613,30 +684,30 @@ $.fn.serializeJsonObject = function () {
  *
  * return URL参数字符串
  */
-var urlEncode = function (param, key, encode) {
+const urlEncode = function (param, key, encode) {
     if (param == null) return '';
-    var paramStr = '';
-    var t = typeof (param);
-    if (t == 'string' || t == 'number' || t == 'boolean') {
+    let paramStr = '';
+    let t = typeof (param);
+    if (t === 'string' || t === 'number' || t === 'boolean') {
         paramStr += '&' + key + '=' + ((encode == null || encode) ? encodeURIComponent(param) : param);
     } else {
-        for (var i in param) {
-            var k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
+        for (let i in param) {
+            let k = key == null ? i : key + (param instanceof Array ? '[' + i + ']' : '.' + i);
             paramStr += urlEncode(param[i], k, encode);
         }
     }
     return paramStr;
-    // return paramStr.slice(1);  
+    // return paramStr.slice(1);
 };
 
 //datetime
 function getFormatDate() {
-    var nowDate = new Date();
-    var year = nowDate.getFullYear();
-    var month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
-    var date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
-    var hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
-    var minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
-    var second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
+    let nowDate = new Date();
+    let year = nowDate.getFullYear();
+    let month = nowDate.getMonth() + 1 < 10 ? "0" + (nowDate.getMonth() + 1) : nowDate.getMonth() + 1;
+    let date = nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate();
+    let hour = nowDate.getHours() < 10 ? "0" + nowDate.getHours() : nowDate.getHours();
+    let minute = nowDate.getMinutes() < 10 ? "0" + nowDate.getMinutes() : nowDate.getMinutes();
+    let second = nowDate.getSeconds() < 10 ? "0" + nowDate.getSeconds() : nowDate.getSeconds();
     return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second;
 };

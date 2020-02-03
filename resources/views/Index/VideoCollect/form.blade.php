@@ -77,7 +77,7 @@
 			</tr>
 		</script>
 
-		<script type="text/javascript" src="{{asset('uploadVideo/js/jquery-1.10.2.min.js')}}"></script>
+		<script type="text/javascript" src="{{asset('include/jquery/jquery.min.js')}}"></script>
 		<script type="text/javascript">
 			// 全部上传操作
 			$(document).on('click', '#upload-all-btn', function() {

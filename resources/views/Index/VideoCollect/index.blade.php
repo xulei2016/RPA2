@@ -5,14 +5,14 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no,viewport-fit=cover" />
 		<title>线下视频上传</title>
-		<link rel="stylesheet" href="{{asset('uploadVideo/css/main.css')}}" />
+		<link rel="stylesheet" href="{{asset('css/index/uploadVideo/main.css')}}" />
 	</head>
 
 	<body>
 		<div class="container">
 			<form id="defaultForm" method="" class="form-horizontal" action="">
 				<div class="header">
-					<img src="{{asset('uploadVideo/images/logo.jpg')}}" />
+					<img src="{{asset('images/index/uploadVideo/logo.jpg')}}" />
 				</div>
 				<div class="form-content">
 					<div class="form-group">
@@ -35,8 +35,8 @@
 			</form>
 		</div>
 
-		<script type="text/javascript" src="{{asset('uploadVideo/js/jquery-1.10.2.min.js')}}"></script>
-		<script type="text/javascript" src="{{asset('uploadVideo/js/bootstrapValidator.js')}}"></script>
+		<script type="text/javascript" src="{{asset('include/jquery/jquery.min.js')}}"></script>
+		<script type="text/javascript" src="{{asset('js/index/uploadVideo/bootstrapValidator.js')}}"></script>
 		<script>
 			$('#defaultForm').bootstrapValidator({
 				fields: {
@@ -53,25 +53,11 @@
 								message: '姓名不能为空'
 							}
 						}
-					},
-// 					idCard: {
-// 						validators: {
-// 							notEmpty: {
-// 								message: '身份证号不能为空'
-// 							}
-// //							,
-// //							regexp: {
-// //                       		regexp: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
-// //                      		message: '请填写正确身份证'
-// //                   		}
-// 						}
-// 					}
-
+					}
 				}
 			});
 
 			$("#nextBtn").on("click", function() {
-
 				var bootstrapValidator = $("#defaultForm").data('bootstrapValidator');
 				bootstrapValidator.validate();
 				if(bootstrapValidator.isValid()){
@@ -93,7 +79,7 @@
 							if(_data.status==200){
 								setData.yyb=_data.data
 								window.localStorage.setItem("mIfo",JSON.stringify(setData));
-								window.location.href="/index/uploadVideo/client";
+								window.location.href="/upload_video/client";
 							}else if(_data.status==500){
 								alert("登陆失败")
 							}

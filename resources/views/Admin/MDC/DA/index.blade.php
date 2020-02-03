@@ -141,7 +141,8 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="//api.map.baidu.com/api?v=2.0&ak={{env('BAIDU_MAP_AK')}}}"></script>
+{{--    <script type="text/javascript" src="https://api.map.baidu.com/getscript?v=2.0&ak=xnMQGdLkK72bzqtPLFkWGln8raaAba9h&services=&t=20200103103842"></script>--}}
+    <script type="text/javascript" src="//api.map.baidu.com/api?v=2&s=1&ak={{env('BAIDU_MAP_AK')}}"></script>
     <script type="text/javascript" src="//api.map.baidu.com/library/Heatmap/2.0/src/Heatmap_min.js"></script>
     <script src="{{URL::asset('/include/charts/Chart.min.js')}}"></script>
     <script src="{{URL::asset('/js/admin/MDC/DA/index.js')}}"></script>

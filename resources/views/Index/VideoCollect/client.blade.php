@@ -5,13 +5,13 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no,viewport-fit=cover" />
 		<title>线下视频上传</title>
-		<link rel="stylesheet" href="{{asset('uploadVideo/css/main.css')}}" />
+		<link rel="stylesheet" href="{{asset('css/index/uploadVideo/main.css')}}" />
 	</head>
 
 	<body>
 		<div class="container">
 			<div class="top">
-				<a href="javascript:history.go(-1)"><img src="{{asset('uploadVideo/images/back.png')}}"></a>
+				<a href="javascript:history.go(-1)"><img src="{{asset('images/index/uploadVideo/back.png')}}"></a>
 				<h2>第一步 录入客户信息</h2>
 			</div>
 			<div class="contentVideo">
@@ -48,8 +48,8 @@
 			</div>
 		</div>
 
-		<script type="text/javascript" src="{{asset('uploadVideo/js/jquery-1.10.2.min.js')}}"></script>
-		<script type="text/javascript" src="{{asset('uploadVideo/js/bootstrapValidator.js')}}"></script>
+		<script type="text/javascript" src="{{asset('include/jquery/jquery.min.js')}}"></script>
+		<script type="text/javascript" src="{{asset('js/index/uploadVideo/bootstrapValidator.js')}}"></script>
 		
 		<script>
 			
@@ -102,7 +102,7 @@
 
 							if(_data.status == 200) {
 								window.localStorage.setItem("setId", _data.data)
-								window.location.href = "/index/uploadVideo/upload";
+								window.location.href = "/upload_video/upload";
 							} else if(_data.status == 500) {
 								alert(_data.data)
 							}

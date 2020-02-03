@@ -35,7 +35,7 @@
                 history.go(-1);
             },
             joinUrl(url){
-                return '/index/mediator/infoDetail?component='+url;
+                return '/mediator/infoDetail?component='+url;
             }
         },
         created:function(){

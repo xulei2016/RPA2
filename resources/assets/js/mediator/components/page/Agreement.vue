@@ -57,7 +57,7 @@
                 }).catch(error => this.$toast(error));
             },
             joinUrl(url){
-                let u = "/index/mediator/agreementDetail/"+url;
+                let u = "/mediator/agreementDetail/"+url;
                 if(this.disabled) {
                     u += '?read=1'
                 }

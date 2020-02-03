@@ -392,13 +392,13 @@ table tr td{
 }
 .footer li .backVideoPic{
 	
-	background:url(../images/upGP.png) no-repeat top center;
+	background:url(../../../images/index/uploadVideo/upGP.png) no-repeat top center;
 	background-size: 30px 30px;
 }
 
 .footer li.active .backVideoPic{
 	
-	background:url(../images/uploadRedPic.png) no-repeat top center;
+	background:url(../../../images/index/uploadVideo/uploadRedPic.png) no-repeat top center;
 	background-size: 30px 30px;
 }
 
@@ -406,13 +406,13 @@ table tr td{
 
 .footer li .recordPic{
 	
-	background:url(../images/recordPic.png) no-repeat top center;
+	background:url(../../../images/index/uploadVideo/recordPic.png) no-repeat top center;
 	background-size: 30px 30px;
 }
 
 .footer li.active .recordPic{
 	
-	background:url(../images/recordRedPic.png) no-repeat top center;
+	background:url(../../../images/index/uploadVideo/recordRedPic.png) no-repeat top center;
 	background-size: 30px 30px;
 }
 
@@ -453,7 +453,7 @@ table tr td{
 	top: 10px;
 	width: 20px;
 	height: 20px;
-	background: url(../images/down.png) no-repeat center center;
+	background: url(../../../images/index/uploadVideo/down.png) no-repeat center center;
 	background-size: cover;
 }
 .controlDiv{
@@ -507,7 +507,7 @@ table tr td{
 .noDataPic{
 	width: 100%;
 	height: 240px;
-	background:url(../images/noData.png) no-repeat center center;
+	background:url(../../../images/index/uploadVideo/noData.png) no-repeat center center;
 }
 .infoHead,.infoDet{
 	width: 98%;

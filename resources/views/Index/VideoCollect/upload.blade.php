@@ -5,13 +5,13 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no" />
 		<title>线下视频上传</title>
-		<link rel="stylesheet" href="{{asset('uploadVideo/css/main.css')}}" />
+		<link rel="stylesheet" href="{{asset('css/index/uploadVideo/main.css')}}" />
 	</head>
 
 	<body>
 		<div class="container">
 			<div class="top">
-				<a href="javascript:history.go(-1)"><img src="{{asset('uploadVideo/images/back.png')}}"></a>
+				<a href="javascript:history.go(-1)"><img src="{{asset('images/index/uploadVideo/back.png')}}"></a>
 				<h2>第二步 上传视频</h2>
 			</div>
 			<div class="contentVideo">
@@ -48,14 +48,14 @@
 			</div>
 			<div class="footer">
 				<ul>
-					<a href="/index/uploadVideo/upload">
+					<a href="/upload_video/upload">
 						<li class="active firstLi">
 							<div class="backVideoPic"></div>
 							<p>文件上传</p>
 			
 						</li>
 					</a>
-					<a href="/index/uploadVideo/record">
+					<a href="/upload_video/record">
 						<li>
 							<div class="recordPic"></div>
 							<p>上传记录</p>
@@ -88,17 +88,16 @@
 				<td>{#fileotherName#}</td>
 				<td class="upload-progress">{#progress#}</td>
 				<td>
-					<img src="{{asset('uploadVideo/images/dele.png')}}" class="del-item-btn">
+					<img src="{{asset('images/index/uploadVideo/dele.png')}}" class="del-item-btn">
 				</td>
 				<td>
 					<input type="button" class="upload-item-btn" data-id="{#iptID#}"  data-name="{#fileName#}" data-size="{#totalSize#}" data-state="default" value="{#uploadVal#}">
 				</td>
 			</tr>
 		</script>
-		<script type="text/javascript" src="{{asset('uploadVideo/js/jquery-1.10.2.min.js')}}"></script>
-		<script type="text/javascript" src="{{asset('uploadVideo/js/md5.js')}}" ></script>
-		<!-- <script type="text/javascript" src="../static/js/sha1.min.js" ></script> -->
-		<script type="text/javascript" src="{{asset('uploadVideo/js/uploadVideo.js')}}"></script>
+		<script type="text/javascript" src="{{asset('include/jquery/jquery.min.js')}}"></script>
+		<script type="text/javascript" src="{{asset('js/index/uploadVideo/md5.js')}}" ></script>
+		<script type="text/javascript" src="{{asset('js/index/uploadVideo/uploadVideo.js')}}"></script>
 		
 	</body>
 

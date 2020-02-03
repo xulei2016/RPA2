@@ -1,6 +1,6 @@
 <template>
     <div>
-        <layout title="登录" >
+        <layout title="居间人认证" >
             <div style="margin-top: 60px;">
                 <van-divider>居间人登录</van-divider>
                 <van-cell-group :border="fieldBorder">

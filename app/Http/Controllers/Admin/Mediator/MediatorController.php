@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin\Mediator;
 
 use App\Http\Controllers\Base\BaseAdminController;
+use App\Models\Admin\Base\Organization\SysDept;
 use App\Models\Index\Mediator\FuncMediatorFlow;
 use App\Models\Index\Mediator\FuncMediatorInfo;
 use App\Models\Index\Mediator\FuncMediatorStep;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MediatorController extends BaseAdminController{
 
@@ -106,12 +109,45 @@ class MediatorController extends BaseAdminController{
     //历史记录分页
     public function history_list(Request $request)
     {
-        $selectInfo = $this->get_params($request, ['uid']);
-        $condition = $this->getPagingList($selectInfo, ['uid'=>'=']);
+        $selectInfo = $this->get_params($request, ['uid','type','flow_status','startTime','endTime']);
+        $condition = $this->getPagingList($selectInfo, ['uid'=>'=','type'=>'=']);
+
+        $flow_status = $selectInfo['flow_status'];
+        if($flow_status){
+            switch ($flow_status){
+                case 1:
+                    $condition[] = ['is_check',0];
+                    break;
+                case 2:
+                    $condition[] = ['is_check',1];
+                    $condition[] = ['is_sure',0];
+                    break;
+                case 3:
+                    $condition[] = ['is_sure',1];
+                    $condition[] = ['is_handle',0];
+                    break;
+                case 4:
+                    $condition[] = ['is_handle',1];
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //申请时间
+        $start = $selectInfo['startTime'];
+        $end = $selectInfo['endTime'];
+        if($start){
+            $condition[] = ['part_b_date','>=',$start];
+        }
+        if($end){
+            $condition[] = ['part_b_date','<',$end];
+        }
+
         $rows = $request->rows;
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder ?? 'desc';
-        $res = FuncMediatorFlow::with('dept')->where($condition)->orderBy($order,$sort)->paginate($rows);
+        $res = FuncMediatorFlow::with('dept')->with('info')->where($condition)->orderBy($order,$sort)->paginate($rows);
         return $res;
     }
 
@@ -141,12 +177,14 @@ class MediatorController extends BaseAdminController{
         if(isset($request->status) && $request->status == 1){
             //通过
             $update = [
+                'rate' => $request->rate,
                 'number' => $request->number,
                 'remark' => $request->remark,
                 'is_check' => '1',
                 'check_time' => date('Y-m-d H:i:s'),
                 'check_person' => Auth::guard('admin')->user()->realName
             ];
+            $flow->number = $request->number;
             if($request->rate <= 70){
                 //判断居间比例是否发生变化
                 if($request->rate != $flow->rate){
@@ -178,10 +216,73 @@ class MediatorController extends BaseAdminController{
             ];
             FuncMediatorFlow::where('id',$id)->update($update);
             //发短信
-            $content = "温馨提示：由于您的如下信息没有按照要求提交（".trim($request->reason)."），请及时重新登录网签居间系统进行修改。详情请咨询400-8820-628";
-            $this->yx_sms($flow->info->phone,$content);
+            if(isset($request->is_send) && $request->is_send == 1){
+                $this->yx_sms($flow->info->phone,$request->send_tpl);
+            }
         }
         return $this->ajax_return(200, '操作成功！');
+    }
+
+    /**
+     * 显示图片
+     * @param Request $request
+     * @return BinaryFileResponse
+     */
+    public function showImage(Request $request)
+    {
+        $url = $request->get('url');
+        $url = Crypt::decrypt($url);
+        $url = storage_path().config('mediator.file_root').$url;
+        return new BinaryFileResponse($url);
+    }
+
+    public function rotateImg(Request $request)
+    {
+        $id = $request->id;
+        $flow = FuncMediatorFlow::where('id',$id)->first();
+        $root = storage_path().config('mediator.file_root');
+        $source = imagecreatefromjpeg($root.$flow->sign_img);
+        $rotate = imagerotate($source,90,0);
+        if($rotate){
+            imagejpeg($rotate,$root.$flow->sign_img);
+            $re = [
+                'status' => 200,
+                'msg' => '图片旋转成功'
+            ];
+        }else{
+            $re= [
+                'status' => 500,
+                'msg' =>'图片旋转失败'
+            ];
+        }
+        return response()->json($re);
+    }
+    /**
+     * 文件下载
+     * @param Request $request
+     * @return BinaryFileResponse
+     */
+    public function download(Request $request)
+    {
+        $root = storage_path().config('mediator.file_root');
+        $id = $request->id;
+        $flow = FuncMediatorFlow::where('id',$id)->first();
+        //1.创建并打开压缩包
+        $zip = new \ZipArchive();
+        $name = $flow->info->name."_".$flow->info->number.".zip";
+        $zip->open($name,\ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        //2.向压缩包添加文件
+        $zip->addFile($root.$flow->sign_img,basename($flow->sign_img));
+        $zip->addFile($root.$flow->exam_img,basename($flow->exam_img));
+        $zip->addFile($root.$flow->sfz_zm_img,basename($flow->sfz_zm_img));
+        $zip->addFile($root.$flow->sfz_fm_img,basename($flow->sfz_fm_img));
+        $zip->addFile($root.$flow->sfz_sc_img,basename($flow->sfz_sc_img));
+        $zip->addFile($root.$flow->bank_img,basename($flow->bank_img));
+        $zip->addFile($root.$flow->agreement_url,basename($flow->agreement_url));
+        //3.关闭压缩包
+        $zip->close();
+        //4.输出
+        return response()->download($name);
     }
 
     /**
@@ -189,9 +290,21 @@ class MediatorController extends BaseAdminController{
      * @param $data
      * @return mixed
      */
-    private function to_crm($data)
+    public function to_crm($data)
     {
+        //1.将流程表数据转化成数组
         $data = $data->toArray();
+        //2.获取主表数据
+        $info = FuncMediatorInfo::where('id',$data['uid'])->first();
+        $data['name'] = $info['name'];
+        $data['zjbh'] = $info['zjbh'];
+        $data['phone'] = $info['phone'];
+        $data['open_time'] = $info['open_time'];
+        //3.获取部门
+        $dept = SysDept::where("id",$data['dept_id'])->first();
+        $data['yyb_hs'] = $dept['yyb_hs'];
+        $data['khfz_hs'] = $dept['khfz_hs'];
+
         $post_data = [
             'type' => 'jjr',
             'action' => 'relationMediator',
@@ -199,9 +312,8 @@ class MediatorController extends BaseAdminController{
                 'info' => $data
             ]
         ];
+
         $result = $this->getCrmData($post_data);
         return $result;
     }
-
-
 }

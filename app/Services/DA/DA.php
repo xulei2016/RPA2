@@ -3,11 +3,42 @@
 
 namespace App\Services\DA;
 
+use App\Models\Admin\MDC\SysLoginRecord;
 
-abstract class DA
+/**
+ * Class DA 区域分析
+ * @package App\Services\DA
+ * @auther hsu lay
+ * @since 20200111
+ */
+class DA extends DAInterface
 {
     /**
-     * @return int
+     * login records id
+     * @var $id
      */
-    abstract protected function analyse(): int;
+    protected $id;
+
+    /**
+     * login data
+     * @var $data
+     */
+    protected $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
+
+    public function single_login(){
+
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function analyse(): int
+    {
+
+    }
 }

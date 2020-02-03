@@ -142,9 +142,7 @@ $(function(){
                                 result = '<span class="x-tag x-tag-sm x-tag-success">已审核，未确认比例</span>'
                             }
                         }else{
-                            if(row.status != 0){
-                                result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
-                            }
+                            result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
                         }
                         return result;
                     }
@@ -157,9 +155,7 @@ $(function(){
                         var id = row.id;
                         var result = "";
                         result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/mediator/info/"+id+"' title='详情'>详情</a> ";
-                        if(row.status != 0){
-                            result += " <a href='/admin/mediator/history/"+id+"' class='btn btn-sm btn-primary' title='履历查询'>履历查询</a>";
-                        }
+                        result += " <a href='/admin/mediator/history/"+id+"' class='btn btn-sm btn-primary' title='履历查询'>履历查询</a>";
                         return result;
                     }
                 }],

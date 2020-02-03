@@ -1,7 +1,9 @@
+@component('admin.widgets.viewForm')
+@slot("title")
+    下载
+@endslot
+@slot("formContent")
 <div class="card">
-    <div class="card-header">
-        <h3 class="card-title">下载</h3>
-    </div>
     <!-- /.card-header -->
     <div class="card-body">
         <div class="inner-section">
@@ -28,6 +30,7 @@
         </div>
     </div>
 </div>
-<script>
-
-</script>
+@endslot
+@slot("formScript")
+@endslot
+@endcomponent

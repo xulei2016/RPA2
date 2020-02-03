@@ -5,7 +5,7 @@
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no,viewport-fit=cover" />
 		<title>上传记录</title>
-		<link rel="stylesheet" href="{{asset('uploadVideo/css/main.css')}}" />
+		<link rel="stylesheet" href="{{asset('css/index/uploadVideo/main.css')}}" />
 	</head>
 
 	<body>
@@ -23,14 +23,14 @@
 
 			<div class="footer">
 				<ul>
-					<a href="/index/uploadVideo/upload">
+					<a href="/upload_video/upload">
 						<li class="firstLi">
 							<div class="backVideoPic"></div>
 							<p>文件上传</p>
 
 						</li>
 					</a>
-					<a href="/index/uploadVideo/record">
+					<a href="/upload_video/record">
 						<li class="active">
 							<div class="recordPic"></div>
 							<p>上传记录</p>
@@ -111,9 +111,8 @@
 			
 
 		</script>
-
-		<script type="text/javascript" src="{{asset('uploadVideo/js/jquery-1.10.2.min.js')}}"></script>
-		<script type="text/javascript" src="{{asset('uploadVideo/js/template-web.js')}}"></script>
+		<script type="text/javascript" src="{{asset('include/jquery/jquery.min.js')}}"></script>
+		<script type="text/javascript" src="{{asset('js/index/uploadVideo/template-web.js')}}"></script>
 		<script>
 			var getStroage =JSON.parse(window.localStorage.getItem("mIfo"));
 			

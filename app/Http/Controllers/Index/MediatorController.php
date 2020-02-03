@@ -31,7 +31,8 @@ use Mews\Captcha\Facades\Captcha;
  */
 class MediatorController extends WebController
 {
-    public $view_prefix = "Index.Mediator.";
+    public $view_prefix = "Index.Mediator."; // 页面前缀
+    public $root_url = "/mediator/";  // 根路由
     public $config = "";
     const BACK_TO = 'backTo';
 
@@ -52,7 +53,7 @@ class MediatorController extends WebController
                 $mediator_id = $request->session()->get('mediator_id');
                 $mediator_flow_id = $request->session()->get('mediator_flow_id');
                 if (!$mediator_id || !$mediator_flow_id) {
-                    return redirect('/index/mediator/login');
+                    return redirect($this->root_url . 'login');
                 } else {
                     if ($request->session()->get(self::BACK_TO)) {
                         $this->config = config('mediator');
@@ -222,7 +223,7 @@ class MediatorController extends WebController
     {
         $id = $request->session()->get('mediator_id');
         if(!$id) {
-            return redirect('/index/mediator/login');
+            return redirect($this->root_url . 'login');
         }
         $flow = FuncMediatorFlow::where([
             ['uid', $id],
@@ -400,10 +401,14 @@ class MediatorController extends WebController
     public function doConfirmRate(Request $request)
     {
         $mediator_flow_id = $request->session()->get('mediator_flow_id');
-        FuncMediatorFlow::where('id', $mediator_flow_id)->update([
-            'is_sure' => $request->is_sure,
-            'sure_time' => date('Y-m-d H:i:s')
-        ]);
+        $flow = FuncMediatorFlow::where('id',$mediator_flow_id)->first();
+
+        $flow->is_sure = $request->is_sure;
+        $flow->sure_time = date('Y-m-d H:i:s');
+        $flow->save();
+        if($request->is_sure == 1){
+            (new \App\Http\Controllers\Admin\Mediator\MediatorController())->to_crm($flow);
+        }
         return $this->ajax_return(200, '操作成功');
     }
 
@@ -434,8 +439,8 @@ class MediatorController extends WebController
         if ($flow->is_handle) {
             $status = 3;
         } else {
-            if($flow->is_check == 1 && $flow->is_sure == 0) { // 被审核 且 需要确认居间比例
-                return redirect('/index/mediator/confirmRate');
+            if($flow->is_check == 1 && $flow->is_sure != 1) { // 被审核 且 需要确认居间比例
+                return redirect($this->root_url . 'confirmRate');
             }
             $status = 1;
         }
@@ -549,13 +554,13 @@ class MediatorController extends WebController
     {
         //当前步骤
         $mediator_flow_id = $request->session()->get('mediator_flow_id');
-        if (!$mediator_flow_id) return redirect('/index/mediator/');
+        if (!$mediator_flow_id) return redirect($this->root_url);
         $flow = FuncMediatorFlow::where('id', $mediator_flow_id)->first();
         if ($request->back || $request->session()->get(self::BACK_TO)) { // 被打回
             $backList = $flow->back_list;
             if ($backList) $backList = explode(',', $backList);
             $request->session()->put(self::BACK_TO, true);
-            return redirect('/index/mediator/' . $backList[0]);
+            return redirect($this->root_url . $backList[0]);
         }
 
         $pre_step = $flow->step; //600
@@ -563,14 +568,14 @@ class MediatorController extends WebController
         $step = FuncMediatorStep::orderBy('code', 'asc')->get();
         $count = count($step);
         if ($pre_step == '') {
-            return redirect('/index/mediator/' . $step[0]->url);
+            return redirect($this->root_url . $step[0]->url);
         } else {
             foreach ($step as $k => $v) {
                 if ($pre_step == $v['code']) {
                     if ($k == $count - 1) {
                         return $this->lastStep($mediator_flow_id);
                     } else {
-                        return redirect('/index/mediator/' . $step[$k + 1]->url);
+                        return redirect($this->root_url . $step[$k + 1]->url);
                     }
                 }
             }
@@ -685,7 +690,7 @@ class MediatorController extends WebController
     public function info(Request $request)
     {
         $flow_id = $request->session()->get('mediator_flow_id');
-        if (!$flow_id) return redirect('/index/mediator/login');
+        if (!$flow_id) return redirect($this->root_url . 'login');
         $flow = FuncMediatorFlow::find($flow_id);
         if ($flow->is_handle != 1) {
             return $this->goNext($request);
@@ -746,20 +751,20 @@ class MediatorController extends WebController
         $flow = FuncMediatorFlow::where('id', $flow_id)->first();
         if ($flow->is_handle == 1) {
             //办理完成跳转控制面板
-            return redirect('/index/mediator/');
+            return redirect($this->root_url);
         } else {
             //审核完成
             if ($flow->is_check == 1) {
                 if ($flow->is_sure == 1) {
                     //确认过比例跳转结果页面
-                    return redirect('/index/mediator/result');
+                    return redirect($this->root_url . 'result');
                 } else {
                     //未确认比例跳转确认比例页面
-                    return redirect('/index/mediator/confirmRate');
+                    return redirect($this->root_url . 'confirmRate');
                 }
             } else {
                 //未审核跳转结果页面
-                return redirect('/index/mediator/result');
+                return redirect($this->root_url . 'result');
             }
         }
     }

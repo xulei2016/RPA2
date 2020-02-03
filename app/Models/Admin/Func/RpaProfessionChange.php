@@ -13,7 +13,7 @@ class RpaProfessionChange extends Model
 {
     protected $table = "rpa_profession_change";
 
-    protected $guarded = [];
+    public $fillable = ['profession_code', 'status', 'handle_status', 'confirm', 'confirm_time'];
 
     public $timestamps = true;
 }

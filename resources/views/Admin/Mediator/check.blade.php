@@ -35,13 +35,19 @@
                     <label for="back" class="col-sm-2 control-label"><span class="must-tag">*</span>打回步骤</label>
                     @foreach($steps as $v)
                         <label class="checkbox-inline" for="{{ $v->url }}">
-                            <input name="back[]" type="checkbox" id="{{ $v->url }}" value="{{ $v->url }}">{{ $v->name }}&nbsp;&nbsp;
+                            <input class="back_step" data-name="{{ $v->name }}" name="back[]" type="checkbox" id="{{ $v->url }}" value="{{ $v->url }}">{{ $v->name }}&nbsp;&nbsp;
                         </label>
                     @endforeach
                 </div>
+                <br>
                 <div class="row">
-                    <label for="reason" class="col-sm-2 control-label"><span class="must-tag">*</span>失败原因</label>
-                    <textarea class="col-sm-10 form-control" name="reason" id="reason" cols="60" rows="3" required></textarea>
+                    <label for="is_send" class="col-sm-2 control-label"><span class="must-tag">*</span>是否发送短信</label>
+                    <input type="checkbox" class="my-switch" id="is_send" name="is_send" value="1" checked>
+                </div>
+                <br>
+                <div class="row">
+                    <label for="send_tpl" class="col-sm-2 control-label"><span class="must-tag">*</span>短信模板</label>
+                    <textarea class="col-sm-10 form-control" name="send_tpl" id="send_tpl" cols="60" rows="3" required></textarea>
                 </div>
             </div>
         </div>

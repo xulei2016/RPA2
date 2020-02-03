@@ -6,7 +6,6 @@
                 <div style="height: 120px; text-align:center;">
                     <p>您已与客户经理协商统一返还比例！</p>
                     <p>佣金返还比例为 {{ rate }}%, 是否确认?</p>
-
                 </div>
                 <div slot="footer" style="text-align:right;">
                     <van-button size="small" @click="confirm(-1)">拒绝</van-button>
@@ -35,7 +34,13 @@
             confirm:function(par){
                 Vue.api.doConfirmRate(par).then(res => {
                     this.$toast.success('保存成功');
-                    Vue.utils.next();
+                    if(par === -1) {
+                        setTimeout(function(){
+                            Vue.utils.goLogin();
+                        }, 500);
+                    } else {
+                        Vue.utils.next();
+                    }
                 }).catch(error => {this.$toast(error)});
             }
         }

@@ -307,7 +307,7 @@ class OfficialApiController extends BaseApiController
                     'name' => 'ProfessionChange',
                     'created_at' => date('Y-m-d H:i:s')
                 ]);
-            } 
+            }
 
         } else {
             $re = [

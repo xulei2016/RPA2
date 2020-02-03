@@ -265,12 +265,12 @@ class OtherApiController extends BaseApiController
             ];
             return $re;
         }
-        
+
         $re = [
             'status' => 200,
             'msg' => "续签流程{$instid},数据同步成功"
         ];
-                
+
         return $re;
     }
 
@@ -296,7 +296,7 @@ class OtherApiController extends BaseApiController
             ];
             return $re;
         }
-		//发送短信 
+		//发送短信
 		$content="您好！您在我公司申请的居间协议已办理成功！客户经理号为{$savepath['JYGH']}，居间编号为{$savepath['BH']}。如有疑问请及时与您的业务经理保持联系或拨打客服电话400-8820-628";
 		//生成协议
 		if($savepath['uid']){
@@ -306,7 +306,7 @@ class OtherApiController extends BaseApiController
 				'path' => $savepath['path'],
 				'sms_content' => $content
 			];
-            
+
             $guzzle = new Client();
             $response = $guzzle->post('http:/172.16.191.26/oa2/index.php?m=Xy&a=xyHB2',[
                 'form_params' => $post_data,
@@ -338,10 +338,5 @@ class OtherApiController extends BaseApiController
         }else{
             return $savepath;
         }
-    }
-
-    public function test(){
-        $a = createPassword("xuenana");
-        echo $a;
     }
 }

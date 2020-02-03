@@ -1,5 +1,14 @@
 <?php
 
+header('Content-type:text/html;charset=utf-8');
+$num = 5;
+$code = '';
+file_put_contents($num.'-女-亲和.wav', base64_decode($code));
+file_put_contents($num.'-女-客服.wav', base64_decode($code2));
+file_put_contents($num.'-男-亲和.wav', base64_decode($code3));
+file_put_contents($num.'-男-情感.wav', base64_decode($code4));
+
+
 /**
  * Laravel - A PHP Framework For Web Artisans
  *

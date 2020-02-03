@@ -27,7 +27,7 @@ $(function () {
         });
         laydate.render({elem: et, type: 'date', max: nowDate});
 
-        $('#pjax-container #tb_departments').on('click', 'tr td .recording', function(e){
+        $('#pjax-container #tb_departments').on('click', 'tr td .recording', function (e) {
             console.log(e);
         });
 
@@ -106,23 +106,25 @@ $(function () {
                 sortable: true,
                 formatter: function (value, row, index) {
                     let res = "";
-                    if (3 == value) {
-                        res = '<span class="x-tag x-tag-sm x-tag-info">已归档</span>';
-                    } else if (2 == value) {
+                    if (3 === value) {
+                        res = '<span class="x-tag x-tag-sm x-tag-success">已归档</span>';
+                    } else if (2 === value) {
                         res = '<span class="x-tag x-tag-sm x-tag-warning">待审核</span>';
+                    } else if (1 === value) {
+                        res = '<span class="x-tag x-tag-sm x-tag-warning">回访中</span>';
                     } else {
                         res = '<span class="x-tag x-tag-sm x-tag-danger">未回访</span>';
                     }
                     return res;
                 }
-            // }, {
-            //     title: '试听',
-            //     align: 'center',
-            //     valign: 'middle',
-            //     formatter: function (value, row, index) {
-            //         let aud = '<a class="btn recording" data-id=`${value}`><i class="fa fa-play"></i></a>';
-            //         return aud;
-            //     }
+                // }, {
+                //     title: '试听',
+                //     align: 'center',
+                //     valign: 'middle',
+                //     formatter: function (value, row, index) {
+                //         let aud = '<a class="btn recording" data-id=`${value}`><i class="fa fa-play"></i></a>';
+                //         return aud;
+                //     }
             }, {
                 field: 'created_at',
                 title: '回访时间',
@@ -139,7 +141,8 @@ $(function () {
                     var result = "";
                     if (2 === row.status) {
                         result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_revisit/" + id + "/edit' title='审核'>审核</a><br/>";
-                    };
+                    }
+                    ;
                     return result;
                 }
             }],

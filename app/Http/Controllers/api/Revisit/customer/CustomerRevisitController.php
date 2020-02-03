@@ -3,25 +3,17 @@
 namespace App\Http\Controllers\api\Revisit\customer;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Exception;
+
 use App\Http\Controllers\api\BaseApiController;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomers;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomerRecords as Records;
 use App\Models\Admin\Func\rpa_customer_manager;
-use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Exception;
-
+use App\Models\Admin\Base\Sys\SysPhoneTable;
 
 class CustomerRevisitController extends BaseApiController
 {
-    private $array = [
-        '创新发展部',
-        '投资发展部',
-        '互联网金融部',
-        ''
-    ];
-
-    private $local_dept = '公司本部';
-
     /**
      * 用户树状图
      *
@@ -32,61 +24,62 @@ class CustomerRevisitController extends BaseApiController
     {
         $user = $request->user('api');
         $dept_id = $user->dept_id;
-        $dept = $user->dept()->where('id', $dept_id)->get(['name']);
+
+        if(!$dept_id){
+            return $this->ajax_return(500, '暂无数据权限');
+        }
 
         //local_dept
-        $local_dept = $this->array;
-        if (in_array($dept, $local_dept)) {
-            $dept = $this->local_dept;
-        }
+        $dept_id = explode(',', $dept_id);
 
         $conditions = [
-            ['rpa_customer_managers.yybNum', 'in', '(39,7)'],
-            ['rpa_customer_managers.jjrNum', '!=', ' ']
+            ['rpa_customer_managers.jjrNum', '!=', ' '],
+            ['rpa_revisit_customers.status', '<', '3']
         ];
 
-        $depts = [
-            [
-                'name' => '公司本部',
-                'num' => 39
-            ],
-            [
-                'name' => '郑州营业部',
-                'num' => 7
-            ]
-        ];
-
-        $newData = [];
-
-        foreach ($depts as $dept) {
-            $conditions = [
-                ['rpa_customer_managers.yybNum', '=', $dept['num']],
-                ['rpa_customer_managers.jjrNum', '!=', ' ']
-            ];
-
-            //find jjr customer
-            $data = RpaRevisitCustomers::where($conditions)
-                ->leftJoin('rpa_customer_managers', 'rpa_customer_managers.ID', '=', 'rpa_revisit_customers.customer_id')
-                ->select([
-                    'rpa_customer_managers.name',
-                    'rpa_customer_managers.fundsNum',
+        //find jjr customer
+        $data = RpaRevisitCustomers::where($conditions)
+            ->whereIn('rpa_customer_managers.yybNum', $dept_id)
+            ->leftJoin('rpa_customer_managers', 'rpa_customer_managers.ID', '=', 'rpa_revisit_customers.customer_id')
+            ->select([
+                'rpa_customer_managers.name',
+                'rpa_customer_managers.fundsNum',
 //                    'rpa_customer_managers.jjrName',
-                    'rpa_revisit_customers.status',
-                    'rpa_revisit_customers.id'
-                ])->get();
+                'rpa_customer_managers.yybName',
+                'rpa_revisit_customers.status',
+                'rpa_revisit_customers.id'
+            ])->get();
 
-            $obj = [
-                'dept' => $dept['name'],
-                'customers' => $data
-            ];
+        $obj = [];
+        $data->map(function($item) use (&$obj) {
+            $obj[$item->yybName][] = $item->toArray();
+        });
 
-            $newData[] = $obj;
-        }
-
-        return $this->ajax_return(200, 'success', $newData);
+        return $this->ajax_return(200, 'success', $obj);
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function tables(Request $request){
+        $user = $request->user('api');
+        $dept_id = $user->dept_id;
 
+        if(!$dept_id){
+            return $this->ajax_return(500, '暂无数据权限');
+        }
+
+        //local_dept
+        $dept_id = explode(',', $dept_id);
+
+        return SysPhoneTable::whereIn('dept_id', $dept_id)->get(['code']);
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
     public function getDetail(Request $request)
     {
         //表单验证
@@ -94,7 +87,9 @@ class CustomerRevisitController extends BaseApiController
             'fundsNum' => 'required|integer',
         ]);
 
-        $sql = '$sql = "select b.JJRBH,b.JJRXM,funcPFS_G_Decrypt(a.DH,\'5a9e037ea39f777187d5c98b\')DH,funcPFS_G_Decrypt(a.SJ,\'5a9e037ea39f777187d5c98b\')SJ,funcPFS_G_Decrypt(a.DZ,\'5a9e037ea39f777187d5c98b\')DZ,funcPFS_G_Decrypt(a.ZJBH,\'5a9e037ea39f777187d5c98b\')ZJBH from tkhxx a left join futures.txctc_jjr_ygxxcl b on a.zjzh = b.zjzh where a.zjzh = \'110003087\'"';
+        $fundsNum = $request->fundsNum;
+
+        $sql = "select b.JJRBH,b.JJRXM,funcPFS_G_Decrypt(a.DH,'5a9e037ea39f777187d5c98b')DH,funcPFS_G_Decrypt(a.SJ,'5a9e037ea39f777187d5c98b')SJ,funcPFS_G_Decrypt(a.DZ,'5a9e037ea39f777187d5c98b')DZ,funcPFS_G_Decrypt(a.ZJBH,'5a9e037ea39f777187d5c98b')ZJBH from tkhxx a left join futures.txctc_jjr_ygxxcl b on a.zjzh = b.zjzh where a.zjzh = '{$fundsNum}'";
         //get Detail
         $param = [
             'type' => 'common',
@@ -105,12 +100,30 @@ class CustomerRevisitController extends BaseApiController
             ]
         ];
 
-        $detail = BaseAdminController::getCrmData($param);
+//        $detail = $this->getCrmData($param);
 
-        $data = '[{"JJRBH":"290107","JJRXM":"\u77f3\u5a9b\u6167","DH":"13120794199","SJ":"13120794199","DZ":"\u4e0a\u6d77\u5e02\u6d66\u4e1c\u65b0\u533a\u4e66\u9662\u9547\u77f3\u6f6d\u8857135\u5f04\u83ca\u6e05\u82d130\u53f7302\u5ba4","ZJBH":"310225198012114839"}]';
-        $data = json_decode($data, true);
+//        $data = '[{"JJRBH":"290107","JJRXM":"\u77f3\u5a9b\u6167","DH":"13120794199","SJ":"13120794199","DZ":"\u4e0a\u6d77\u5e02\u6d66\u4e1c\u65b0\u533a\u4e66\u9662\u9547\u77f3\u6f6d\u8857135\u5f04\u83ca\u6e05\u82d130\u53f7302\u5ba4","ZJBH":"310225198012114839"}]';
+//        $data = json_decode($data, true);
 
-        return $this->ajax_return(200, 'success', $data);
+//        $detail = $detail[0];
+//        $detail['sc_DH'] = str_repeat('*', 7).substr($detail['DH'], 7);
+//        $detail['sc_SJ'] = str_repeat('*', 7).substr($detail['SJ'], 7);
+//        $detail['sc_ZJBH'] = substr($detail['ZJBH'], 0, 3).str_repeat('*', strlen($detail['ZJBH'])-7).substr($detail['ZJBH'], -4);
+
+        $data = [
+            "JJRBH" => "290107",
+            "JJRXM"=> "石媛慧",
+            "DH"=> "13120794199",
+            "SJ"=> "13120794199",
+            "DZ"=> "上海市浦东新区书院镇石潭街135弄菊清苑30号302室",
+            "ZJBH"=> "310225198012114839",
+            "sc_DH"=> "*******4199",
+            "sc_SJ"=> "*******4199",
+            "sc_ZJBH"=> "310***********4839"
+        ];
+        $detail = $data;
+
+        return $this->ajax_return(200, 'success', $detail);
     }
 
 
@@ -148,7 +161,7 @@ class CustomerRevisitController extends BaseApiController
 
             if($path){
                 try {
-                    $revisit = RpaRevisitCustomers::where('customer_id', 5937)->firstOrFail();
+                    $revisit = RpaRevisitCustomers::where('customer_id', $res[0]['id'])->firstOrFail();
                     $revisit->update(['status'=>2]);
 
                     $size = $file->getClientSize();

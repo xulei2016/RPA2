@@ -47,11 +47,10 @@ $(function(){
         //特殊格式的条件处理
         var temp = {
             uid : $("#pjax-container #search-group #uid").val(),
-            // customer : $("#pjax-container #search-group #customer").val(),
-            // revisit : $("#pjax-container #search-group #name").val(),
-            // status : $("#pjax-container #search-group #status").val(),
-            // from_updatetime : $("#pjax-container #search-group #startTime").val(),
-            // to_updatetime : $("#pjax-container #search-group #endTime").val()
+            type : $("#pjax-container #search-group #type").val(),
+            flow_status : $("#pjax-container #search-group #flow_status").val(),
+            startTime : $("#pjax-container #search-group #startTime").val(),
+            endTime : $("#pjax-container #search-group #endTime").val()
         };
         return temp;
     }
@@ -81,6 +80,11 @@ $(function(){
             columns: [{
                     checkbox: true,
                 }, {
+                    field: 'info.name',
+                    title: '姓名',
+                    align: 'center',
+                    valign: 'middle'
+                }, {
                     field: 'dept.name',
                     title: '部门',
                     align: 'center',
@@ -102,7 +106,12 @@ $(function(){
                         return result;
                     }
                 },{
-                    field: 'xy_date_start',
+                    field: 'number',
+                    title: '居间编号',
+                    align: 'center',
+                    valign: 'middle'
+                },{
+                    field: 'xy_date_begin',
                     title: '协议开始日期',
                     align: 'center',
                     valign: 'middle'
@@ -124,7 +133,7 @@ $(function(){
                     valign: 'middle'
                 }, {
                     field: 'flow_status',
-                    title: '流程状态',
+                    title: '审核状态',
                     align: 'center',
                     valign: 'middle',
                     formatter: function (value,row,index) {
@@ -140,11 +149,30 @@ $(function(){
                                 result = '<span class="x-tag x-tag-sm x-tag-success">已审核，未确认比例</span>'
                             }
                         }else{
-                            if(row.part_b_date){
-                                result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
+                            if(row.is_back == 1){
+                                result = '<span class="x-tag x-tag-sm x-tag-danger">已打回</span>';
                             }else{
-                                result = '<span class="x-tag x-tag-sm x-tag-info">未完成</span>';
+                                if(row.part_b_date){
+                                    result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
+                                }else{
+                                    result = '<span class="x-tag x-tag-sm x-tag-info">未完成</span>';
+                                }
                             }
+
+                        }
+                        return result;
+                    }
+                }, {
+                    field: 'status',
+                    title: '流程状态',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function (value,row,index) {
+                        var result = "";
+                        if(value == 0){
+                            result = '<span class="x-tag x-tag-sm x-tag-danger">作废</span>'
+                        }else{
+                            result = '<span class="x-tag x-tag-sm x-tag-success">正常</span>'
                         }
                         return result;
                     }
@@ -162,8 +190,11 @@ $(function(){
                         var id = row.id;
                         var result = "";
                         result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/mediator/flow_info/"+id+"' title='详情'>详情</a>";
-                        if(row.is_check == 0 && row.part_b_date != ''){
+                        if(row.is_check == 0 && row.part_b_date && row.is_back == 0){
                             result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/mediator/check/"+id+"' title='审核'>审核</a>";
+                        }
+                        if(row.is_check == 1){
+                            result += " <a href='/admin/mediator/download/"+id+"' class='btn btn-sm btn-primary'  title='导出文件'>导出文件</a>"
                         }
                         return result;
                     }

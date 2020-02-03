@@ -39,21 +39,21 @@
             click(url){
                 if(url === 'new') {
                     if(this.status.indexOf('1') > -1) {
-                        window.location.href = '/index/mediator/panel?status=1';
+                        window.location.href = '/mediator/panel?status=1';
                     } else {
                         this.$toast('您暂时无法新签');
                     }
                     return false;
                 } else if(url === 're') {
                     if(this.status.indexOf('2') > -1) {
-                        window.location.href = '/index/mediator/panel?status=2';
+                        window.location.href = '/mediator/panel?status=2';
                     } else {
                         this.$toast('您暂时无法续签');
                     }
                     return false;
                 } else if(url === 'info') {
                     if(this.status.indexOf('0') > -1) {
-                        window.location.href = '/index/mediator/info';
+                        window.location.href = '/mediator/info';
                     } else {
                         this.$toast('您无法查看信息');
                     }

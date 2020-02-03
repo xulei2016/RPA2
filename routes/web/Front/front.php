@@ -38,15 +38,24 @@ Route::group(['prefix' => 'call_center', 'namespace' => 'CallCenter'], function(
 });
 
 //视频上传
-Route::group(['prefix' => 'uploadVideo'], function(){
+Route::group(['prefix' => 'upload_video'], function(){
     Route::get('/', 'VideoCollectController@index');
     Route::get('/client', 'VideoCollectController@client');
     Route::get('/upload', 'VideoCollectController@upload');
     Route::get('/record', 'VideoCollectController@record');
 });
 
+Route::group(['prefix' => 'credit'], function(){
+    Route::get('/', 'LoseCreditController@index');
+    Route::post('/', 'LoseCreditController@query');
+    Route::post('/loopQuery', 'LoseCreditController@loopQuery');
+    Route::get('/show', 'LoseCreditController@showLostCredit');
+    Route::get('/showImg', 'LoseCreditController@showImg');
+});
+
 Route::group(['prefix' => 'mediator'], function(){
     Route::get('/', 'MediatorController@index');
+    Route::get('/index', 'MediatorController@index');
     Route::get('/getImageCode', 'MediatorController@getImageCode');
     Route::get('/login', 'MediatorController@login');
     Route::post('/sendCode', 'MediatorController@sendCode');
@@ -81,18 +90,8 @@ Route::group(['prefix' => 'mediator'], function(){
     Route::get('/getDictionaries', 'MediatorController@getDictionaries');
 });
 
-Route::group(['prefix' => 'credit'], function(){
-    Route::get('/', 'LoseCreditController@index');
-    Route::post('/', 'LoseCreditController@query');
-    Route::post('/loopQuery', 'LoseCreditController@loopQuery');
-    Route::get('/show', 'LoseCreditController@showLostCredit');
-    Route::get('/showImg', 'LoseCreditController@showImg');
-});
 
-Route::group([], function(){
-    Route::get('/login', 'AuthController@login');
-    Route::get('/test', 'AuthController@test')->middleware('auth:app');
-});
+
 
 
 

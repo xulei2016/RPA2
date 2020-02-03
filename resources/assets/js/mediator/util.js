@@ -1,3 +1,5 @@
+var prefix = "/mediator/";
+
 function dateFormat(fmt, date){ //日期格式化
     let ret;
     let opt = {
@@ -25,7 +27,7 @@ export default {
     },
     next:(flag = false) => {
         setTimeout(function(){
-            let url = "/index/mediator/goNext";
+            let url = prefix + "goNext";
             if(flag) {
                 url += '?back=1';
             }
@@ -33,7 +35,11 @@ export default {
         }, 500);
     },
     panel:() => {
-        window.location.href = "/index/mediator/";
+        window.location.href = prefix;
+    },
+    goLogin: () => {
+        window.location.href = prefix + "login"
     }
-
 }
+
+

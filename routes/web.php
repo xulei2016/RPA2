@@ -25,6 +25,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'admin\Base'], function () {
     Route::post('/login', 'LoginController@login');
     Route::any('/logout', 'LoginController@logout')->name('logout');
 
+    //keepAlive
+    Route::get('/keepAlive', 'SysController@keepAlive');
+    Route::any('/lock', 'SysController@lock');
+    Route::any('/singleOut', 'SysController@singleOut');
     Route::any('/400', 'SysController@error400')->name('400');
     Route::any('/401', 'SysController@error401')->name('401');
     Route::any('/402', 'SysController@error402')->name('402');
