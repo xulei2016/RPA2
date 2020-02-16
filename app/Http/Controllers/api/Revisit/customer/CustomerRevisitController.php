@@ -52,6 +52,7 @@ class CustomerRevisitController extends BaseApiController
 
         $obj = [];
         $data->map(function($item) use (&$obj) {
+            array_merage($obj, [ $item->yybName => $item->toArray() ]);
             $obj[$item->yybName][] = $item->toArray();
         });
 
@@ -89,7 +90,7 @@ class CustomerRevisitController extends BaseApiController
 
         $fundsNum = $request->fundsNum;
 
-        $sql = "select b.JJRBH,b.JJRXM,funcPFS_G_Decrypt(a.DH,'5a9e037ea39f777187d5c98b')DH,funcPFS_G_Decrypt(a.SJ,'5a9e037ea39f777187d5c98b')SJ,funcPFS_G_Decrypt(a.DZ,'5a9e037ea39f777187d5c98b')DZ,funcPFS_G_Decrypt(a.ZJBH,'5a9e037ea39f777187d5c98b')ZJBH from tkhxx a left join futures.txctc_jjr_ygxxcl b on a.zjzh = b.zjzh where a.zjzh = '{$fundsNum}'";
+        $sql = "select a.SEX,b.JJRBH,b.JJRXM,funcPFS_G_Decrypt(a.DH,'5a9e037ea39f777187d5c98b')DH,funcPFS_G_Decrypt(a.SJ,'5a9e037ea39f777187d5c98b')SJ,funcPFS_G_Decrypt(a.DZ,'5a9e037ea39f777187d5c98b')DZ,funcPFS_G_Decrypt(a.ZJBH,'5a9e037ea39f777187d5c98b')ZJBH from tkhxx a left join futures.txctc_jjr_ygxxcl b on a.zjzh = b.zjzh where a.zjzh = '{$fundsNum}'";
         //get Detail
         $param = [
             'type' => 'common',
@@ -100,28 +101,28 @@ class CustomerRevisitController extends BaseApiController
             ]
         ];
 
-//        $detail = $this->getCrmData($param);
+        $detail = $this->getCrmData($param);
 
-//        $data = '[{"JJRBH":"290107","JJRXM":"\u77f3\u5a9b\u6167","DH":"13120794199","SJ":"13120794199","DZ":"\u4e0a\u6d77\u5e02\u6d66\u4e1c\u65b0\u533a\u4e66\u9662\u9547\u77f3\u6f6d\u8857135\u5f04\u83ca\u6e05\u82d130\u53f7302\u5ba4","ZJBH":"310225198012114839"}]';
-//        $data = json_decode($data, true);
+        $data = '[{"JJRBH":"290107","JJRXM":"\u77f3\u5a9b\u6167","DH":"13120794199","SJ":"13120794199","DZ":"\u4e0a\u6d77\u5e02\u6d66\u4e1c\u65b0\u533a\u4e66\u9662\u9547\u77f3\u6f6d\u8857135\u5f04\u83ca\u6e05\u82d130\u53f7302\u5ba4","ZJBH":"310225198012114839"}]';
+        $data = json_decode($data, true);
 
-//        $detail = $detail[0];
-//        $detail['sc_DH'] = str_repeat('*', 7).substr($detail['DH'], 7);
-//        $detail['sc_SJ'] = str_repeat('*', 7).substr($detail['SJ'], 7);
-//        $detail['sc_ZJBH'] = substr($detail['ZJBH'], 0, 3).str_repeat('*', strlen($detail['ZJBH'])-7).substr($detail['ZJBH'], -4);
-
-        $data = [
-            "JJRBH" => "290107",
-            "JJRXM"=> "石媛慧",
-            "DH"=> "13120794199",
-            "SJ"=> "13120794199",
-            "DZ"=> "上海市浦东新区书院镇石潭街135弄菊清苑30号302室",
-            "ZJBH"=> "310225198012114839",
-            "sc_DH"=> "*******4199",
-            "sc_SJ"=> "*******4199",
-            "sc_ZJBH"=> "310***********4839"
-        ];
-        $detail = $data;
+        $detail = $detail[0];
+        $detail['sc_DH'] = str_repeat('*', 7).substr($detail['DH'], 7);
+        $detail['sc_SJ'] = str_repeat('*', 7).substr($detail['SJ'], 7);
+        $detail['sc_ZJBH'] = substr($detail['ZJBH'], 0, 3).str_repeat('*', strlen($detail['ZJBH'])-7).substr($detail['ZJBH'], -4);
+//
+//        $data = [
+//            "JJRBH" => "290107",
+//            "JJRXM"=> "石媛慧",
+//            "DH"=> "13120794199",
+//            "SJ"=> "13120794199",
+//            "DZ"=> "上海市浦东新区书院镇石潭街135弄菊清苑30号302室",
+//            "ZJBH"=> "310225198012114839",
+//            "sc_DH"=> "*******4199",
+//            "sc_SJ"=> "*******4199",
+//            "sc_ZJBH"=> "310***********4839"
+//        ];
+//        $detail = $data;
 
         return $this->ajax_return(200, 'success', $detail);
     }

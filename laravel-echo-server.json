@@ -1,5 +1,5 @@
 {
-	"authHost": "http://www.rpa.com",
+	"authHost": "http://www.rpa2.com",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [],
 	"database": "redis",

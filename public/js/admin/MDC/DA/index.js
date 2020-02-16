@@ -156,15 +156,15 @@
 
             //根据条件查询信息
             $('#pjax-container #search-group #formSearch #search-btn').click(function () {
-                initHeatMap();
+                initChart();
             });
 
             //enter键盘事件
             $("#pjax-container #search-group #formSearch input").keydown(function (event) {
                 event = event ? event : window.event;
-                // if (event.keyCode == 13) {
-                //     initHeatMap();
-                // }
+                if (event.keyCode == 13) {
+                    initChart();
+                }
             });
 
             function initChart() {
@@ -188,8 +188,8 @@
 
             //设置柱状图数据
             function initBar(config) {
-                let ChartData = barChartData.datasets[0].data;
-                let ChartData2 = barChartData2.datasets[0].data;
+                let ChartData = barChartData.datasets[0].data = [];
+                let ChartData2 = barChartData2.datasets[0].data = [];
                 $.get('/admin/mdc/heat_map/getTfrequency', {
                     from_login_time: config.startTime,
                     to_login_time: config.endTime
@@ -228,10 +228,14 @@
                 }, function (json) {
                     if (200 == json.code) {
                         let data = json.data;
+                        ChartData3.labels = [];
+                        ChartData3.datasets[0].data = [];
                         for (let i = 0; i < data.region.length; i++) {
                             ChartData3.labels.push(data.region[i].region);
                             ChartData3.datasets[0].data.push(data.region[i].count);
                         }
+                        ChartData4.labels = [];
+                        ChartData4.datasets[0].data = [];
                         for (let i = 0; i < data.city.length; i++) {
                             ChartData4.labels.push(data.city[i].city);
                             ChartData4.datasets[0].data.push(data.city[i].count);

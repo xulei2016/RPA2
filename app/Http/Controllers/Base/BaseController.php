@@ -352,13 +352,13 @@ class BaseController extends Controller
 	public static function getTime(){
 	    return date('Y-m-d H:i:s',time());
     }
-    	
-	/**
-	 * 构造分页页面提交数据
-	 * @param object $controller
-	 * @param array $keyValueList array('name'=>'like','add_time'=>'>=','sort'=>'=')
-	 * @return array
-	 */
+
+    /**
+     * 构造分页页面提交数据
+     * @param $data
+     * @param array $keyValueList array('name'=>'like','add_time'=>'>=','sort'=>'=')
+     * @return array
+     */
 	protected function getPagingList($data,$keyValueList){
         $conditionList = array();
         $value = '';
