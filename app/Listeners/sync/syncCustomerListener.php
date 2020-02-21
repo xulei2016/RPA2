@@ -2,18 +2,17 @@
 
 namespace App\Listeners\sync;
 
-use App\Events\Sync\SyncOfflineCustomer;
-use App\Http\Controllers\base\BaseAdminController;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
+use App\Events\Sync\SyncCustomer;
 use App\Models\Admin\Func\rpa_customer_manager;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomers;
 use App\Models\Admin\Admin\SysAdminAlert;
 
-use Illuminate\Support\Facades\Log;
 
-class syncOfflineCustomerListener implements ShouldQueue
+class syncCustomerListener implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -47,7 +46,7 @@ class syncOfflineCustomerListener implements ShouldQueue
                 break;
         }
 
-        if(!$status){
+        if (!$status) {
             SysAdminAlert::create([
                 'user_id' => 1,
                 'title' => '失败警告',
@@ -64,7 +63,7 @@ class syncOfflineCustomerListener implements ShouldQueue
      */
     private static function sync($data)
     {
-        if(is_object($data) || is_array($data)){
+        if (is_object($data) || is_array($data)) {
             $id = is_object($data) ? $data->id : $data['id'];
 
             $record = [
@@ -81,8 +80,8 @@ class syncOfflineCustomerListener implements ShouldQueue
      */
     private static function syncOffline(array $data)
     {
+        $res = '';
         if (!empty($data['msg'])) {
-            $res = '';
             foreach ($data['msg'] as $v) {
                 $array = [
                     'name' => $v['KHXM'],
@@ -100,7 +99,7 @@ class syncOfflineCustomerListener implements ShouldQueue
                 ];
                 $res = rpa_customer_manager::create($array);
 
-                if($res){
+                if ($res) {
                     $res = self::sync($res);
 
                     $post_data = [
@@ -113,9 +112,8 @@ class syncOfflineCustomerListener implements ShouldQueue
                     (new \App\Http\Controllers\base\BaseAdminController)->getCrmData($post_data);
                 }
             }
-            return $res;
         }
-        return false;
+        return $res;
     }
 
 }

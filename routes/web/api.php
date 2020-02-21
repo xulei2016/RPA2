@@ -105,8 +105,8 @@ use Illuminate\Http\Request;
     //客户回访
     Route::group(['namespace' => 'Revisit\customer', ['middleware' => 'auth:api']], function () {
         Route::post('/customer/getRevisitList', 'CustomerRevisitController@getRevisitList');
-        Route::post('/customer/getDetail', 'CustomerRevisitController@getDetail');
-        Route::post('/customer/tables', 'CustomerRevisitController@tables');
+        Route::post('/customer/getDetail', 'CustomerRevisitController@getCustomerDetail');
+        Route::post('/customer/tables', 'CustomerRevisitController@getTables');
         Route::post('/customer/mark', 'CustomerRevisitController@mark');
         Route::post('/customer/uploadRecords', 'CustomerRevisitController@uploadRecords');
     });

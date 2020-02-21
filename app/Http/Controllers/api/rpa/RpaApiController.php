@@ -426,9 +426,9 @@ class RpaApiController extends BaseApiController
         ];
 
         //event sync 同步开户客户回访列表 -- （2020-01-13 hsu lay）
-        if(2 == $request->type){
+        if(2 === $request->type)
             event(new SyncOfflineCustomer($result, 2));
-        }
+
 
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());

@@ -51,6 +51,7 @@ class MWSMS
             'content' => $this->TO_GBK($content),
             'timestamp' => $this->timestamp
         ];
+
         return $this->send($config, $apiStr, $form_params);
     }
 

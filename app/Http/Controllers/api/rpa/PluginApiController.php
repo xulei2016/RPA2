@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Func\rpa_cotton_entrys;
 
-use App\Events\Sync\SyncOfflineCustomer;
+use App\Events\Sync\SyncCustomer;
 
 class PluginApiController extends BaseApiController
 {

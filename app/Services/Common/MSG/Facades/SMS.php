@@ -5,7 +5,7 @@ namespace App\Services\Common\MSG\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class SMSMsg extends Facade
+class SMS extends Facade
 {
     /**
      * Get the registered name of the component.
@@ -14,6 +14,6 @@ class SMSMsg extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'SMSMsg';
+        return 'SMS';
     }
 }

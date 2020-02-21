@@ -18,7 +18,8 @@ use App\Models\Admin\Admin\SysAdminAlert;
 use App\Models\Admin\Base\SysMessage;
 
 use App\Jobs\MSG\SendSMS;
-use SMSMsg;
+use SMS;
+use App\Services\Common\MSG\MWSMS;
 
 /**
  * SysController
@@ -30,8 +31,17 @@ class SysController extends BaseAdminController
     /**
      * dashboard
      */
-    public function index(Request $request)
+    public function index(Request $request, SMS $sms)
     {
+        $res = (new MWSMS)->single_send("您的验证码为: 6379", '18056877137');
+        dd($res);
+
+        $res = $sms::send(18056877137, [
+            'content'  => '您的验证码为: 6379',
+        ], ['MW']);
+
+        dd($res);
+
         if (!auth()->Guard('admin')->check()) {
             return redirect('/');
         }

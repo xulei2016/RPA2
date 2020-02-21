@@ -597,6 +597,12 @@ html.ios-fix body {
     color: #909399;
 }
 
+.x-tag-warning {
+    background-color: #fff8e6;
+    border-color: #fff1cc;
+    color: #ffba00;
+}
+
 .x-tag-success {
     background-color: rgba(19, 206, 102, .1);
     border-color: rgba(19, 206, 102, .2);
@@ -1166,3 +1172,75 @@ body .accent-olive .card-primary.card-outline {
 
 
 /************************* end drawerPanel *****************************/
+
+/****************多菜单tabs start*******************/
+.tags-view-container{
+    height: 34px;
+    width: 100%;
+    background: #fff;
+    border-bottom: 1px solid #d8dce5;
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 0 3px 0 rgba(0, 0, 0, 0.04);
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+.tags-warp{
+    white-space: nowrap;
+    position: relative;
+    overflow: scroll;
+    overflow-y: hidden;
+    width: 100%;
+}
+.tags-item{
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    height: 26px;
+    line-height: 26px;
+    border: 1px solid #d8dce5;
+    color: #495060;
+    background: #fff;
+    padding: 0 8px;
+    font-size: 12px;
+    margin-left: 5px;
+    margin-top: 4px;
+}
+.tags-item.active{
+    background-color: #42b983;
+    color: #fff;
+    border-color: #42b983;
+}
+.tags-item.active:before{
+    content: '';
+    background: #fff;
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: relative;
+    margin-right: 2px;
+}
+.tags-item .tags-close{
+    margin-left: 5px;
+    height: 16px;
+    width: 16px;
+    vertical-align: 3px;
+    border-radius: 50%;
+    text-align: center;
+    -webkit-transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    -webkit-transform-origin: 100% 50%;
+    transform-origin: 100% 50%;
+}
+.tags-item .tags-close:before{
+    -webkit-transform: scale(0.6);
+    transform: scale(0.6);
+    display: inline-block;
+    vertical-align: -3px;
+}
+.tags-item .tags-close:hover{
+    background-color: #b4bccc;
+    color: #fff;
+}
+
+/*****************************多菜单tabs end******************************/

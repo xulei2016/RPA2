@@ -39,14 +39,14 @@ $(function(){
         });
 
         //导出全部
-        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+        $("#pjax-container #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
             location.href="/admin/sys_admin/export?"+$url;
         });
 
         //导出选中
-        $("#pjax-container section.content #toolbar #export").on('click', function(){
+        $("#pjax-container #toolbar #export").on('click', function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);

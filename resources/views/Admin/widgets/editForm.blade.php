@@ -13,7 +13,7 @@
     <div class="modal-footer">
         {{ method_field('PATCH')}}
         <div class="checkbox pull-right" style="margin-right:10px;"><label><input type="checkbox" class="minimal" id="form-continue" {{ $edit_continue or '' }}>继续{{ $title or '修改' }}</label></div>
-        <button type="button" class="btn btn-success pull-right" id="save">{{ $title or '修改' }}</button>
+        <button type="button" class="btn btn-success pull-right" id="save">提交</button>
     </div>
     <!-- /.modal-footer -->
 </form>

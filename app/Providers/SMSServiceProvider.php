@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Services\Common\MSG\SMSMsg;
+use App\Services\Common\MSG\SMS;
 use Illuminate\Support\ServiceProvider;
 
 class SMSServiceProvider extends ServiceProvider
@@ -24,8 +24,8 @@ class SMSServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind('SMSMsg', function ($app) {
-            return new SMSMsg();
+        $this->app->bind('SMS', function ($app) {
+            return new SMS();
         });
     }
 }

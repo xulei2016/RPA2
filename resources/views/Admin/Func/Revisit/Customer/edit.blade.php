@@ -2,7 +2,7 @@
     @slot('formContent')
 
         <div class="form-group row">
-            <label for="implement_type" class="col-sm-2 control-label"><span class="must-tag">*</span>回访状态</label>
+            <label for="implement_type" class="col-sm-2 control-label">回访状态<span class="must-tag">*</span></label>
             <div class="col-sm-10">
                 <input type="checkbox" class="my-switch" id="implement_type" name="status" value="3" checked>
             </div>
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="row hidden">
-                <label for="khyj" class="col-sm-2 control-label">备注</label>
+                <label for="khyj" class="col-sm-2 control-label">失败原因</label>
                 <div class="col-sm-10">
                     <textarea id="bz" name="bz" cols="60" rows="3"></textarea>
                 </div>
@@ -29,7 +29,7 @@
     @endslot
 
     @slot('formScript')
-        <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+        <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
         <script src="{{URL::asset('/js/Admin/Func/Revisit/customer/edit.js')}}"></script>
         <script>
 

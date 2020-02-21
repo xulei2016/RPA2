@@ -17,11 +17,11 @@
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
 
-            {{--<div class="tags-view-container">--}}
-                {{--<div class="tags-warp">--}}
-                    {{--<div class="scrop"></div>--}}
-                {{--</div>--}}
-            {{--</div>--}}
+            <div class="tags-view-container">
+                <div class="tags-warp">
+                    <div class="scrop"></div>
+                </div>
+            </div>
 
             @include('admin.layouts.alerts')
             

@@ -8,19 +8,15 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-use SMSMsg;
+use SMS;
 
 class SendSMS implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $content;
+    private $to;
 
-    private $phone;
-
-    private $param;
-
-    private $type;
+    private $params;
 
     /**
      * 任务最大尝试次数。
@@ -31,34 +27,24 @@ class SendSMS implements ShouldQueue
 
     /**
      * SendSMS constructor.
-     * @param $content
-     * @param $phone
-     * @param string $type
-     * @param array $param
-     * @param string $callBack
+     * @param $to
+     * @param $params
      */
-    public function __construct($content, $phone, $type = '', $param = [], string $callBack = '')
+    public function __construct($to, $params)
     {
-        $this->content = $content;
+        $this->to = $to;
 
-        $this->phone = $phone;
-
-        $this->param = $param;
-
-        $this->type = $type;
-
-        $this->callBack = $callBack;
-
+        $this->params = $params;
     }
 
     /**
      * Execute the job.
      *
-     * @param SMSMsg $sms
+     * @param SMS $sms
      * @return void
      */
-    public function handle(SMSMsg $sms)
+    public function handle(SMS $sms)
     {
-        return $sms::init($this->content, $this->phone, $this->type, $this->param, $this->callBack);
+        return $sms::send($this->to, $this->params);
     }
 }
