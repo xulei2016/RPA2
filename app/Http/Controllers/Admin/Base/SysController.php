@@ -7,19 +7,12 @@ use App\Models\Admin\Base\SysVersionUpdate;
 use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Api\RpaApiLog;
-use App\Models\Admin\Base\SysLog;
 use App\Models\Admin\RPA\rpa_taskcollections;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Base\BaseAdminController;
-
 use App\Models\Admin\Admin\SysAdminAlert;
 use App\Models\Admin\Base\SysMessage;
-
-use App\Jobs\MSG\SendSMS;
-use SMS;
-use App\Services\Common\MSG\MWSMS;
 
 /**
  * SysController
@@ -30,18 +23,11 @@ class SysController extends BaseAdminController
 {
     /**
      * dashboard
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
      */
-    public function index(Request $request, SMS $sms)
+    public function index(Request $request)
     {
-        $res = (new MWSMS)->single_send("您的验证码为: 6379", '18056877137');
-        dd($res);
-
-        $res = $sms::send(18056877137, [
-            'content'  => '您的验证码为: 6379',
-        ], ['MW']);
-
-        dd($res);
-
         if (!auth()->Guard('admin')->check()) {
             return redirect('/');
         }

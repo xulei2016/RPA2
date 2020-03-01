@@ -6,6 +6,7 @@ namespace App\Services\Common\MSG;
 use App\Services\Common\MSG\Contracts\MessageInterface;
 use App\Services\Common\MSG\Contracts\PhoneNumberInterface;
 use App\Services\Common\MSG\Exceptions\NoGatewayAvailableException;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class Messenger
@@ -32,11 +33,11 @@ class Messenger
      * @param PhoneNumberInterface $to
      * @param MessageInterface $message
      * @param array $gateways
+     * @param bool $debug
      * @return array
      * @throws NoGatewayAvailableException
-     * @throws Exceptions\InvalidArgumentException
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message, array $gateways = [])
+    public function send(PhoneNumberInterface $to, MessageInterface $message, array $gateways = [], $debug = false)
     {
         $results = [];
 
@@ -44,16 +45,19 @@ class Messenger
 
         foreach ($gateways as $gateway => $config) {
             try {
+
+                $result = $debug ? Log::info('DEBUG MODAL', [$to->getNumber(), $message->getContent()])
+                    : $this->sms->gateway($gateway)->send($to, $message, $config);
+
                 $results[$gateway] = [
                     'gateway' => $gateway,
                     'status' => self::STATUS_SUCCESS,
-                    'result' => $this->sms->gateway($gateway)->send($to, $message, $config),
+                    'result' => $result,
                 ];
 
                 $sendSuccess = true;
 
             } catch (\Exception $e) {
-                dd($e->getMessage());
                 $results[$gateway] = [
                     'gateway' => $gateway,
                     'status' => self::STATUS_FAILURE,
@@ -67,8 +71,6 @@ class Messenger
                 ];
             }
         }
-
-        dd($results);
 
         if (!$sendSuccess) {
             throw new NoGatewayAvailableException($results);

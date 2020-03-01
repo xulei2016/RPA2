@@ -14,9 +14,25 @@ class SendSMS implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $to;
+    /**
+     * @var
+     */
+    protected $to;
 
-    private $params;
+    /**
+     * @var
+     */
+    protected $msg;
+
+    /**
+     * @var
+     */
+    protected $params;
+
+    /**
+     * @var
+     */
+    protected $gateway;
 
     /**
      * 任务最大尝试次数。
@@ -27,14 +43,21 @@ class SendSMS implements ShouldQueue
 
     /**
      * SendSMS constructor.
+     *
      * @param $to
+     * @param $msg
      * @param $params
+     * @param $gateway
      */
-    public function __construct($to, $params)
+    public function __construct($to, $msg, $params = [], $gateway = [])
     {
         $this->to = $to;
 
+        $this->msg = $msg;
+
         $this->params = $params;
+
+        $this->gateway = $gateway;
     }
 
     /**
@@ -45,6 +68,6 @@ class SendSMS implements ShouldQueue
      */
     public function handle(SMS $sms)
     {
-        return $sms::send($this->to, $this->params);
+        return $sms::send($this->to, $this->msg, $this->params, $this->gateway);
     }
 }

@@ -3,8 +3,6 @@
 
 namespace App\Services\Common\MSG\Contracts;
 
-use App\Services\Common\MSG\Support\Config;
-
 /**
  * Interface GatewayInterface
  * @package App\Services\Common\MSG\Contracts
@@ -21,8 +19,7 @@ interface GatewayInterface
     /**
      * @param PhoneNumberInterface $to
      * @param MessageInterface $message
-     * @param Config $config
      * @return mixed
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message, Config $config);
+    public function send(PhoneNumberInterface $to, MessageInterface $message);
 }

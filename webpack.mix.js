@@ -11,7 +11,7 @@ let mix = require('laravel-mix');
  |
  */
 
- let jspack = [
+let jspack = [
     // 'public/js/app.js',   //app
     // 'public/include/jquery/jquery-3.3.1.min.js', //Jquery
     'public/include/bootstrap/dist/js/bootstrap.min.js', //Bootstrap 3.3.7
@@ -33,9 +33,9 @@ let mix = require('laravel-mix');
     'public/include/jquery-validate/jquery.validate.min.js',     //jquery.validate.min
     'public/include/jquery-validate/localization/messages_zh.min.js',     //messages_zh
     'https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.js',     //fix ie
- ];
+];
 
- let csspack = [
+let csspack = [
     'public/include/bootstrap/dist/css/bootstrap.min.css',    //bootstrap
     'public/include/adminLte/css/AdminLTE.min.css',   //AdminLTE
     'public/include/adminLte/css/skins/_all-skins.min.css',     //AdminLTE skins
@@ -49,23 +49,26 @@ let mix = require('laravel-mix');
     'public/include/sweetalert2/sweetalert2.min.css',     //sweetalert2
     'public/include/select2/dist/css/select2.min.css',     //select2
     'public/include/laydate/theme/default/laydate.css',     //laydate
- ];
+];
 
- mix.js(['resources/assets/js/app.js'], 'public/js');
-        // .scripts(jspack, 'public/js/all.js')
+mix.js([
+    'resources/assets/js/app.js',
+    'public/js/admin/main.js'
+], 'public/js');
+// .scripts(jspack, 'public/js/all.js')
 
-        // .sass('resources/assets/sass/app.scss', 'public/css')
-        // .styles(csspack, 'public/css/all.css')
+// .sass('resources/assets/sass/app.scss', 'public/css')
+// .styles(csspack, 'public/css/all.css')
 
 
-        //font-awesome fonts dir
-        // .copyDirectory('public/include/font-awesome/fonts', 'public/fonts')
-        //laydate theme
-        // .copyDirectory('public/include/laydate/theme', 'public/js/theme')
-        //ionicons fonts dir
-      //   .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
-        // .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
-        //ickeck blue theme png
-        // .copy('public/include/iCheck/minimal/blue.png', 'public/css/')
-        //boostrap fonts dir
-        // .copyDirectory('public/include/bootstrap/fonts', 'public/fonts');
+//font-awesome fonts dir
+// .copyDirectory('public/include/font-awesome/fonts', 'public/fonts')
+//laydate theme
+// .copyDirectory('public/include/laydate/theme', 'public/js/theme')
+//ionicons fonts dir
+//   .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
+// .copyDirectory('public/include/ionicons/fonts', 'public/css/iconfont')
+//ickeck blue theme png
+// .copy('public/include/iCheck/minimal/blue.png', 'public/css/')
+//boostrap fonts dir
+// .copyDirectory('public/include/bootstrap/fonts', 'public/fonts');

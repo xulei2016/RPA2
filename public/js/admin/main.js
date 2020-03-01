@@ -5,11 +5,17 @@
  * @since 2018/2
  * @version 2.0
  */
+// const ajaxSetup = require('./Common/AjaxSetup');
+
 var RPA = RPA || {};
+
 RPA.prototype = {
     init: function (obj) {
         //event bind
         this.bind.call(this);
+    },
+    version: {
+        index: '2.1.0.0',
     },
     config: {
         modal: '#modal-lg',
@@ -41,6 +47,8 @@ RPA.prototype = {
             obj: $('.drawerPanel-container .drawerPanel .handle-button')
         },
         alerts: $('.alerts .close'),
+        windowNotification: !!window.Notification,
+
     },
     bind: function () {
         var _this = this;
@@ -70,6 +78,7 @@ RPA.prototype = {
 
         //异步请求csrf头
         $.ajaxSetup({
+            //X-CSRF-TOKEN
             headers: {'X-CSRF-TOKEN': LA.token}
         });
 
@@ -598,17 +607,20 @@ RPA.prototype = {
             setTimeout(function () {
                 lastNotify.slideUp(1000);
             }, 8000);
+
+            //桌面通知
+            RPA.config.windowNotification && RPA.Notify.popNotice(typeName, obj.content);
         },
         event: obj => {
-            switch(obj.event_type){
+            switch (obj.event_type) {
                 case 'single_login':
                     keepAlive();
                     break;
             }
 
-            function keepAlive(){
-                $.get('/admin/keepAlive', function(json){
-                    if(200 !== json.code && 'fail' === json.info){
+            function keepAlive() {
+                $.get('/admin/keepAlive', function (json) {
+                    if (200 !== json.code && 'fail' === json.info) {
                         //登出
                         $('#modal-sm .modal-content').text('').load('/admin/singleOut');
                         $('#modal-sm').modal('show');
@@ -616,6 +628,18 @@ RPA.prototype = {
                 });
             }
         }
+    },
+    Notify: {
+        popNotice: (title, content) => {
+            let notification = new Notification(`${title}:`, {
+                body: content,
+                icon: "https://rpa.haqh.com:8088/common/images/logo.png"
+            });
+            notification.onclick = function () {
+                window.open('https://rpa.haqh.com:8088/admin');
+                notification.close()
+            }
+        },
     },
     Alert: {
         howSearch: () => {

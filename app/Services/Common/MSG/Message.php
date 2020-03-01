@@ -5,6 +5,7 @@ namespace App\Services\Common\MSG;
 
 use App\Services\Common\MSG\Contracts\GatewayInterface;
 use App\Services\Common\MSG\Contracts\MessageInterface;
+use DB;
 
 class Message implements MessageInterface
 {
@@ -168,6 +169,20 @@ class Message implements MessageInterface
     {
         if (property_exists($this, $property)) {
             return $this->$property;
+        }
+    }
+
+    /**
+     * @param $gateway
+     * @return array|string
+     */
+    public function getGatewaysFromDB($gateway)
+    {
+        try{
+            $gateways = DB::table('sys_sms_gateways')->where('unique_name', strtoupper($gateway))->pluck('available_list');
+            return empty($gateways) ? [] : explode(',',$gateways[0]) ;
+        }catch(\Exception $e){
+            return $e->getMessage();
         }
     }
 

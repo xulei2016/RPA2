@@ -7,7 +7,7 @@ $(function(){
         bindEvent();
 
         //1.初始化Table
-        var oTable = new RPA.TableInit();
+        let oTable = new RPA.TableInit();
         pageNation(oTable);
     }
 

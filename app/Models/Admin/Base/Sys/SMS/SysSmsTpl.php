@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Admin\Base;
+namespace App\Models\Admin\Base\Sys\SMS;
 
 use Illuminate\Database\Eloquent\Model;
 
-class SysSmsLog extends Model
+class SysSmsTpl extends Model
 {
     public $timestamps = true;
 

@@ -178,7 +178,7 @@ class CustomerRevisitController extends BaseApiController
      * @param Request $request
      * @return array|void
      */
-    public function mark(Request $request)
+    public function markCustomerState(Request $request)
     {
         $id = $request->id;
 
@@ -220,6 +220,7 @@ class CustomerRevisitController extends BaseApiController
         $file = $request->file('recording');
 
         $res = rpa_customer_manager::where('fundsNum', $fundsNum)->get(['id'])->toArray();
+
         if ($file->isValid()) {
             $fileName = $this->recordPath . $fundsNum;
             $path = Storage::disk('local')->put($fileName, $file);
@@ -270,11 +271,14 @@ class CustomerRevisitController extends BaseApiController
         if ($id || $fundsNum) {
 
             $column = $id ? 'id' : 'fundsNum';
-            $condition = $id ?? $fundsNum;
+            $condition = $id ?: $fundsNum;
 
             //名下客户
-            $dept_id = RpaRevisitCustomers::where($column, $condition)->pluck('yybNum');
-            if (!in_array($dept_id, $dept_ids))
+            $dept_id = RpaRevisitCustomers::where([[$column,'=', $condition]])
+                ->leftJoin('rpa_customer_managers', 'rpa_customer_managers.ID', '=', 'rpa_revisit_customers.customer_id')
+                ->pluck('rpa_customer_managers.yybNum');
+
+            if (!in_array($dept_id[0], $dept_ids))
                 return false;
         }
 

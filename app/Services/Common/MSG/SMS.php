@@ -8,11 +8,19 @@ use App\Services\Common\MSG\Contracts\MessageInterface;
 use App\Services\Common\MSG\Contracts\PhoneNumberInterface;
 use App\Services\Common\MSG\Contracts\StrategyInterface;
 use App\Services\Common\MSG\Exceptions\InvalidArgumentException;
+use App\Services\Common\MSG\Exceptions\NoGatewayAvailableException;
 use App\Services\Common\MSG\Gateways\Gateway;
+use App\Services\Common\MSG\Storage\LogStorage;
 use App\Services\Common\MSG\Strategies\OrderStrategy;
 use App\Services\Common\MSG\Support\Config;
 use Closure;
+use RuntimeException;
 
+/**
+ * Class SMS
+ *
+ * @package App\Services\Common\MSG
+ */
 class SMS
 {
     /**
@@ -63,22 +71,24 @@ class SMS
     /**
      * @param $to
      * @param $message
-     * @param array $gateway
+     * @param array $params
+     * @param string $gateways
      * @return mixed
      * @throws InvalidArgumentException
-     * @throws Exceptions\NoGatewayAvailableException
      */
-    public function send($to, $message, array $gateway = [])
+    public function send($to, $message, array $params, $gateways = '')
     {
         $to = $this->formatPhoneNumber($to);
         $message = $this->formatMessage($message);
-        $gateways = empty($gateways) ? $message->getGateways() : $gateways;
+        $gateways = $gateways ? $message->getGatewaysFromDB($gateways) : [];
 
         if (empty($gateways)) {
             $gateways = $this->config->get('default.gateways', []);
         }
 
-        return $this->getMessenger()->send($to, $message, $this->formatGateways($gateways));
+        $log = new LogStorage($this->config, $params);
+
+        return $log->afterSend($log->beforeSend($to, $message), $this->getResponse($to, $message, $this->formatGateways($gateways), $this->config->get('debug', false)));
     }
 
     /**
@@ -93,7 +103,7 @@ class SMS
         }
 
         if (!class_exists($strategy)) {
-            $strategy = __NAMESPACE__.'\Strategy\\'.ucfirst($strategy);
+            $strategy = __NAMESPACE__ . '\Strategy\\' . ucfirst($strategy);
         }
 
         if (!class_exists($strategy)) {
@@ -191,7 +201,7 @@ class SMS
     /**
      * Register a custom driver creator Closure.
      *
-     * @param string   $name
+     * @param string $name
      * @param Closure $callback
      *
      * @return $this
@@ -299,7 +309,7 @@ class SMS
 
         $name = \ucfirst(\str_replace(['-', '_', ''], '', $name));
 
-        return __NAMESPACE__."\\Gateways\\{$name}Gateway";
+        return __NAMESPACE__ . "\\Gateways\\{$name}Gateway";
     }
 
     /**
@@ -314,5 +324,22 @@ class SMS
         return \call_user_func($this->customCreators[$gateway], $this->config->get("gateways.{$gateway}", []));
     }
 
+    /**
+     * @param $to
+     * @param $message
+     * @param $gateways
+     * @param $debug
+     * @return array|mixed
+     */
+    protected function getResponse($to, $message, $gateways, $debug = false)
+    {
+        try {
+            return $this->getMessenger()->send($to, $message, $gateways, $debug);
+        } catch (NoGatewayAvailableException $e) {
+            return $e->getResults();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
 }

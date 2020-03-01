@@ -8,17 +8,31 @@ use App\Services\Common\MSG\Contracts\MessageInterface;
 use App\Services\Common\MSG\Exceptions\GatewayErrorException;
 use App\Services\Common\MSG\Support\Config;
 use App\Services\Common\MSG\Traits\HasHttpRequest;
-use Exception;
-use GuzzleHttp\Client;
 
+/**
+ * Class MWGateway
+ * @package App\Services\Common\MSG\Gateways
+ */
 class MWGateway extends Gateway
 {
     use HasHttpRequest;
 
+    /**
+     * @var Config
+     */
     protected $config;
 
+
+    /**
+     * @var false|string
+     */
     protected $timestamp;
 
+
+    /**
+     * MWGateway constructor.
+     * @param array $config
+     */
     public function __construct(array $config)
     {
         parent::__construct($config);
@@ -34,36 +48,30 @@ class MWGateway extends Gateway
      *
      * @param PhoneNumberInterface $to
      * @param MessageInterface $message
-     * @param Config $config
      * @return array|mixed
      * @throws GatewayErrorException
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message, Config $config)
+    public function send(PhoneNumberInterface $to, MessageInterface $message)
     {
         $apiStr = 'single_send';
 
         $msg = $message->getContent($this);
 
         $params = [
-            'userid' => $config['account'],
+            'userid' => $this->config['account'],
             'pwd' => $this->encryption(),
             'mobile' => $to->getNumber(),
             'content' => $this->TO_GBK($msg),
             'timestamp' => $this->timestamp
         ];
 
-        $base_url = $config->get('url');
-        $url = $base_url['mult'] . $apiStr;
-
-        $result = $this->request('post', $url, [
+        $result = $this->request('post', $apiStr, [
             'headers' => ['Accept' => 'application/json'],
             'json' => $params,
         ]);
 
-        dd($result);
-
         if (0 != $result['result']) {
-            throw new GatewayErrorException($result['errmsg'], $result['result'], $result);
+            throw new GatewayErrorException($this->config['status'][$result['result']] ?? '', $result['result'], $result);
         }
 
         return $result;
@@ -80,8 +88,6 @@ class MWGateway extends Gateway
     {
         $apiStr = 'batch_send';
 
-//        $data = $message->getData($this);
-
         $msg = $message->getContent($this);
 
         $params = [
@@ -92,9 +98,7 @@ class MWGateway extends Gateway
             'timestamp' => $this->timestamp
         ];
 
-        $url = $config->get('base_url').$apiStr;
-
-        $result = $this->request('post', $url, [
+        $result = $this->request('post', $apiStr, [
             'headers' => ['Accept' => 'application/json'],
             'json' => $params,
         ]);
@@ -112,13 +116,12 @@ class MWGateway extends Gateway
      */
     protected function encryption()
     {
-        $config = $this->config;
         $pwd = '';
 
-        if (1 == $config['mode']) {   //明文
-            $pwd = $config['password'];
-        } elseif (2 == $config['mode']) {  //加密
-            $pwd = $config['account'] . '00000000' . $config['password'] . $this->timestamp;
+        if (1 == $this->config['mode']) {   //明文
+            $pwd = $this->config['password'];
+        } elseif (2 == $this->config['mode']) {  //加密
+            $pwd = $this->config['account'] . '00000000' . $this->config['password'] . $this->timestamp;
             $pwd = MD5($pwd);
         }
 

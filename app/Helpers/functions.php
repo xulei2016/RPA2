@@ -181,7 +181,13 @@ function showConfigName($str){
             break;
         case 'common':
             $result = '通用配置';
-            break;    
+            break;
+        case 'Hadmy':
+            $result = '华安达摩院';
+            break;
+        case 'sms':
+            $result = '短信平台';
+            break;
         default:
             $result = '未知';
     }

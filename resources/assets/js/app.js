@@ -24,6 +24,6 @@ window.Vue = require('vue');
 
 const app = new Vue({
    el: '#app',
-    render: h => h(Hello)
+    render: h => h('Hello')
 });
 

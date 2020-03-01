@@ -38,7 +38,7 @@ class PhoneNumber implements PhoneNumberInterface
      *
      * @inheritDoc
      */
-    public function getNumber(): int
+    public function getNumber(): string
     {
         return $this->number;
     }

@@ -1,5 +1,12 @@
 $(function () {
 
+    let options = {
+        nextLabel: "下一步 &rarr;",
+        prevLabel: "&larr; 上一步",
+        skipLabel: "跳过",
+        doneLabel: "知道了",
+    };
+
     /**
      * 初始化
      */
@@ -8,6 +15,9 @@ $(function () {
         bindEvent();
 
         showTodoList();
+
+        intro();
+
     }
 
     /**
@@ -18,7 +28,6 @@ $(function () {
         pieChart();
 
         //计时
-        let obj = $('');
         let st = new Date('2017-06-01');
         setInterval(function () {
             let activeDate = new Date();
@@ -34,28 +43,28 @@ $(function () {
             $('#pjax-container .accumulated_time').html(accumulated_time);
         }, 1000);
 
-        document.addEventListener('operationFlow', function(){
+        document.addEventListener('operationFlow', function () {
             showTodoList();
         })
     }
 
-    function showTodoList(){
-        $.get('/admin/sys_flow_mine/todoList', function(res){
-            var html = '';
-            if(res.data.length ===  0) {
+    function showTodoList() {
+        $.get('/admin/sys_flow_mine/todoList', function (res) {
+            let html = '';
+            if (res.data.length === 0) {
                 html = "暂无待办流程";
                 $('.flow .card-body').html(html);
                 return false;
             }
 
-            $.each(res.data, function(index, item){
+            $.each(res.data, function (index, item) {
                 html += ' <div class="flow">\n' +
-                    '         <div class="title"><span class="fa fa-angle-right"></span> '+item.flow_title+'-'+item.node_title+'</div>\n' +
+                    '         <div class="title"><span class="fa fa-angle-right"></span> ' + item.flow_title + '-' + item.node_title + '</div>\n' +
                     '               <div class="flow-body">\n' +
-                    '                   <a href="javascript:void(0)" onclick="operation($(this));" url="/admin/sys_flow_mine/'+item.id+'">\n' +
-                    '                                <span class="flow-title">'+item.title+'</span>\n' +
+                    '                   <a href="javascript:void(0)" onclick="operation($(this));" url="/admin/sys_flow_mine/' + item.id + '">\n' +
+                    '                                <span class="flow-title">' + item.title + '</span>\n' +
                     '                    </a>\n' +
-                    '                    <span>'+item.created_at+'</span>\n' +
+                    '                    <span>' + item.created_at + '</span>\n' +
                     '          </div>\n' +
                     '      </div>'
             });
@@ -69,8 +78,8 @@ $(function () {
     function pieChart() {
 
         //我的足迹
-        $.post('/admin/sys_chart/footprint', function(json){
-            var config = {
+        $.post('/admin/sys_chart/footprint', function (json) {
+            let config = {
                 type: 'doughnut',
                 data: {
                     datasets: [{
@@ -84,10 +93,37 @@ $(function () {
                     responsive: true
                 }
             };
-            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-            var pieChart = new Chart(pieChartCanvas, config);
+            let pieChartCanvas = $('#pieChart').get(0).getContext('2d');
+            new Chart(pieChartCanvas, config);
         });
 
+    }
+
+    function intro() {
+        let localVersion = localStorage.getItem('version') ? JSON.parse(localStorage.getItem('version')) : {};
+        if (Object.keys(localVersion).length > 0 && (RPA.version.index === localVersion.index))
+            return;
+
+        $('aside.main-sidebar').attr({'data-step': 1, 'data-intro': '这里是侧边菜单栏', 'data-position': 'left'});
+        $('.content-wrapper .tags-view-container').attr({
+            'data-step': 2,
+            'data-intro': '这里是快捷菜单栏',
+            'data-position': 'top'
+        });
+        $('.drawerPanel-container .drawerPanel').attr({
+            'data-step': 3,
+            'data-intro': '这里是个性化布局设置',
+            'data-position': 'right'
+        });
+
+        localVersion['index'] = RPA.version.index;
+        localStorage.setItem('version', JSON.stringify(localVersion));
+
+        introJs().setOption(options).onafterchange(function (ele) {
+            if ($(ele).hasClass('drawerPanel') && $(ele).parent().hasClass('show')) {
+                $(ele).find('.handle-button').click();
+            }
+        }).start();
     }
 
     init();

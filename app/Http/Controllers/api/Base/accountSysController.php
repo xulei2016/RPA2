@@ -6,6 +6,11 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+/**
+ * Class accountSysController
+ *
+ * @package App\Http\Controllers\api\Base
+ */
 class accountSysController extends Controller
 {
     protected $cookie = "";

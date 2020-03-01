@@ -13,9 +13,9 @@ interface PhoneNumberInterface
     /**
      * 获取号码 18888888888
      *
-     * @return int
+     * @return string
      */
-    public function getNumber(): int;
+    public function getNumber(): string;
 
     /**
      * 获取国际区号 +86

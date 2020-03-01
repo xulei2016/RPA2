@@ -45,6 +45,16 @@ abstract class Gateway implements GatewayInterface
     }
 
     /**
+     * Return timeout.
+     *
+     * @return int|mixed
+     */
+    public function getBaseUri()
+    {
+        return $this->timeout ?: $this->config->get('base_uri', '');
+    }
+
+    /**
      * Set timeout.
      *
      * @param int $timeout
