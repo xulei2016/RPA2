@@ -12,6 +12,10 @@ use Mockery\Exception;
 
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Class CustomerRevisitController
+ * @package App\Http\Controllers\Admin\Revisit
+ */
 class CustomerRevisitController extends BaseAdminController
 {
     /**
@@ -95,17 +99,22 @@ class CustomerRevisitController extends BaseAdminController
      */
     public function update(Request $request, $id)
     {
-        //
-        $data = $this->get_params($request, [['status', 1], ['bz','']]);
+        $data = $this->get_params($request, [['status', 1], ['bz', '']]);
 
         //更新record/ revisit customer
         DB::beginTransaction();
-        try{
-            RpaRevisitCustomers::where([['id', '=', $id], ['status','<','3']])->update(['status'=>$data['status']]);
-            Records::where([['record_id', '=', $id], ['status','=','0']])->update(['status'=>$data['status'], 'desc'=>$data['bz']]);
+        try {
+            RpaRevisitCustomers::where([['id', '=', $id], ['status', '<', '3']])
+                ->update(['status' => $data['status']]);
+
+            Records::where([['record_id', '=', $id], ['status', '=', '0']])
+                ->update(['status' => $data['status'], 'desc' => $data['bz']]);
+
             DB::commit();
+
             return $this->ajax_return(200, '操作成功！');
-        } catch(\Exception $e){
+
+        } catch (\Exception $e) {
             DB::rollBack();
             return $this->ajax_return(500, '操作失败！', $e->getMessage());
         }
@@ -131,7 +140,7 @@ class CustomerRevisitController extends BaseAdminController
     {
         $rows = $request->rows;
         $data = $this->get_params($request, ['yybName', 'status', 'name'], false);
-//        $conditions = $this->getPagingList($data, ['yybName' => 'like', 'status' => '=', 'customer' => 'like']);
+
         $conditions = [];
         if (isset($data['yybName'])) {
             $conditions[] = ['rpa_customer_managers.yybName', 'like', "%" . $data['yybName'] . "%"];
@@ -140,7 +149,11 @@ class CustomerRevisitController extends BaseAdminController
             $conditions[] = ['rpa_revisit_customers.status', '=', $data['status']];
         }
         if (isset($data['name'])) {
-            $conditions[] = ['rpa_customer_managers.name', 'like', "%" . $data['name'] . "%"];
+            if (preg_match("/^\d*$/", $data['name'])) {
+                $conditions[] = ['rpa_customer_managers.fundsNum', '=', $data['name']];
+            } else {
+                $conditions[] = ['rpa_customer_managers.name', 'like', "%" . $data['name'] . "%"];
+            }
         }
         $order = $request->sort ?? 'rpa_revisit_customers.status';
         $sort = $request->sortOrder;

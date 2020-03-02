@@ -33,7 +33,6 @@
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="startTime" placeholder="开始时间">
                                 </div>
-                                <div style="float:left;">-</div>
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="endTime" placeholder="结束时间">
                                 </div>
