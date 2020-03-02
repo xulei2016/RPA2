@@ -202,7 +202,8 @@ class BaseApiController extends BaseController
         return $body;
     }
 
-    /** http请求
+    /**
+     * http请求
      * 
      */
     public function http($url, $method, $postfields = NULL, $headers = array(),$outputHeader=false) {

@@ -20,7 +20,7 @@ class MenuController extends BaseAdminController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function index(Request $request)
     {
@@ -32,7 +32,7 @@ class MenuController extends BaseAdminController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create()
     {
@@ -44,7 +44,7 @@ class MenuController extends BaseAdminController
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function store(Request $request)
     {
@@ -69,7 +69,7 @@ class MenuController extends BaseAdminController
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($id)
     {
@@ -83,7 +83,7 @@ class MenuController extends BaseAdminController
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function update(Request $request)
     {
@@ -98,7 +98,7 @@ class MenuController extends BaseAdminController
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return array
      */
     public function destroy(Request $request, $id)
     {
@@ -109,6 +109,7 @@ class MenuController extends BaseAdminController
 
     /**
      * orderUpdate
+     * @param Request $request
      * @return array $resulr
      */
     public function orderUpdate(Request $request){
@@ -121,6 +122,8 @@ class MenuController extends BaseAdminController
 
     /**
      * sortUpdate
+     * @param $order
+     * @param int $pid
      * @return bool $resulr
      */
     private function sortUpdate($order, $pid = 0){

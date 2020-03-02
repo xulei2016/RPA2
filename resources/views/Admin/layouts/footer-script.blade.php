@@ -35,13 +35,14 @@
 <script src="{{URL::asset('/js/app.js')}}"></script>
 {{--bootstrap-fileinput--}}
 <script src="{{URL::asset('/include/bootstrap-fileinput/js/fileinput.js')}}"></script>
-<script src="{{URL::asset('/include/bootstrap-fileinput/themes/fas/theme.js')}}"></script><script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-fileinput/themes/fas/theme.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
 
 <script>
     //消息通知laravel-echo
     let socket = {
-        userId : {{ Auth::user()->id }}
+        userId: {{ Auth::user()->id }}
     }
 </script>
 {{--<script src="{{URL::asset('/js/app.js')}}"></script>--}}

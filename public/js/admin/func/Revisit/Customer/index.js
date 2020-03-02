@@ -8,7 +8,7 @@ $(function () {
         bindEvent();
 
         //1.初始化Table
-        var oTable = new RPA.TableInit();
+        let oTable = new RPA.TableInit();
         pageNation(oTable);
     }
 
@@ -43,6 +43,19 @@ $(function () {
                 $('#tb_departments').bootstrapTable('refresh');
             }
         });
+
+        //导出全部
+        $("#pjax-container #toolbar #exportAll").on('click', function () {
+            let url = urlEncode(getSearchGroup());
+            location.href = `/admin/rpa_customer_revisit/export?${url}`;
+        });
+
+        //导出全部
+        $("#pjax-container #toolbar #export").on('click', function () {
+            let ids = RPA.getIdSelections('#tb_departments');
+            let url = urlEncode(getSearchGroup());
+            location.href = `/admin/rpa_customer_revisit/export?${url}&ids=${ids}`;
+        });
     }
 
     /**
@@ -50,21 +63,20 @@ $(function () {
      */
     function getSearchGroup() {
         //特殊格式的条件处理
-        var temp = {
+        return temp = {
             name: $("#pjax-container #search-group #customer").val(),
             status: $("#pjax-container #search-group #status").val(),
             yybName: $("#pjax-container #search-group #yybName").val(),
             from_created_at: $("#pjax-container #search-group #startTime").val(),
             to_created_at: $("#pjax-container #search-group #endTime").val()
         };
-        return temp;
     }
 
     //分页参数
     function pageNation(oTable) {
         oTable.queryParams = function (params) {
             //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-            var temp = $("#pjax-container #search-group").serializeJsonObject();
+            let temp = $("#pjax-container #search-group").serializeJsonObject();
             temp["rows"] = params.limit;                        //页面大小
             temp["total"] = params.total;                        //页面大小
             temp["page"] = (params.offset / params.limit) + 1;  //页码
@@ -79,7 +91,7 @@ $(function () {
         };
 
 
-        var param = {
+        let param = {
             url: '/admin/rpa_customer_revisit/list',
             columns: [{
                 checkbox: true,
@@ -106,14 +118,16 @@ $(function () {
                 sortable: true,
                 formatter: function (value, row, index) {
                     let res = "";
-                    if (3 === value) {
+                    if (4 === value) {
                         res = '<span class="x-tag x-tag-sm x-tag-success">已归档</span>';
+                    } else if (3 === value) {
+                        res = '<span class="x-tag x-tag-sm x-tag-success">审核完成</span>';
                     } else if (2 === value) {
-                        res = '<span class="x-tag x-tag-sm x-tag-warning">待审核</span>';
+                        res = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
                     } else if (1 === value) {
                         res = '<span class="x-tag x-tag-sm x-tag-warning">回访中</span>';
                     } else {
-                        res = '<span class="x-tag x-tag-sm x-tag-danger">未回访</span>';
+                        res = '<span class="x-tag x-tag-sm x-tag-info">未回访</span>';
                     }
                     return res;
                 }
@@ -126,7 +140,13 @@ $(function () {
                 //         return aud;
                 //     }
             }, {
-                field: 'created_at',
+                field: 'check_at',
+                title: '审核时间',
+                align: 'center',
+                valign: 'middle',
+                sortable: true,
+            }, {
+                field: 'revisit_at',
                 title: '回访时间',
                 align: 'center',
                 valign: 'middle',
@@ -146,7 +166,7 @@ $(function () {
                     return result;
                 }
             }],
-        }
+        };
 
         //初始化表格
         oTable.Init('#tb_departments', param);

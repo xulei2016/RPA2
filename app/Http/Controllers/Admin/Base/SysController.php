@@ -7,13 +7,10 @@ use App\Models\Admin\Base\SysVersionUpdate;
 use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Api\RpaApiLog;
-use App\Models\Admin\Base\SysLog;
 use App\Models\Admin\RPA\rpa_taskcollections;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use App\Http\Controllers\Base\BaseAdminController;
-
 use App\Models\Admin\Admin\SysAdminAlert;
 use App\Models\Admin\Base\SysMessage;
 
@@ -26,6 +23,8 @@ class SysController extends BaseAdminController
 {
     /**
      * dashboard
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
      */
     public function index(Request $request)
     {

@@ -198,6 +198,9 @@ return [
         //Flow
         App\Providers\FlowServiceProvider::class,
 
+        //SMS
+        App\Providers\SMSServiceProvider::class,
+
         //Agent tools
         Jenssegers\Agent\AgentServiceProvider::class,
 
@@ -250,6 +253,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Flow' => App\Services\Flow\Facades\Flow::class,
+        'SMS' => App\Services\Common\MSG\Facades\SMS::class,
 
         //excel
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,

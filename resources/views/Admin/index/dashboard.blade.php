@@ -225,7 +225,9 @@
         </div>
     </div>
 
+    <link rel="stylesheet" href="{{URL::asset('/include/intro/intro.min.css')}}">
     <script src="{{URL::asset('/include/charts/Chart.min.js')}}"></script>
+    <script src="{{URL::asset('/include/intro/intro.min.js')}}"></script>
     <script src="{{URL::asset('/js/admin/dashboard.js')}}"></script>
 
 </section>

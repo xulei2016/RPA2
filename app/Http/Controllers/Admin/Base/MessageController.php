@@ -6,7 +6,6 @@ use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Base\SysMessage;
 use App\Models\Admin\Base\SysMessageObjects;
 use App\Models\Admin\Base\SysMessageTypes;
-use App\Models\Admin\Base\SysSmsLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Notifications\DatabaseNotification;
@@ -93,21 +92,5 @@ class MessageController extends BaseAdminController
             ->paginate($rows);
         return $result;
     }
-    /*******************************短信记录************************************************/
-    public function sms_list(Request $request)
-    {
-        $this->log(__CLASS__, __FUNCTION__, $request, "短信发送 列表");
-        return view('admin/Base/message/sms_list');
-    }
-    public function sms_pagination(Request $request){
-        $selectInfo = $this->get_params($request, ['type','phone','from_created_at','to_created_at']);
-        $condition = $this->getPagingList($selectInfo, ['type'=>'=','phone'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
-        $rows = $request->rows;
-        $order = $request->sort ?? 'id';
-        $sort = $request->sortOrder ?? 'desc';
-        $result = SysSmsLog::where($condition)
-            ->orderBy($order, $sort)
-            ->paginate($rows);
-        return $result;
-    }
+
 }
