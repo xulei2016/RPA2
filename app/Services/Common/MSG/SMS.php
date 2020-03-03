@@ -303,6 +303,8 @@ class SMS
      */
     protected function formatGatewayClassName($name)
     {
+        $name = \strpos($name, '-') ? \substr($name,0, \strpos($name, '-')) : $name ;
+
         if (\class_exists($name) && \in_array(GatewayInterface::class, \class_implements($name))) {
             return $name;
         }

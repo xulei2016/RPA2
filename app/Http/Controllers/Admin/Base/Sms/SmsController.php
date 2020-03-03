@@ -235,7 +235,11 @@ class SmsController extends BaseAdminController
     {
         $data = $this->get_params($request, ['phone', 'content', 'params', 'gateway']);
         $data['params'] = $data['params'] ?? [];
-        return (new SMS)::send($data['phone'], $data['content'], $data['params'], $data['gateway']);
+
+        $config = getSMSConfig();
+        $config['debug'] = true;
+
+        return (new SMS($config))::send($data['phone'], $data['content'], $data['params'], $data['gateway']);
     }
 
 

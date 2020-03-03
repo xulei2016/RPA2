@@ -54,6 +54,16 @@ class LogStorage implements LogInterface
     protected $errMsg;
 
     /**
+     * @var string
+     */
+    private $default_errNotify_to_role = 'smsManager';
+
+    /**
+     * @var bool
+     */
+    private $needErrNotify = false;
+
+    /**
      * LogStorage constructor.
      *
      * @param Config $config
@@ -83,14 +93,17 @@ class LogStorage implements LogInterface
      */
     public function afterSend($id, $results)
     {
+        $err = [];
+
         foreach ($results as $k => $result) {
 
             $this->gateway = $k;
 
             if ('failure' === $result['status'] && isset($result['exception'])) {
-                $this->failureResponse($result);
+                $err[] = $result;
+                $results[$k]['code'] = $result['exception']->getCode();
 
-                (new ErrNotify())->notify($this->config->get('errNotify_to_role', 'smsManager'), $result);
+                $this->failureResponse($result);
             } else {
                 $this->successResponse($result);
             }
@@ -100,6 +113,9 @@ class LogStorage implements LogInterface
             $this->updateLog($id, $result);
 
         }
+
+        if($this->needErrNotify)
+            (new ErrNotify())->notify($this->config->get('errNotify_to_role', $this->default_errNotify_to_role), $err);
 
         return $results;
     }
@@ -185,6 +201,7 @@ class LogStorage implements LogInterface
      */
     protected function failureResponse($result)
     {
+        $this->needErrNotify = true;
         $this->status = 2;
         $this->code = $result['exception']->getCode();
         $this->errMsg = $result['exception']->getMessage();

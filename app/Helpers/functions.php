@@ -1,51 +1,55 @@
 <?php
+
+use Illuminate\Support\Facades\Cache;
+use DB;
+
 /**
  * 公共方法
  */
 
 // 获取发送邮件的用户和id
-function getAdmin($mode,$user)
+function getAdmin($mode, $user)
 {
     //$user 传过来的可能是数组也可能是字符串
-    if(!is_array($user)){
-        $user = explode(",",$user);
+    if (!is_array($user)) {
+        $user = explode(",", $user);
     }
     $sysAdminIds = [];
     $sysAdmin = [];
-    if(4 == $mode){
-        $sysAdmins = \App\Models\Admin\Admin\SysAdmin::where("type",1)->get();
-        foreach($sysAdmins as $admin){
+    if (4 == $mode) {
+        $sysAdmins = \App\Models\Admin\Admin\SysAdmin::where("type", 1)->get();
+        foreach ($sysAdmins as $admin) {
             $sysAdminIds[] = $admin->id;
             $sysAdmin[] = $admin;
         }
-    }else if(3 == $mode){
+    } else if (3 == $mode) {
         $role_ids = $user;
-        $roles = \App\Models\Admin\Base\SysRole::whereIn('id',$role_ids)->get();
-        foreach($roles as $role){
-            foreach($role->users->where("type",1) as $admin){
+        $roles = \App\Models\Admin\Base\SysRole::whereIn('id', $role_ids)->get();
+        foreach ($roles as $role) {
+            foreach ($role->users->where("type", 1) as $admin) {
                 $sysAdminIds[] = $admin->id;
                 $sysAdmin[] = $admin;
             }
         }
-    }else if(2 == $mode){
+    } else if (2 == $mode) {
         $group_ids = $user;
-        $groups = \App\Models\Admin\Admin\SysAdminGroup::whereIn('id',$group_ids)->get();
-        foreach($groups as $group){
-            foreach($group->users->where("type",1) as $admin){
+        $groups = \App\Models\Admin\Admin\SysAdminGroup::whereIn('id', $group_ids)->get();
+        foreach ($groups as $group) {
+            foreach ($group->users->where("type", 1) as $admin) {
                 $sysAdminIds[] = $admin->id;
                 $sysAdmin[] = $admin;
             }
         }
-    }else if(1 == $mode){
+    } else if (1 == $mode) {
         $admin_ids = $user;
-        $sysAdmins = \App\Models\Admin\Admin\SysAdmin::whereIn('id',$admin_ids)->get();
-        foreach($sysAdmins as $admin){
+        $sysAdmins = \App\Models\Admin\Admin\SysAdmin::whereIn('id', $admin_ids)->get();
+        foreach ($sysAdmins as $admin) {
             $sysAdminIds[] = $admin->id;
             $sysAdmin[] = $admin;
         }
     }
     return [
-        'sysAdminIds'=>$sysAdminIds,
+        'sysAdminIds' => $sysAdminIds,
         'sysAdmin' => $sysAdmin
     ];
 }
@@ -57,9 +61,9 @@ function getAdmin($mode,$user)
  * @return  [Integer] $code     状态码
  * @return  [String]  $data     返回信息
  */
-function zzy_sms($phone,$msg)
+function zzy_sms($phone, $msg)
 {
-    $msg = iconv("utf-8","gb2312",$msg);
+    $msg = iconv("utf-8", "gb2312", $msg);
 
     $zzy = config('sms.ZZY');
     $url = $zzy['url']['mult'];
@@ -78,14 +82,14 @@ function zzy_sms($phone,$msg)
     ]);
     $body = $response->getBody();
 
-    $status = explode('/',(string)$body)[0];
+    $status = explode('/', (string)$body)[0];
 
     $data = [
         'status' => $status,
         'msg' => $statuses[$status]
     ];
 
-    smsLog('中正云', $phone, iconv("gb2312","utf-8",$msg), $status);
+    smsLog('中正云', $phone, iconv("gb2312", "utf-8", $msg), $status);
 
     return $data;
 }
@@ -97,9 +101,9 @@ function zzy_sms($phone,$msg)
  * @return  [Integer] $code     状态码
  * @return  [String]  $data     返回信息
  */
-function yx_sms($phone,$msg)
+function yx_sms($phone, $msg)
 {
-    $msg = iconv("utf-8","gb2312",$msg);
+    $msg = iconv("utf-8", "gb2312", $msg);
 
     $yx = config('sms.YX');
     $url = $yx['url']['mult'];
@@ -127,7 +131,7 @@ function yx_sms($phone,$msg)
     ];
 
     //短信日志
-    smsLog('优信', $phone, iconv("gb2312","utf-8",$msg), $body);
+    smsLog('优信', $phone, iconv("gb2312", "utf-8", $msg), $body);
 
     return $data;
 }
@@ -141,7 +145,8 @@ function yx_sms($phone,$msg)
  * @param [string] $status
  * @return void bool
  */
-function smsLog($type, $phone, $content, $status){
+function smsLog($type, $phone, $content, $status)
+{
     $sms = [
         'type' => $type,
         'api' => 'sms',
@@ -155,14 +160,15 @@ function smsLog($type, $phone, $content, $status){
 /**
  * 生成密码
  */
-function createPassword($name, $flag = false){
-    $a = 'H@qh9772_'.$name;
-    if($flag) {
+function createPassword($name, $flag = false)
+{
+    $a = 'H@qh9772_' . $name;
+    if ($flag) {
         return $a;
     } else {
-        return bcrypt('H@qh9772_'.$name);
+        return bcrypt('H@qh9772_' . $name);
     }
-   
+
 }
 
 /**
@@ -170,7 +176,8 @@ function createPassword($name, $flag = false){
  * @param $str
  * @return string
  */
-function showConfigName($str){
+function showConfigName($str)
+{
     $str = trim($str);
     switch ($str) {
         case 'rpa':
@@ -199,10 +206,11 @@ function showConfigName($str){
  * @param $number
  * @return int|string
  */
-function transNumber($number){
-    if($number == 0) return 0;
-    $number = round($number*100, 2);
-    return $number."%";
+function transNumber($number)
+{
+    if ($number == 0) return 0;
+    $number = round($number * 100, 2);
+    return $number . "%";
 }
 
 /**
@@ -211,9 +219,10 @@ function transNumber($number){
  * @param string $disk
  * @return string
  */
-function image2base64($url, $disk = 'local'){
+function image2base64($url, $disk = 'local')
+{
     $result = \Illuminate\Support\Facades\Storage::disk($disk)->get($url);
-    return  "data:image/png;base64,".base64_encode($result);
+    return "data:image/png;base64," . base64_encode($result);
 }
 
 /**
@@ -221,7 +230,8 @@ function image2base64($url, $disk = 'local'){
  * @param $str
  * @return string
  */
-function customDecode($str){
+function customDecode($str)
+{
     return \Illuminate\Support\Facades\Crypt::decrypt($str);
 }
 
@@ -230,7 +240,8 @@ function customDecode($str){
  * @param $str
  * @return string
  */
-function customEncode($str){
+function customEncode($str)
+{
     return \Illuminate\Support\Facades\Crypt::encrypt($str);
 }
 
@@ -239,13 +250,14 @@ function customEncode($str){
  * @param $id_card
  * @return bool
  */
-function validation_filter_id_card($id_card){
-    if(strlen($id_card)==18){
+function validation_filter_id_card($id_card)
+{
+    if (strlen($id_card) == 18) {
         return idcard_checksum18($id_card);
-    }elseif((strlen($id_card)==15)){
-        $id_card=idcard_15to18($id_card);
+    } elseif ((strlen($id_card) == 15)) {
+        $id_card = idcard_15to18($id_card);
         return idcard_checksum18($id_card);
-    }else{
+    } else {
         return false;
     }
 }
@@ -254,46 +266,51 @@ function validation_filter_id_card($id_card){
  * @param $idcard_base
  * @return bool|mixed
  */
-function idcard_verify_number($idcard_base){
-    if(strlen($idcard_base)!=17){
+function idcard_verify_number($idcard_base)
+{
+    if (strlen($idcard_base) != 17) {
         return false;
     }
     //加权因子
-    $factor=array(7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2);
+    $factor = array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
     //校验码对应值
-    $verify_number_list=array('1','0','X','9','8','7','6','5','4','3','2');
-    $checksum=0;
-    for($i=0;$i<strlen($idcard_base);$i++){
-        $checksum += substr($idcard_base,$i,1) * $factor[$i];
+    $verify_number_list = array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+    $checksum = 0;
+    for ($i = 0; $i < strlen($idcard_base); $i++) {
+        $checksum += substr($idcard_base, $i, 1) * $factor[$i];
     }
-    $mod=$checksum % 11;
-    $verify_number=$verify_number_list[$mod];
+    $mod = $checksum % 11;
+    $verify_number = $verify_number_list[$mod];
     return $verify_number;
 }
+
 // 将15位身份证升级到18位
-function idcard_15to18($idcard){
-    if(strlen($idcard)!=15){
+function idcard_15to18($idcard)
+{
+    if (strlen($idcard) != 15) {
         return false;
-    }else{
+    } else {
         // 如果身份证顺序码是996 997 998 999，这些是为百岁以上老人的特殊编码
-        if(array_search(substr($idcard,12,3),array('996','997','998','999')) !== false){
-            $idcard=substr($idcard,0,6).'18'.substr($idcard,6,9);
-        }else{
-            $idcard=substr($idcard,0,6).'19'.substr($idcard,6,9);
+        if (array_search(substr($idcard, 12, 3), array('996', '997', '998', '999')) !== false) {
+            $idcard = substr($idcard, 0, 6) . '18' . substr($idcard, 6, 9);
+        } else {
+            $idcard = substr($idcard, 0, 6) . '19' . substr($idcard, 6, 9);
         }
     }
-    $idcard=$idcard.idcard_verify_number($idcard);
+    $idcard = $idcard . idcard_verify_number($idcard);
     return $idcard;
 }
+
 // 18位身份证校验码有效性检查
-function idcard_checksum18($idcard){
-    if(strlen($idcard)!=18){
+function idcard_checksum18($idcard)
+{
+    if (strlen($idcard) != 18) {
         return false;
     }
-    $idcard_base=substr($idcard,0,17);
-    if(idcard_verify_number($idcard_base)!=strtoupper(substr($idcard,17,1))){
+    $idcard_base = substr($idcard, 0, 17);
+    if (idcard_verify_number($idcard_base) != strtoupper(substr($idcard, 17, 1))) {
         return false;
-    }else{
+    } else {
         return true;
     }
 }
@@ -303,24 +320,75 @@ function idcard_checksum18($idcard){
  * @param $url
  * @return string
  */
-function buildImageUrl($url){
-    return "/index/credit/showImg?url=".$url;
+function buildImageUrl($url)
+{
+    return "/index/credit/showImg?url=" . $url;
 }
 
 
 /**
  * 生成GUID
  */
-function guid() {
-    if (function_exists ( 'com_create_guid' )) {
-        $guid= com_create_guid ();
+function guid()
+{
+    if (function_exists('com_create_guid')) {
+        $guid = com_create_guid();
     } else {
-        mt_srand ( ( double ) microtime () * 10000 ); // optional for php 4.2.0 and up.
-        $charid = strtoupper ( md5 ( uniqid ( rand (), true ) ) );
-        $hyphen = chr ( 45 ); // "-"
-        $uuid = chr ( 123 ) . 			// "{"
-            substr ( $charid, 0, 8 ) . $hyphen . substr ( $charid, 8, 4 ) . $hyphen . substr ( $charid, 12, 4 ) . $hyphen . substr ( $charid, 16, 4 ) . $hyphen . substr ( $charid, 20, 12 ) . chr ( 125 ); // "}"
-        $guid=$uuid;
+        mt_srand(( double )microtime() * 10000); // optional for php 4.2.0 and up.
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45); // "-"
+        $uuid = chr(123) .            // "{"
+            substr($charid, 0, 8) . $hyphen . substr($charid, 8, 4) . $hyphen . substr($charid, 12, 4) . $hyphen . substr($charid, 16, 4) . $hyphen . substr($charid, 20, 12) . chr(125); // "}"
+        $guid = $uuid;
     }
-    return substr($guid, 1,36);
+    return substr($guid, 1, 36);
+}
+
+/**
+ * @param $email
+ * @return int
+ */
+function checkEmail($email)
+{
+    // Create the syntactical validation regular expression
+    $regexp = "/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})$/";
+
+    // Presume that the email is invalid
+    $valid = 0;
+
+    // Validate the syntax
+    if (preg_match($regexp, $email)) {
+        list($username, $domaintld) = preg_split("/@/", $email);
+        // Validate the domain
+        if (getmxrr($domaintld, $mxrecords))
+            $valid = 1;
+    } else {
+        $valid = 0;
+    }
+
+    return $valid;
+}
+
+function getSMSConfig()
+{
+    if (Cache::has("sysSMSConfig")) {
+
+        $sysSMSConfig = DB::table('sys_configs')->where('item_group', 'sms')->get(['item_key', 'item_value', 'type']);
+        $gateways = DB::table('sys_sms_settings')->where('status', 1)->get(['unique_name','setting']);
+
+        $config = [];
+        foreach($sysSMSConfig as $k => $SMSConfig){
+            $config[$SMSConfig->item_key] = 'json' === $SMSConfig->type ? json_decode($SMSConfig->item_value, true): $SMSConfig->item_value ;
+        }
+        foreach($gateways as $gateway){
+            $config['gateways'][$gateway->unique_name] = json_decode($gateway->setting, true);
+        }
+
+        if($config){
+            Cache::add("sysSMSConfig",$sysSMSConfig,3600);
+        }
+    }else{
+        $config = Cache::get("sysSMSConfig");
+    }
+    return $config;
 }

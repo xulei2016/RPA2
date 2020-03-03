@@ -21,7 +21,7 @@ class ErrNotify implements NotifyInterface
     {
         $admins = SysAdmin::role($notify_to)->get();
 
-        $content = $this->getContent($result);
+        $content = $this->getContent((array)$result);
 
         $this->sendManagerAlert($admins, $content);
 
@@ -32,8 +32,8 @@ class ErrNotify implements NotifyInterface
 
     /**
      * @param SysAdmin $users
-     * @param $content
-     * @return
+     * @param string $content
+     * @return int insertID
      */
     protected function sendManagerAlert($users, string $content)
     {
@@ -72,12 +72,16 @@ class ErrNotify implements NotifyInterface
                 'uid' => $email->id,
                 'type' => 2
             ];
-            array_push($address, $email->email);
+            if(!empty($email->email) && checkEmail($email->email))
+                array_push($address, $email->email);
         }
 
         DB::table('sys_user_mails')->insert($data);
 
-        return Mail::to($address)->send(new MdEmail($sendmail));
+        if(!empty($address))
+            return Mail::to($address)->send(new MdEmail($sendmail));
+
+        return false;
     }
 
     /**
@@ -104,17 +108,21 @@ class ErrNotify implements NotifyInterface
     }
 
     /**
-     * @param $result
+     * @param array $errs
      * @return string
      */
-    protected function getContent($result)
+    protected function getContent(array $errs)
     {
-        $gateway = $result['gateway'];
-        $result = $result['exception'] ?: $result;
-        $time = date('Y-m-d H:i:s');
-        $code = $result->getCode() ?: 000000 ;
-        $msg = $result->getMessage() ?: '' ;
+        $msg = "尊敬的管理员您好，RPA短信服务异常，请及时登录服务器查看，";
 
-        return "尊敬的管理员您好，RPA短信服务异常，请及时登录服务器查看，【{$gateway} -- {$msg} 错误代码: {$code} --{$time}】 【RPA服务平台】";
+        foreach($errs as $result){
+            $exception = $result['exception'] ?: $result;
+            $code = $exception->getCode() ?: 000000 ;
+            $message = $exception->getMessage() ?: '' ;
+
+            $msg.= "【{$result['gateway']} -- {$message} 错误代码: {$code}】";
+        }
+
+        return $msg."【RPA服务平台 - ".date('Y-m-d H:i:s')."】";
     }
 }

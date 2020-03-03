@@ -25,7 +25,7 @@ class SMSServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('SMS', function ($app) {
-            return new SMS();
+            return new SMS(getSMSConfig());
         });
     }
 }

@@ -42,7 +42,10 @@
                                                         @endif
                                                     </p>
 
-                                                    <p><b>管理地址: </b><a href="{{ $Setting -> managerAddress }}">{{ $Setting -> managerAddress }}</a>
+                                                    <p><b>管理地址: </b>
+                                                        @if($Setting -> managerAddress)
+                                                            <a  href="{{ $Setting -> managerAddress }}">点我前往</a>
+                                                        @endif
 
                                                     <p><b>剩余短信条数: </b>
                                                 </div>
