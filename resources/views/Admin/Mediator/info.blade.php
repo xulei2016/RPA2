@@ -3,6 +3,7 @@
         查看
     @endslot
     @slot('formContent')
+    <link rel="stylesheet" type="text/css" href="{{URL::asset('/include/fancybox/fancybox.css')}}">
         <div class="card card-primary card-outline">
     <div class="card-body">
         <div class="nav-tabs-custom">
@@ -28,12 +29,6 @@
                             <td>{{ $info->phone }}</td>
                         </tr>
                         <tr>
-                            <th>出生日期</th>
-                            <td>{{ $info->birthday }}</td>
-                            <th>开户日期</th>
-                            <td>{{ $info->open_time }}</td>
-                        </tr>
-                        <tr>
                             <th>客户经理工号</th>
                             <td>{{ $info->manager_number }}</td>
                             <th>居间人编号</th>
@@ -46,7 +41,7 @@
                             <td>{{ $info->edu_background }}</td>
                         </tr>
                         <tr>
-                            <th>地址</th>
+                            <th>联系地址</th>
                             <td>{{ $info->address }}</td>
                             <th>邮编</th>
                             <td>{{ $info->postal_code }}</td>
@@ -54,7 +49,7 @@
                         <tr>
                             <th>职业</th>
                             <td>{{ $info->profession }}</td>
-                            <th>从业资格证号</th>
+                            <th>从业资格合格证编号</th>
                             <td>{{ $info->exam_number }}</td>
                         </tr>
                         <tr>
@@ -66,16 +61,18 @@
                                     <span class="x-tag x-tag-sm x-tag-danger">未通过</span>
                                 @endif
                             </td>
-                            <th>从业资格证</th>
+                            <th>从业资格合格证图片</th>
                             <td>
                                 @if($info->is_exam)
                                     <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}">
-                                        <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格证"  title="从业资格证">
+                                        <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格合格证图片"  title="从业资格合格证图片">
                                     </div>
                                 @endif
                             </td>
                         </tr>
                         <tr>
+                            <th>开户日期</th>
+                            <td>{{ $info->open_time }}</td>
                             <th>居间人状态</th>
                             <td>
                                 @if($info->status == 0)
@@ -95,10 +92,16 @@
                 <div class="tab-pane" id="idCard">
                     <table class="table table-bordered table-striped table-hover table-base">
                         <tr>
-                            <th>证件编号</th>
-                            <td>{{ $info->zjbh }}</td>
+                            <th>出生日期</th>
+                            <td>{{ $info->birthday }}</td>
                             <th>证件到期日</th>
                             <td>{{ $info->sfz_date_end }}</td>
+                        </tr>
+                        <tr>
+                            <th>证件编号</th>
+                            <td>{{ $info->zjbh }}</td>
+                            <th>身份证地址</th>
+                            <td>{{ $info->sfz_address }}</td>
                         </tr>
                         <tr>
                             <th>身份证正面照</th>
@@ -121,8 +124,6 @@
                                     <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}" alt="手持身份证照"  title="手持身份证照">
                                 </div>
                             </td>
-                            <th>身份证地址</th>
-                            <td>{{ $info->sfz_address }}</td>
                         </tr>
                     </table>
                 </div>
@@ -155,10 +156,6 @@
                         <tr>
                             <th>比例(%)</th>
                             <td>{{ $info->rate }}</td>
-                            <th>金融比例(%)</th>
-                            <td>{{ $info->jr_rate }}</td>
-                        </tr>
-                        <tr>
                             <th>签字照片</th>
                             <td colspan="3">
                                 <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}">
@@ -172,6 +169,8 @@
         </div>
     </div>
 </div>
+<script type="text/javascript" src="{{URL::asset('/include/fancybox/fancybox.js')}}"></script>
+    
     @endslot
 
     @slot('formScript')

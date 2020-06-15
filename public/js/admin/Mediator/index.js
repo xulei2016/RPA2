@@ -26,17 +26,32 @@ $(function(){
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
 
-        //根据条件查询信息
-        $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
-        });
+        
+        
 
-        //enter键盘事件
+        //根据条件查询信息
+$('#pjax-container #search-group #formSearch #search-btn').click(function() {
+    $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
+});
+//enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
             if(event.keyCode == 13){
                 $('#tb_departments').bootstrapTable('refresh');
             }
+        });
+
+        //导出全部
+        $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
+            var condition = getSearchGroup();
+            $url = urlEncode(condition);
+            location.href="/admin/mediator/export?"+$url;
+        });
+
+        //导出选中
+        $("#pjax-container section.content #toolbar #export").on('click', function(){
+            var ids = RPA.getIdSelections('#tb_departments');
+            location.href="/admin/mediator/export?id="+ids;
         });
     }
 
@@ -50,6 +65,7 @@ $(function(){
             flow_status : $("#pjax-container #search-group #flow_status").val(),
             dept_id : $("#pjax-container #search-group #dept_id").val(),
             mediator : $("#pjax-container #search-group #mediator").val(),
+            remark : $("#pjax-container #search-group #remark").val(),
             startTime : $("#pjax-container #search-group #startTime").val(),
             endTime : $("#pjax-container #search-group #endTime").val()
         };
@@ -91,8 +107,8 @@ $(function(){
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'open_time',
-                    title: '开户日期',
+                    field: 'flow.part_b_date',
+                    title: '申请日期',
                     align: 'center',
                     valign: 'middle',
                     sortable: true,
@@ -144,11 +160,24 @@ $(function(){
                                 result = '<span class="x-tag x-tag-sm x-tag-success">已审核，未确认比例</span>'
                             }
                         }else{
-                            result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
+                            if(row.flow.is_back == 1){
+                                result = '<span class="x-tag x-tag-sm x-tag-danger">已打回</span>';
+                            }else{
+                                if(row.flow.part_b_date){
+                                    result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
+                                }else{
+                                    result = '<span class="x-tag x-tag-sm x-tag-info">未申请完成</span>';
+                                }
+                            }
                         }
                         return result;
                     }
                 }, {
+                    field: 'flow.remark',
+                    title: '备注',
+                    align: 'center',
+                    valign: 'middle',
+                },{
                     field: 'id',
                     title: '操作',
                     align: 'center',
@@ -158,6 +187,9 @@ $(function(){
                         var result = "";
                         result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/mediator/info/"+id+"' title='详情'>详情</a> ";
                         result += " <a href='/admin/mediator/history/"+id+"' class='btn btn-sm btn-primary' title='履历查询'>履历查询</a>";
+                        if(row.status != 0){
+                            result += " <a href='/admin/mediator/downloadAll/"+id+"' class='btn btn-sm btn-success'  title='导出全部'>导出全部</a>"
+                        }
                         return result;
                     }
                 }],

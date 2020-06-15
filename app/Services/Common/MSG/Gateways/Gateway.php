@@ -51,7 +51,7 @@ abstract class Gateway implements GatewayInterface
      */
     public function getBaseUri()
     {
-        return $this->base_uri ?: $this->config->get('base_uri', '');
+        return $this->timeout ?: $this->config->get('base_uri', '');
     }
 
     /**

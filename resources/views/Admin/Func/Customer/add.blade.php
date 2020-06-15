@@ -37,9 +37,9 @@
     </div>
 
     <div class="form-group row">
-        <label for="jjr" class="col-sm-2 control-label">居间人编号</label>
+        <label for="jjrNum" class="col-sm-2 control-label">居间人编号</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" name="jjr" id="jjr" placeholder="居间人编号">
+            <input type="text" class="form-control" name="jjr" id="jjrNum" placeholder="居间人编号">
         </div>
     </div>
 

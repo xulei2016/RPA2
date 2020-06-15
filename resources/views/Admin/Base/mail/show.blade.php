@@ -1,11 +1,16 @@
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-title">查看操作</h3>
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body">
-        <pre style="white-space: normal;">
-            {!! $sysMail->content !!}
-        </pre>
-    </div>
-</div>
+@component('admin.widgets.viewForm')
+    @slot("title")
+        查看
+    @endslot
+    @slot("formContent")
+        <div class="card">
+            <div class="card-body">
+            <pre style="white-space: normal;">
+                {!! $sysMail->content !!}
+            </pre>
+            </div>
+        </div>
+    @endslot
+    @slot("formScript")
+    @endslot
+@endcomponent

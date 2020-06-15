@@ -1,5 +1,5 @@
 <template>
-    <layout title="居间人权利义务告知书">
+    <layout title="居间人权利义务告知书" left="">
 
         <div style="text-align: center; margin-top: 60px;">
             <van-divider>请仔细阅读以下协议</van-divider>
@@ -47,9 +47,9 @@
         methods: {
             confirm(){
                 if(this.read !== '1') {
-                    let agreement = sessionStorage.getItem('agreement');
+                    let agreement = Vue.utils.getCookie('agreement');
                     if(!agreement) agreement = '';
-                    sessionStorage.setItem('agreement', agreement+'2');
+                    Vue.utils.setCookie('agreement', agreement+'2','h2');
                 }
                 history.go(-1);
                 return false;

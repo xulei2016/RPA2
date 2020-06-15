@@ -173,7 +173,6 @@ return;
         $('#pjax-container #search-group #formSearch #search-btn').click(function () {
             initHeatMap();
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function (event) {
             event = event ? event : window.event;

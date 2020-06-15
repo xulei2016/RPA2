@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Admin\Base\SysSmsTpl;
 use App\Models\Admin\Rpa\rpa_filebinarys;
 use GuzzleHttp\Client;
+use SMS;
 
 class NoticeApiController extends BaseApiController
 {
@@ -47,16 +48,23 @@ class NoticeApiController extends BaseApiController
         $validatedData = $request->validate([
             'phone' => 'required',
             'msg' => 'required',
-            'type' => 'in:zzy_sms,yx_sms'
+            'gateway' => 'required'
         ]);
 
-        if($request->type == "zzy_sms"){
-            $data = $this->zzy_sms($request->phone,$request->msg);
-        }elseif($request->type == "yx_sms"){
-            $data = $this->yx_sms($request->phone,$request->msg);
+        $res = (new SMS())::send($request->phone, $request->msg, [], $request->gateway);
+        $arr = end($res);
+        if($arr['status'] == 'success'){
+            $re = [
+                'status' => 200,
+                'msg' => '短信发送成功！'
+            ];
+        }else{
+            $re = [
+                'status' => 500,
+                'msg' => '短信发送失败！'
+            ];
         }
-
-        return response()->json(['status'=>200,'data'=> $data]);
+        return response()->json($re);
     }
 
     /**
@@ -139,6 +147,7 @@ class NoticeApiController extends BaseApiController
             'id' => 'required|numeric'
         ]);
 
+        $server_name = isset($request->server_name) ? $request->server_name : "";
         $id = $request->id;
         $uploadmail = rpa_uploademail::find($id);
         if($uploadmail){
@@ -170,7 +179,7 @@ class NoticeApiController extends BaseApiController
                     }else{
                         //发邮件
                         $data1 = [
-                            'title' => $maintenance['bewrite']."任务运行反馈",
+                            'title' => $maintenance['bewrite']."任务运行反馈(".$server_name.")",
                             'content' => $uploadmail['content'],
                             'tid' => 2
                         ];
@@ -189,101 +198,20 @@ class NoticeApiController extends BaseApiController
                     if(empty($uploadmail['SMS'])){
                         $sms = "短信不发送";
                     }else{
-                        $ph = implode(",", $phones);
-                        $smsdata = $this->zzy_sms($ph,$uploadmail['SMS']);
-                        $sms = $smsdata['msg'];
-                    }
-                    $data['mail'] = $mail;
-                    $data['sms'] = $sms;
-                }else{
-                    rpa_uploademail::where('id',$id)->update(['state'=>'不发送']);
-                    $data = [
-                        'status' => 200,
-                        'mail' => '邮件不发送',
-                        'sms' => '短信不发送',
-                        'phones' => '',
-                        'emails' => ''
-                    ];
-                }
-            }else{
-                $data = [
-                    'status' => 500,
-                    'msg' => "任务名称错误！"
-                ];
-            }
-        }else{
-            $data = [
-                'status' => 500,
-                'msg' => "数据查询失败！"
-            ];
-        }
-
-        //api日志
-        $this->apiLog(__FUNCTION__,$request,json_encode($data,true),$request->getClientIp());
-
-        return response()->json($data);
-    }
-
-    public function test_notice(Request $request)
-    {
-        //表单验证
-        $validatedData = $request->validate([
-            'id' => 'required|numeric'
-        ]);
-
-        $id = $request->id;
-        $uploadmail = rpa_uploademail::find($id);
-        if($uploadmail){
-            $maintenance = rpa_maintenance::where([['name','=',$uploadmail['name']]])->first();
-            if($maintenance){
-                //任务设置不发送
-                if($maintenance['notice_type'] != 0){
-                    $admin = getAdmin($maintenance['notice_type'],$maintenance['noticeAccepter']);
-                    // 获取通知的用户和id
-                    $sysAdminIds = $admin['sysAdminIds'];
-                    $sysAdmin = $admin['sysAdmin'];
-                    //取出所有要发送的手机号和邮箱
-                    $phones = [];
-                    $emails = [];
-                    foreach ($sysAdmin as $v){
-                        $phones[] = $v->phone;
-                        $emails[] = $v->email;
-                    }
-
-                    $data = [
-                        'status' => 200,
-                        'emails' => $emails,
-                        'phones' => $phones
-                    ];
-                    //邮件内容为空不发送
-                    if(empty($uploadmail['content'])){
-                        rpa_uploademail::where('id',$id)->update(['state'=>'不发送']);
-                        $mail = "邮件不发送";
-                    }else{
-                        //发邮件
-                        $data1 = [
-                            'title' => $maintenance['bewrite']."任务运行反馈",
-                            'content' => $uploadmail['content'],
-                            'tid' => 2
-                        ];
-                        $sysmail = SysMail::create($data1);
-                        $sysmail->admins()->attach($sysAdminIds);
-                        Mail::to($sysAdmin)->send(new MdEmail($sysmail));
-                        if($sysmail){
-                            $mail = "邮件发送成功";
-                            rpa_uploademail::where('id',$id)->update(['state'=>'已发送']);
-                        }else{
-                            $mail = "邮件发送失败";
-                            rpa_uploademail::where('id',$id)->update(['state'=>'发送失败']);
+                        //循环发送短信
+                        $flag = true;
+                        foreach($phones as $ph){
+                            $res = (new SMS())::send($ph, $uploadmail['SMS'], [], 'RPA-TZ'); 
+                            $arr = end($res);
+                            if($arr['status'] != 'success'){
+                                $flag = false;
+                            }
                         }
-                    }
-                    //短信内容为空不发送
-                    if(empty($uploadmail['SMS'])){
-                        $sms = "短信不发送";
-                    }else{
-                        $ph = implode(",", $phones);
-                        $smsdata = $this->zzy_sms($ph,$uploadmail['SMS']);
-                        $sms = $smsdata['msg'];
+                        if($flag){
+                            $sms = '短信发送成功！';
+                        }else{
+                            $sms = '短信发送失败！';
+                        }
                     }
                     $data['mail'] = $mail;
                     $data['sms'] = $sms;
@@ -463,9 +391,9 @@ class NoticeApiController extends BaseApiController
                 if($v->title != "不发短信" && !empty($v->content)) {
                     $content = "尊敬的" . $request->name . "您好：" . $v->content . "，我司会尽快为您办理开户事宜，感谢您的配合！";
 
-                    $data = $this->yx_sms($request->phone,$content);
+                    $data = $this->sendSmsSingle($request->phone, $content, 'LLQCJ');
 
-                    if ($data['status'] != 0) {
+                    if ($data !== true) {
                         $error = 0;
                     }
                 }
@@ -525,9 +453,11 @@ class NoticeApiController extends BaseApiController
         $config = $this->get_config(['code_distinguish']);
         $func = $config['code_distinguish'];
         if($func == '尖叫'){
-            $return = $this->jianjiao($file->filebinary,'cn');
+            $return = $this->jianjiao($file->filebinary,'ne');
         }elseif($func == '云打码'){
             $return = $this->yundama($path,$type);
+        }elseif($func == '超人云'){
+            $return = $this->chaorenyun($path,$type);
         }else{
             $func = config('code.default');
             $return = $this->$func($path,$type);
@@ -536,6 +466,47 @@ class NoticeApiController extends BaseApiController
         $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
 
         return response()->json($return);
+    }
+
+    /** 超人云识别验证码
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function chaorenyun($path,$type)
+    {
+
+        if($type == 1005){
+            $softId = 71205;
+        }elseif($type == 1004){
+            $softId = 71210;
+        }else{
+            $softId = 71211;
+        }
+
+        $data = [
+            'username' => config('code.chaorenyun.USERNAME'),
+            'password' => config('code.chaorenyun.PASSWORD'),
+            'softId' => $softId,
+            'imgdata' => bin2hex(file_get_contents($path))
+        ];
+        $guzzle = new Client(['verify'=>false]);
+        $response = $guzzle->post(config('code.chaorenyun.url.mult'), [
+            'form_params' => $data,
+        ]);
+        $body = $response->getBody();
+        $body = json_decode((string)$body,true);
+        if($body['info'] == 1){
+            $return = [
+                'status' => 200,
+                'msg' => $body['result']
+            ];
+        }else{
+            $return = [
+                'status' => 500,
+                'msg' => $body['info']
+            ];
+        }
+        return $return;
     }
 
     /** 尖叫识别验证码

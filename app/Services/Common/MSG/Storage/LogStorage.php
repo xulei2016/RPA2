@@ -102,7 +102,6 @@ class LogStorage implements LogInterface
             if ('failure' === $result['status'] && isset($result['exception'])) {
                 $err[] = $result;
                 $results[$k]['code'] = $result['exception']->getCode();
-
                 $this->failureResponse($result);
             } else {
                 $this->successResponse($result);

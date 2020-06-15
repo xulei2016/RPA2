@@ -8,6 +8,8 @@
                     <div class="card-body">
                         @component('admin.widgets.toolbar')
                         @slot('listsOperation')
+                            <li><a class="dropdown-item" href="javascript:void(0)" id="exportAll">导出全部</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0)" id="export">导出选中</a></li>
                         @endslot
 
                         @slot('operation')
@@ -32,6 +34,7 @@
                                 <option value="2">待确认比例</option>
                                 <option value="3">正在办理</option>
                                 <option value="4">办理完成</option>
+                                <option value="5">已打回</option>
                             </select>
                         </div>
                         <div class="col-sm-2">
@@ -46,9 +49,10 @@
                             <input type="text" class="form-control" id="mediator" placeholder="居间姓名或居间编号">
                         </div>
                         <div class="col-sm-2">
+                        <input type="text" class="form-control" id="remark" placeholder="备注">
                         </div>
-                                    <div class="col-sm-2">
-                                    </div>
+                        <div class="col-sm-2">
+                        </div>
                         <div class="col-sm-2">
                             <input type="text" class="form-control" id="startTime" placeholder="开始时间">
                         </div>

@@ -9,4 +9,6 @@ class FuncLostCreditShowRecord extends Model
     protected $table = "func_lost_credit_show_records";
 
     protected $guarded = [];
+
+    // protected $connection = "master2";
 }

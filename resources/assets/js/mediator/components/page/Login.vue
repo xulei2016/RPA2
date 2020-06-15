@@ -1,6 +1,6 @@
 <template>
     <div>
-        <layout title="居间人认证" >
+        <layout title="居间人认证" left="" >
             <div style="margin-top: 60px;">
                 <van-divider>居间人登录</van-divider>
                 <van-cell-group :border="fieldBorder">
@@ -85,7 +85,7 @@
                     this.$toast("短信发送失败!");
                     return false;
                 }
-                Vue.api.sendCode({phone:this.phone,img_code:this.imageCode}).then(res=>{
+                Vue.api.sendCode({phone:this.phone,icode:this.imageCode}).then(res=>{
                     this.$toast("短信发送成功");
                     this.codeTime = 60;
                     this.timer = setInterval(() => {

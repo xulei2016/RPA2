@@ -28,11 +28,13 @@ $(function(){
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
 
+        
+        
+
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -110,6 +112,28 @@ $(function(){
             },
             error:function() {
                 swal('分配失败', '', 'error');
+                return false;
+            }
+        });
+    }
+
+    function sendErr(id) {
+        $.ajax({
+            url:'/admin/rpa_simulation_account_business/sendErr',
+            data:{id:id},
+            type:'post',
+            dataType:'json',
+            success:function(r) {
+                if(r.code != 200) {
+                    swal(r.info, '', 'error');
+                    return false;
+                } else {
+                    swal('发送成功', '', 'success');
+                    $.pjax.reload('#pjax-container');
+                }
+            },
+            error:function() {
+                swal('发送失败', '', 'error');
                 return false;
             }
         });
@@ -219,6 +243,38 @@ $(function(){
                 align: 'center',
                 valign: 'middle'
             }, {
+                field: 'errorMessage',
+                title: '错误信息',
+                align: 'center',
+                valign: 'middle',
+                formatter:function(v){
+                    if(v){
+                        return "<span class='text text-danger'>"+v+"</span>"; 
+                    }   
+                },
+            }, {
+                field: 'isSendErr',
+                title: '发送错误短信',
+                align: 'center',
+                valign: 'middle',
+                formatter:function(v,row){
+                    var result = "";
+                    if(v == 2) {
+                        result += ' <span class="text text-success">已发送</span>';
+                    }else if(v == 1){
+                        result += "<button class='btn btn-primary btn-sm sendErr'>发送短信</button>";
+                    }else {
+                        result += ' <span class="text text-info">无需发送</span>' 
+                    }
+                    return result;
+                },
+                events: {
+                    "click .sendErr":function (e, value, row, index){
+                        var id = row.id;
+                        sendErr(id);
+                    }
+                },
+            }, {
                 field: 'created_at',
                 title: '创建时间',
                 align: 'center',
@@ -232,7 +288,7 @@ $(function(){
                     if(v == 2) {
                         return "仅CTP穿透(已分配)";
                     } else if(v == 1) {
-                        return "仅CTP穿透<button class='btn btn-primary btn-sm fp'>分配</button>";
+                        return "仅CTP穿透 <button class='btn btn-primary btn-sm fp'>分配</button>";
                     } else {
                         return "无";
                     }

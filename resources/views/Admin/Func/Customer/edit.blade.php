@@ -2,9 +2,9 @@
     @slot('formContent')
 
     <div class="form-group row">
-        <label for="yyb" class="col-sm-2 control-label"><span class="must-tag">*</span>营业部名称</label>
+        <label for="yybName" class="col-sm-2 control-label"><span class="must-tag">*</span>营业部名称</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" value="{{$customer->yybName}}" readonly>
+            <input type="text" name="yybName" class="form-control" value="{{$customer->yybName}}">
         </div>
     </div>
 
@@ -32,14 +32,14 @@
     <div class="form-group row">
         <label for="customerNum" class="col-sm-2 control-label">客户经理号</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" value="{{$customer->customerNum}}" readonly>
+            <input type="text" name="customerNum" class="form-control" value="{{$customer->customerNum}}">
         </div>
     </div>
 
     <div class="form-group row">
-        <label for="jjr" class="col-sm-2 control-label">居间人编号</label>
+        <label for="jjrNum" class="col-sm-2 control-label">居间人编号</label>
         <div class="col-sm-10">
-            <input type="text" class="form-control" value="{{$customer->jjr}}" readonly>
+            <input type="text" name="jjrNum" class="form-control" value="{{$customer->jjrNum}}">
         </div>
     </div>
 

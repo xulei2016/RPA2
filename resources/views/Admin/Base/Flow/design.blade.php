@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="/include/flowdesign/css/ie.css?2025">
     <![endif]-->
 
-    <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.min.css')}}">
     <!-- design flow -->
     <link rel="stylesheet" href="{{URL::asset('/css/admin/flow/design.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/css/admin/flow/flowDesign.css')}}">

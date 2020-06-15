@@ -7,6 +7,12 @@
                 <input type="text" class="form-control" name="name" id="name" placeholder="插件名称">
             </div>
         </div>
+        <div class="form-group row">
+            <label for="name_en" class="col-sm-12 control-label"><span class="must-tag">*</span>英文名称(提交后无法修改)</label>
+            <div class="col-sm-12">
+                <input type="text" class="form-control" name="name_en" id="name_en" placeholder="英文名称">
+            </div>
+        </div>
 
 
         <div class="form-group row">

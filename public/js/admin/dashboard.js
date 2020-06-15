@@ -24,6 +24,23 @@ $(function () {
      * 绑定
      */
     function bindEvent() {
+        // Make the dashboard widgets sortable Using jquery UI
+        $('.connectedSortable').sortable({
+            placeholder: 'sort-highlight',
+            connectWith: '.connectedSortable',
+            handle: '.card-header, .nav-tabs',
+            forcePlaceholderSize: true,
+            zIndex: 999999
+        });
+        $('.connectedSortable .card-header, .connectedSortable .nav-tabs-custom').css('cursor', 'move');
+
+        // jQuery UI sortable for the todo list
+        $('.todo-list').sortable({
+            placeholder: 'sort-highlight',
+            handle: '.handle',
+            forcePlaceholderSize: true,
+            zIndex: 999999
+        });
 
         pieChart();
 
@@ -46,6 +63,18 @@ $(function () {
         document.addEventListener('operationFlow', function () {
             showTodoList();
         })
+
+        $(function(){
+            var notification = window.Notification || window.mozNotification || window.webkitNotification;
+            if(!notification) return false; // 不支持通知
+            if(notification.permission === 'granted') return false; // 已经开启
+            if(notification.permission === 'denied') {
+                // swal.fire("系统检测到您已禁止浏览器通知, 强烈建议您去手动开启", '', 'info');
+            }
+            if(notification.permission === 'default') {
+                notification.requestPermission() 
+            }
+        });
     }
 
     function showTodoList() {

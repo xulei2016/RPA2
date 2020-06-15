@@ -4,7 +4,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="stylesheet" href="{{ URL::asset('/include/bootstrap3/css/bootstrap.css')}}">
-        <link rel="stylesheet" href="{{ URL::asset('/include/sweetalert2/sweetalert2.css')}}">
+        <link rel="stylesheet" href="{{ URL::asset('/include/sweetalert2/sweetalert2.min.css')}}">
         <link rel="stylesheet" href="{{ URL::asset('/include/bootstrap-switch/css/bootstrap3/bootstrap-switch.css')}}">
         <style>
             .mt10{
@@ -44,15 +44,16 @@
                                 <div class="form-group row mt10">
                                     <label for="pName" class="col-md-4">姓名:</label>
                                     <div class="col-md-7">
-                                        <input autocomplete="off" type="text" id="pName" name="pName" class="form-control" placeholder="请输入用户姓名">
+                                        <input autocomplete="off" type="text" value="{{$data['name']}}" @if($data['number']) readonly @endif id="pName" name="pName" class="form-control" placeholder="请输入用户姓名">
                                     </div>
                                 </div>
                                 <div class="form-group row mt10">
                                     <label for="pCard" class="col-md-4">身份证号:</label>
                                     <div class="col-md-7">
-                                        <input autocomplete="off"  type="text" id="pCard" name="pCard" class="form-control" placeholder="请输入用户身份证号码">
+                                        <input autocomplete="off" value="{{$data['idCard']}}" @if($data['number']) readonly @endif  type="text" id="pCard" name="pCard" class="form-control" placeholder="请输入用户身份证号码">
                                     </div>
                                 </div>
+                                <input type="hidden" name="number" id="number" value="{{$data['number']}}">
                                 <hr>
                                 <div class="form-group row mt10">
                                     <div class="col-md-8 col-md-offset-3">
@@ -68,7 +69,7 @@
                                 <div class="form-group row mt10">
                                     <label for="cName" class="col-md-4">企业名称:</label>
                                     <div class="col-md-7">
-                                        <input autocomplete="off" type="text" name="cName" id="cName" class="form-control" placeholder="请输入企业全面">
+                                        <input autocomplete="off" type="text" name="cName" id="cName" class="form-control" placeholder="请输入企业名称">
                                     </div>
                                 </div>
                                 <div class="form-group row mt10">
@@ -136,7 +137,7 @@
 
     </body>
     <script src="{{ URL::asset('/include/jquery/jquery.min.js')}} "></script>
-    <script src="{{ URL::asset('/include/sweetalert2/sweetalert2.all.js')}} "></script>
+    <script src="{{ URL::asset('/include/sweetalert2/sweetalert2.min.js')}} "></script>
     <script src=" {{ URL::asset('/include/bootstrap3/js/bootstrap.js')}} "></script>
     <script src=" {{ URL::asset('/include/bootstrap-switch/js/bootstrap-switch.js')}} "></script>
     <script src=" {{ URL::asset('/include/clipboard/clipboard.min.js')}} "></script>
@@ -146,13 +147,26 @@
             var timer;
             var clickTime = 0;
             var clickTimer;
+            var resetQuery = false;
+            var current;
+
+            // swal通用模板
+            var MySwal = Swal.mixin({
+                type: 'warning', // 弹框类型
+                confirmButtonText: '确定',// 确定按钮的 文字
+                showCancelButton: true, // 是否显示取消按钮
+                cancelButtonText: "取消", // 取消按钮的 文字
+                focusCancel: true, // 是否聚焦 取消按钮
+                reverseButtons: true  // 是否 反转 两个按钮的位置 默认是  左边 确定  右边 取消
+            });
+
             $("#switch").bootstrapSwitch({
                 onText:"是",
                 offText:"否",
                 onSwitchChange:function(event,state){
                     var fName = $('#fName').val();
                     var fCard = $('#fCard').val();
-                    if(state==true){
+                    if(state == true){
                         $('#dName').val(fName);
                         $('#dCard').val(fCard);
                     }else{
@@ -161,6 +175,44 @@
                     }
                 }
             });
+
+            // 查询失败时展示
+            function showError(){
+                MySwal.fire({
+                    title:"查询失败",
+                    text:"是否要重新查询"
+                }).then((isConfirm) => {
+                    try {
+                        //判断 是否 点击的 确定按钮
+                        if (isConfirm.value) {
+                            clickTime = 0;
+                            resetQuery = true;
+                            $(current + ' .query').click();
+                        }
+                    } catch (e) {
+                        Swal.fire("网络异常", '', 'warning');
+                    }
+                });
+            }
+
+            // 存在失信
+            function showCredit(code, token){
+                MySwal.fire({
+                    title:"查询到失信记录",
+                    text:"是否要重新查询",
+                }).then((isConfirm) => {
+                    try {
+                        //判断 是否 点击的 确定按钮
+                        if (isConfirm.value) {
+                            clickTime = 0;
+                            resetQuery = true;
+                            $(current + ' .query').click();
+                        }
+                    } catch (e) {
+                        Swal.fire("网络异常", '', 'warning');
+                    }
+                });
+            }
 
             function loop(){
                 $.ajaxSetup({
@@ -176,6 +228,7 @@
                         if(res.code === 200) {
                             $('#uu').val(code);
                             Swal('未查询到失信记录<br><br>'+code, '<button data-clipboard-target="#uu" data-clipboard-text="'+code+'" class="btn btn-info btn-xs" id="clipboard">复制</button>识别码,可在CRM系统查询到详细记录' , 'success');
+                            $('#clipboard').click();
                         }
                         if(res.code === 202) {
                             setTimeout(function(){
@@ -183,10 +236,12 @@
                             }, 10000)
                         }
                         if(res.code === 201) {
-                            Swal('查询到失信记录', '' , 'info');
+                            showCredit();
+                            return false;
                         }
                         if(res.code === 500) {
-                            Swal('查询失败, 请重试', '', 'error');
+                            showError();
+                            return false;
                         }
                         if(res.code !== 202 ) {
                             clearTimeout(timer);
@@ -195,6 +250,7 @@
                     },
                 })
             }
+
             // 保存
             $('.query').on('click', function(){
                 if(clickTime) {
@@ -204,6 +260,7 @@
                 var _this = $(this);
                 var flag = true;
                 var type = _this.attr('type');
+                current = "#"+type;
                 var form = '#'+type+'-form';
                 var inputs = $(form + ' input:text');
                 $.each(inputs, function(index, item){
@@ -216,6 +273,10 @@
                 if(flag) { // 所有字段均填写
                     var data = $(form).serialize();
                     data += '&type='+type;
+                    if(resetQuery) {
+                        data += '&resetQuery=1';
+                        resetQuery = false;
+                    }
                     $.ajax({
                         url:"/credit",
                         type:'post',
@@ -239,6 +300,7 @@
                                 code = res.info;
                                 $('#uu').val(code);
                                 Swal('未查询到失信记录<br><br>'+code, '<button  data-clipboard-target="#uu" data-clipboard-text="'+code+'" class="btn btn-info btn-xs" id="clipboard">复制</button>识别码,可在CRM系统查询到详细记录' , 'success');
+                                $('#clipboard').click();
                                 return false;
                             }
                             code = res.data;

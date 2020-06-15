@@ -210,7 +210,7 @@ $(function () {
             $('#detail #personCard').show();
             $('#detail #nodeCard').hide();
             $('#detail #initCard').hide();
-            showUserHtml(uid);
+            showUserHtml();
         }
     }
 
@@ -222,43 +222,18 @@ $(function () {
         }).then((json) => {
             $('#nodeCard').html(json);
             return false;
-            if(200 == json.code) {
-                // 员工一览
-                var adminHtml = "";
-                $.each(json.data.admins, function(index, item){
-                    adminHtml += "<tr>" +
-                        "<td>"+item.realName+"</td>" +
-                        "<td>"+item.post+"</td>" +
-                        "</tr>";
-                });
-                $('#userList tbody').html(adminHtml);
-
-                //岗位一览
-                var postHtml = "";
-                $.each(json.data.posts, function(index, item) {
-                    postHtml += "<tr>" +
-                        "<td>" + item.name + "</td>" +
-                        "<td>" + item.rank + "</td>" +
-                        "</tr>";
-                });
-                $("#postList tbody").html(postHtml)
-            }
         });
     }
 
     //展示员工详细信息
     function showUserHtml(){
         if(!uid) return false;
-        $.get("/admin/sys_admin/getById", {
-            id: uid
-        }).then((res) => {
-            if(res.code == 200) {
-                $("#item_operation").attr('item-id', res.data.id);
-                $.each(res.data, function(index, item){
-                    $("#item_"+index).text(item);
-                });
-            }
-        })
+        $.get('/admin/sys_dept/getUserDetail', {
+            id:uid
+        }).then(res => {
+            $('#personCard').html(res);
+            return false;
+        });
     }
 
     //移除结点事件

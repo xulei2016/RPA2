@@ -9,6 +9,12 @@
         </div>
         <div class="form-group">
             <div class="row">
+                <label for="" class="col-sm-2 control-label"><span class="must-tag">*</span>回访方式</label>
+                <div class="col-sm-10">
+                    <input type="radio" value="2" name="reviewType" id="dh" checked> <label for="dh">电话</label>
+                    <input type="radio" value="1" name="reviewType" id="dx"> <label for="dx">短信</label>
+                </div>
+                <br>
                 <label for="khyj" class="col-sm-2 control-label">客户意见</label>
                 <div class="col-sm-10">
                     <textarea id="khyj" name="khyj" cols="60" rows="3"></textarea>

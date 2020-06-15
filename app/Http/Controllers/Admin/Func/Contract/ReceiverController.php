@@ -15,7 +15,7 @@ class ReceiverController extends BaseController
     /**
      * @var string 页面前缀
      */
-    protected $view_prefix = "admin.func.contract.receiver.";
+    protected $view_prefix = "admin.func.contract.receiver.";    
 
     /**
      * 首页

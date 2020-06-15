@@ -1,5 +1,5 @@
 <template>
-    <layout title="信息查看" >
+    <layout title="信息查看" left="">
         <div style="margin-top: 60px;">
             <van-divider>点击查看相关信息</van-divider>
 

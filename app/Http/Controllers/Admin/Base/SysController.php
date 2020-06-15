@@ -6,11 +6,12 @@ use DB;
 use App\Models\Admin\Base\SysVersionUpdate;
 use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Admin\SysAdmin;
-use App\Models\Admin\Api\RpaApiLog;
+use App\Models\Admin\Api\ApiLog;
 use App\Models\Admin\RPA\rpa_taskcollections;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Base\BaseAdminController;
+
 use App\Models\Admin\Admin\SysAdminAlert;
 use App\Models\Admin\Base\SysMessage;
 
@@ -23,8 +24,6 @@ class SysController extends BaseAdminController
 {
     /**
      * dashboard
-     * @param Request $request
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
      */
     public function index(Request $request)
     {
@@ -33,45 +32,40 @@ class SysController extends BaseAdminController
         }
 
         $last_week = date('Y-m-d', strtotime('-1week'));
+        $last_month = date('Y-m-d', strtotime('-1month'));
 
         //用户提醒
         $data['alerts'] = auth()->guard('admin')->user()->alerts()->where([['state', '=', 0], ['created_at', '>', $last_week]])->get(['id', 'title', 'content', 'type', 'created_at'])->toArray();
-
-        //用户数
-        $data['countUser'] = SysAdmin::where('type', 1)->count();
-        //日活
-        $date = date('Y-m-d', strtotime('-1 day'));
-        $data['countYUser'] = SysAdmin::where([['type', 1], ['updated_at', '>=', "{$date}"]])->count();
         //未读邮件
         $data['notification_count'] = auth()->guard('admin')->user()->notification_count;
+
+        //用户数
+        $data['count']['countUser'] = SysAdmin::where('type', 1)->count();
+        //日活
+        $date = date('Y-m-d', strtotime('-1 day'));
+        $data['count']['countYUser'] = SysAdmin::where([['type', 1], ['updated_at', '>=', "{$date}"]])->count();
         //执行任务数
-        $data['countTask'] = rpa_taskcollections::count();
-        //条用接口数
-        $data['countApi'] = RpaApiLog::count();
-        //活动内容
+        $data['count']['countTask'] = rpa_taskcollections::count();
+        //调用接口数
+        $data['count']['countApi'] = ApiLog::count();
+
+        //近期操作
+        $data['usulMenus'] = self::getUsulMenus($last_month);
+
+        //我的活动内容
         $user_id = auth()->guard('admin')->user()->id;
-        $data['footprint'] = DB::select("select count(*)c,simple_desc from sys_logs where user_id = {$user_id} GROUP BY controller,simple_desc ORDER BY c desc limit 10");
-        $data['pie_labels'] = '';
-        $data['pie_datas'] = '';
-        $data['pie_all'] = 0;
-        foreach ($data['footprint'] as $footprint) {
-            $data['pie_all'] += $footprint->c;
-        }
+        $data['myActivity'] = self::myActivity($user_id);
 
-        foreach ($data['footprint'] as $footprint) {
-            $data['pie_labels'] .= "'{$footprint->simple_desc}',";
-            $data['pie_datas'] .= "{$footprint->c},";
-        }
-
-        $data['pie_labels'] = trim($data['pie_labels'], ',');
-        $data['pie_datas'] = trim($data['pie_datas'], ',');
-
+        //系统信息
+//        $data['sysInfo'] = self::sys_info();
         $data = array_merge($data, self::sys_info());
+
+        //版本更新历史
+        $data['versionUpdateList'] = SysVersionUpdate::where('status', 1)->orderBy('id', 'desc')->limit(3)->get();
+
+
         $this->log(__CLASS__, __FUNCTION__, $request, "查看 首页");
-
-        $versionUpdateList = SysVersionUpdate::where('status', 1)->orderBy('id', 'desc')->limit(3)->get();
-
-        return view('admin.index.index', ['data' => $data, 'versionUpdateList' => $versionUpdateList]);
+        return view('admin.index.index', ['data' => $data]);
     }
 
     /**
@@ -159,6 +153,46 @@ class SysController extends BaseAdminController
     }
 
     /**
+     * 获取用户自定义首页展示内容 无自定义则使用默认
+     * 时间优先、频次优先
+     * @param $last_month
+     * @return array
+     */
+    private function getUsulMenus($last_month)
+    {
+        $actList = [];
+        $active = DB::select("select count(*),simple_desc,path,id from sys_logs where created_at >= {$last_month} and account = 'xuliang' and action = 'index' and simple_desc like '%查看%' group by simple_desc order by id desc, count(*) desc limit 5");
+        foreach ($active as $item) {
+            $m = explode(' ', $item->simple_desc);
+            isset($m[1]) ? ($actList[$m[1]] = $item->path) : '';
+        }
+        return $actList;
+    }
+
+    /**
+     * 我的活跃内容
+     * @param $user_id
+     * @return mixed
+     */
+    private function myActivity($user_id)
+    {
+        $data['footprint'] = DB::select("select count(*)c,simple_desc from sys_logs where user_id = {$user_id} GROUP BY controller,simple_desc ORDER BY c desc limit 10");
+        $data['pie_labels'] = '';
+        $data['pie_datas'] = '';
+        $data['pie_all'] = 0;
+        foreach ($data['footprint'] as $footprint) {
+            $data['pie_all'] += $footprint->c;
+
+            $data['pie_labels'] .= "'{$footprint->simple_desc}',";
+            $data['pie_datas'] .= "{$footprint->c},";
+        }
+
+        $data['pie_labels'] = trim($data['pie_labels'], ',');
+        $data['pie_datas'] = trim($data['pie_datas'], ',');
+        return $data;
+    }
+
+    /**
      * 清除缓存
      */
     public function clearCache()
@@ -168,7 +202,7 @@ class SysController extends BaseAdminController
             return $this->ajax_return(200, '缓存清除成功！');
         } else {
             return $this->ajax_return(500, '缓存清除失败！请联系管理员处理');
-        };
+        }
     }
 
     /**

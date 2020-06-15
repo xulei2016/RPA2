@@ -27,7 +27,7 @@
                                             @if($v['download'])
                                                 <button class="btn btn-sm btn-success pull-right download" url="/admin/rpa_download_plugin/{{$v['id']}}" style="margin-left: 6px;">下载</button>
                                             @endif
-                                            <button class="btn btn-sm btn-primary pull-right apply">申请</button>
+                                            <button class="btn btn-sm btn-primary pull-right apply" style="margin-left: 6px;">申请</button>
                                             <button class="btn btn-sm btn-default pull-right document">使用说明</button>
 
                                         </div>

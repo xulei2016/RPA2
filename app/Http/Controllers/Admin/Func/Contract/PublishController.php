@@ -19,6 +19,7 @@ class PublishController extends BaseController
 {
     protected $view_prefix = "admin.func.contract.publish.";
 
+
     /**
      * 首页
      * @param Request $request
@@ -119,7 +120,6 @@ class PublishController extends BaseController
      * 获取数据
      */
     public function getData($date) {
-        $this->dayList = $this->getAllDays();
         $newDate = $this->getDateAfter($date, 0, 'F1');
         if($newDate) {
             $date = date('Y-m-d', strtotime($newDate));
@@ -141,7 +141,7 @@ class PublishController extends BaseController
         foreach ($allExtraList as $v) {
             $allList[$v->hydm] = $v->real_date;
         }
-        $receiverList = RpaContractReceiver::all();
+        $receiverList = RpaContractReceiver::where('status', 1)->get();
         $emailList = [];
         foreach ($receiverList as $v) {
             $emailList[] = $v->email;
@@ -255,7 +255,6 @@ class PublishController extends BaseController
         }
         $sysmail = SysMail::create($data);
         $to = $emailList;
-        // $to = ["775745307@qq.com"];  // 测试邮件发送
         $result = (new MdEmail($sysmail, 'mail.test'));
         Mail::to($to)->send($result);
         $re = [

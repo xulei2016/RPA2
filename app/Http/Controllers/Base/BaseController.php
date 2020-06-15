@@ -4,11 +4,13 @@ namespace App\Http\Controllers\base;
 
 use App\Models\Admin\Base\Organization\SysDept;
 use App\Models\Admin\Base\SysConfig;
+use App\Models\Admin\Base\Sys\SMS\SysSmsSetting;
 use App\Http\Controllers\Controller;
 use App\Models\Admin\Rpa\rpa_accesstoken;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\MessageBag;
 use GuzzleHttp\Client;
+use SMS;
 
 class BaseController extends Controller
 {
@@ -352,13 +354,13 @@ class BaseController extends Controller
 	public static function getTime(){
 	    return date('Y-m-d H:i:s',time());
     }
-
-    /**
-     * 构造分页页面提交数据
-     * @param $data
-     * @param array $keyValueList array('name'=>'like','add_time'=>'>=','sort'=>'=')
-     * @return array
-     */
+    	
+	/**
+	 * 构造分页页面提交数据
+	 * @param object $controller
+	 * @param array $keyValueList array('name'=>'like','add_time'=>'>=','sort'=>'=')
+	 * @return array
+	 */
 	protected function getPagingList($data,$keyValueList){
         $conditionList = array();
         $value = '';
@@ -471,6 +473,22 @@ class BaseController extends Controller
     public function getCrmData($post_data){
         $guzzle = new Client();
         $response = $guzzle->post('www.localhost.com:9102/index.php',[
+            'form_params' => $post_data,
+            'synchronous' => true,
+            'timeout' => 0,
+        ]);
+        $body = $response->getBody();
+        $result = json_decode((String)$body,true);
+        return $result;
+    }
+    
+    /**
+     * 从crm中间件获取数据
+     * 
+     */
+    public function getCrmData2($post_data){
+        $guzzle = new Client();
+        $response = $guzzle->post('www.localhost.com:1234/index.php',[
             'form_params' => $post_data,
             'synchronous' => true,
             'timeout' => 0,
@@ -631,8 +649,236 @@ class BaseController extends Controller
     {
         $dept = SysDept::where('is_business',1)
             ->orderBy('order','desc')
-            ->orderBy('id','desc')
+            ->orderBy('id','asc')
             ->get(['id','name']);
         return $dept;
+    }
+
+    /**
+     * 获取百度access_token
+     * @return mixed
+     */
+    public function getBaiduAccessToken()
+    {
+        $guzzle = new Client(['verify' => false]);
+        $url = config('baidu_api.token_url');
+        $response = $guzzle->get($url, [
+            'query' => [
+                'grant_type' => 'client_credentials',
+                'client_id' => config('baidu_api.API_KEY'),
+                'client_secret' => config('baidu_api.SECRET_KEY'),
+            ]
+        ]);
+        $body = $response->getBody();
+        $body = json_decode((string)($body),true);
+        return $body['access_token'];
+    }
+
+    /**
+     * 身份证识别
+     * @param $image 图片base64
+     * @param $id_card_side 身份证正反面 	front：身份证含照片的一面；back：身份证带国徽的一面
+     */
+    public function idCardOCR($image_path,$id_card_side)
+    {
+        //图片base编码
+        if(!file_exists($image_path)){
+            return false;
+        }
+        $image = file_get_contents($image_path);
+        $image = base64_encode($image);
+
+        $guzzle = new Client();
+        $url = config('baidu_api.idCard_OCR.url');
+        $token = $this->getBaiduAccessToken();
+        $url = $url."?access_token=".$token;
+        $response = $guzzle->request('POST',$url,[
+            'form_params' => [
+                'image' => $image,
+                'id_card_side' => $id_card_side,
+                'detect_direction' => config('baidu_api.idCard_OCR.detect_direction'),
+                'detect_risk' => config('baidu_api.idCard_OCR.detect_risk'),
+                'detect_photo' => config('baidu_api.idCard_OCR.detect_photo'),
+                'detect_rectify' => config('baidu_api.idCard_OCR.detect_rectify'),
+            ]
+        ]);
+
+        $body = $response->getBody();
+        $body = json_decode((string)($body),true);
+        return $body;
+    }
+
+    // 银行卡识别
+    public function bankCardOCR($path) {
+        //图片base编码
+        if(!file_exists($path)){
+            return false;
+        }
+        $image = file_get_contents($path);
+        $image = base64_encode($image);
+
+        $guzzle = new Client([
+            'verify' => false
+        ]);
+        $url = config('baidu_api.bankCard_OCR.url');
+        $token = $this->getBaiduAccessToken();
+        $url = $url."?access_token=".$token;
+        $response = $guzzle->request('POST',$url,[
+            'form_params' => [
+                'image' => $image,
+                'detect_direction' => config('baidu_api.bankCard_OCR.detect_direction')
+            ]
+        ]);
+        $body = $response->getBody();
+        $body = json_decode((string)($body),true);
+        return $body;
+    }
+
+    /**
+     * 获取居间人培训时长
+     * @param $name 姓名
+     * @param $number 编号
+     */
+    public function getLengthOfMediatorTraining($name, $number){
+        //去crm查询居间人的协议日期
+        $post_data = [
+            'type' => 'jjr',
+            'action' => 'getJjrBy',
+            'param' => [
+                'table' => 'JJR',
+                'by' => [
+                    ['BH','=',$number],
+                    ['XM','=',$name]
+                ],
+                'columns' => ['XYKSRQ','XYJSRQ']
+            ]
+
+        ];
+        $res = $this->getCrmData($post_data);
+        if($res){
+            $xyksrq = strtotime($this->crmDateFormat($res[0]['XYKSRQ']));
+            $xyjsrq = strtotime($this->crmDateFormat($res[0]['XYJSRQ']))+86400;
+        } else {
+            $xyksrq = strtotime('-1 year')+86400;
+            $xyjsrq = time();
+        }
+        $guzzle = new Client();
+        $response = $guzzle->post('http://api.hatzjh.com/live/getmedinfo',[
+            'query' => [
+                'username' => 'haqhJJCX',
+                'password' => 'JJCXMediator',
+                '_time' => 1,
+            ],
+            'form_params' => [
+                'data' => json_encode([
+                    [
+                        'begintime' => $xyksrq,
+                        'endtime' => $xyjsrq,
+                        'name' => $name,
+                        'number' => $number
+                    ]
+                ])
+            ]
+        ]);
+        
+        $body = $response->getBody();
+        $body = json_decode((string)$body,true);
+        if(isset($body['code'])) {
+            return [
+                'code' => 500,
+                'message' => '未找到相关记录'
+            ];
+        }
+        $body = $body[0];
+        if($body['code'] == 400){
+            $re = [
+                'code' => 500,
+                'message' => '未参加线下视频培训'
+            ];
+        }elseif($body['code'] == 200){
+            $hour = floor($body['total_time']/3600);  
+            $minute = floor(($body['total_time']-3600 * $hour)/60);  
+            $second = floor((($body['total_time']-3600 * $hour) - 60 * $minute) % 60);
+            return [
+                'code' => 200,
+                'message' => '查询成功',
+                'data' => [
+                    'time' => $body['total_time'],
+                    'format' => $hour."小时".$minute."分钟".$second."秒"
+                ]
+            ];
+        }
+        return [
+            'code' => 500,
+            'message' => '未找到相关记录'
+        ];
+
+    }
+
+    /**
+     * 格式化crm日期
+     * @param $date
+     * @return string
+     */
+    public function crmDateFormat($date)
+    {
+        $Y = substr($date,0,4);
+        $m = substr($date,4,2);
+        $d = substr($date,6,2);
+        return $Y."-".$m."-".$d;
+    }
+
+    /**
+     * 发送短信 单发
+     * @param string $phone 手机号
+     * @param string $content 内容
+     * @param string $channel 通道 短信验证码使用 YZM
+     * @param array $param 额外参数
+     */
+    public function sendSmsSingle($phone, $code, $channel = 'YZM', $param = []){
+        $result = SMS::send($phone, $code, $param, $channel);
+        $end = end($result);
+        if(isset($end['status']) && 'success' == $end['status']){
+            return true;
+        } else {
+            $gateway = $end['gateway'];
+            $settingInfo = SysSmsSetting::where('unique_name', $gateway)->first();
+            if($settingInfo) {
+                $setting = json_decode($settingInfo->setting, true);
+                $statusList = $setting['status'];
+                if(isset($statusList[$end['code']])) {
+                    return $statusList[$end['code']];
+                } 
+            } 
+        }
+        return '短信发送失败';
+    }
+
+    /**
+     * 密码强度验证
+     * @param $str
+     * @return bool
+     */
+    public function isPWD($str)
+    {
+        $score = 0;
+        $array = [
+            "/[0-9]+/",
+            "/[a-z]+/",
+            "/[A-Z]+/",
+            "/[_|\-|+|=|*|!|@|#|$|%|^|&|(|)]+/"
+        ];
+        if(strlen($str) >= 8 && strlen($str) <= 20){
+            foreach($array as $key){
+                if(preg_match($key,$str)){
+                    $score ++;
+                }
+            }
+        }
+        if($score <= 3){
+            return false;
+        }else{
+            return true;
+        }
     }
 }

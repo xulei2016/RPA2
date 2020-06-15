@@ -38,9 +38,13 @@
                                     <input type="text" class="form-control" id="mediator" placeholder="居间姓名或居间编号">
                                 </div>
                                 <div class="col-sm-2">
-
+                                    <select class="form-control" name="is_online" id="is_online">
+                                        <option value="">来源(全部)</option>
+                                        <option value="1">线上</option>
+                                        <option value="0">线下</option>
+                                    </select>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-12" style="height: 8px;">
 
                                 </div>
                                 <div class="col-sm-2">

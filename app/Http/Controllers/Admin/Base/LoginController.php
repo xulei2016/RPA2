@@ -131,6 +131,10 @@ class LoginController extends BaseAdminController
             $validate = $this->getValidationFactory()->make($request->all(), $validateDetail, $validateStr);
             $validate->validate();
             $admin = SysAdmin::where($this->username(), $request->name)->first();
+            if(!$admin) {
+                $validate->errors()->add('account', '账号或密码错');
+                throw new ValidationException($validate);
+            }
             if ($admin->error_count >= 10) {
                 $validate->errors()->add('account', '错误次数过多,账号被锁定');
                 throw new ValidationException($validate);

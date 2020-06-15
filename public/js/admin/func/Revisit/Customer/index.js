@@ -36,6 +36,11 @@ $(function () {
             $('#tb_departments').bootstrapTable('refresh');
         });
 
+        //根据条件查询信息
+        $('#pjax-container #search-group #formSearch #search-btn').click(function() {
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
+        });
+        
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function (event) {
             event = event ? event : window.event;
@@ -67,6 +72,8 @@ $(function () {
             name: $("#pjax-container #search-group #customer").val(),
             status: $("#pjax-container #search-group #status").val(),
             yybName: $("#pjax-container #search-group #yybName").val(),
+            reviser: $("#pjax-container #search-group #reviser").val(),
+            checker: $("#pjax-container #search-group #checker").val(),
             from_created_at: $("#pjax-container #search-group #startTime").val(),
             to_created_at: $("#pjax-container #search-group #endTime").val()
         };
@@ -111,21 +118,25 @@ $(function () {
                 align: 'center',
                 valign: 'middle'
             }, {
+                field: 'customerManagerName',
+                title: '客户经理',
+                align: 'center',
+                valign: 'middle'
+            },{
                 field: 'status',
                 title: '状态',
                 align: 'center',
                 valign: 'middle',
-                sortable: true,
                 formatter: function (value, row, index) {
                     let res = "";
                     if (4 === value) {
                         res = '<span class="x-tag x-tag-sm x-tag-success">已归档</span>';
                     } else if (3 === value) {
-                        res = '<span class="x-tag x-tag-sm x-tag-success">审核完成</span>';
+                        res = '<span class="x-tag x-tag-sm x-tag-default">审核完成</span>';
                     } else if (2 === value) {
                         res = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
                     } else if (1 === value) {
-                        res = '<span class="x-tag x-tag-sm x-tag-warning">回访中</span>';
+                        res = '<span class="x-tag x-tag-sm x-tag-warning">回访失败</span>';
                     } else {
                         res = '<span class="x-tag x-tag-sm x-tag-info">未回访</span>';
                     }
@@ -140,17 +151,52 @@ $(function () {
                 //         return aud;
                 //     }
             }, {
-                field: 'check_at',
-                title: '审核时间',
+                field: 'KHRQ',
+                title: '开户日期',
                 align: 'center',
                 valign: 'middle',
                 sortable: true,
+            }, {
+                field: 'reviser',
+                title: '回访人',
+                align: 'center',
+                valign: 'middle',
             }, {
                 field: 'revisit_at',
                 title: '回访时间',
                 align: 'center',
                 valign: 'middle',
                 sortable: true,
+            }, {
+                field: 'dict_prompt',
+                title: '回访标记',
+                align: 'center',
+                valign: 'middle',
+                formatter: function (value, row, index) {
+                    let res = "";
+                    if ('正常' === value) {
+                        res = `<span class="x-tag x-tag-sm x-tag-success">${value}</span>`;
+                    } else {
+                        res = `<span class="x-tag x-tag-sm x-tag-danger">${value}</span>`;
+                    }
+                    return res;
+                }
+            }, {
+                field: 'checker',
+                title: '审核人',
+                align: 'center',
+                valign: 'middle',
+            }, {
+                field: 'check_at',
+                title: '审核时间',
+                align: 'center',
+                valign: 'middle',
+                sortable: true,
+            }, {
+                field: 'failDesc',
+                title: '备注',
+                align: 'center',
+                valign: 'middle',
             }, {
                 field: 'id',
                 title: '操作',
@@ -161,8 +207,9 @@ $(function () {
                     var result = "";
                     if (2 === row.status) {
                         result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/rpa_customer_revisit/" + id + "/edit' title='审核'>审核</a><br/>";
+                    } else if (1 <= row.status) {
+                        result += ` <a href='javascript:;' class='btn btn-sm btn-warning' onclick="operation($(this));" url='/admin/rpa_customer_revisit/${id}' title='查看'>查看</a><br/>`;
                     }
-                    ;
                     return result;
                 }
             }],

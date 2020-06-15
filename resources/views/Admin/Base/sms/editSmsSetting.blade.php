@@ -36,15 +36,6 @@
                 <input type="hidden" class="form-control" name="setting" value="{{ $Setting->setting }}">
             </div>
         </div>
-        <div class="form-group row">
-            <label for="return_code" class="col-sm-2 control-label"><span class="must-tag">*</span>返回码</label>
-            <div class="col-sm-10">
-                <div class="jsoneditor">
-                    <div id="return_code" style="min-height: 400px;"></div>
-                </div>
-                <input type="hidden" class="form-control" name="return_code" value="{{ $Setting->return_code }}">
-            </div>
-        </div>
         <div class="form-group row hidden">
             <div class="col-sm-10">
                 <input type="text" class="form-control" name="id" value="{{ $Setting->id }}" id="id" placeholder="id">

@@ -12,7 +12,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">总计执行任务</span>
-                    <span class="info-box-number">{{ $data['countTask'] }}
+                    <span class="info-box-number">{{ $data['count']['countTask'] }}
                         <small>次</small>
                     </span>
                 </div>
@@ -48,7 +48,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">接口调用次数</span>
-                    <span class="info-box-number">{{ $data['countApi'] }}</span>
+                    <span class="info-box-number">{{ $data['count']['countApi'] }}</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -63,7 +63,7 @@
 
                 <div class="info-box-content">
                     <span class="info-box-text">用户数-活跃度</span>
-                    <span class="info-box-number">{{ $data['countUser'] }}-{{ round($data['countYUser']/$data['countUser'],2)*100 }}%</span>
+                    <span class="info-box-number">{{ $data['count']['countUser'] }}-{{ round($data['count']['countYUser']/$data['count']['countUser'],2)*100 }}%</span>
                 </div>
                 <!-- /.info-box-content -->
             </div>
@@ -74,7 +74,26 @@
     <!-- /.row -->
 
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6 connectedSortable">
+
+            {{-- 常用菜单 --}}
+            <div class="card usulMenus">
+                <div class="card-header">
+                    <h5 class="card-title">近期使用</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                    class="fa fa-minus"></i></button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @foreach($data['usulMenus'] as $menus => $url)
+                        <a href="{{ $url }}" class="btn btn-flat btn-default">{{$menus}}</a>
+                    @endforeach
+                </div>
+            </div>
+
             {{-- 待办流程 --}}
             <div class="card flow">
                 <div class="card-header">
@@ -87,9 +106,7 @@
                     </div>
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body" style="height: 288px;overflow-y: scroll;">
-
-                </div>
+                <div class="card-body" style="height: 288px;overflow-y: scroll;"></div>
                 <!-- /.card-body -->
                 <!-- /.card-body -->
                 <div class="card-footer text-center">
@@ -116,7 +133,7 @@
                     <!-- The timeline -->
                     <div class="timeline timeline-inverse">
                         <!-- timeline time label -->
-                        @foreach($versionUpdateList as $v)
+                        @foreach($data['versionUpdateList'] as $v)
                             <div>
                                 @if($v['type'] == 3)
                                     <i class="fa fa-bolt bg-danger"></i> @elseif($v['type'] == 2)
@@ -147,7 +164,7 @@
             </div>
             <!-- /.card -->
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 connectedSortable">
             {{-- 我的活跃内容 --}}
             <div class="card">
                 <div class="card-header">
@@ -227,6 +244,7 @@
 
     <link rel="stylesheet" href="{{URL::asset('/include/intro/intro.min.css')}}">
     <script src="{{URL::asset('/include/charts/Chart.min.js')}}"></script>
+    <script src="{{URL::asset('/include/jquery-ui/jquery-ui.min.js')}}"></script>
     <script src="{{URL::asset('/include/intro/intro.min.js')}}"></script>
     <script src="{{URL::asset('/js/admin/dashboard.js')}}"></script>
 

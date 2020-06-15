@@ -7,7 +7,7 @@
 {{-- toastr --}}
 <script src="{{URL::asset('/include/toastr/toastr.min.js')}}"></script>
 {{-- sweetalert2 --}}
-<script src="{{URL::asset('/include/sweetalert2/sweetalert2.js')}}"></script>
+<script src="{{URL::asset('/include/sweetalert2/sweetalert2.min.js')}}"></script>
 {{-- icheck --}}
 <script src="{{URL::asset('/include/iCheck/icheck.min.js')}}"></script>
 {{-- nprogress --}}
@@ -31,18 +31,17 @@
 <!-- AdminLTE App -->
 <script src="{{URL::asset('/include/adminlte/js/adminlte.js')}}"></script>
 <!-- select2 -->
-<script src="{{URL::asset('/include/select2/js/select2.js')}}"></script>
+<script src="{{URL::asset('/include/select2/js/select2.min.js')}}"></script>
 <script src="{{URL::asset('/js/app.js')}}"></script>
 {{--bootstrap-fileinput--}}
 <script src="{{URL::asset('/include/bootstrap-fileinput/js/fileinput.js')}}"></script>
-<script src="{{URL::asset('/include/bootstrap-fileinput/themes/fas/theme.js')}}"></script>
-<script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
+<script src="{{URL::asset('/include/bootstrap-fileinput/themes/fas/theme.js')}}"></script><script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
 <script src="{{URL::asset('/include/bootstrap-fileinput/js/locales/zh.js')}}"></script>
 
 <script>
     //消息通知laravel-echo
     let socket = {
-        userId: {{ Auth::user()->id }}
+        userId : {{ Auth::user()->id }}
     }
 </script>
 {{--<script src="{{URL::asset('/js/app.js')}}"></script>--}}

@@ -37,7 +37,7 @@ class Messenger
      * @return array
      * @throws NoGatewayAvailableException
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message, array $gateways = [], $debug = false)
+    public function send(PhoneNumberInterface $to, MessageInterface $message, array $gateways = [], $params = [], $debug = false)
     {
         $results = [];
 
@@ -47,7 +47,7 @@ class Messenger
             try {
 
                 $result = $debug ? Log::info('DEBUG MODAL', [$to->getNumber(), $message->getContent()])
-                    : $this->sms->gateway($gateway)->send($to, $message, $config);
+                    : $this->sms->gateway($gateway)->send($to, $message, $params);
 
                 $results[$gateway] = [
                     'gateway' => $gateway,
@@ -56,6 +56,8 @@ class Messenger
                 ];
 
                 $sendSuccess = true;
+                
+                break;
 
             } catch (\Exception $e) {
                 $results[$gateway] = [

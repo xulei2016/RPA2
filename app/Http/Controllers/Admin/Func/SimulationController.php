@@ -73,8 +73,8 @@ class SimulationController extends BaseAdminController
         if($res){
             $kh = RpaSimulationAccount::find($request->id);
             $content = "尊敬的".$account->name."：您好，您的仿真期权账号为".$request->zjzh."，初始密码为身份证后六位，可于下一个交易日参与交易。请到华安期货官网-软件下载-其他及模拟仿真栏目下载软件，推荐下载“期权仿真恒生-5.0”";
-            $res = $this->yx_sms($account->phone,$content);
-            if($res['status'] == '0'){
+            $res = $this->sendSmsSingle($account->phone,$content, 'MNFZ');
+            if($res === true){
                 return $this->ajax_return(200, '成功');
             }else{
                 return $this->ajax_return(500, '数据更新成功，短信发送失败');
@@ -136,8 +136,8 @@ class SimulationController extends BaseAdminController
                 return $this->ajax_return(500, '资金账号不存在');
             }
             $content = "尊敬的{$name}客户：您好，您的仿真期权账号为{$result['zjzh']}，初始密码为身份证后六位，请在华安期货官网-软件下载-期权仿真软件，下载软件，可于下一个交易日参与交易，参与商品期权需满足10天20笔的仿真记录并具有行权经历，祝您交易愉快。(仅允许交易豆粕、白糖的期货和期权，其他品种请勿开仓)";
-            $result = yx_sms($phone, $content);
-            if($result['status'] == 0) {
+            $result = $this->sendSmsSingle($phone, $content, 'MNFZ');
+            if($result === true) {
                 RpaSimulationAccount::where('id', $data['id'])->update([
                     'is_notice' => 1
                 ]);
@@ -174,8 +174,8 @@ class SimulationController extends BaseAdminController
                 $content = "尊敬的".$name."：开立期权账户需满足该品种10天20笔期权仿真交易，截至".$date."，您的仿真期权交易情况：白糖".$result['zz_days']."天".$result['zz_amount']."笔，豆粕".$result['dl_days']."天".$result['dl_amount']."笔，请及时完成即可来现场开户。开户咨询：0551-62839083";
             }
         }
-        $result = yx_sms($phone, $content);
-        if($result['status'] == 0) {
+        $result = $this->sendSmsSingle($phone, $content, 'MNFZ');
+        if($result === true) {
             RpaSimulationAccount::where('id', $data['id'])->update([
                 'is_sms' => 1
             ]);
@@ -216,8 +216,8 @@ class SimulationController extends BaseAdminController
                     $content = "尊敬的".$v['name']."：开立期权账户需满足该品种10天20笔期权仿真交易，截至".$date."，您的仿真期权交易情况：白糖".$v['zz_days']."天".$v['zz_amount']."笔，豆粕".$v['dl_days']."天".$v['dl_amount']."笔，请及时完成即可来现场开户。开户咨询：0551-62839083";
                 }
             }
-            $r = yx_sms($v['phone'], $content);
-            if($r['status'] == 0) {
+            $r = $this->sendSmsSingle($v['phone'], $content, 'MNFZ');
+            if($r === true) {
                 RpaSimulationAccount::where('id', $v['id'])->update([
                     'is_sms' => 1
                 ]);

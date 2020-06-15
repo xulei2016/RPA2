@@ -1,5 +1,5 @@
 <template>
-    <layout title="首页" >
+    <layout title="首页" left="" >
         <div style="margin-top: 60px;">
             <van-grid :column-num="1" :gutter="20">
                 <van-grid-item
@@ -33,6 +33,10 @@
             status:{
                 type: String,
                 default: 0
+            },
+            message:{
+                type: String,
+                default: ""
             }
         },
         methods:{
@@ -41,29 +45,27 @@
                     if(this.status.indexOf('1') > -1) {
                         window.location.href = '/mediator/panel?status=1';
                     } else {
-                        this.$toast('您暂时无法新签');
+                        this.$toast(this.message);
                     }
                     return false;
                 } else if(url === 're') {
                     if(this.status.indexOf('2') > -1) {
                         window.location.href = '/mediator/panel?status=2';
                     } else {
-                        this.$toast('您暂时无法续签');
+                        this.$toast(this.message);
                     }
                     return false;
                 } else if(url === 'info') {
                     if(this.status.indexOf('0') > -1) {
                         window.location.href = '/mediator/info';
                     } else {
-                        this.$toast('您无法查看信息');
+                        this.$toast(this.message);
                     }
                     return false;
                 }
-                console.log(url)
             }
         },
         created:function(){
-            console.log(this.status)
         }
     }
 </script>

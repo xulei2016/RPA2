@@ -69,8 +69,8 @@
                         </div>
                     </div>
                     <div class="drawer-item"><span>固定顶部菜单</span>
-                        <div class="drawer-switch">
-                            <input type="checkbox" disabled>
+                        <div class="fixed-navbar drawer-switch">
+                            <input type="checkbox" checked>
                         </div>
                     </div>
                 </div>

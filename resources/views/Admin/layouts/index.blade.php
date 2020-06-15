@@ -5,7 +5,7 @@
 @include('admin.layouts.header')
 
 
-<body class="hold-transition skin-blue fixed sidebar-mini">
+<body class="hold-transition skin-blue fixed sidebar-mini layout-navbar-fixed">
     <div class="wrapper">
         
         {{-- left bar --}} 
@@ -17,11 +17,11 @@
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
 
-            <div class="tags-view-container" data-step="2" data-intro="这里是快捷菜单栏" data-position="top">
-                <div class="tags-warp">
-                    <div class="scrop"></div>
-                </div>
+        <div class="tags-view-container">
+            <div class="tags-warp">
+                <div class="scrop"></div>
             </div>
+        </div>
 
             @include('admin.layouts.alerts')
             

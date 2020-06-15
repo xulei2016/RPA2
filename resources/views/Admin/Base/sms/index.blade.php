@@ -21,12 +21,22 @@
                                 <div class="col-sm-2">
                                     <select name="type" id="type" class="form-control">
                                         <option value="" selected>平台:全部</option>
-                                        <option value="中正云">中正云</option>
-                                        <option value="优信">优信</option>
+                                        @foreach($typeList as $v)
+                                            <option value="{{ $v->unique_name }}">{{ $v->name }}</option>
+                                        @endforeach
+
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="phone" placeholder="手机号">
+                                </div>
+                                <div class="col-sm-2">
+                                    <select name="status" id="status" class="form-control">
+                                        <option value="">状态:全部</option>
+                                        <option value="1">发送成功</option>
+                                        <option value="2">发送失败</option>
+                                        <option value="0">未发送</option>
+                                    </select>
                                 </div>
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="startTime" placeholder="开始时间">

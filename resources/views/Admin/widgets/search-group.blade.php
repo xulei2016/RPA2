@@ -6,7 +6,7 @@
 
                 {{ $searchContent }}
 
-                <div class="col-sm-2">
+                <div class="col-sm-2" style="text-align:left;">
                     <button type="button" style="margin-left:10px" id="search-btn" class="btn btn-primary">查询</button>
                     <button type="reset" id="reset" class="btn btn-default">重置</button>
                 </div>

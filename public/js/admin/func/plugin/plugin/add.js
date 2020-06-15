@@ -49,6 +49,9 @@ $(function(){
         rules:{
             name:{
                 required:true
+            },
+            name_en:{
+                required:true
             }
         },
         errorPlacement:function(error,element){

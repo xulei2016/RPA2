@@ -5,6 +5,11 @@
 return [
     'ak' => 'MrEUOWVKDgUW0lopooN6R4jT6gcCbUu3',
 
+    'APPID' => '18265729',
+    'API_KEY' => '6Hh3Y0SYi1CU3grUrbqDSZRf',
+    'SECRET_KEY' => 'bIqFbUkAa4WDSm4Hn1Qam7hjPDD3RF6U',
+    'token_url' => 'https://aip.baidubce.com/oauth/2.0/token',
+
     // ip定位
     'ip_location' => [
         'url' => 'http://api.map.baidu.com/location/ip',
@@ -34,4 +39,20 @@ return [
             '402' => '当前并发量已经超过约定并发配额，并且服务总并发量也已经超过设定的总并发配额，限制访问',
         ]
     ],
+
+    //身份证识别
+    'idCard_OCR' => [
+        'url' => 'https://aip.baidubce.com/rest/2.0/ocr/v1/idcard',
+        //配置
+        'detect_direction' => true, //是否检测图像旋转角度
+        'detect_risk' => false, //是否开启身份证风险类型
+        'detect_photo' => false, //是否检测头像内容
+        'detect_rectify' => true, //是否进行完整性校验
+    ],
+    //银行卡识别
+    'bankCard_OCR' => [
+        'url' => 'https://aip.baidubce.com/rest/2.0/ocr/v1/bankcard',
+        //配置
+        'detect_direction' => false, //是否检测图像旋转角度
+    ]
 ];

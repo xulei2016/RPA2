@@ -1,7 +1,8 @@
 <template>
-    <layout title="银行卡信息" >
+    <layout title="银行卡信息" :left="left" >
         <div style="text-align: center;margin-top: 60px;">
             <van-divider>推荐使用工商银行等大型银行</van-divider>
+            <van-divider v-if="status">默认显示之前上传的图片,点击图片可以重新上传</van-divider>
             <van-uploader  name="bank_img" upload-text="银行卡" :disabled="disabled" :after-read="afterRead" :before-read="beforeRead" >
                 <img :src="bank_img" width="96%" alt="">
             </van-uploader>
@@ -19,15 +20,15 @@
             </van-cell-group>
 
             <van-cell-group>
-                <van-field   v-model="form.bank_branch" :readonly="disabled" placeholder="银行网点"  label="银行网点" :error-message="errors['form.bank_branch']"  required />
+                <van-field   v-model="form.bank_branch" :readonly="disabled" placeholder="开户网点"  label="开户网点" :error-message="errors['form.bank_branch']"  required />
             </van-cell-group>
 
             <van-cell-group>
-                <van-field  v-model="form.bank_username" :readonly="disabled"  placeholder="银行户名"  label="银行户名" :error-message="errors['form.bank_username']"  required />
+                <van-field  v-model="form.bank_username" :readonly="trueResult"  placeholder="银行户名"  label="银行户名" :error-message="errors['form.bank_username']"  required />
             </van-cell-group>
 
             <van-cell-group>
-                <van-field  v-model="form.bank_number" @blur="onblur()" :readonly="disabled" placeholder="银行卡号"  label="银行卡号" :error-message="errors['form.bank_number']"  required />
+                <van-field  v-model="form.bank_number" :readonly="disabled" placeholder="银行卡号"  label="银行卡号" :error-message="errors['form.bank_number']"  required />
             </van-cell-group>
             <div style="text-align: center">
                 <van-button style="margin-top: 60px;width: 94%" type="info" @click="next()">{{btnName}}</van-button>
@@ -50,11 +51,14 @@
     export default {
         data() {
             return {
+                trueResult:true,
                 btnName:'下一步',
                 bank_img : "/images/index/mediator/yhk.png",
                 bankPicker : false,
+                status : false,
                 bankList : [],
                 disabled:false,
+                left:'返回',
                 error:'',
                 form:{
                     bank_img:'',
@@ -87,16 +91,16 @@
                 message: '银行必填'
             },
             'form.bank_branch': {
-                test: /\S{1,}/,
-                message: '银行网点必填'
+                test: /^.*[^\d].*$/,
+                message: '请填写正确的开户网点'
             },
             'form.bank_username': {
                 test: /\S{1,}/,
                 message: '银行户名必填'
             },
             'form.bank_number': {
-                test: /\S{1,}/,
-                message: '银行卡号必填'
+                test: /\d{1,}/,
+                message: '请输入正确的银行卡号'
             }
         },
         computed: {
@@ -110,7 +114,9 @@
                 Vue.api.uploadFile(file.file, type).then(res => { // 上传文件到服务器
                     if(type === 'bank_img') {
                         this.bank_img = file.content;
-                        this.form.bank_img = res;
+                        this.form.bank_img = res.path;
+                        this.form.bank_number = res.data.bankCardNumber;
+                        this.form.bank_name = res.data.bankCardName;
                     }
                     this.$toast.clear();
                 }).catch(error => this.$toast(error));
@@ -132,25 +138,10 @@
                 this.form.bank_name = value;
                 this.bankPicker = false;
             },
-            onblur(){
-                let card = this.form.bank_number;
-                if(card) {
-                    Vue.api.checkBankCard(card).then(res => {
-                        this.error = '';
-                    }).catch(error => {
-                        this.$toast.fail(error);
-                        this.error = error;
-                    });
-                }
-
-            },
             next(){
+                console.log(111);
                 if(this.readonly === '1') {
                     history.go(-1);
-                    return false;
-                }
-                if(this.error) {
-                    this.$toast.fail(this.error);
                     return false;
                 }
                 let verifyList = ['form.bank_img', 'form.bank_name', 'form.bank_branch', 'form.bank_username', 'form.bank_number'];
@@ -159,10 +150,15 @@
                     this.$toast("保存失败");
                     return false;
                 }
-                Vue.api.doInfo(this.form).then(res => {
-                    this.$toast.success('保存成功');
-                    Vue.utils.next();
-                }).catch(error => this.$toast(error));
+                let card = this.form.bank_number;
+                Vue.api.checkBankCard(card, this.form.bank_branch).then(res => {
+                    Vue.api.doInfo(this.form).then(res => {
+                        Vue.utils.next();
+                    }).catch(error => this.$toast(error));
+                }).catch(error => {
+                    this.$toast(error)
+                })
+
             }
         },
         created: function () {
@@ -170,19 +166,23 @@
                 this.bankList = res;
             });
             let info = JSON.parse(this.data);
+            this.form.bank_username = info.data.name;
             if(info.status === 1) {
+                this.status = true;
                 let user = info.data;
-                this.bank_img = user.bank_img_base64;
-
-                this.form.bank_img = user.bank_img;
+                if(user.bank_img_base64) {
+                    this.form.bank_img = user.bank_img;
+                    this.bank_img = user.bank_img_base64;
+                }
                 this.form.bank_name = user.bank_name;
                 this.form.bank_branch = user.bank_branch;
-                this.form.bank_username = user.bank_username;
                 this.form.bank_number = user.bank_number;
             }
             if(this.readonly === '1') {
                 this.btnName = '返回';
+                this.status = false;
                 this.disabled = true;
+                this.left = '';
             }
         }
     }

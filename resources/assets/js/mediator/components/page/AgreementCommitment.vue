@@ -1,5 +1,5 @@
 <template>
-    <layout title="居间人自律承诺书">
+    <layout title="居间人自律承诺书" left="">
 
         <div style="text-align: center; margin-top: 60px;">
             <van-divider>请仔细阅读以下协议</van-divider>
@@ -116,12 +116,12 @@
         methods: {
             confirm(){
                 if(this.read !== '1') {
-                    let agreement = sessionStorage.getItem('agreement');
-                    if(!agreement) agreement = '';
-                    sessionStorage.setItem('agreement', agreement+'3');
+                    Vue.api.saveAgreement("3").then(res => {
+                        Vue.utils.panel();
+                    }).catch(error => {this.$toast(error)})
+                } else {
+                    history.go(-1);
                 }
-                history.go(-1);
-                return false;
             }
         },
         created:function(){

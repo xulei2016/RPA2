@@ -13,7 +13,7 @@
 
 Route::group(['namespace' => 'CNode'], function () {
     Route::get('/cnode', 'CNodeController@index');
-    Route::get('/cnode/getCNode', 'CNodeController@getCNode');
+    Route::get('/cnode/getResultView', 'CNodeController@getResultView');
 });
 
 //客服中心前台  (*************需要修复namespace**************)
@@ -47,18 +47,23 @@ Route::group(['prefix' => 'upload_video'], function(){
 
 Route::group(['prefix' => 'credit'], function(){
     Route::get('/', 'LoseCreditController@index');
+    Route::get('/{id}', 'LoseCreditController@otherIndex');
     Route::post('/', 'LoseCreditController@query');
     Route::post('/loopQuery', 'LoseCreditController@loopQuery');
     Route::get('/show', 'LoseCreditController@showLostCredit');
+    Route::get('/showTest', 'LoseCreditController@showLostCreditTest');
+    Route::get('/showLocal', 'LoseCreditController@showLostCreditFromLocal');
     Route::get('/showImg', 'LoseCreditController@showImg');
 });
 
-Route::group(['prefix' => 'mediator'], function(){
+Route::group(['prefix' => 'mediator1'], function(){
     Route::get('/', 'MediatorController@index');
+    Route::get('/test', 'MediatorController@test');
     Route::get('/index', 'MediatorController@index');
+    
     Route::get('/getImageCode', 'MediatorController@getImageCode');
     Route::get('/login', 'MediatorController@login');
-    Route::post('/sendCode', 'MediatorController@sendCode');
+    Route::post('/getCode', 'MediatorController@getCode');
     Route::get('/IDCard', 'MediatorController@IDCard');
     Route::get('/perfectInformation', 'MediatorController@perfectInformation');
     Route::get('/sign', 'MediatorController@sign');
@@ -89,6 +94,47 @@ Route::group(['prefix' => 'mediator'], function(){
     Route::post('/checkBankCard', 'MediatorController@checkBankCard');
     Route::get('/getDictionaries', 'MediatorController@getDictionaries');
 });
+
+Route::group(['prefix' => 'mediator'], function(){
+    Route::get('/', 'MediatorController@indexView');
+    Route::get('/ttt', 'MediatorController@test');
+    Route::get('/sync', 'MediatorController@syncTrainingDuration');
+
+    Route::get('/index', 'MediatorController@indexView');
+    Route::get('/getImageCode', 'MediatorController@getImageCode');
+    Route::get('/login', 'MediatorController@loginView');
+    Route::post('/sendCode', 'MediatorController@sendCode');
+    Route::get('/showStepView/{step}', 'MediatorController@showStepView');
+    Route::get('/IDCard', 'MediatorController@IDCardView');
+    Route::get('/agreementDetail/{id}', 'MediatorController@agreementDetailView');
+    Route::get('/rate', 'MediatorController@rateView');
+    Route::get('/confirmRate', 'MediatorController@confirmRateView');
+    Route::get('/result', 'MediatorController@resultView');
+    Route::get('/info', 'MediatorController@infoView');
+    Route::get('/infoDetail', 'MediatorController@infoDetailView');
+
+    Route::post('/doInfo', 'MediatorController@doInfo');
+    Route::post('/getCode', 'MediatorController@getCode');
+    Route::post('/doLogin', 'MediatorController@doLogin');
+    Route::post('/upload', 'MediatorController@upload');
+    Route::post('/doConfirmRate', 'MediatorController@doConfirmRate');
+
+    Route::get('/panel', 'MediatorController@panelSkip');
+    Route::get('/goNext', 'MediatorController@goNext');
+    Route::get('/goBack', 'MediatorController@goBack');
+    Route::get('/getRealDept', 'MediatorController@getRealDept');
+    Route::get('/getPotic', 'MediatorController@getPotic');
+    Route::post('/checkPotic', 'MediatorController@checkPotic');
+    Route::post('/checkIdCard', 'MediatorController@checkIdCard');
+    Route::post('/checkBankCard', 'MediatorController@checkBankCard');
+    Route::get('/getDictionaries', 'MediatorController@getDictionaries');
+    Route::get('/showImage', 'MediatorController@showImage');
+
+    Route::post('/saveAgreement', 'MediatorController@saveAgreement');
+    Route::get('/getAgreement', 'MediatorController@getAgreement');
+});
+
+
 
 
 

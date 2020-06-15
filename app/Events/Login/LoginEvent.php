@@ -54,12 +54,7 @@ class LoginEvent
     /**
      * Create a new event instance.
      *
-     * @param $request
-     * @param $user
-     * @param $agent
-     * @param $timestamp
-     * @param $ip
-     * @param $status
+     * @return void
      */
     public function __construct($request, $user, $agent, $timestamp, $ip, $status)
     {
@@ -129,9 +124,6 @@ class LoginEvent
         return SysAdmin::where('id', $id)->update($token);
     }
 
-    /**
-     * rememberLogin
-     */
     public function rememberLogin(){
         $user = auth()->guard('admin')->user();
         $token = $this->request->session()->get('_token');
@@ -143,7 +135,7 @@ class LoginEvent
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return Channel|array
+     * @return \Illuminate\Broadcasting\Channel|array
      */
     public function broadcastOn()
     {

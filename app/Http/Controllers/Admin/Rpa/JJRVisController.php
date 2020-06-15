@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin\Rpa\rpa_releasetasks;
 use App\Http\Controllers\admin\rpa\ImmedtaskController;
 use App\Http\Controllers\Base\BaseAdminController;
+use App\Models\Admin\Func\rpa_jjrvis;
 
 /**
  * JJRVisController
@@ -34,7 +35,9 @@ class JJRVisController extends BaseAdminController
     public function index(Request $request)
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "居间人回访分配 任务列表");
-        return view('admin.rpa.JJRVis.index');
+        //未分配人数
+        $count = rpa_jjrvis::where('is_dist',0)->count();
+        return view('admin.rpa.JJRVis.index',['count' => $count]);
     }
 
     /**

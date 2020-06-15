@@ -26,11 +26,13 @@ $(function(){
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
 
+        
+        
+
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -103,13 +105,14 @@ $(function(){
             manager : $("#pjax-container #search-group #manager").val(),
             mediator : $("#pjax-container #search-group #mediator").val(),
             from_add_time : $("#pjax-container #search-group #startTime").val(),
-            to_add_time : $("#pjax-container #search-group #endTime").val()
+            to_add_time : $("#pjax-container #search-group #endTime").val(),
+            is_online : $("#pjax-container #search-group #is_online").val(),
         };
         return temp;
     }
 
-    //分页参数
-    function pageNation(oTable){
+     //分页参数
+     function pageNation(oTable){
         oTable.queryParams = function (params) {
             //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             var temp = $("#pjax-container #search-group").serializeJsonObject();
@@ -165,6 +168,20 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     sortable: true,
+                },{
+                    field: 'is_online',
+                    title: '来源',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function(value, row, index){
+                        var result = "";
+                        if(value){
+                            result = '<span class="x-tag x-tag-sm x-tag-success">线上</span>';
+                        } else {
+                            result = '<span class="x-tag x-tag-sm x-tag-primary">线下</span>';
+                        }
+                        return result;
+                    }
                 }, {
                     field: 'message',
                     title: '备注',
@@ -186,6 +203,35 @@ $(function(){
                         return result;
                     }
                 }, {
+                    field: 'bankRelationStatus',
+                    title: '银期关联状态',
+                    align: 'center',
+                    valign: 'middle',
+                    events: {
+                        "click .bank-relation":function (e, value, row, index){
+                            var id = row.id;
+                            $.pjax({
+                                container: '#pjax-container',
+                                url:'/admin/rpa_bank_relation?uid='+id,
+                            });
+                        }
+                    },
+                    formatter: function(value, row, index){
+                        var result = "";
+                        if(value == 1) {
+                            result = '<span class="x-tag x-tag-sm x-tag-success bank-relation">关联成功</span>';
+                        } else if(value == 2) {
+                            result = '<span class="x-tag x-tag-sm x-tag-danger bank-relation">关联失败</span>';
+                        } else if(value == 3) {
+                            result = '<span class="x-tag x-tag-sm x-tag-warning bank-relation">无需关联</span>';
+                        } else if(value == 0) {
+                            result = '<span class="x-tag x-tag-sm x-tag-primary bank-relation">未关联</span>';;
+                        } else {
+                            result = '-';
+                        }
+                        return result;
+                    }
+                 }, {
                     field: 'add_time',
                     title: '添加时间',
                     align: 'center',
@@ -219,6 +265,7 @@ $(function(){
         //初始化表格
         oTable.Init('#tb_departments', param);
     }
+
 
     init();
 });

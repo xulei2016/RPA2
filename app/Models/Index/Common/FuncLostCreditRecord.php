@@ -15,4 +15,6 @@ class FuncLostCreditRecord extends Model
 
     protected $guarded = [];
 
+    // protected $connection = "master2";
+
 }

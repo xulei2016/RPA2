@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <index status="{{$status}}"></index>
+    <index status="{{$status}}" message="{{$message}}"></index>
 
 @endsection

@@ -1,8 +1,8 @@
 <template>
-    <layout title="完善信息" >
+    <layout title="完善信息" :left="left" >
         <div style="margin-top: 60px;padding: 6px;">
             <van-divider>基本信息</van-divider>
-
+            <van-divider>请检查信息是否正确</van-divider>
             <van-cell-group>
                 <van-field  placeholder="请输入姓名" :readonly="disabled" label="姓名" v-model="form.name" :error-message="errors['form.name']"  required />
             </van-cell-group>
@@ -52,20 +52,7 @@
                         :error-message="errors['form.sfz_date_end']"
                 />
             </van-cell-group>
-
-            <van-divider>详细信息</van-divider>
-            <van-cell-group>
-                <van-field  placeholder="联系地址" :readonly="disabled" label="联系地址" v-model="form.address" :error-message="errors['form.address']"  required />
-            </van-cell-group>
-
-            <van-cell-group>
-                <van-field  placeholder="邮政编码" :readonly="disabled"  label="邮政编码" v-model="form.postal_code"  />
-            </van-cell-group>
-
-            <van-cell-group>
-                <van-field  placeholder="邮箱" :readonly="disabled" label="邮箱" v-model="form.email"  />
-            </van-cell-group>
-
+            <van-divider>归属营业部</van-divider>
             <van-cell-group>
                 <van-field
                         v-model="dept"
@@ -78,6 +65,20 @@
                         :error-message="errors['form.dept_id']"
                 />
             </van-cell-group>
+            <van-divider>详细信息</van-divider>
+            <van-cell-group>
+                <van-field  placeholder="联系地址" :readonly="disabled" label="联系地址" v-model="form.address" :error-message="errors['form.address']"  required />
+            </van-cell-group>
+
+            <van-cell-group>
+                <van-field  placeholder="邮政编码" :readonly="disabled"  label="邮政编码" v-model="form.postal_code" :error-message="errors['form.postal_code']"  />
+            </van-cell-group>
+
+            <van-cell-group>
+                <van-field  placeholder="邮箱" :readonly="disabled" label="邮箱" v-model="form.email" :error-message="errors['form.email']"   />
+            </van-cell-group>
+
+
 
             <van-divider>教育信息</van-divider>
 
@@ -126,16 +127,16 @@
             </van-cell-group>
 
             <van-cell-group>
-                <van-switch-cell :disabled="disabled"  title="是否通过期货从业资格考试" v-model="form.is_exam" :error-message="errors['form.is_exam']" required />
+                <van-switch-cell :disabled="disabled"  title="是否通过期货从业资格考试" v-model="showCheckbox" :error-message="errors['form.is_exam']" required />
             </van-cell-group>
 
-            <van-cell-group v-if="form.is_exam">
-                <van-field  placeholder="成绩合格证编号" :readonly="disabled"  label="成绩合格证编号" v-model="form.exam_number"  required />
+            <van-cell-group v-if="showCheckbox">
+                <van-field  placeholder="从业资格合格证编号" :readonly="disabled"  label="从业资格合格证编号" v-model="form.exam_number"  required />
             </van-cell-group>
 
-            <div v-if="form.is_exam">
-                <h2 class="doc">上传从业资格证书</h2>
-                <van-uploader name="exam_img" upload-text="从业资格证书" :disabled="disabled" :after-read="afterRead" :before-read="beforeRead" >
+            <div v-if="showCheckbox">
+                <h2 class="doc">上传从业资格合格证照片</h2>
+                <van-uploader name="exam_img" upload-text="上传从业资格合格证照片" :disabled="disabled" :after-read="afterRead" :before-read="beforeRead" >
                     <img :src="exam_img" width="96%" alt="">
                 </van-uploader>
             </div>
@@ -225,8 +226,10 @@
     export default {
         data() {
             return {
+                left:'返回',
                 btnName:'下一步',
                 disabled:false,
+                showCheckbox:true,
                 minDate: new Date(1920, 0, 1),
                 currentDate: new Date(),
                 info:'',
@@ -264,7 +267,7 @@
                     edu_background:'', // 学历
                     profession:'', // 职业
                     manager_number:'', // 经理客户号
-                    is_exam:true, // 从业资格考试
+                    is_exam:1, // 从业资格考试
                     exam_img:'', // 从业资格图片
                     exam_number:'', // 从业资格图片
                     // edu_img:'', //  学历图片
@@ -322,17 +325,24 @@
                 message: '必填'
             },
             'form.sfz_address': {
-                test: /\S{1,}/,
-                message: '必填'
+                test: /^.*[^\d].*$/,
+                message: '请填写正确的证件地址'
             },
             'form.sfz_date_end': {
                 test: /\w{1,}/,
                 message: '必填'
             },
-
+            'form.postal_code':{
+                test: /\d{6}/,
+                message: '请输入正确的邮编'
+            },
+            'form.email' : {
+                test: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+                message: '请输入正确的邮箱'
+             },
             'form.address': {
-                test: /\S{1,}/,
-                message: '必填'
+                test: /^.*[^\d].*$/,
+                message: '请填写正确的地址'
             },
             'form.dept_id': {
                 test: /\w{1,}/,
@@ -375,13 +385,13 @@
                 Vue.api.uploadFile(file.file, 'exam_img').then(res => {
                     if(type === 'exam_img') {
                         this.exam_img = file.content;
-                        this.form.exam_img = res
+                        this.form.exam_img = res.path;
                     } else if(type === 'edu_img') {
                         this.edu_img[0].url = file.content;
-                        this.form.edu_img = res
+                        this.form.edu_img = res.path;
                     } else if(type === 'edu_degree_img') {
                         this.edu_degree_img[0].url = file.content;
-                        this.form.edu_degree_img = res
+                        this.form.edu_degree_img = res.path;
                     }
                 }).catch(error => this.$toast(error));
                 return true;
@@ -402,6 +412,11 @@
                     this.$toast.fail(this.error);
                     return false;
                 }
+                if(this.showCheckbox ) {
+                    this.form.is_exam = 1;
+                } else {
+                    this.form.is_exam = 0;
+                }
                 let verifyList = [
                     'form.name','form.sex','form.birthday','form.zjbh','form.sfz_address',
                     'form.sfz_date_end','form.address','form.dept_id','form.edu_background',
@@ -412,17 +427,22 @@
                     this.$toast('信息必填');
                     return false;
                 }
-                if(this.form.is_exam && !this.form.exam_img) {
+                if(this.showCheckbox && !this.form.exam_img) {
                     this.$toast('从业资格证书图片必须上传');
                     return false;
                 }
 
-                if(this.form.is_exam && !this.form.exam_number) {
+                if(this.showCheckbox && !this.form.exam_number) {
                     this.$toast('从业资格证书编号必须填写');
                     return false;
                 }
+
+                // 判断是否过期 大于0表示过期
+                if(new Date().getTime()-new Date(this.form.sfz_date_end).getTime() > 0) {
+                    this.$toast.fail("您的身份证已过期");
+                    return false;
+                }
                 Vue.api.doInfo(this.form).then(res => {
-                    this.$toast.success('保存成功');
                     Vue.utils.next();
                 }).catch(error => {this.$toast(error)});
             },
@@ -475,14 +495,14 @@
                 this.professionList = res;
             });
             let info = JSON.parse(this.data);
-            if(info.status === 1) {
-                let user = info.data;
-                this.form.name = user.name;
-                this.form.sex = user.sex;
-                this.form.birthday = user.birthday;
-                this.form.zjbh = user.zjbh;
-                this.form.sfz_address = user.sfz_address;
-                this.form.sfz_date_end = user.sfz_date_end;
+            let user = info.data;
+            this.form.name = user.name;
+            this.form.sex = user.sex;
+            this.form.birthday = user.birthday;
+            this.form.zjbh = user.zjbh;
+            this.form.sfz_address = user.sfz_address;
+            this.form.sfz_date_end = user.sfz_date_end;
+            if(info.status === 1) { // 续签
                 this.form.address = user.address;
                 this.form.postal_code = user.postal_code;
                 this.form.email = user.email;
@@ -492,19 +512,25 @@
                 this.form.dept_id = user.dept_id;
                 this.dept = user.dept;
                 if (user.is_exam) {
-                    this.form.is_exam = true;
-                    this.form.exam_img = user.exam_img;
+                    this.showCheckbox = true;
+                    if(user.exam_img_base64) {
+                        this.form.exam_img = user.exam_img;
+                        this.exam_img = user.exam_img_base64
+                    }
                     this.form.exam_number = user.exam_number;
-                    this.exam_img = user.exam_img_base64
                 } else {
-                    this.form.is_exam = false;
+                    this.form.is_exam = 0;
                 }
             }
             if(this.readonly === '1') {
                 this.disabled = true;
                 this.dept = info.data.dept;
                 this.btnName = '返回';
+                this.left = '';
             }
+        },
+        mounted:function()  {
+
         }
     }
 </script>

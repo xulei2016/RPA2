@@ -17,12 +17,10 @@ $(function(){
      * 绑定事件
      */
     function bindEvent(){
-
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -35,7 +33,7 @@ $(function(){
         $("#pjax-container section.content #toolbar #exportAll").on('click', function(){
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href = "/admin/rpa_profession_change/export?"+$url;
+            location.href= "/admin/rpa_profession_change/export?"+$url;
         });
 
         //导出选中
@@ -43,8 +41,9 @@ $(function(){
             var ids = RPA.getIdSelections('#tb_departments');
             var condition = getSearchGroup();
             $url = urlEncode(condition);
-            location.href =  "/admin/rpa_profession_change/export?"+$url+'&id='+ids;
+            location.href= "/admin/rpa_profession_change/export?"+$url+'&id='+ids;
         });
+
     }
 
     /**
@@ -71,7 +70,7 @@ $(function(){
                     success:function(r){
                         if(r.code == 200) {
                             swal('提示', '操作成功','success');
-                            location.reload();
+                            // location.reload();
                         } else {
                             swal('提示', r.info, 'error');
                         }}
@@ -126,16 +125,16 @@ $(function(){
                 title: '资金账号',
                 align: 'center',
                 valign: 'middle'
-            }, {
-                field: 'phone',
-                title: '手机号',
-                align: 'center',
-                valign: 'middle'
-            }, {
-                field: 'sfz',
-                title: '身份证',
-                align: 'center',
-                valign: 'middle'
+            // }, {
+            //     field: 'phone',
+            //     title: '手机号',
+            //     align: 'center',
+            //     valign: 'middle'
+            // }, {
+            //     field: 'sfz',
+            //     title: '身份证',
+            //     align: 'center',
+            //     valign: 'middle'
             }, {
                 field: 'profession',
                 title: '职业',
@@ -146,6 +145,22 @@ $(function(){
                 title: '状态',
                 align: 'center',
                 valign: 'middle'
+            }, {
+                field: 'restatus',
+                title: '取消限制状态',
+                align: 'center',
+                valign: 'middle',
+                formatter: function (value,row,index) {
+                    var result = "";
+                    if(value == 0){
+                        result = '<span class="x-tag x-tag-sm x-tag-success">成功</span>'
+                    }else if(value == 1){
+                        result = '<span class="x-tag x-tag-sm x-tag-danger">失败</span>'
+                    }else{
+                        
+                    }
+                    return result;
+                }
             },{
                 field: 'created_at',
                 title: '申请时间',
@@ -174,7 +189,7 @@ $(function(){
                 },
                 formatter: function(value, row, index){
                     var result = '';
-                    if(row.status == 5) {
+                    if(row.status == 5 || row.status == 6) {
                         result = "<a href='javascript:;' class='btn btn-sm btn-primary confirmOne' item-id='"+value+"' onclick='confirmOne("+value+")' title='确认'>确认</a>";
                     }
                     return result;

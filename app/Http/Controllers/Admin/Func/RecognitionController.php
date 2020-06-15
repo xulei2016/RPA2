@@ -140,7 +140,7 @@ class RecognitionController extends BaseAdminController{
      * export
      */
     public function export(Request $request){
-        $selectInfo = $this->get_params($request, ['zjzh','state','from_created_at','to_created_at']);
+        $selectInfo = $this->get_params($request, ['id','zjzh','state','from_created_at','to_created_at']);
 
         $condition = $this->getPagingList($selectInfo, ['zjzh'=>'=','state'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
 
@@ -155,12 +155,14 @@ class RecognitionController extends BaseAdminController{
             'review_time' => '复核时间',
             'created_at' => '开户时间',
         ];
-
         if(isset($selectInfo['id'])){
             $data = rpa_address_recognition::whereIn('id', explode(',',$selectInfo['id']))->select(array_keys($exportList))->get()->toArray();
         }else{
             $data = rpa_address_recognition::where($condition)->select(array_keys($exportList))->get()->toArray();
+        
         }
+        // print_r($data);die;
+
         //设置表头
         $cellData[] = array_values($exportList);
 

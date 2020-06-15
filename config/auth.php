@@ -72,7 +72,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Admin\Base\SysApiUser::class,
+            'model' => App\Models\Admin\Base\ApiUser::class,
         ],
 
         // 'users' => [

@@ -14,9 +14,10 @@ $(function(){
      * 绑定事件
      */
     function bindEvent(){
+
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
 
         //enter键盘事件

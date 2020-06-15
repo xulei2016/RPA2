@@ -88,7 +88,7 @@ class SMS
 
         $log = new LogStorage($this->config, $params);
 
-        return $log->afterSend($log->beforeSend($to, $message), $this->getResponse($to, $message, $this->formatGateways($gateways), $this->config->get('debug', false)));
+        return $log->afterSend($log->beforeSend($to, $message), $this->getResponse($to, $message, $this->formatGateways($gateways), $params, $this->config->get('debug', false)));
     }
 
     /**
@@ -330,13 +330,14 @@ class SMS
      * @param $to
      * @param $message
      * @param $gateways
+     * @param $params
      * @param $debug
      * @return array|mixed
      */
-    protected function getResponse($to, $message, $gateways, $debug = false)
+    protected function getResponse($to, $message, $gateways, $params = [], $debug = false)
     {
         try {
-            return $this->getMessenger()->send($to, $message, $gateways, $debug);
+            return $this->getMessenger()->send($to, $message, $gateways, $params, $debug);
         } catch (NoGatewayAvailableException $e) {
             return $e->getResults();
         } catch (\Exception $e) {

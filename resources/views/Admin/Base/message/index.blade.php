@@ -12,6 +12,7 @@
                         @endslot
 
                         @slot('operation')
+                            <a class='btn btn-primary btn-sm' id="readAll" href="javascript:;">全部已读</a>
                         @endslot
                         @endcomponent
 

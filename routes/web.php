@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes

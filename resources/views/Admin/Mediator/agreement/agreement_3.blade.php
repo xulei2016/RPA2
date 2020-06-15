@@ -9,8 +9,8 @@
     <h3>自律承诺附件</h3>
     <h2 style="text-align: center;">期货居间人自律承诺书</h2>
     <p>
-        本人/单位：{{ $flow->info->name }}<br>
-        身份证号码/统一社会信用代码证：{{ $flow->zjbh }}<br>
+        本人/单位： {{ $flow->info->name }}<br>
+        身份证号码/统一社会信用代码证：<span>{{ $flow->zjbh }}<span/><br>
         是华安期货有限责任公司的居间人，自愿履行以下承诺： <br>
     </p>
     <p>

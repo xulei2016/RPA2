@@ -53,7 +53,21 @@ return [
             'strict' => false,
             'engine' => null,
         ],
-
+        'master2' => [
+            'driver' => 'mysql',
+            'host' => env('DB2_HOST', '127.0.0.1'),
+            'port' => env('DB2_PORT', '3306'),
+            'database' => env('DB2_DATABASE', 'forge'),
+            'username' => env('DB2_USERNAME', 'forge'),
+            'password' => env('DB2_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+        
         'oa' => [
             'driver' => 'mysql',
             'host' => env('DB2_HOST', '127.0.0.1'),
@@ -65,7 +79,8 @@ return [
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
-            'strict' => true,
+            'strict' => false,
+            'mode' => '',
             'engine' => null,
         ],
 
@@ -93,6 +108,20 @@ return [
             'password' => env('DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
+        ],
+        'rpatest' => [
+            'driver' => 'mysql',
+            'host' => '172.16.253.170',
+            'port' => 3306,
+            'database' => 'rpa',
+            'username' => 'root',
+            'password' => 'root',
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
         ],
 
     ],
@@ -124,7 +153,6 @@ return [
     'redis' => [
 
         'client' => 'predis',
-
         'default' => [
             'host' => env('REDIS_HOST', '127.0.0.1'),
             'password' => env('REDIS_PASSWORD', null),
@@ -139,5 +167,4 @@ return [
         ],
 
     ],
-
 ];

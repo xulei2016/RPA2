@@ -3,7 +3,6 @@
     <title>失信查询</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="{{ URL::asset('/include/bootstrap3/css/bootstrap.css')}}">
-    <link rel="stylesheet" href="{{ URL::asset('/include/sweetalert2/sweetalert2.css')}}">
     <link rel="stylesheet" href="{{ URL::asset('/include/swiper/swiper.min.css')}}">
     <link rel="stylesheet" href="{{ URL::asset('/include/fancybox/fancybox.css')}}">
     <style>
@@ -55,9 +54,7 @@
             text-align: right;
             line-height: 33px;
         }
-        body{
-            background: url("{{ URL::asset('/images/index/credit/bg.png')}}");
-        }
+
     </style>
 </head>
 <body>
@@ -82,14 +79,16 @@
                                 <div class="swiper-container mt10" id="{{ $v['type'] }}-swiper">
                                     <div class="swiper-wrapper">
                                         @foreach($v['list'] as $img)
-                                            <div data-fancybox class="swiper-slide" href="{{ buildImageUrl($img['url'])  }}" style="background: url({{ buildImageUrl($img['url']) }});background-size: 800px 600px;">
+                                            <div data-fancybox class="swiper-slide" href="{{ buildImageUrl($img['url'])  }}" style="background: url({{ buildImageUrl($img['url']) }});background-size: 100% 600px;">
 {{--                                                <div class="title" data-swiper-parallax="-300">{{ $img['name'] }}</div>--}}
                                             </div>
                                         @endforeach
                                     </div>
+                                    <div class="swiper-pagination"></div>
                                     <div class="swiper-button-prev"></div><!--左箭头。如果放置在swiper-container外面，需要自定义样式。-->
                                     <div class="swiper-button-next"></div><!--右箭头。如果放置在swiper-container外面，需要自定义样式。-->
                                 </div>
+                                <hr style="margin-top: 40px;">
                                 <div class="swiper-container gallery-thumbs mt10" id="{{ $v['type'] }}-thumbs">
                                     <div class="swiper-wrapper">
                                         @foreach($v['list'] as $img)
@@ -113,7 +112,7 @@
 
 </body>
 <script src="{{ URL::asset('/include/jquery/jquery.min.js')}} "></script>
-<script src="{{ URL::asset('/include/sweetalert2/sweetalert2.all.js')}} "></script>
+<script src="{{ URL::asset('/include/sweetalert2/sweetalert2.min.js')}} "></script>
 <script src=" {{ URL::asset('/include/bootstrap3/js/bootstrap.js')}} "></script>
 <script src=" {{ URL::asset('/include/swiper/swiper.min.js')}} "></script>
 <script src=" {{ URL::asset('/include/fancybox/fancybox.js')}} "></script>
@@ -129,6 +128,9 @@
         var list = $(".nav-tabs li a");
         var init = $(list[0]).attr('href');
         new Swiper(init+"-swiper", {
+            pagination: {
+                el: init + ' .swiper-pagination',
+            },
             // autoplay: false,//可选选项，自动滑动
             navigation: {
                 nextEl: init+" .swiper-button-next",
@@ -150,6 +152,9 @@
             if(!data[type]) {
                 setTimeout(function(){
                     new Swiper(type+"-swiper", {
+                        pagination: {
+                            el: init + ' .swiper-pagination',
+                        },
                         // autoplay: false,//可选选项，自动滑动
                         navigation: {
                             nextEl: type+" .swiper-button-next",

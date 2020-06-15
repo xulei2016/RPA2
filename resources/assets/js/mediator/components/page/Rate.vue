@@ -1,9 +1,9 @@
 <template>
-    <layout title="佣金返还比例" >
+    <layout title="佣金返还比例" :left="left">
         <div style="margin-top: 60px;">
-            <van-divider>请选择佣金返还比例</van-divider>
+            <van-divider>请填写佣金返还比例</van-divider>
             <van-cell-group>
-                <van-field v-model="form.rate" :readonly="disabled"  placeholder="佣金返还比例(0-100)"  label="比例(单位:%)" :error-message="errors['form.rate']"  required />
+                <van-field v-model="form.rate" :readonly="disabled"  placeholder="佣金返还比例"  label="比例(单位:%)" :error-message="errors['form.rate']"  required />
             </van-cell-group>
 
             <div style="text-align: center">
@@ -18,6 +18,7 @@
         data() {
             return {
                 btnName:'下一步',
+                left:'返回',
                 disabled:false,
                 form:{
                     rate: '',
@@ -59,7 +60,6 @@
                     return false;
                 }
                 Vue.api.doInfo(this.form).then(res => {
-                    this.$toast.success('保存成功');
                     Vue.utils.next();
                 }).catch(error => this.$toast(error));
             }
@@ -71,6 +71,7 @@
                 this.btnName = '返回';
                 this.disabled = true;
                 this.form.rate = info.data.rate;
+                this.left = '';
             }
         }
     }

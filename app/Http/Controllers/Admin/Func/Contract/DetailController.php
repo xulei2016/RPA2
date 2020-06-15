@@ -32,9 +32,8 @@ class DetailController extends BaseController
 
     protected $jysList; // 交易所列表
 
-    protected $dayList; // 交易日列表
-
     public function __construct(){
+        parent::__construct();
         $this->dayNumber = RpaContractDict::where('name', 'DAY_NUMBER')->first()->value;
         $this->pzList = RpaContractPz::getList();
         $this->jysList = RpaContractJys::getList();
@@ -107,8 +106,6 @@ class DetailController extends BaseController
         }
         $result = RpaContractDetail::create($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "新增 合约-详细");
-        $this->dayList = $this->getAllDays();
-
         $this->publish($data, $result->id);
         if($result) {
             return $this->ajax_return(200, '操作成功！');
@@ -162,7 +159,6 @@ class DetailController extends BaseController
             $data['xhy_rnfy'] = null;
         }
         $result = RpaContractDetail::where('id', $data['id'])->update($data);
-        $this->dayList = $this->getAllDays();
         $this->publish($data, $data['id']);
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 合约-详细");
         if($result) {
@@ -204,7 +200,7 @@ class DetailController extends BaseController
 
     //获取实际日期和需要提醒的日期
     public function getDayList($date, $number, $jysCode){
-        $list = $this->lists[$jysCode];
+        $list = $this->dayList[$jysCode];
         $count = count($list);
         $start = $list[0];
         $end = $list[$count-1];
@@ -233,7 +229,7 @@ class DetailController extends BaseController
 
     //获取某一日期后第几日
     public function getDayAft($date, $afterDay, $jysCode){
-        $list = $this->lists[$jysCode];
+        $list = $this->dayList[$jysCode];
         $count = count($list);
         $start = $list[0];
         $end = $list[$count-1];
@@ -256,7 +252,6 @@ class DetailController extends BaseController
      * 更新全部
      */
     public function updateAll(){
-        $this->dayList = $this->getAllDays();
         $list = RpaContractDetail::get()->toArray();
         foreach($list as $k => $v) {
             $this->publish($v, $v['id']);
@@ -302,14 +297,14 @@ class DetailController extends BaseController
                         $remindDate = $this->getDateAfter($date, $afterDay, $jysCode);
                         $dateList = $this->returnDays($remindDate, $number, $jysCode);
                     } else { // 交易日
-                        $remindDate = $this->getFixedDate($jysCode, $day+$afterDay, $m);
+                        $remindDate = $this->getFixedDate($jysCode, $day+$afterDay, $m, date('Y', $onlineTime));
                         $dateList = $this->returnDays($remindDate, $number, $jysCode);
                     }
                     if($dateList) {
                         $realTime = strtotime($dateList['realDate']);
                         $realDate = date('Y-m-d', $realTime);
                         $hydmOff = $pz['code'].substr(date('Ym', $onlineTime), -4);
-                        if($realTime > time()) { // 之前的不做处理
+                        if($realTime >=  strtotime(date('Y-m-d'))) { // 之前的不做处理
                             RpaContractPublish::create([
                                 'contract_id' => $contractId,
                                 'jys_id' => $jysId,
@@ -350,7 +345,7 @@ class DetailController extends BaseController
                         $tzDateList = $this->returnDays($tzDate, $number, $jysCode);
                         $tzRealTime = strtotime($tzDateList['realDate']);
                         $tzRealDate = date('Y-m-d', $tzRealTime);
-                        if($tzRealTime > time()) {
+                        if($tzRealTime >=  strtotime(date('Y-m-d'))) {
                             RpaContractPublish::create([
                                 'contract_id' => $contractId,
                                 'jys_id' => $jysId,

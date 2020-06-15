@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\api\Mediator;
 
 use App\Http\Controllers\api\BaseApiController;
+use App\Http\Controllers\api\Mediator\webServiceController;
 use App\Models\Admin\Base\Organization\SysDept;
 use App\Models\Index\Mediator\FuncMediatorChangeList;
 use App\Models\Index\Mediator\FuncMediatorFlow;
 use App\Models\Index\Mediator\FuncMediatorInfo;
+use App\Models\Admin\Func\rpa_jjrvis;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Models\Admin\Api\RpaHaLcztcx;
@@ -23,7 +25,8 @@ class MediatorApiController extends BaseApiController
      * 续签
      * 后台审核完成，写入crm居间人续签处理表（TXCTC_JJR_XQDJ）。
      * crm自动触发续签申请
-     * 监控续签审核，修改数据库状态，生成协议，影像归档
+     * 监控续签流程完成，获取居间人比例，如有更改需要发送短信，居间人需要登录系统确认比例
+     * 修改数据库状态，生成协议，影像归档
      *
      * 信息变更
      * 监控crm信息变更流程，根据变更的内容写入变更表，在流程表加一条记录
@@ -50,7 +53,6 @@ class MediatorApiController extends BaseApiController
 //        if($res !== true){
 //            return response()->json($res);
 //        }
-
         //表单验证
         $validatedData = $request->validate([
             'id' => 'required|numeric',
@@ -69,6 +71,138 @@ class MediatorApiController extends BaseApiController
         $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
 
         return response()->json($return);
+    }
+
+    /**
+     * 获取可审批流程
+     */
+    public function getTaskList()
+    {
+        $webservice = new webServiceController();
+        $taskList = $webservice->queryTaskList();
+        $webservice->logout();
+        $errArr = [];
+        if($taskList){
+            $list = null;
+            if(isset($taskList->values)){
+                $list[0] = $taskList;
+            }else{
+                $list = $taskList;
+            }
+            foreach($list as $v){
+                //1.获取居间比例
+                $instid = $v->values[1];
+                $param = [
+                    'type' => 'jjr',
+                    'action' => 'getRateByInstanceId',
+                    'param' => [
+                        'instid' => $instid,
+                    ]
+                ];
+                $res = $this->getCrmData($param);
+                // echo $instid;exit;
+                // print_r($res);exit;
+                if(200 == $res['code']){
+                    $number = $res['data'];
+                }else{
+                    $errArr[] = [
+                        'instid' => $instid,
+                        'errMsg' => '居间比例未找到'
+                    ];
+                    continue;
+                }
+                
+                //2.是否等于居间填写比例
+                $table = 'TXCTC_LC_JJR_XQSQ';
+                $columns = "BH,SFZH,XXYKSRQ,XXYJSRQ";
+                $data = $this->getLcData($instid,$table,$columns);
+                $info = FuncMediatorInfo::where('number',$data['BH'])->first();
+                if($info){
+                    //线下
+                    if($info->is_unline == 1){
+                        $re = $this->doTask($instid);
+                        if(!$re){
+                            $errArr[] = [
+                                'instid' => $instid,
+                                'errMsg' => '审批流程失败'
+                            ];
+                        }
+                    }else{
+                        $flow = FuncMediatorFlow::where([['uid',$info->id],['status',1],['type',1],['is_handle',0]])->first();
+                        if($flow){
+                            if($flow->rate == $number){
+                                //判断是否是确认比例状态
+                                if($flow->is_sure == 1){
+                                    $re = $this->doTask($instid);
+                                    if(!$re){
+                                        $errArr[] = [
+                                            'instid' => $instid,
+                                            'errMsg' => '审批流程失败'
+                                        ];
+                                    }
+                                }
+                            }else{
+                                //3.居间确认比例
+                                $content = "您好！您在我公司申请的居间协议已通过初步审核！请您凭手机号再次登陆居间申请系统确认居间返佣比例。注：确认居间返佣比例后方可生成居间编号及居间协议，请收到此短信后务必及时登陆确认。如有疑问请及时与您的业务经理保持联系或拨打客服电话400-8820-628";
+                                $this->sendSmsSingle($flow->info->phone, $content, 'JJR-KF');
+                                $update['is_sure'] = 0;
+                                $update['sure_time'] = '';
+                                $update['rate'] = $number;
+                                $update['instid'] = $instid;
+                                FuncMediatorFlow::where('id',$flow->id)->update($update);
+                            }
+                        }else{
+                            $errArr[] = [
+                                'instid' => $instid,
+                                'errMsg' => 'rpa未找到该流程'
+                            ];
+                        }
+                    }
+                }else{
+                    $errArr[] = [
+                        'instid' => $instid,
+                        'errMsg' => 'rpa未找到该居间'
+                    ];
+                }
+            }
+        }elseif(-1 == $taskList){
+            $errArr[] = [
+                'instid' => "",
+                'errMsg' => '查询任务出错'
+            ];
+        }
+        return $errArr;
+    }
+
+    /**
+     * 审批流程
+     */
+    public function doTask($instid)
+    {
+        $webservice = new webServiceController();
+        $result = $webservice->doWorkAction($instid);
+        $webservice->logout();
+        return $result;
+    }
+
+    /**
+     * 重新生成协议专用
+     */
+    public function getXYFile(){
+        $names = [];
+
+        foreach($names as $name){
+            $info = FuncMediatorInfo::where('name',$name)->first();
+            if($info){
+                $file_path = storage_path().config('mediator.file_root').dirname($info->sign_img);
+                $flow = FuncMediatorFlow::where('uid',$info->id)->orderBy('id','desc')->first();
+                $this->getAgreementFile($flow,$file_path);
+                echo $name."完成";
+            }else{
+                echo $name."不存在";
+            }
+            echo "<br/>";
+        }
     }
 
     /**************************************居间信息处理业务**********************************/
@@ -123,12 +257,12 @@ class MediatorApiController extends BaseApiController
     private function jjrAdd($instid)
     {
         $table = 'TXCTC_LC_JJR_XZ';
-
-        $data = $this->getLcData($instid,$table);
+        $columns = "SFZH";
+        $data = $this->getLcData($instid,$table,$columns);
         $info = FuncMediatorInfo::where('zjbh',$data['SFZH'])->first();
         if(!$info){
             //线下居间，同步到rpa
-            $this->addMediator($data);
+            $this->addMediator($data,0,$instid);
         }
 
         $re = [
@@ -148,43 +282,33 @@ class MediatorApiController extends BaseApiController
     private function jjrBLQR($instid)
     {
         $table = 'TXCTC_LC_JJRBLQR';
-
-        $data = $this->getLcData($instid,$table);
+        $columns = "funcPFS_G_Decrypt(SFZH,'5a9e037ea39f777187d5c98b')SFZH,XYKSRQ,XYJSRQ";
+        $data = $this->getLcData($instid,$table,$columns);
         $info = FuncMediatorInfo::where('zjbh',$data['SFZH'])->first();
         if($info){
-//            1.修改流程表状态
+        // 1.修改流程表状态
             $flow = FuncMediatorFlow::where([['uid',$info->id],['status',1],['is_handle',0]])->whereIn('type',[0,1])->first();
             if($flow){
-                $flow->is_handle = 1;
-                $flow->handle_time = date('Y-m-d H:i:s');
                 $flow->xy_date_begin = $this->crmDateFormat($data['XYKSRQ']);
                 $flow->xy_date_end = $this->crmDateFormat($data['XYJSRQ']);
                 $flow->save();
-//            2.移动文件
-                $path = $this->moveFile($flow);
-//            3.生成协议
-                $this->getAgreementFile($flow,$path);
-//            4.同步数据到主表
-                $this->syncToInfo($flow);
+                $this->handleFlow($flow,'bl');
+                $re = [
+                    'status' => 200,
+                    'msg' => "比例确认流程{$instid},数据同步成功"
+                ];
             }else{
                 $re = [
                     'status' => 500,
                     'msg' => "未查询到数据！"
                 ];
-                return $re;
             }
         }else{
             $re = [
                 'status' => 500,
                 'msg' => "未查询到数据！"
             ];
-            return $re;
         }
-
-        $re = [
-            'status' => 200,
-            'msg' => "比例确认流程{$instid},数据同步成功"
-        ];
 
         return $re;
     }
@@ -198,34 +322,32 @@ class MediatorApiController extends BaseApiController
     private function jjrXQ($instid)
     {
         $table = 'TXCTC_LC_JJR_XQSQ';
-
-        $data = $this->getLcData($instid,$table);
+        $columns = "funcPFS_G_Decrypt(SFZH,'5a9e037ea39f777187d5c98b')SFZH,XXYKSRQ,XXYJSRQ";
+        $data = $this->getLcData($instid,$table,$columns);
         $info = FuncMediatorInfo::where('zjbh',$data['SFZH'])->first();
         if(!$info){
             //线下居间，同步到rpa
-            $this->addMediator($data);
+            $this->addMediator($data,1,$instid);         
         }else{
-//            线上居间
-//            1.修改流程表状态
-            $flow = FuncMediatorFlow::where([['uid',$info->id],['status',1],['is_handle',0]])->whereIn('type',[0,1])->first();
-            if($flow){
-                $flow->is_handle = 1;
-                $flow->handle_time = date('Y-m-d H:i:s');
-                $flow->xy_date_begin = $this->crmDateFormat($data['XYKSRQ']);
-                $flow->xy_date_end = $this->crmDateFormat($data['XYJSRQ']);
-                $flow->save();
-//            2.移动文件
-                $path = $this->moveFile($flow);
-//            3.生成协议
-                $this->getAgreementFile($flow,$path);
-//            4.同步数据到主表
-                $this->syncToInfo($flow);
+            if($info->is_unline == 1){
+                //线下居间，同步到rpa
+                $data['unline'] = 1;
+                $this->addMediator($data,1,$instid);  
             }else{
-                $re = [
-                    'status' => 500,
-                    'msg' => "未查询到数据！"
-                ];
-                return $re;
+                //线上居间
+                $flow = FuncMediatorFlow::where([['uid',$info->id],['status',1],['is_handle',0]])->whereIn('type',[0,1])->first();
+                if($flow){
+                    $flow->xy_date_begin = $this->crmDateFormat($data['XXYKSRQ']);
+                    $flow->xy_date_end = $this->crmDateFormat($data['XXYJSRQ']);
+                    $flow->save();
+                    $this->handleFlow($flow,'xq');
+                }else{
+                    $re = [
+                        'status' => 500,
+                        'msg' => "未查询到数据！"
+                    ];
+                    return $re;
+                }
             }
         }
 
@@ -247,14 +369,22 @@ class MediatorApiController extends BaseApiController
 
         $table = 'TXCTC_LC_JJR_XG';
 
-        $data = $this->getLcData($instid,$table);
+        $columns = "BH,KHYH,YHZH,LXSJ,DH,FHMC";
+        $data = $this->getLcData($instid,$table,$columns);
+        $res = $this->addFlow($data,'XG');
 
-        $this->addFlow($data,'XG');
-
-        $re = [
-            'status' => 200,
-            'msg' => "修改流程{$instid},数据同步成功"
-        ];
+        if($res){
+            $re = [
+                'status' => 200,
+                'msg' => "修改流程{$instid},数据同步成功"
+            ];
+        }else{
+            $re = [
+                'status' => 500,
+                'msg' => "修改流程{$instid},数据同步失败"
+            ];
+        }
+        
         return $re;
     }
 
@@ -262,15 +392,21 @@ class MediatorApiController extends BaseApiController
     private function jjrZXSQ($instid)
     {
         $table = 'TXCTC_LC_JJR_ZXSQ';
+        $columns = "BH,XYJSRQ";
+        $data = $this->getLcData($instid,$table,$columns);
 
-        $data = $this->getLcData($instid,$table);
-
-        $this->addFlow($data,'ZX');
-
-        $re = [
-            'status' => 200,
-            'msg' => "注销流程{$instid},数据同步成功"
-        ];
+        $res = $this->addFlow($data,'ZX');
+        if($res){
+            $re = [
+                'status' => 200,
+                'msg' => "注销流程{$instid},数据同步成功"
+            ];
+        }else{
+            $re = [
+                'status' => 500,
+                'msg' => "注销流程{$instid},数据同步失败"
+            ];
+        }
         return $re;
     }
 
@@ -282,10 +418,10 @@ class MediatorApiController extends BaseApiController
     private function jjrXQQR($instid)
     {
         $table = 'TXCTC_LC_JJRXQQR';
-
-        $data = $this->getLcData($instid,$table);
+        $columns = "funcPFS_G_Decrypt(ZJBH,'5a9e037ea39f777187d5c98b')ZJBH,QRLX";
+        $data = $this->getLcData($instid,$table,$columns);
         if($data['QRLX'] == 1){
-            $flow = FuncMediatorFlow::where([['zjbh',$data['SFZH']],['status',1],['is_handle',1]])->whereIn('type',[0,1])->orderBy('id','desc')->first();
+            $flow = FuncMediatorFlow::where([['zjbh',$data['ZJBH']],['status',1],['is_handle',1]])->whereIn('type',[0,1])->orderBy('id','desc')->first();
             $flow->is_manager_agree = 1;
             $flow->agree_time = date('Y-m-d H:i:s');
             $flow->save();
@@ -304,10 +440,10 @@ class MediatorApiController extends BaseApiController
      * @param $tabname
      * @return mixed
      */
-    private function getLcData($instid,$tabname)
+    private function getLcData($instid,$tabname,$columns)
     {
         //获取流程信息
-        $sql = "select * from {$tabname} where instid = ".$instid;
+        $sql = "select {$columns} from {$tabname} where instid = ".$instid;
         $post_data = [
             'type' => 'common',
             'action' => 'getEveryBy',
@@ -356,13 +492,13 @@ class MediatorApiController extends BaseApiController
         $new_exam_img= $path."/从业资格证书.png";
 
         //移动文件
-        rename($old_sign_img,$root.$new_sign_img);
-        rename($old_sfz_zm_img,$root.$new_sfz_zm_img);
-        rename($old_sfz_fm_img,$root.$new_sfz_fm_img);
-        rename($old_sfz_sc_img,$root.$new_sfz_sc_img);
-        rename($old_bank_img,$root.$new_bank_img);
+        copy($old_sign_img,$root.$new_sign_img);
+        copy($old_sfz_zm_img,$root.$new_sfz_zm_img);
+        copy($old_sfz_fm_img,$root.$new_sfz_fm_img);
+        copy($old_sfz_sc_img,$root.$new_sfz_sc_img);
+        copy($old_bank_img,$root.$new_bank_img);
         if($flow->is_exam == 1){
-            rename($old_exam_img,$root.$new_exam_img);
+            copy($old_exam_img,$root.$new_exam_img);
         }
 
         //修改数据库
@@ -371,7 +507,9 @@ class MediatorApiController extends BaseApiController
         $flow->sfz_fm_img = $new_sfz_fm_img;
         $flow->sfz_sc_img = $new_sfz_sc_img;
         $flow->bank_img = $new_bank_img;
-        $flow->exam_img = $new_exam_img;
+        if($flow->is_exam == 1){
+            $flow->exam_img = $new_exam_img;
+        }
         $flow->agreement_url = $path."/".$flow->info->name."--居间水印协议.pdf";
         $flow->save();
         return $root.$path;
@@ -394,7 +532,28 @@ class MediatorApiController extends BaseApiController
         $mpdf->AddPage();
         $view1 = view('Admin.Mediator.agreement.agreement', ['flow' => $flow]);
         $mpdf->writeHtml($view1);
-        $mpdf->SetWatermarkImage('images/Mediator/gz.png','0.7',['60','60'],['25','50']);
+
+        //根据地址长度判断公章位置
+        $y = 55;
+        $address = $flow->address;
+        $len = mb_strlen($address);
+
+
+        $sum = 0;
+        for($i = 0;$i < $len; $i++) {
+            $item = mb_substr($address, $i, 1);
+            if(strlen($item) == 3) {
+                $l = 2;
+            } else {
+                $l = 1;
+            }
+            $sum += $l;
+        }
+        if($sum > 32){
+            $y = 80;
+        }
+
+        $mpdf->SetWatermarkImage('images/Mediator/gz.png','0.7',['50','50'],['30',$y]);
         $mpdf->showWatermarkImage = true;
 
         //居间测试题
@@ -412,20 +571,19 @@ class MediatorApiController extends BaseApiController
         $mpdf->AddPage();
         $view4 = view('Admin.Mediator.agreement.agreement_4', ['flow' => $flow]);
         $mpdf->writeHtml($view4);
-        $mpdf->SetWatermarkImage('images/Mediator/gz.png','0.7',['60','60'],['30','150']);
+        $mpdf->SetWatermarkImage('images/Mediator/gz.png','0.7',['50','50'],['30','150']);
         $mpdf->showWatermarkImage = true;
 
         $name = $flow->info->name."--居间水印协议.pdf";
         $mpdf->Output($path."/".$name);
-        exit;
     }
 
     /**
      * 同步流程数据到主表
-     * @param $flow
+     * @param $flow,$is_crm
      * @return mixed
      */
-    private function syncToInfo($flow)
+    private function syncToInfo($flow,$is_crm = 0)
     {
         $update = [
             'sex' => $flow->sex,
@@ -459,41 +617,99 @@ class MediatorApiController extends BaseApiController
             'status' => 1
         ];
         //新签，需要更新开户日期
-        if($flow->type == 0){
-            $update['open_time'] = date('Y-m-d H:i:s');
+        if($flow->type == 0 && $is_crm == 0){
+            $update['open_time'] = date('Y-m-d');
         }
 
         return FuncMediatorInfo::where('id',$flow->uid)->update($update);
     }
 
+
+    /**
+     * 办理流程
+     */
+    public function handleFlow($flow,$type)
+    {
+//      1.修改流程表状态
+        $flow->is_handle = 1;
+        $flow->handle_time = date('Y-m-d H:i:s');
+        $flow->save();
+//      2.移动文件
+        $path = $this->moveFile($flow);
+//      3.生成协议
+        $this->getAgreementFile($flow,$path);
+//      4.同步数据到主表
+        $this->syncToInfo($flow);
+//      5.发送短信
+        $info = FuncMediatorInfo::where('id',$flow->uid)->first();
+        if($type == 'bl'){
+            $content = "您好！您在我公司申请的居间协议已办理成功！客户经理号为". $info->manager_number ."，居间编号为". $info->number ."。如有疑问请及时与您的业务经理保持联系或拨打客服电话400-8820-628";
+        }else{
+            $content = "您好！您在我公司申请的居间续签协议已办理成功！如有疑问请及时与您的业务经理保持联系或拨打客服电话400-8820-628";
+        }
+        $this->sendSmsSingle($info->phone, $content, 'JJR-KF');
+//      6.加入回访
+        $this->addReview($flow);
+    }
+    
     /**
      * 线下居间新增
      * @param $data
      */
-    private function addMediator($data,$type)
+    private function addMediator($data,$type,$instid)
     {
 //        获取居间人完整信息
         $post_data = [
             'type' => 'jjr',
             'action' => 'getJjrBy',
             'param' => [
+                'table' => 'JJR',
                 'by' => [
                     ['SFZH','=',$data['SFZH']]
                 ]
             ]
         ];
         $result = $this->getCrmData($post_data);
-        $jjr = $result[0];
+        $jjr = end($result);
+        if(isset($data['unline']) && $data['unline'] == 1){
+            $info = FuncMediatorInfo::where('zjbh',$data['SFZH'])->first();
+        }else{
+            //        增加主表
+            $add1 = [
+                'name' =>  $jjr['XM'],
+                'phone' =>  $jjr['LXSJ'] ? $jjr['LXSJ'] : $jjr['DH'],
+                'zjbh' =>  $jjr['SFZH'],
+                'is_unline' => 1,
+                'open_time' =>  $this->crmDateFormat($jjr['KHRQ']),
+            ];
+            $info = FuncMediatorInfo::create($add1);
+        }
 
-//        增加主表
-        $add1 = [
-           'name' =>  $jjr['XM'],
-           'phone' =>  $jjr['LXSJ'] ? $jjr['LXSJ'] : $jjr['DH'],
-           'zjbh' =>  $jjr['SFZH'],
-           'open_time' =>  $jjr['KHRQ   '],
-        ];
-        $info = FuncMediatorInfo::create($add1);
-//        增加流程表
+        //        增加流程表
+        //          获取比例
+        if($type==0){
+            $param = [
+                'type' => 'jjr',
+                'action' => 'getRateByBh',
+                'param' => [
+                    'bh' => $jjr['BH'],
+                ]
+            ];
+        }else{
+            $param = [
+                'type' => 'jjr',
+                'action' => 'getRateByInstanceId',
+                'param' => [
+                    'instid' => $instid,
+                ]
+            ];
+        }
+        $res = $this->getCrmData($param);
+        if(200 == $res['code']){
+            $rate = $res['data'];
+        }else{
+            $rate = "";
+        }
         $add2 = [
             'uid' => $info->id,
             'type' => $type,
@@ -504,14 +720,15 @@ class MediatorApiController extends BaseApiController
             'sex' => $this->getDm('SEX',$jjr['XB']),
             'birthday' => '',
             'email' => $jjr['EMAIL'],
-            'edu_background' => $this->getDm('XL',$jjr['XL']),
+            'edu_background' => $this->getDm('JJR_XL',$jjr['XL']),
             'address' => $jjr['LXDZ'],
             'postal_code' => $jjr['YZBM'],
             'profession' => $jjr['ZY'],
             'is_exam' => 0,
             'exam_number' => '',
-            'rate' => $jjr['TCFAMC'],
+            'rate' => $rate,
             'jr_rate' => '',
+            'part_b_date' => $this->crmDateFormat($jjr['XYKSRQ']),
             'xy_date_begin' => $this->crmDateFormat($jjr['XYKSRQ']),
             'xy_date_end' => $this->crmDateFormat($jjr['XYJSRQ']),
             'sfz_date_end' => $this->crmDateFormat($jjr['ZJDQ']),
@@ -525,10 +742,16 @@ class MediatorApiController extends BaseApiController
             'is_check' => 1,
             'is_sure' => 1,
             'is_handle' => 1,
+            'handle_time' => date('Y-m-d H:i:s'),
+            'is_review' => 1,
             'status' => 1,
             'crmflow_end_time' => date('Y-m-d H:i:s'),
         ];
-        FuncMediatorFlow::create($add2);
+        $flow = FuncMediatorFlow::create($add2);
+        //同步信息到主表
+        $this->syncToInfo($flow,1);
+        //加入回访
+        $this->addReview($flow);
     }
 
     /**
@@ -538,7 +761,11 @@ class MediatorApiController extends BaseApiController
      */
     private function addFlow($data,$type)
     {
-        $info = FuncMediatorInfo::where('zjbh',$data['SFZH'])->first();
+        $info = FuncMediatorInfo::where('number',$data['BH'])->first();
+
+        if(!$info){
+            return false;
+        }
 
         if($type == 'ZX'){
             //注销
@@ -591,15 +818,66 @@ class MediatorApiController extends BaseApiController
             }
             FuncMediatorInfo::where('id',$info->id)->update($update);
             //3.写入变更表
+            $name = [
+                'phone' => '手机号',
+                'bank_number' => '银行卡号',
+                'bank_name' => '银行名称',
+                'bank_branch' => '支行名称'
+            ];
             foreach ($update as $k => $v){
                 $add = [
                     'fid' => $flow->id,
-                    'name' => $k,
+                    'name' => $name[$k],
                     'old' => $info->$k,
                     'new' => $v
                 ];
                 FuncMediatorChangeList::create($add);
             }
+        }
+        return true;
+    }
+
+    /**
+     * 居间加入回访
+     */
+    private function addReview($flow)
+    {
+        $info = FuncMediatorInfo::where('id',$flow->uid)->first();
+        $dept = Sysdept::where('id',$flow->dept_id)->first();
+        if($flow->is_review == 1){
+
+            //根据客户经理编号获取客户经理姓名
+            $post_data = [
+                'type' => 'common',
+                'action' => 'getEveryBy',
+                'param' => [
+                    'table' => 'YGXX',
+                    'by' => [
+                        ['BH','=',$flow->manager_number]
+                    ],
+                    'columns' => ['XM']
+                ]
+            ];
+            $res = $this->getCrmData($post_data);
+            if(isset($res[0])){
+                $manager_name = $res[0]['XM'];
+            }else{
+                $manager_name = "";
+            }
+
+            $data = [
+                'deptname' => $dept->name,
+                'mediatorname' => $info->name,
+                'sex' => $flow->sex,
+                'manager_name' => $manager_name,
+                'managerNo' => $flow->manager_number,
+                'rate' => $flow->rate,
+                'tel' => $info->phone,
+                'open_date' => $info->open_time,
+                'is_dist' => 0,
+                'number' => $flow->number
+            ];
+            rpa_jjrvis::create($data);
         }
     }
 
@@ -608,7 +886,7 @@ class MediatorApiController extends BaseApiController
      * @param $date
      * @return string
      */
-    private function crmDateFormat($date)
+    public function crmDateFormat($date)
     {
         $Y = substr($date,0,4);
         $m = substr($date,4,2);
@@ -624,7 +902,7 @@ class MediatorApiController extends BaseApiController
      */
     private function getDm($type,$val)
     {
-        $sql = "select NOTE from txtdm where FLDM =".$type ." and CBM =".$val;
+        $sql = "select NOTE from txtdm where FLDM ='".$type ."' and CBM =".$val;
         $post_data = [
             'type' => 'common',
             'action' => 'getEveryBy',
@@ -666,5 +944,91 @@ class MediatorApiController extends BaseApiController
         ];
         $result = $this->getCrmData($post_data);
         return $result[0]['BH'];
+    }
+
+
+    /**
+     * 同步居间人培训时长
+     * @param Request $request
+     * @return array
+     */
+    public function syncMediatorTrainingDuration(Request $request){
+        $param = [
+            'type' => 'jjr',
+            'action' => 'getPart',
+            'param' => [
+                
+            ]
+        ];
+        $list = $this->getCrmData($param);
+        if(!$list) {
+            return [
+                'status' => 200,
+                'msg' => '没有更多的数据'
+            ];
+        }
+        $data = [];
+        foreach ($list as $k => $v) {
+            $data[] = [
+                'begintime' => strtotime($v['XYKSRQ']),
+                'endtime' => strtotime($v['XYJSRQ']),
+                'name' => $v['XM'],
+                'number' => $v['BH'],
+            ];
+        }
+        $guzzle = new Client();
+        $response = $guzzle->post('http://api.hatzjh.com/live/getmedinfo',[
+            'query' => [
+                'username' => 'haqhJJCX',
+                'password' => 'JJCXMediator',
+                '_time' => 1,
+            ],
+            'form_params' => [
+                'data' => json_encode($data)
+            ]
+        ]);
+        $body = $response->getBody();
+        $result = json_decode((string)$body,true);
+        if(!$result) {
+            return [
+                'status' => 500,
+                'msg' => '获取居间培训时长接口异常'
+            ];
+        }
+        if(isset($result['code'])) { // 表示有问题
+            return [
+                'status' => 500,
+                'msg' => "获取居间培训时长接口异常:".$result['msg']
+            ];
+        }
+        $crmData = [];
+        foreach ($data as $k => $v) {
+            $time = 200 == $result[$k]['code']?$result[$k]['total_time']:0;
+            $crmData[] = [
+                'name' => $v['name'],
+                'number' => $v['number'],
+                'time' =>$time?round($time/3600, 2):0
+            ];
+        }
+        $param = [
+            'type' => 'jjr',
+            'action' => 'SyncTrainingDuration',
+            'param' => [
+                'date' => date('Ymd'),
+                'data' => json_encode($crmData)
+            ]
+        ];
+        $crmResult = $this->getCrmData($param);
+        if(isset($crmResult['code']) && 200 == $crmResult['code']) {
+            return [
+                'status' => 200,
+                'msg' => '同步成功'
+            ];
+        } else {
+            return [
+                'status' => 500,
+                'msg' => '同步失败'
+            ];
+        }
     }
 }

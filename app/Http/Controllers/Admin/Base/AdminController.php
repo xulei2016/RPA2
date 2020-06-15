@@ -151,11 +151,16 @@ class AdminController extends BaseAdminController
     public function store(Request $request){
         $data = $this->get_params($request, ['name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID','dept_id','posts', 'func_id','leader_id']);
         $roles = $data['roleLists'];
-        $posts = $data['posts'];
-
         $data['roleLists'] = implode(',', $data['roleLists']);
-        $data['posts'] = implode(',', $data['posts']);
-
+        
+        $posts = [];
+        if($data['posts']) {
+            $posts = $data['posts'];
+            $data['posts'] = implode(',', $data['posts']);
+            if($data['posts'] == '未选择') {
+                $posts = [];
+            }
+        }
         //密码强度检测
         $result = self::check_pwd($data['password']);
         if(isset($result['code'])){
@@ -163,7 +168,6 @@ class AdminController extends BaseAdminController
         };
         $data['password'] = bcrypt($data['password']);
         $result = SysAdmin::create($data);
-
         foreach ($posts as $v) {
             SysDeptRelation::create([
                 'admin_id' => $result->id,
@@ -186,7 +190,7 @@ class AdminController extends BaseAdminController
     public function update(Request $request){
         $data = $this->get_params($request, ['id','name',['type',0],['sex',2],'phone','realName','desc','password','email','roleLists','groupID','dept_id', 'posts', 'func_id','leader_id']);
         $roles = $data['roleLists'];
-        $posts = $data['posts'];
+       
         if(null == $data['password'] || '' == $data['password']){
             unset($data['password']);
         }else{
@@ -198,7 +202,14 @@ class AdminController extends BaseAdminController
             $data['password'] = bcrypt($data['password']);
         }
         $data['roleLists'] = implode(',', $data['roleLists']);
-        $data['posts'] = implode(',', $data['posts']);
+        $posts = [];
+        if($data['posts']) {
+            $posts = $data['posts'];
+            $data['posts'] = implode(',', $data['posts']);
+            if($data['posts'] == '未选择') {
+                $posts = [];
+            }
+        }
         $result = SysAdmin::where('id', $data['id'])->update($data);
         SysDeptRelation::where([
             'admin_id' => $data['id'],

@@ -33,14 +33,6 @@
             </div>
         </div>
         <div class="form-group row">
-            <label for="uri" class="col-sm-2 control-label"><span class="must-tag">*</span>返回码</label>
-            <div class="col-sm-10">
-                <div class="jsoneditor">
-                    <div id="return_code" style="min-height: 400px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="form-group row">
             <label for="desc" class="col-sm-2 control-label"><span class="must-tag">*</span>备注</label>
             <div class="col-sm-10">
                 <textarea type="text" class="form-control" name="desc" id="desc" style="min-height: 200px;"></textarea>

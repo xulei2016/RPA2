@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin\Base;
 
 
 use App\Http\Controllers\base\BaseAdminController;
+use App\Models\Admin\Base\SysConfig;
 use App\Models\Admin\Base\SysVersionUpdate;
 use Illuminate\Http\Request;
+use Cache;
 
 /**
  * 版本更新控制器
@@ -35,6 +37,7 @@ class VersionUpdateController extends BaseAdminController
     /**
      * 列表数据
      * @param Request $request
+     * @return
      */
     public function pagination(Request $request) {
         $selectInfo = $this->get_params($request, ['desc', 'type']);
@@ -57,19 +60,33 @@ class VersionUpdateController extends BaseAdminController
     /**
      * 新增页面
      * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function create(Request $request){
+        $versionNumber = SysConfig::where('item_key', 'version_number')->first();
         $this->log(__CLASS__, __FUNCTION__, $request, "版本更新 新增页");
-        return view($this->view_prefix.'add', ['typeList' => $this->typeList]);
+        return view($this->view_prefix.'add', ['typeList' => $this->typeList, 'versionNumber' => $versionNumber]);
     }
 
     /**
      * 保存
      * @param Request $request
+     * @return array
      */
     public function store(Request $request){
         $post = $request->all();
         $post['created_by'] = auth()->guard('admin')->user()->realName;
+        $versionNumber = $post['version_number'];
+        unset($post['version_number']);
+        $version = SysConfig::where('item_key', 'version_number')->first();
+        if(!$versionNumber) {
+            $versionArray = explode('.', $version->item_value);
+            $versionArray[2] += 1;
+            $versionNumber = implode('.', $versionArray);
+        }
+        $version->item_value = $versionNumber;
+        $version->save();
+        Cache::forget('sysConfigs');
         $result = SysVersionUpdate::create($post);
         if($result) {
             return $this->ajax_return(200, '操作成功');

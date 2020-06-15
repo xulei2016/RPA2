@@ -2,6 +2,6 @@
 
 @section('component')
 
-    <confirm-rate rate="{{$rate}}"></confirm-rate>
+    <confirm-rate rate="{{$rate}}" special="{{$isSpecial}}"></confirm-rate>
 
 @endsection

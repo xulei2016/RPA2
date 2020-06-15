@@ -1,6 +1,8 @@
 <?php
 namespace App\Http\Controllers\Admin\Func\Plugin;
 
+use App\Models\Admin\Base\Document\SysDocumentContent;
+use App\Models\Admin\Base\Document\SysDocumentMenu;
 use App\Models\Admin\Func\Plugin\RpaPlugin;
 use App\Models\Admin\Func\Plugin\RpaPluginVersion;
 use App\Models\Admin\Func\Plugin\RpaPluginDownload;
@@ -67,7 +69,7 @@ class VersionController extends BaseController
      * @return array
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['version','desc','pid','url','show_name']);
+        $data = $this->get_params($request, ['version','desc','pid','url','show_name','doc_id']);
         $this->log(__CLASS__, __FUNCTION__, $request, "新增 插件版本");
         RpaPluginVersion::create($data);
         return $this->ajax_return('200', '操作成功！');
@@ -82,6 +84,8 @@ class VersionController extends BaseController
     public function edit(Request $request, $id){
         $pluginVersion = RpaPluginVersion::where('id', $id)->first();
         $plugin = RpaPlugin::where('id', $pluginVersion->pid)->first();
+        $doc = SysDocumentContent::where('did', $pluginVersion->doc_id)->first();
+        if($doc) $pluginVersion->docName = $doc->name;
         return view($this->view_prefix.'edit', ['pluginVersion' => $pluginVersion, 'plugin' => $plugin]);
     }
 
@@ -92,7 +96,7 @@ class VersionController extends BaseController
      * @return array
      */
     public function update(Request $request){
-        $data = $this->get_params($request, ['version','desc','pid','url','show_name','id',['status',0]]);
+        $data = $this->get_params($request, ['version','desc','pid','url','show_name','id','doc_id',['status',0]]);
         $result = RpaPluginVersion::where('id', $data['id'])->update($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 插件版本");
         return $this->ajax_return('200', '操作成功！');
@@ -144,9 +148,20 @@ class VersionController extends BaseController
     /**
      * @param Request $id
      * 根据插件id获取列表
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function getByPlugin(Request $request, $id){
         $this->log(__CLASS__, __FUNCTION__, $request, "插件版本 列表页");
         return view($this->view_prefix.'index', ['id' => $id]);
+    }
+
+    /**
+     * 查找文档
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function searchDoc(Request $request){
+        $docList = SysDocumentMenu::get(['id','parent_id as pid','name'])->toArray();
+        return view($this->view_prefix. 'searchDoc',  ['list' => $docList]);
     }
 }

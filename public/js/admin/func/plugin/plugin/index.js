@@ -19,12 +19,10 @@ $(function(){
      * 绑定事件
      */
     function bindEvent(){
-
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -137,12 +135,18 @@ $(function(){
                 title: '插件名称',
                 align: 'center',
                 valign: 'middle'
+            },{
+                field: 'name_en',
+                title: '英文名称',
+                align: 'center',
+                valign: 'middle'
             }, {
                 field: 'desc',
                 title: '插件描述',
                 align: 'center',
                 valign: 'middle',
                 formatter:function(val){
+                    if(!val) return '暂无描述';
                     var num = val.substr(50, 1);
                     var t = val.substr(0,50);
                     if(num) {

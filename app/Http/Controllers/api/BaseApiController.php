@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\base\BaseController;
-use App\Models\Admin\Api\RpaApiIp;
-use App\Models\Admin\Api\RpaApiLog;
+use App\Models\Admin\Api\ApiList;
+use App\Models\Admin\Api\ApiLog;
 use App\Models\Admin\Base\SysSmsLog;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
@@ -14,108 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BaseApiController extends BaseController
 {
-    /**
-     * 中正云短信接口
-     * @param   [String]  $phone    手机号 多个手机号用“,”分割
-     * @param   [String]  $msg      发送内容
-     * @return  [Integer] $code     状态码
-     * @return  [String]  $data     返回信息
-     */
-    protected function zzy_sms($phone,$msg)
-    {
-        $msg = iconv("utf-8","gbk",$msg);
-
-        $zzy = config('sms.ZZY');
-        $url = $zzy['url']['mult'];
-        $statuses = $zzy['status'];
-
-        $form_params = [
-            'id' => $zzy['account'],
-            'pwd' => $zzy['password'],
-            'to' => $phone,
-            'content' => $msg,
-        ];
-
-        $guzzle = new Client();
-        $response = $guzzle->post($url, [
-            'form_params' => $form_params
-        ]);
-        $body = $response->getBody();
-
-        $status = explode('/',(string)$body)[0];
-
-        $data = [
-            'status' => $status,
-            'msg' => $statuses[$status]
-        ];
-
-        $this->smsLog('中正云', $phone, iconv("gbk","utf-8",$msg), $status);
-
-        return $data;
-    }
-
-    /**
-     * 优信短信接口
-     * @param   [String]  $phone    手机号
-     * @param   [String]  $msg      发送内容
-     * @return  [Integer] $code     状态码
-     * @return  [String]  $data     返回信息
-     */
-    protected function yx_sms($phone,$msg)
-    {
-        $msg = iconv("utf-8","gbk",$msg);
-
-        $yx = config('sms.YX');
-        $url = $yx['url']['mult'];
-        $statuses = $yx['status'];
-
-        $form_params = [
-            'CorpID' => $yx['account'],
-            'Pwd' => $yx['password'],
-            "Mobile" => $phone,
-            "Content" => $msg,
-            "Cell" => '',
-            "SendTime" => ''
-        ];
-
-        $guzzle = new Client();
-        $response = $guzzle->post($url, [
-            'form_params' => $form_params
-        ]);
-        $body = $response->getBody();
-        $body = (string)$body;
-
-        $data = [
-            'status' => $body,
-            'msg' => $statuses[$body]
-        ];
-
-        //短信日志
-        $this->smsLog('优信', $phone, iconv("gbk","utf-8",$msg), $body);
-
-        return $data;
-    }
-
-    /**
-     * 短信发送日志
-     * @Description 短信日志
-     * @param [string] $type
-     * @param [string] $phone
-     * @param [string] $content
-     * @param [string] $status
-     * @return void bool
-     */
-    private function smsLog($type, $phone, $content, $status){
-        $sms = [
-            'type' => $type,
-            'api' => 'sms',
-            'phone' => $phone,
-            'content' => $content,
-            'return' => $status,
-        ];
-        return SysSmsLog::create($sms);
-    }
-
+    
     /**
      * api调用日志
      * @param string $function
@@ -132,7 +31,7 @@ class BaseApiController extends BaseController
             'return' => $data,
             'ip' => $name
         ];
-        return RpaApiLog::create($log);
+        return ApiLog::create($log);
     }
 
     /**
@@ -143,9 +42,10 @@ class BaseApiController extends BaseController
      */
     protected function check_ip($api,$ip)
     {
+        return true;
         //获取黑白名单，先取缓存
         if (!Cache::has($api)) {
-            $sysapiip = RpaApiIp::where([['api','=',$api],['state','=',1]])->first();
+            $sysapiip = ApiList::where([['name','=',$api],['status','=',1]])->first();
             if(!$sysapiip){
                 $data = [
                     'status' => 403,
@@ -202,8 +102,7 @@ class BaseApiController extends BaseController
         return $body;
     }
 
-    /**
-     * http请求
+    /** http请求
      * 
      */
     public function http($url, $method, $postfields = NULL, $headers = array(),$outputHeader=false) {
@@ -266,4 +165,6 @@ class BaseApiController extends BaseController
         $age = strtotime(substr($idcard,6,8).' +'.$diff.'years')>$today?($diff+1):$diff;
         return $age;
     }
+
+    
 }

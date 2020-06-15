@@ -42,4 +42,12 @@ return [
         'APPKEY' => 'AKID32f578bd65497b531f92a26419d1a7a7',
         'APPSECRET' => 'e5fe0353fc8b878fad9d00f3514024a8',
     ],
+
+    'chaorenyun' => [
+        'url' => [
+            'mult' => 'http://api2.sz789.net:88/RecvByte.ashx',
+        ],
+        'USERNAME' => 'haqhjrkjb',
+        'PASSWORD' => 'H@qh9772,.',
+    ],
 ];

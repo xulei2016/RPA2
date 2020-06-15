@@ -182,7 +182,7 @@
         e.stopPropagation();
         e.preventDefault();
     });
-    $('.submit_btn').on('click', function () {
+    $('.submit_btn').one('click', function () {
         var code = "{{$codeConfig}}";
         if (code === "2") {
             handle(function () {

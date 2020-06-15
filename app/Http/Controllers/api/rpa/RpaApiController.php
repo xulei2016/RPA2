@@ -4,6 +4,8 @@ namespace App\Http\Controllers\api\rpa;
 
 use App\Http\Controllers\Admin\Func\Contract\PublishController;
 use App\Http\Controllers\api\BaseApiController;
+use App\Models\Admin\Api\RpaCustomerInfo;
+use App\Models\Admin\Func\RpaCustomerSecondFinance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use GuzzleHttp\Client;
@@ -15,6 +17,7 @@ use App\Models\Admin\Api\RpaDtuSms;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Func\RpaSimulationAccount;
 use App\Models\Admin\Func\rpa_customer_jkzx;
+use Illuminate\Support\Facades\Auth;
 
 use App\Events\Sync\SyncOfflineCustomer;
 
@@ -58,8 +61,8 @@ class RpaApiController extends BaseApiController
         if(date("Y-m-d",strtotime($del_date)) != date("Y-m-d")){
             //获取保留打卡天数
             $limit = $this->get_config(['punch_card_limit']);
-            rpa_clock_list::where("created_at","<",strtotime("- ".$limit['punch_card_limit']." days"))->destory();
-
+            $time = strtotime("- ".$limit['punch_card_limit']." days");
+            rpa_clock_list::where([["created_at","<",$time]])->delete();
             file_put_contents($file_path,date("Y-m-d"));
         }
 
@@ -134,7 +137,7 @@ class RpaApiController extends BaseApiController
     {
         //ip检测
         $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
-        if($res === true){
+        if($res !== true){
             return response()->json($res);
         }
         $body = $this->getCard();
@@ -394,6 +397,7 @@ class RpaApiController extends BaseApiController
      * 获取客户信息
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * 1、线上户  2、线下户 3、特殊开户 4、线上+线下 5、线上+特殊
      */
     public function get_customer_info(Request $request)
     {
@@ -419,16 +423,17 @@ class RpaApiController extends BaseApiController
             ]
         ];
         $result = [];
-//        $result = $this->getCrmData($post_data);
+        $result = $this->getCrmData($post_data);
         $return = [
             'status' => 200,
-            'msg' => $result
+            'msg' => $result,
         ];
 
         //event sync 同步开户客户回访列表 -- （2020-01-13 hsu lay）
-        if(2 === $request->type)
-            event(new SyncOfflineCustomer($result, 2));
-
+        //已关闭运行20200326 hsulay
+        // if(2 == $request->type){
+        //     event(new SyncOfflineCustomer($result, 2));
+        // }
 
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
@@ -635,12 +640,11 @@ class RpaApiController extends BaseApiController
                     AND A.FUTUCODE_TYPE=B.FUTUCODE_TYPE AND A.FUTU_CODE=B.FUTU_CODE AND A.FOPT_TYPE=B.FOPT_TYPE 
                     AND A.FOPT_TYPE<>'2' AND A.HEDGE_TYPE='!' AND B.HEDGE_TYPE='!'  AND C.dict_entry='250026' AND A.FUTUCODE_TYPE=C.SUBENTRY";
         }
-        
         $post_data = [
             'type' => 'common',
             'action' => 'getEveryBy',
             'param' => [
-                'db' => 'uf20bak',
+                'db' => 'uf20bak2',
                 'table' => 'TKHXX',
                 'by' => $sql
             ]
@@ -802,8 +806,8 @@ class RpaApiController extends BaseApiController
         if($res){
             $kh = RpaSimulationAccount::find($request->id);
             $content = "尊敬的".$kh->name."：您好，您的仿真期权账号为".$request->zjzh."，初始密码为身份证后六位，可于下一个交易日参与交易。请到华安期货官网-软件下载-其他及模拟仿真栏目下载软件，推荐下载“期权仿真恒生-5.0”";
-            $res = $this->yx_sms($kh->phone,$content);
-            if($res['status'] == '0'){
+            $res = $this->sendSmsSingle($kh->phone, $content, 'MNFZ');
+            if($res === true){
                 $re = [
                     'status' => 200,
                     'msg' => '数据更新成功，短信发送成功'
@@ -811,7 +815,7 @@ class RpaApiController extends BaseApiController
             }else{
                 $re = [
                     'status' => 500,
-                    'msg' => '数据更新成，短信发送失败，失败原因：'.$res['msg']
+                    'msg' => '数据更新成，短信发送失败，失败原因：'.$res
                 ];
             }
         }else{
@@ -856,5 +860,189 @@ class RpaApiController extends BaseApiController
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
         return response()->json($re);
+    }
+
+    /**
+     * 获取客户关系
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function get_mediator_by_account(Request $request)
+    {
+        //ip检测
+        // $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+        // if($res !== true){
+        //     return response()->json($res);
+        // }
+
+        //表单验证
+        $validatedData = $request->validate([
+            'account' => 'required|numeric'
+        ]);
+
+        //根据姓名加资金账号查询客户
+        $post_data = [
+            'type' => 'common',
+            'action' => 'getEveryBy',
+            'param' => [
+                'table' => 'TKHXX',
+                'by' => [
+                    ['ZJZH','=',$request->account]
+                ],
+                'columns' => ['YYB','ID']
+            ]
+        ];
+        $result = $this->getCrmData($post_data);
+        if($result){
+            $post_data = [
+                'type' => 'jjr',
+                'action' => 'get_customer_relation',
+                'param' => [
+                    'yyb_number' => $result[0]['YYB'],
+                    'kid' => $result[0]['ID']
+                ]
+            ];
+            $res = $this->getCrmData($post_data);
+            $re = [
+                'status' => 200,
+                'msg' => $res
+            ];
+        }else{
+            $re = [
+                'status' => 500,
+                'msg' => '该资金账号未找到'
+            ];
+        }
+
+        //api日志
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+
+        return response()->json($re);
+    }
+
+    /**
+     * 获取线下资料
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUnlineMediatorFile(Request $request)
+    {
+        //表单验证
+        $validatedData = $request->validate([
+            'number' => 'required|numeric',
+            'type' => 'required|in:0,1'
+        ]);
+
+        //根据居间编号获取影像资料
+        if($request->type == 1){
+            $table = "TXCTC_LC_JJR_XQSQ";
+        }else{
+            $table = "TXCTC_LC_JJR_XZ";
+        }
+        $post_data = [
+            'type' => 'jjr',
+            'action' => 'getUnlineMediatorFile',
+            'param' => [
+                'table' => $table,
+                'number' => $request->number
+            ]
+        ];
+        $result = $this->getCrmData($post_data);
+
+        return response()->json($result);
+    }
+
+    /**
+     * 获取二次金融客户
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getSecondFinance(Request $request)
+    {
+        $date = isset($request->date) ? $request->date : date('Y-m-d');
+        $res = RpaCustomerSecondFinance::where([['open_date',$date],['status',0]])->get();
+
+        $return = [
+            'status' => 200,
+            'msg' => $res
+        ];
+
+        return response()->json($return);
+    }
+
+    /**
+     * 保存二次金融监控中心截图
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function saveJkzxImage(Request $request)
+    {
+        //表单验证
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'fundsNum' => 'required',
+            'jkzxstates' => 'required',
+            'jkzxfile' => 'required'
+        ]);
+
+        $customer = RpaCustomerSecondFinance::where('fundsNum',$request->fundsNum)->first();
+
+        $path = "E:/Records/二次金融图片/";
+        $path = $path.date('Y-m-d')."/".$customer->idCard."/";
+        $file = $request->file('jkzxfile');
+        $filename = 'JKZX.png';
+        $file->move($path,$filename);
+
+        $update = [
+            'jkzxstates' => $request->jkzxstates,
+            'jkzxpaths' => $path.$filename,
+            'xyzgpaths' => $path."XYZG_1.jpg,".$path."XYZG_2.jpg"
+        ];
+        if($request->jkzxstates == 0 || $request->jkzxstates == 1){
+            $update['status'] = 1;
+        }
+
+        //身份证
+        $info = RpaCustomerInfo::where('fundAccount',$request->fundsNum)->first();
+        $root = "D:/uploadFile/customerImg/";
+        $sfz_zm = $root.$info->sfz_zm;
+        $sfz_fm = $root.$info->sfz_fm;
+        if(file_exists($sfz_zm)){
+            copy($sfz_zm,$path."SFZ_ZM.jpg");
+            $update['sfz_zm'] = $path."SFZ_ZM.jpg";
+        }
+        if(file_exists($sfz_fm)){
+            copy($sfz_fm,$path."SFZ_FM.jpg");
+            $update['sfz_fm'] = $path."SFZ_FM.jpg";
+        }
+
+        $res = RpaCustomerSecondFinance::where('fundsNum',$request->fundsNum)->update($update);
+        if($res){
+
+            $param = [
+                'name' => $customer->name,
+                'idCard' => $customer->idCard,
+                'operator' => Auth::user()->name,
+                'ispic' => 1
+            ];
+
+            $data = [
+                'name' => 'SupervisionXYZG_im',
+                'jsondata' => json_encode($param,JSON_UNESCAPED_UNICODE)
+            ];
+            rpa_immedtasks::create($data);
+
+            $return = [
+                'status' => 200,
+                'msg' => '保存成功！'
+            ];
+        }else{
+            $return = [
+                'status' => 500,
+                'msg' => '保存失败！'
+            ];
+        }
+
+        return response()->json($return);
     }
 }

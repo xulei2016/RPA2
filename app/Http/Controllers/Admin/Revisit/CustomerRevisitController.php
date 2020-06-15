@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin\Revisit;
 
+use App\Models\Admin\Func\rpa_customer_manager;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +12,7 @@ use Excel;
 use App\Http\Controllers\base\BaseAdminController;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomers;
 use App\Models\Admin\Api\Revisit\Customer\RpaRevisitCustomerRecords as Records;
+use Illuminate\View\View;
 
 /**
  * Class CustomerRevisitController
@@ -56,7 +59,14 @@ class CustomerRevisitController extends BaseAdminController
      */
     public function show($id)
     {
-        return view('Admin.Func.Revisit.Customer.edit', compact('id'));
+        $record = RpaRevisitCustomers::leftJoin('rpa_customer_managers', 'rpa_revisit_customers.customer_id', '=', 'rpa_customer_managers.id')
+            ->select([
+                'rpa_customer_managers.fundsNum',
+                'rpa_customer_managers.name',
+                'rpa_customer_managers.sync_jjr_num',
+                'rpa_customer_managers.sync_jjr_name'
+            ])->find($id);
+        return view('Admin.Func.Revisit.Customer.show', compact('id', 'record'));
     }
 
     /**
@@ -84,8 +94,14 @@ class CustomerRevisitController extends BaseAdminController
      */
     public function edit($id)
     {
-        //
-        return view('Admin.Func.Revisit.Customer.edit', compact('id'));
+        $record = RpaRevisitCustomers::leftJoin('rpa_customer_managers', 'rpa_revisit_customers.customer_id', '=', 'rpa_customer_managers.id')
+            ->select([
+                'rpa_customer_managers.fundsNum',
+                'rpa_customer_managers.name',
+                'rpa_customer_managers.sync_jjr_num',
+                'rpa_customer_managers.sync_jjr_name'
+            ])->find($id);
+        return view('Admin.Func.Revisit.Customer.edit', compact('id','record'));
     }
 
     /**
@@ -102,10 +118,20 @@ class CustomerRevisitController extends BaseAdminController
         //更新record/ revisit customer
         DB::beginTransaction();
         try {
+            $customer = RpaRevisitCustomers::find($id);
+            $customer_manager = rpa_customer_manager::find($customer->customer_id);
+
+            //客户经理、回访人、复核人不能是同一人
+            if( auth()->guard('admin')->user()->realName == $customer->reviser
+                || auth()->guard('admin')->user()->realName == $customer_manager->customerManagerName ){
+                return $this->ajax_return(500, '审核人不能与经理人或回访人是同一人！');
+            }
             RpaRevisitCustomers::where([['id', '=', $id], ['status', '<', '3']])->update([
                 'status' => $data['status'],
-                'checker' => auth()->guard('admin')->user()->id,
-                'check_at' => date('Y-m-d H:i:s')
+                'checker' => auth()->guard('admin')->user()->realName,
+                'check_at' => date('Y-m-d H:i:s'),
+                'failID' => (1 == $data['status']) ? 110 : 0,
+                'failDesc' => $data['bz']
             ]);
             Records::where([['record_id', '=', $id], ['status', '=', '0']])->update(['status' => $data['status'], 'desc' => $data['bz']]);
             DB::commit();
@@ -135,19 +161,26 @@ class CustomerRevisitController extends BaseAdminController
     public function pagination(Request $request)
     {
         $rows = $request->rows;
-        $data = $this->get_params($request, ['yybName', 'status', 'name'], false);
+        $data = $this->get_params($request, ['yybName', 'status', 'name', 'reviser', 'checker', 'from_created_at', 'to_created_at'], false);
 
         $conditions = $this->serializeCondition($data);
         $order = $request->sort ?? 'rpa_revisit_customers.status';
         $sort = $request->sortOrder;
         return RpaRevisitCustomers::where($conditions)
             ->leftJoin('rpa_customer_managers', 'rpa_revisit_customers.customer_id', '=', 'rpa_customer_managers.id')
+            ->leftJoin('sys_dictionaries', 'rpa_revisit_customers.failID', '=', 'sys_dictionaries.value')
             ->select([
                 'rpa_customer_managers.fundsNum',
                 'rpa_customer_managers.name',
-                'rpa_customer_managers.yybName',
+                'rpa_customer_managers.sync_yyb_name as yybName',
+                'rpa_customer_managers.KHRQ',
+                'rpa_customer_managers.sync_jlr_name as customerManagerName',
                 'rpa_revisit_customers.status',
+                'rpa_revisit_customers.reviser',
+                'rpa_revisit_customers.checker',
                 'rpa_revisit_customers.id',
+                'sys_dictionaries.dict_prompt',
+                'rpa_revisit_customers.failDesc',
                 'rpa_revisit_customers.revisit_at',
                 'rpa_revisit_customers.check_at',
             ])
@@ -161,7 +194,7 @@ class CustomerRevisitController extends BaseAdminController
      */
     public function export(Request $request)
     {
-        $params = $this->get_params($request, ['yybName', 'status', 'name'], false);
+        $params = $this->get_params($request, ['yybName', 'status', 'name', 'reviser', 'checker','from_created_at', 'to_created_at'], false);
 
         $conditions = $this->serializeCondition($params);
 
@@ -170,15 +203,39 @@ class CustomerRevisitController extends BaseAdminController
         if (isset($params['ids'])) {
             $data = RpaRevisitCustomers::where($conditions)
                 ->leftJoin('rpa_customer_managers', 'rpa_revisit_customers.customer_id', '=', 'rpa_customer_managers.id')
+                ->leftJoin('sys_dictionaries', 'rpa_revisit_customers.failID', '=', 'sys_dictionaries.value')
                 ->whereIn('rpa_customer_managers.id', explode(',', $params['ids']))
-                ->select(['rpa_customer_managers.fundsNum', 'rpa_customer_managers.name', 'rpa_customer_managers.yybName', 'rpa_revisit_customers.status', 'rpa_revisit_customers.id', 'rpa_revisit_customers.revisit_at'])
+                ->select([
+                    'rpa_customer_managers.fundsNum', 
+                    'rpa_customer_managers.name', 
+                    'rpa_customer_managers.sync_yyb_name', 
+                    'rpa_customer_managers.sync_jjr_name', 
+                    'rpa_revisit_customers.reviser',
+                    'rpa_revisit_customers.revisit_at',
+                    'rpa_revisit_customers.checker',
+                    'rpa_revisit_customers.check_at',
+                    'sys_dictionaries.dict_prompt',
+                    'rpa_revisit_customers.failDesc'
+                    ])
                 ->orderBy($order, $sort)
                 ->get()
                 ->toArray();
         } else {
             $data = RpaRevisitCustomers::where($conditions)
                 ->leftJoin('rpa_customer_managers', 'rpa_revisit_customers.customer_id', '=', 'rpa_customer_managers.id')
-                ->select(['rpa_customer_managers.fundsNum', 'rpa_customer_managers.name', 'rpa_customer_managers.yybName', 'rpa_revisit_customers.status', 'rpa_revisit_customers.id', 'rpa_revisit_customers.revisit_at'])
+                ->leftJoin('sys_dictionaries', 'rpa_revisit_customers.failID', '=', 'sys_dictionaries.value')
+                ->select([
+                    'rpa_customer_managers.fundsNum', 
+                    'rpa_customer_managers.name', 
+                    'rpa_customer_managers.sync_yyb_name', 
+                    'rpa_customer_managers.sync_jjr_name', 
+                    'rpa_revisit_customers.reviser',
+                    'rpa_revisit_customers.revisit_at',
+                    'rpa_revisit_customers.checker',
+                    'rpa_revisit_customers.check_at',
+                    'sys_dictionaries.dict_prompt',
+                    'rpa_revisit_customers.failDesc'
+                    ])
                 ->orderBy($order, $sort)
                 ->get()
                 ->toArray();
@@ -204,11 +261,38 @@ class CustomerRevisitController extends BaseAdminController
     private function serializeCondition($data)
     {
         $conditions = [];
+
+        $dept_id = auth()->guard('admin')->user()->dept_id;
+        $yyb = DB::table('sys_depts')->where('id', $dept_id)->pluck('yyb_hs');
+        $yyb = !$yyb->isEmpty() ? $yyb[0] : '' ;
+
+        $conditions[] = ['sys_dictionaries.type', '=', 'failType'];
+        $conditions[] = ['rpa_customer_managers.sync_jjr_num', '!=', ' '];
+        //是否总部权限
+        if($yyb && '1001' !== $yyb && '1009' !== $yyb && '10005' !== $yyb){
+            $conditions[] = ['rpa_customer_managers.sync_yyb_num', '=', $yyb];
+        }
+        //是否IB权限
+        if($yyb && '10005' == $yyb){
+            $conditions[] = ['rpa_customer_managers.sync_yyb_name', 'like', '%IB%'];
+        }
         if (isset($data['yybName'])) {
-            $conditions[] = ['rpa_customer_managers.yybName', 'like', "%" . $data['yybName'] . "%"];
+            $conditions[] = ['rpa_customer_managers.sync_yyb_name', 'like', "%" . $data['yybName'] . "%"];
+        }
+        if (isset($data['from_created_at'])) {
+            $conditions[] = ['rpa_revisit_customers.created_at', '>=', $data['from_created_at']];
+        }
+        if (isset($data['to_created_at'])) {
+            $conditions[] = ['rpa_revisit_customers.created_at', '<=', $data['to_created_at'] . " 23:59:59"];
         }
         if (isset($data['status'])) {
             $conditions[] = ['rpa_revisit_customers.status', '=', $data['status']];
+        }
+        if (isset($data['reviser'])) {
+            $conditions[] = ['rpa_revisit_customers.reviser', '=', $data['reviser']];
+        }
+        if (isset($data['checker'])) {
+            $conditions[] = ['rpa_revisit_customers.checker', '=', $data['checker']];
         }
         if (isset($data['name'])) {
             if (preg_match("/^\d*$/", $data['name'])) {

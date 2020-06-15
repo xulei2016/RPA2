@@ -8,14 +8,18 @@ use App\Models\Admin\Api\RpaCustomerInfo;
 use App\Models\Admin\Api\RpaFlow;
 use App\Models\Admin\Api\RpaShixincfa;
 use App\Models\Admin\Api\RpaShixinsf;
+use App\Models\Admin\Func\rpa_customer_manager;
 use App\Models\Admin\Rpa\rpa_immedtasks;
+use App\Models\Admin\Rpa\rpa_timetasks;
+use App\Models\Index\CNode\RpaAccountFlows;
+use App\Models\Index\Mediator\FuncMediatorInfo;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\Func\rpa_cotton_entrys;
 
-use App\Events\Sync\SyncCustomer;
+use App\Events\Sync\SyncOfflineCustomer;
 
 class PluginApiController extends BaseApiController
 {
@@ -269,23 +273,20 @@ class PluginApiController extends BaseApiController
                     ];
                 }
             }else{
-                $sql = "select signatureimg from oa_mediator where number =".$flow->number;
-                $res = DB::connection("oa")->select($sql);
+                $res = FuncMediatorInfo::where('number',$flow->number)->first();
                 if($res){
-                    $res = $res[0];
-                    $guzzle = new Client();
-                    $response = $guzzle->post('http://172.16.253.26/interface/crm/getMediatorImg.php',[
-                        'form_params' => [
-                            "filename" => $res->signatureimg
-                        ],
-                    ]);
-                    $body = $response->getBody();
-                    $body = (string)$body;
-
-                    $re = [
-                        'status' => 200,
-                        'msg' => $body
-                    ];
+                    $baseImg = $this->base64EncodeImage(storage_path().config('mediator.file_root').$res->sign_img);
+                    if($baseImg){
+                        $re = [
+                            'status' => 200,
+                            'msg' => $baseImg
+                        ];
+                    }else{
+                        $re = [
+                            'status' => 500,
+                            'msg' => '图片文件未找到！'
+                        ];
+                    }
                 }else{
                     $re = [
                         'status' => 500,
@@ -445,10 +446,16 @@ class PluginApiController extends BaseApiController
             'zjzh' => 'required',
         ]);
 
-        $sign_base64 = isset($request->sign_base64) ? $request->sign_base64 : "";
-        $sfz_zm_base64 = isset($request->sfz_zm_base64) ? $request->sfz_zm_base64 : "";
-        $sfz_fm_base64 = isset($request->sfz_fm_base64) ? $request->sfz_fm_base64 : "";
-        $head_zm_base64 = isset($request->head_zm_base64) ? $request->head_zm_base64 : "";
+        $re = [
+            'status' => 500,
+            'msg' => '该接口版本过低，需要升级插件'
+        ];
+        return response()->json($re);
+
+        $sign_base64 = isset($request->sign_base64) ? str_replace("||",";",$request->sign_base64) : "";
+        $sfz_zm_base64 = isset($request->sfz_zm_base64) ? str_replace("||",";",$request->sfz_zm_base64) : "";
+        $sfz_fm_base64 = isset($request->sfz_fm_base64) ? str_replace("||",";",$request->sfz_fm_base64) : "";
+        $head_zm_base64 = isset($request->head_zm_base64) ? str_replace("||",";",$request->head_zm_base64) : "";
         //图片转码保存
 
         $data = [
@@ -520,9 +527,18 @@ class PluginApiController extends BaseApiController
         if(!empty($sfz_zm_base64)){
             $result = RpaCustomerInfo::where("fundAccount",$data['fundAccount'])->first();
             if($result->sfz_zm){
+
+                $server = $this->get_config();
+                if($server == 'H1_inner'){
+                    $s = '主服务器1';
+                }elseif($server == 'H2_inner'){
+                    $s = '主服务器2';
+                }
+
                 $data = [
                     'name' => "IDRecognition",
-                    'jsondata' => json_encode(['ids' => (string)$result->id],JSON_UNESCAPED_UNICODE)
+                    'jsondata' => json_encode(['ids' => (string)$result->id],JSON_UNESCAPED_UNICODE),
+                    'server' => $s
                 ];
                 //插入即时任务
                 $res = rpa_immedtasks::create($data);
@@ -547,7 +563,7 @@ class PluginApiController extends BaseApiController
                 'msg' => '图片保存失败！'
             ];
         }
-        
+
         //api日志
         //$this->apiLog(__FUNCTION__,$request,$re['status'],$request->getClientIp());
 
@@ -719,13 +735,80 @@ class PluginApiController extends BaseApiController
         }else{
             $re = [
                 'status' => 500,
-                'msg' => '居间人不存在或无效居间！' 
+                'msg' => '居间人不存在或无效居间！'
             ];
         }
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
 
         return response()->json($re);
+    }
+
+    /**
+     * 检查居间和客户经理是否匹配
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkRelations(Request $request)
+    {
+        //表单验证
+        $validatedData = $request->validate([
+            'mediator_num' => 'required|numeric',
+            'manager_num' => 'required|numeric'
+        ]);
+
+        $post_data = [
+            'type' => 'common',
+            'action' => 'getEveryBy',
+            'param' => [
+                'table' => 'JJR',
+                'by' => [
+                    ['BH','=',$request->mediator_num]
+                ],
+                'columns' => ['KFR']
+            ]
+        ];
+        $result = $this->getCrmData($post_data);
+        if($result){
+            $kfr = $result[0]['KFR'];
+            $post_data = [
+                'type' => 'common',
+                'action' => 'getEveryBy',
+                'param' => [
+                    'table' => 'YGXX',
+                    'by' => [
+                        ['ID','=',$kfr]
+                    ]
+                ]
+            ];
+            $result = $this->getCrmData($post_data);
+            if($result){
+                $manager_num = $result[0]['BH'];
+                if($manager_num == $request->manager_num){
+                    $return = [
+                        'status' => 200,
+                        'msg' => '匹配成功！'
+                    ];
+                }else{
+                    $return = [
+                        'status' => 500,
+                        'msg' => '匹配失败！'
+                    ];
+                }
+            }else{
+                $return = [
+                    'status' => 500,
+                    'msg' => '客户经理未找到！'
+                ];
+            }
+        }else{
+            $return = [
+                'status' => 500,
+                'msg' => '居间人未找到！'
+            ];
+        }
+
+        return response()->json($return);
     }
 
     /**
@@ -826,6 +909,12 @@ class PluginApiController extends BaseApiController
             'fundsNum' => 'required|numeric'
         ]);
 
+        $re = [
+            'status' => 500,
+            'msg' => '该接口版本过低，需要升级插件'
+        ];
+        return response()->json($re);
+
         $data = [
             'yybName' => isset($request->yyb) ? $request->yyb : "",
             'jjrNum' => isset($request->jjr) ? $request->jjr : "",
@@ -834,10 +923,11 @@ class PluginApiController extends BaseApiController
             'customerNum' =>isset($request->customerNum) ? $request->customerNum : "",
             'fundsNum' =>$request->fundsNum,
             'message' =>isset($request->message) ? $request->message : "",
-            'creater' =>Auth::user()->name,
+            'creater' => isset($request->creater) ? $request->creater :Auth::user()->name,
             'add_time' => date('Y-m-d H:i:s'),
             'special' => trim($request->special,','),
-            'is_visit' => 0
+            'is_visit' => 0,
+            'is_script' => isset($request->is_script) ? 1 : 0
         ];
         //判断是否强制提交，如果是强制提交。验证错误时返回状态为true
         $comellent_submit = isset($request->comellent_submit) ? $request->comellent_submit : "";
@@ -847,7 +937,7 @@ class PluginApiController extends BaseApiController
             $status = 500;
         }
         //判断是否已提交
-        //判断资金账号
+        //1.判断资金账号
         $post_data = [
             'type' => 'common',
             'action' => 'getEveryBy',
@@ -860,7 +950,7 @@ class PluginApiController extends BaseApiController
         ];
         $result = $this->getCrmData($post_data);
         if($result){
-            //判断身份证号
+            //2.判断身份证号
             if($result[0]['ZJBH'] != $data['idCard']){
                 $re = [
                     'status' => 500,
@@ -873,8 +963,7 @@ class PluginApiController extends BaseApiController
             }
         }
         // 判断特殊开户是否存在
-        $sql = "select * from oa_customer_manager where fundsNum = ".$data['fundsNum'];
-        $res = DB::connection("oa")->select($sql);
+        $res = rpa_customer_manager::where('fundsNum',$data['fundsNum'])->get();
         if($res){
             foreach($res as $v){
                 $arr1 = explode(",",$v->special);
@@ -895,8 +984,6 @@ class PluginApiController extends BaseApiController
         }
         //非特殊客户，crm待处理信息表是否有相同资金账号
         if(!$data['special']){
-            //$sql = "select * from futures.txctc_jjr_ygxxcl where zjzh={$data['fundsNum']} and CLZT != 4";
-            //$result = DB::connection("crm")->select($sql);
             $post_data = [
                 'type' => 'common',
                 'action' => 'getEveryBy',
@@ -928,68 +1015,119 @@ class PluginApiController extends BaseApiController
 
         //客户归属关系
         if('' != $data['customerNum'] && null != $data['customerNum']){
-            //$manager = M('office_mmanager')->where('manager_number = '.$data['customerNum'])->find();
-            $sql = "select * from oa_office_mmanager where manager_number =".$data['customerNum'];
-            $manager = DB::connection("oa")->select($sql);
 
-            if(isset($manager[0])){
+            //去crm获取
+            $post_data = [
+                'type' => 'common',
+                'action' => 'getEveryBy',
+                'param' => [
+                    'table' => 'YGXX',
+                    'by' => [
+                        ['BH','=',$data['customerNum']]
+                    ],
+                    'columns' => ['YYB','XM']
+                ]
+            ];
+            $result = $this->getCrmData($post_data);
+            if(isset($result[0])){
                 //客户经理
-                $manager = $manager[0];
-                $data['customerManagerName'] = $manager->manager_name;
-
-                //营业部信息
-                $sql = "select * from oa_dept where did =".$manager->pid;
-                $yyb = DB::connection("oa")->select($sql);
+                $manager = $result[0];
+                $data['customerManagerName'] = $manager['XM'];
+                //部门
+                $sql = "select NAME from LBORGANIZATION where ID=".$manager['YYB']." order by ID desc";
+                $post_data = [
+                    'type' => 'common',
+                    'action' => 'getEveryBy',
+                    'param' => [
+                        'table' => 'LBORGANIZATION',
+                        'by' => $sql
+                    ]
+                ];
+                $yyb = $this->getCrmData($post_data);
                 if(isset($yyb[0])){
                     $yyb = $yyb[0];
-                    $data['yybNum'] = $manager->pid;
-                    $data['yybName'] = $data['yybName'] ? $data['yybName'] : $yyb->deptname;
+                    $data['yybNum'] = $manager['YYB'];
+                    $data['yybName'] = $data['yybName'] ? $data['yybName'] : $yyb['NAME'];
                 }
-
-                //居间人信息
-                if($data['jjrNum']){
-                    $sql = "select * from oa_mediator where number = " . $data['jjrNum'];
-                    $jjr = DB::connection("oa")->select($sql);
-                    if(isset($jjr[0])){
-                        $jjr = $jjr[0];
-                        $data['jjrName'] = $jjr->mediatorname;
-                    }
+                //居间人
+                if($data['jjrNum']) {
+                    $jjr = FuncMediatorInfo::where("number", $data['jjrNum'])->first();
+                    $data['jjrName'] = $jjr->name;
                 }
             }
         }else{
             //居间人信息
             if($data['jjrNum']){
-                $sql = "select * from oa_mediator where number = " . $data['jjrNum'];
-                $jjr = DB::connection("oa")->select($sql);
-                if(isset($jjr[0])){
-                    $jjr = $jjr[0];
-                    $data['jjrName'] = $jjr->mediatorname;
-                    $data['yybNum'] = $jjr->did;
-                    //营业部信息
-                    $sql = "select * from oa_dept where did =".$jjr->did;
-                    $yyb = DB::connection("oa")->select($sql);
-                    if(isset($yyb[0])){
-                        $yyb = $yyb[0];
-                        $data['yybName'] = $data['yybName'] ? $data['yybName'] : $yyb->deptname;
+                $jjr = FuncMediatorInfo::where("number", $data['jjrNum'])->first();
+                if(isset($jjr)) {
+                    $data['jjrName'] = $jjr->name;
+
+                    $post_data = [
+                        'type' => 'jjr',
+                        'action' => 'get_mediator_relation',
+                        'param' => [
+                            'phone' => $jjr->phone,
+                        ]
+                    ];
+                    $res = $this->getCrmData($post_data);
+                    if($res){
+                        $data['yybNum'] = $res['yyb_number'];
+                        $data['yybName'] = $data['yybName'] ? $data['yybName'] : $res['yyb_name'];
                     }
                 }
             }
         }
-        //写入内部系统
-        $result1 = DB::connection("oa")->table("oa_customer_manager")->insertGetId($data);
         //写入rpa
-        $result2 = DB::table("rpa_customer_manager")->insertGetId($data);
-        if($result1 && $result2){
+        $data['KHRQ'] = date('Y-m-d');
+        $result2 = rpa_customer_manager::create($data);
 
-            //event sync 同步开户客户回访列表 -- （2020-01-13 hsu lay）
-            $event_customer = $data;
-            $event_customer['id'] = $result2;
-            event(new SyncOfflineCustomer($event_customer, 1));
+        if($result2){
+
+            //发布客户分组任务
+            $jsondata = [
+                'zjzh' => $data['fundsNum'],
+                'dept' => $data['yybName']
+            ];
+            $timetask = [
+                'time' => date("Y-m-d H:i:s",time()+180),
+                'name' => 'CustomerGroupings',
+                'jsondata' => json_encode($jsondata,JSON_UNESCAPED_UNICODE),
+                'description' => '客户分组'
+
+            ];
+            rpa_timetasks::create($timetask);
+
+
+
+            /****event sync 同步线上开户客户回访列表 -- （2020-01-13 hsu lay）****/
+            //已关闭运行 20200326 hsulay
+
+            //修改 增加只处理居间客户 (2020-03-24  hsu lay)
+            // if($data['jjrNum']){
+            //     $event_customer = $data;
+            //     $event_customer['id'] = $result2;
+            //     event(new SyncOfflineCustomer($event_customer, 1));
+            // }
+
+            /*********************************end*******************************/
 
 
             //开户插件同步居间关系到crm系统
             //增加二次股指、激活、更新判断，以上客户不同步到crm
             if(!$data['special']){
+
+                //发布银期关联任务
+                $jsondata = [
+                    'zjzh' => $data['fundsNum'],
+                    'uid' => "{$result2->id}",
+                ];
+                rpa_timetasks::create([
+                    'time' => date("Y-m-d H:i:s",time()+300),
+                    'name' => 'ReleaseRelationTask',
+                    'jsondata' => json_encode($jsondata, JSON_UNESCAPED_UNICODE),
+                    'description' => '自动银期'
+                ]);
+
                 $post_data = [
                     'type' => 'customer',
                     'action' => 'relationCustomer',
@@ -1020,7 +1158,7 @@ class PluginApiController extends BaseApiController
 
             $re = [
                 'status' => 500,
-                'msg' => "内部系统信息录入失败，请联系软件工程部！"
+                'msg' => "RPA系统信息录入失败，请联系金融科技部！"
             ];
         }
         //api日志
@@ -1091,71 +1229,38 @@ class PluginApiController extends BaseApiController
             'mediatorName' => 'required',
             'mediatorNo' => 'required',
         ]);
-        
-        // 判断线上还是线下
-        $sql = "select * from oa_mediator where mediatorname = '".$request->mediatorName."' and 
-        number =".$request->mediatorNo." and length(sfz_img_zm) > 15";
-        $res = DB::connection("oa")->select($sql);
-        if(!$res){
-            //线下
-            
-            //获取手机号
-            if(!isset($request->mediatorPhone)){
-                //根据姓名加资金账号查询客户
-                $post_data = [
-                    'type' => 'common',
-                    'action' => 'getEveryBy',
-                    'param' => [
-                        'table' => 'JJR',
-                        'by' => [
-                            ['XM','=',$request->mediatorName],
-                            ['BH','=',$request->mediatorNo]
-                        ],
-                        'columns' => ['LXSJ','DH']
-                    ]
-                ];
-                $result = $this->getCrmData($post_data);
-                $phone = $result[0]['LXSJ'] ?? $result[0]['DH'];
-            }else{
-                $phone = $request->mediatorPhone;
-            }
-
-            $guzzle = new Client();
-            $response = $guzzle->get('http://api.hatzjh.com/mediator/check',[
-                'query' => [
-                    'username' => 'haqhJJCX',
-                    'password' => 'JJCXMediator',
-                    '_time' => 1,
-                    'mediatorName' => $request->mediatorName,
-                    'mediatorNo' => $request->mediatorNo,
-                    'mediatorPhone' => $phone,
-                    'tdsourcetag' => 's_pctim_aiomsg'
-                ]
-            ]);
-            $body = $response->getBody();
-            $body = json_decode((string)$body,true);
-
-            if($body['code'] == 0){
-                $re = [
-                    'status' => 500,
-                    'msg' => '未参加线下视频培训'
-                ];
-            }elseif($body['code'] == 200){
-                $re = [
-                    'status' => 200,
-                    'msg' => date('Y-m-d H:i:s',$body['datetime'])
-                ];
-            }
-        }else{
-            //线上
+        $data = $this->getLengthOfMediatorTraining($request->mediatorName, $request->mediatorNo);
+        if($data['code'] == 200) {
             $re = [
-                'status' => 201,
-                'msg' => '该居间为线上居间'
+                'status' => 200,
+                'time' => $data['data']['time'],
+                'msg' => $data['data']['format']
+            ];
+        } else {
+            $re = [
+                'status' => 500,
+                'msg' => $data['message']
             ];
         }
-
         //api日志
         $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
+        return response()->json($re);
+    }
+
+    /**
+     * 获取客户来源
+     */
+    public function getCustomerFrom(Request $request)
+    {
+        $validatedData = $request->validate([
+            'phone' => 'required',
+        ]);
+        $flow = RpaAccountFlows::where('tel',$request->phone)->orderBy('id','desc')->first();
+        $re = [
+            'status' => 200,
+            'msg' => $flow,
+            'sj_num' => '100888'
+        ];
         return response()->json($re);
     }
 }

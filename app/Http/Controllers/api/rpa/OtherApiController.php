@@ -117,226 +117,72 @@ class OtherApiController extends BaseApiController
     }
 
     /**
-     * 居间人流程同步
+     * 居间人验证
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function mediator_flow(Request $request)
+    public function check_mediator(Request $request)
     {
         //ip检测
-        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
-        if($res !== true){
-            return response()->json($res);
-        }
+//        $res = $this->check_ip(__FUNCTION__,$request->getClientIp());
+//        if($res !== true){
+//            return response()->json($res);
+//        }
 
         //表单验证
         $validatedData = $request->validate([
-            'id' => 'required|numeric',
+            'phone' => 'required|numeric',
+            'number' => 'required|numeric',
+            'id_card' => 'required',
+            'name' => 'required'
         ]);
 
-        $lc = RpaHaLcztcx::find($request->id);
-        if($lc){
-            $return = $this->jjrDistribute($lc);
+        $post_data = [
+            'type' => 'jjr',
+            'action' => 'getJjrBy',
+            'param' => [
+                'table' => 'JJR',
+                'by' => [
+                    ['BH','=',$request->number]
+                ]
+            ]
+
+        ];
+        $res = $this->getCrmData($post_data);
+        // print_r($res);exit;
+        if($res){
+            $res = $res[0];
+             if($res['LXSJ'] != $request->phone && $res['DH'] != $request->phone){
+                $re = [
+                    'status' => 400,
+                    'msg' => "手机号码不匹配"
+                ];
+             }elseif($res['SFZH'] != $request->id_card){
+                $re = [
+                    'status' => 400,
+                    'msg' => "身份证号码不匹配"
+                ];
+             }elseif($res['XM'] != $request->name){
+                $re = [
+                    'status' => 400,
+                    'msg' => "姓名不匹配"
+                ];
+             }else{
+                $re = [
+                    'status' => 200,
+                    'msg' => "成功"
+                ];
+             }
         }else{
-            $return = [
-                'status' => 500,
-                'msg' => "未找到流程"
+            $re = [
+                'status' => 400,
+                'msg' => "该居间不存在"
             ];
         }
 
         //api日志
-        $this->apiLog(__FUNCTION__,$request,json_encode($return,true),$request->getClientIp());
+        $this->apiLog(__FUNCTION__,$request,json_encode($re,true),$request->getClientIp());
 
-        return response()->json($return);
-    }
-    /**************************************居间信息处理业务**********************************/
-
-    /**
-     * 居间人业务分发
-     */
-    private function jjrDistribute($lc){
-        if($lc->state >= 4){
-            switch($lc->tablename){
-                case "TXCTC_LC_JJR_XZ":  //居间人新增流程
-                    $re = $this->jjrAdd($lc->instid);
-                    break;
-                case "TXCTC_LC_JJR_XG": //居间人信息变更流程
-                    $re =  $this->jjrChange($lc->instid);
-                    break;
-                case "TXCTC_LC_JJR_XQSQ": //居间人续签流程
-                    $re =  $this->jjrXQ($lc->instid);
-                    break;
-                case "TXCTC_LC_JJRBLQR": //居间人比例确认
-                    $re = $this->jjrBLQR($lc->instid);
-                    break;
-                default:
-                    $re = [
-                        'status' => 500,
-                        'msg' => "该流程不是居间新增,变更,续签,比例流程！"
-                    ];
-                    break;
-            }
-        }else{
-            $re = [
-                'status' => 500,
-                'msg' => "该流程还未完成"
-            ];
-        }
-        return $re;
-    }
-
-    /**
-     * 居间新增流程
-     * @param $instid
-     * @return array
-     */
-    private function jjrAdd($instid){
-        $table = 'TXCTC_LC_JJR_XZ';
-        //调用接口，保存文件
-        $postdata = array(
-            "instid"=>$instid,
-            'tabname'=>$table
-        );
-        //保存文件
-        $savepath = $this->save_file($postdata);
-        if($savepath === false){
-            $re = [
-                'status' => 500,
-                'msg' => "新增流程{$instid}附件保存失败"
-            ];
-            return $re;
-        }
-
-        //成功
-        $re = [
-            'status' => 200,
-            'msg' => "新增流程{$instid},数据同步成功"
-        ];
-        return $re;
-    }
-
-    /**
-     * 居间变更流程
-     * @param $instid
-     * @return array
-     */
-    private function jjrChange($instid){
-        //调用接口，保存文件
-        $table = 'TXCTC_LC_JJR_XG';
-        $postdata = array(
-            "instid"=>$instid,
-            'tabname'=>$table
-        );
-
-        //保存文件
-        $savepath = $this->save_file($postdata);
-        if($savepath === false){
-            $re = [
-                'status' => 500,
-                'msg' => "修改流程{$instid}附件保存失败"
-            ];
-            return $re;
-        }
-
-        $re = [
-            'status' => 200,
-            'msg' => "修改流程{$instid},数据同步成功"
-        ];
-        return $re;
-    }
-
-    /**
-     * 居间续签流程
-     * @param $instid
-     * @return array
-     */
-    private function jjrXQ($instid){
-        $table = 'TXCTC_LC_JJR_XQSQ';
-        $postdata = array(
-            "instid"=>$instid,
-            'tabname'=>$table
-        );
-        //保存文件
-        $savepath = $this->save_file($postdata);
-        if($savepath === false){
-            $re = [
-                'status' => 500,
-                'msg' => "续签流程{$instid}附件保存失败"
-            ];
-            return $re;
-        }
-
-        $re = [
-            'status' => 200,
-            'msg' => "续签流程{$instid},数据同步成功"
-        ];
-
-        return $re;
-    }
-
-    /**
-     * 居间比例确认流程
-     * @param $instid
-     * @return array
-     */
-    private function jjrBLQR($instid){
-		//调用接口，保存文件
-		$table = 'TXCTC_LC_JJRBLQR';
-		//调用接口，保存文件
-		$postdata = array(
-				"instid"=>$instid,
-				'tabname'=>$table
-			);
-		//保存文件
-        $savepath = $this->save_file($postdata);
-        if($savepath === false){
-            $re = [
-                'status' => 500,
-                'msg' => "续签流程{$instid}附件保存失败"
-            ];
-            return $re;
-        }
-		//发送短信
-		$content="您好！您在我公司申请的居间协议已办理成功！客户经理号为{$savepath['JYGH']}，居间编号为{$savepath['BH']}。如有疑问请及时与您的业务经理保持联系或拨打客服电话400-8820-628";
-		//生成协议
-		if($savepath['uid']){
-
-			$post_data = [
-				'uid' => $savepath['uid'],
-				'path' => $savepath['path'],
-				'sms_content' => $content
-			];
-
-            $guzzle = new Client();
-            $response = $guzzle->post('http:/172.16.191.26/oa2/index.php?m=Xy&a=xyHB2',[
-                'form_params' => $post_data,
-            ]);
-            $body = $response->getBody();
-            $result = json_decode((String)$body,true);
-		}
-		$re = [
-			'status' => 200,
-			'msg' => "比例申请流程{$instid}数据同步成功"
-		];
-		return $re;
-	}
-
-    /**
-     * 保存文件
-     * @param $postdata
-     * @return bool|mixed
-     */
-    public function save_file($postdata){
-        $guzzle = new Client();
-        $response = $guzzle->post('http://172.16.191.26/interface/yxxt/yxxt.php',[
-            'form_params' => $postdata,
-        ]);
-        $body = $response->getBody();
-        $savepath = json_decode((String)$body,true);
-        if(!$savepath){
-            return false;
-        }else{
-            return $savepath;
-        }
+        return response()->json($re);
     }
 }

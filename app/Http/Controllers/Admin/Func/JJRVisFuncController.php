@@ -76,6 +76,9 @@ class JJRVisFuncController extends BaseAdminController{
         if(!empty( $dept )){
             array_push($condition,  array('deptname', 'like', "%".$dept."%"));
         }
+
+        array_push($condition,array('is_dist',1));
+
         $rows = $request->rows;
         $order = $request->sort ?? 'id';
         $sort = $request->sortOrder ?? 'desc';

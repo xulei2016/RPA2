@@ -28,9 +28,8 @@ $(function(){
 
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -47,6 +46,25 @@ $(function(){
                 Delete(ids);
             }
         });
+        //全部已读
+        $("#pjax-container #readAll").on('click', function(){
+            Swal({
+                title: "是否将所有信息标记为已读",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: "确认",
+                showLoaderOnConfirm: true,
+                cancelButtonText: "取消",
+            }).then(function(res) {
+                if(res.value) {
+                    $.get('/admin/sys_message_list/readAllMessage', function(res){
+                        if(res.code == 200) {
+                            Swal('操作成功', '', 'success');
+                        }
+                    })
+                }
+            });
+        })
     }
 
     /**
@@ -169,7 +187,7 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                     formatter: function(value, row, index){
-                       return value.title;
+                       return value?value.title:'-';
                     }
 
                 }, {
@@ -179,6 +197,7 @@ $(function(){
                     valign: 'middle',
                     formatter: function(value, row, index){
                         let res = "";
+                        if(!value) return '-';
                         if(1 == value.typeName){
                             res = '<span class="x-tag x-tag-sm">系统公告</span>';
                         }else if(2 == value.typeName){

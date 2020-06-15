@@ -34,8 +34,8 @@
     <link rel="stylesheet" href="{{URL::asset('/include/nprogress/nprogress.css')}}">
     <!-- overlayScrollbars -->
     <link rel="stylesheet" href="{{URL::asset('/include/overlayScrollbars/css/OverlayScrollbars.min.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('/include/select2/css/select2.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('/include/select2/css/select2.min.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('/include/toastr/toastr.min.css')}}">
     <link rel="stylesheet" href="{{URL::asset('/css/admin/common/main.css')}}">
     {{--  simple cale  --}}
     <link rel="stylesheet" href="{{URL::asset('/include/simple-calendar/stylesheets/simple-calendar.css')}}">

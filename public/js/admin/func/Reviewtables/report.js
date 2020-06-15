@@ -25,12 +25,10 @@ $(function(){
             }
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
-
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -91,7 +89,22 @@ $(function(){
                     field: 'success',
                     title: '已回访人数',
                     align: 'center',
-                    valign: 'middle'
+                    valign: 'middle',
+                }, {
+                    field: 'dx',
+                    title: '短信回访人数',
+                    align: 'center',
+                    valign: 'middle',
+                }, {
+                    field: 'dh',
+                    title: '电话回访人数',
+                    align: 'center',
+                    valign: 'middle',
+                }, {
+                    field: 'wz',
+                    title: '其他方式回访人数',
+                    align: 'center',
+                    valign: 'middle',
                 }, {
                     field: 'error',
                     title: '回访失败人数',

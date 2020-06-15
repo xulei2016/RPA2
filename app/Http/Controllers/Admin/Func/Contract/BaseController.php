@@ -13,6 +13,13 @@ class BaseController extends BaseAdminController
      */
     protected $view_prefix;
 
+    public $dayList; // 所有交易日
+
+    public function __construct(){
+        parent::__construct();
+        if(!$this->dayList) $this->dayList = $this->getAllDays();
+    }
+
     /**
      * 首页
      * @param Request $request
@@ -146,7 +153,9 @@ class BaseController extends BaseAdminController
      */
     public function getDateAfter($date, $number, $jys){
         $date = date('Ymd', strtotime($date));
-        $list = $this->dayList[$jys];
+        $day = $this->dayList;
+        $jys = trim($jys);
+        $list = $day[$jys];
         $count = count($list);
         $start = $list[0];
         $end = $list[$count-1];
@@ -244,6 +253,7 @@ class BaseController extends BaseAdminController
             ]
         ];
         $jyr = $this->getCrmData($jyrData);
+        
         $newList = [];
         foreach($jyr as $v) {
             $jys = trim($v['EXCHANGE_TYPE']);

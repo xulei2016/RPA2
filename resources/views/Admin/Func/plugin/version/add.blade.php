@@ -26,6 +26,18 @@
             </div>
         </div>
 
+        <div class="form-group row">
+            <label for="" class="col-sm-2">关联文档</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="doc_id" id="doc_id" readonly>
+                    <option value="" >未选择</option>
+                </select>
+            </div>
+            <div class="col-sm-1">
+                <a class="btn btn-primary searchDoc"><i class="fa fa-search"></i></a>
+            </div>
+        </div>
+
         <div class="form-group row" style="margin-left: 30px;">
             <div class="btn btn-default btn-file">
                 <i class="fa fa-paperclip"></i> <span>上传附件</span>

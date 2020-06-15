@@ -7,6 +7,7 @@ use App\Models\Admin\Base\SysMenu;
 use App\Http\Controllers\Base\BaseAdminController;
 
 use App\Models\Admin\Admin\SysAdmin;
+use mysql_xdevapi\Exception;
 use Spatie\Permission\Models\Role;
 
 /**
@@ -20,7 +21,7 @@ class MenuController extends BaseAdminController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
@@ -32,7 +33,7 @@ class MenuController extends BaseAdminController
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -43,12 +44,12 @@ class MenuController extends BaseAdminController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $data = $this->get_params($request, [['parent_id',0],'title','uri','icon','order','unique_name']);
+        $data = $this->get_params($request, [['parent_id', 0], 'title', 'uri', 'icon', 'order', 'unique_name']);
         $result = SysMenu::create($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "添加 菜单");
         return $this->ajax_return(200, '操作成功！');
@@ -57,7 +58,7 @@ class MenuController extends BaseAdminController
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -68,8 +69,8 @@ class MenuController extends BaseAdminController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @param int $id
+     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
@@ -81,15 +82,15 @@ class MenuController extends BaseAdminController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return array
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
+     * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
     {
-        $data = $this->get_params($request, [['parent_id',0],'title','uri','icon','order','id','unique_name'], false);
+        $data = $this->get_params($request, [['parent_id', 0], 'title', 'uri', 'icon', 'order', 'id', 'unique_name'], false);
         $result = SysMenu::where('id', $data['id'])
-                ->update($data);
+            ->update($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "更新 菜单");
         return $this->ajax_return(200, '恭喜你，操作成功！');
     }
@@ -97,8 +98,8 @@ class MenuController extends BaseAdminController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return array
+     * @param int $id
+     * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
     {
@@ -109,31 +110,30 @@ class MenuController extends BaseAdminController
 
     /**
      * orderUpdate
-     * @param Request $request
      * @return array $resulr
      */
-    public function orderUpdate(Request $request){
+    public function orderUpdate(Request $request)
+    {
         $order = $request->_order;
-        $order = json_decode($order,true);
-        if($this->sortUpdate($order)){
+        $order = json_decode($order, true);
+        if ($this->sortUpdate($order)) {
             return $this->ajax_return(200, '操作成功！');
         }
     }
 
     /**
      * sortUpdate
-     * @param $order
-     * @param int $pid
      * @return bool $resulr
      */
-    private function sortUpdate($order, $pid = 0){
-        foreach($order as $k => $sort){
+    private function sortUpdate($order, $pid = 0)
+    {
+        foreach ($order as $k => $sort) {
             $id = $sort['id'];
             $dbsort = SysMenu::find($id);
-            if($k != $dbsort->order || $pid != $dbsort->pid){
+            if ($k != $dbsort->order || $pid != $dbsort->pid) {
                 SysMenu::where('id', $id)->update(['order' => $k, 'parent_id' => $pid]);
             }
-            if(isset($sort['children'])){
+            if (isset($sort['children'])) {
                 $this->sortUpdate($sort['children'], $id);
             }
         }
@@ -144,24 +144,25 @@ class MenuController extends BaseAdminController
      * find all menus
      * @return array menuList
      */
-    public function AllMenus(){
+    public function AllMenus()
+    {
         $menuList = SysMenu::where('is_use', 1)
-                    ->orderBy('order', 'asc')
-                    ->get()
-                    ->toArray();
+            ->orderBy('order', 'asc')
+            ->get()
+            ->toArray();
 
         $data = [];
 
         $newMenuList = [];
-        foreach($menuList as $key => $menus){
+        foreach ($menuList as $key => $menus) {
             $newMenuList[$menus['id']] = $menus;
         }
         unset($menuList);
 
-        foreach($newMenuList as $k => $menu){
-            if(isset($newMenuList[$menu['parent_id']])){
+        foreach ($newMenuList as $k => $menu) {
+            if (isset($newMenuList[$menu['parent_id']])) {
                 $newMenuList[$menu['parent_id']]['child'][] = &$newMenuList[$menu['id']];
-            }else{
+            } else {
                 $data[] = &$newMenuList[$menu['id']];
             }
         }
@@ -174,7 +175,7 @@ class MenuController extends BaseAdminController
     public function getMenuList()
     {
         //登录控制
-        if(!auth()->Guard('admin')->check()) {
+        if (!auth()->Guard('admin')->check()) {
             header('Location: /admin/login');
             exit;
         }
@@ -184,49 +185,57 @@ class MenuController extends BaseAdminController
         if (config('app.debug') || !session()->has(config('admin.cache.menuList'))) {
             $menu = self::AllMenus();
             session([config('admin.cache.menuList') => $menu]);
-        }else{
+        } else {
             $menu = session(config('admin.cache.menuList'));
         }
+
         return $this->initMenuList($menu);
     }
 
     //菜单列表视图
-    public function initMenuList($menus){
-        
-        if ($menus){
+    public function initMenuList($menus)
+    {
+        if ($menus) {
             $item = '';
-            foreach ($menus as $v){
+            foreach ($menus as $v) {
                 //权限判断
                 $user = auth()->guard('admin')->user();
-                if(!$user->hasRole('superAdministrator')){
-                    if(!$user->hasPermissionTo($v['unique_name'])){
+                if (!$user->hasRole('superAdministrator')) {
+                    try {
+                        if (!$user->hasPermissionTo($v['unique_name'])) {
+                            continue;
+                        }
+                    } catch (\Exception $e) {
                         continue;
                     }
                 }
                 $item .= $this->getNetableItem($v);
             }
+
             return $item;
         }
         return '暂无菜单';
     }
 
     //返回菜单 HTML代码
-    public function  getNetableItem($data){
-        if (isset($data['child'])){
+    public function getNetableItem($data)
+    {
+        if (isset($data['child'])) {
             return $this->getHandleList($data);
         }
-        return '<li class="nav-item"><a href="'.$data['uri'].'" class="nav-link"><i class="nav-icon fa '.$data['icon'].'"></i><p>'.$data['title'].'</p></a></li>';
+        return '<li class="nav-item"><a href="' . $data['uri'] . '" class="nav-link"><i class="nav-icon fa ' . $data['icon'] . '"></i><p>' . $data['title'] . '</p></a></li>';
     }
 
     //判断是否有子集
-    public function getHandleList($data){
-        $handle = '<li class="nav-item has-treeview"><a href="#" class="nav-link"><i class="nav-icon fa '.$data['icon'].'"></i><p>'.$data['title'].'<i class="fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview">';
+    public function getHandleList($data)
+    {
+        $handle = '<li class="nav-item has-treeview"><a href="#" class="nav-link"><i class="nav-icon fa ' . $data['icon'] . '"></i><p>' . $data['title'] . '<i class="fa fa-angle-left right"></i></p></a><ul class="nav nav-treeview">';
 
-        foreach ($data['child'] as $v){
+        foreach ($data['child'] as $v) {
             //权限判断
             $user = auth()->guard('admin')->user();
-            if(!$user->hasRole('superAdministrator')){
-                if(!$user->hasPermissionTo($v['unique_name'])){
+            if (!$user->hasRole('superAdministrator')) {
+                if (!$user->hasPermissionTo($v['unique_name'])) {
                     continue;
                 }
             }
@@ -238,7 +247,8 @@ class MenuController extends BaseAdminController
     }
 
     //icon list
-    public function sys_icon(){
+    public function sys_icon()
+    {
         return view('admin.base.menu.iconList');
     }
 

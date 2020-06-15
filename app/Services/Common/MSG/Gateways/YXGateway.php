@@ -37,7 +37,7 @@ class YXGateway extends Gateway
      * @return array|mixed
      * @throws GatewayErrorException
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message)
+    public function send(PhoneNumberInterface $to, MessageInterface $message, $params = [])
     {
         $apiStr = '';
 

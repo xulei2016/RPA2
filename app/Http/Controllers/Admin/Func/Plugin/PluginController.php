@@ -62,7 +62,7 @@ class PluginController extends BaseController {
      * @return array
      */
     public function store(Request $request){
-        $data = $this->get_params($request, ['name','desc']);
+        $data = $this->get_params($request, ['name', 'name_en', 'desc']);
         RpaPlugin::create($data);
         $this->log(__CLASS__, __FUNCTION__, $request, "新增 插件");
         return $this->ajax_return('200', '操作成功！');

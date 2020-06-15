@@ -25,12 +25,10 @@ $(function(){
             }
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
-
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -100,6 +98,8 @@ $(function(){
                             result = '<span class="x-tag x-tag-sm x-tag-success">新签</span>'
                         }else if(value == 1){
                             result = '<span class="x-tag x-tag-sm">续签</span>'
+                        }else if(value == 2){
+                            result = '<span class="x-tag x-tag-sm">变更</span>'
                         }else{
                             result = '<span class="x-tag x-tag-sm x-tag-danger">注销</span>'
                         }
@@ -157,7 +157,7 @@ $(function(){
                                 if(row.part_b_date){
                                     result = '<span class="x-tag x-tag-sm x-tag-danger">待审核</span>';
                                 }else{
-                                    result = '<span class="x-tag x-tag-sm x-tag-info">未完成</span>';
+                                    result = '<span class="x-tag x-tag-sm x-tag-info">未申请完成</span>';
                                 }
                             }
 
@@ -179,6 +179,20 @@ $(function(){
                         return result;
                     }
                 }, {
+                    field: 'training_duration',
+                    title: '培训时长',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function (value,row,index) {
+                        var result = "";
+                        if(value == 0){
+                            result = '-'
+                        }else{
+                            result = (value/3600).toFixed(2) + ' 小时'
+                        }
+                        return result;
+                    }
+                }, {
                     field: 'remark',
                     title: '备注',
                     align: 'center',
@@ -191,11 +205,20 @@ $(function(){
                     formatter: function(value, row, index){
                         var id = row.id;
                         var result = "";
-                        result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/mediator/flow_info/"+id+"' title='详情'>详情</a>";
+                        if((row.type == 0 || row.type ==1)  && row.part_b_date){
+                            if(row.is_check == 1){
+                                result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/mediator/flow_info/"+id+"' title='详情'>详情</a>";
+                            }else{
+                                result += " <a href='javascript:;' class='btn btn-sm btn-success' onclick=\"operation($(this));\" url='/admin/mediator/edit/"+id+"' title='编辑'>编辑</a>";
+                            }
+                        }else if(row.type == 2){
+                            result += " <a href='javascript:;' class='btn btn-sm btn-info' onclick=\"operation($(this));\" url='/admin/mediator/flow_info/"+id+"' title='详情'>详情</a>";
+                        }
                         if(row.is_check == 0 && row.part_b_date && row.is_back == 0){
                             result += " <a href='javascript:;' class='btn btn-sm btn-primary' onclick=\"operation($(this));\" url='/admin/mediator/check/"+id+"' title='审核'>审核</a>";
                         }
-                        if(row.is_check == 1){
+                        if(row.is_handle == 1){
+                            if(row.type == 0 || row.type == 1)
                             result += " <a href='/admin/mediator/download/"+id+"' class='btn btn-sm btn-primary'  title='导出文件'>导出文件</a>"
                         }
                         return result;

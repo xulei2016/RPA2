@@ -1,6 +1,4 @@
 <?php
-//echo date('mdHis').'<br>';
-//echo MD5('JJ270600000000' . 775599 . date('mdHis'));exit;
 
 /**
  * Laravel - A PHP Framework For Web Artisans

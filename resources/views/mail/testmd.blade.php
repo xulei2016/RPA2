@@ -4,8 +4,4 @@
 
 {!! $mail->content !!}
 
-{{--@component('mail::button', ['url' => ""])--}}
-{{--测试--}}
-{{--@endcomponent--}}
-
 @endcomponent

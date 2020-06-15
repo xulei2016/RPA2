@@ -26,7 +26,7 @@
     </div>
     <div style="float:left;">
         <p>居间人（简称乙方）：{{ $flow->info->name }}</p>
-        <p>证件号码：{{ $flow->zjbh }}</p>
+        <p>证件号码：<span>{{ $flow->zjbh }}</span></p>
         <p>联系方式：{{ $flow->info->phone }}</p>
         <p>联系地址：{{ $flow->address }}</p>
         <p>职    业：{{ $flow->profession }}</p>

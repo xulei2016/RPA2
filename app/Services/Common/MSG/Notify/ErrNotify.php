@@ -78,10 +78,7 @@ class ErrNotify implements NotifyInterface
 
         DB::table('sys_user_mails')->insert($data);
 
-        if(!empty($address))
-            return Mail::to($address)->send(new MdEmail($sendmail));
-
-        return false;
+        return Mail::to($address)->send(new MdEmail($sendmail));
     }
 
     /**

@@ -14,9 +14,6 @@ RPA.prototype = {
         //event bind
         this.bind.call(this);
     },
-    version: {
-        index: '2.1.0.0',
-    },
     config: {
         modal: '#modal-lg',
         canMove: '.modal-header.move',
@@ -31,11 +28,14 @@ RPA.prototype = {
         NProgressParent: '#body', //nprogress 父级作用元素
         adminPopup: $('.navbar .navbar-nav .admin-info-list,.navbar .navbar-nav .admin-message'),
         sidebar: {
-            obj: $('body aside .sidebar, .content-wrapper .tags-warp '),
+            obj: $('body aside .sidebar, .content-wrapper .tags-warp ,body .wrapper #pjax-container .card.usulMenus '),
             activeBar: sessionStorage.activeBar ? sessionStorage.activeBar : '/admin',
         },
+        usulMenus:{
+            obj: $('body .wrapper #pjax-container .card.usulMenus a'),
+        },
         search: {//全局搜索框
-            _sidebar: 'body aside .sidebar',
+            _sidebar: 'body aside .sidebar .nav-item',
             _search: 'body nav .search',
             _search1: $('body nav .search input'),
         },
@@ -48,7 +48,8 @@ RPA.prototype = {
         },
         alerts: $('.alerts .close'),
         windowNotification: !!window.Notification,
-
+        searchBtn: $('#pjax-container #search-group #formSearch #search-btn'),
+        bootstrapTable: $('#tb_departments')
     },
     bind: function () {
         var _this = this;
@@ -99,6 +100,11 @@ RPA.prototype = {
             _this.tags.addTags(_this, event);
         });
 
+        //快捷菜单点击事件
+        // _this.config.usulMenus.obj.on('click',function(e){
+        //     _this.tags.addTags(_this, event);
+        // });
+
         //关闭alerts
         _this.config.alerts.on('click', function () {
             $.get(`/admin/closeAlert/${$(this).data('id')}`);
@@ -117,7 +123,6 @@ RPA.prototype = {
                 d.addClass('show');
             }
         });
-
     },
     tags: {
         initTags: function (e) {
@@ -148,8 +153,8 @@ RPA.prototype = {
                     title: obj[0].innerText
                 };
                 let array = {[obj[0].innerText]: data};
-                if (tagsList = localStorage.getItem('tagsList')) {
-                    tagsList = JSON.parse(tagsList);
+                if (localStorage.getItem('tagsList')) {
+                    tagsList = JSON.parse(localStorage.getItem('tagsList'));
                     for (item in tagsList) {
                         tagsList[item].type = false;
                     }
@@ -170,8 +175,8 @@ RPA.prototype = {
             e.returnValue = false;
             let _this = $(e.target);
             let uri, obj;
-            if (tagsList = localStorage.getItem('tagsList')) {
-                tagsList = JSON.parse(tagsList);
+            if (localStorage.getItem('tagsList')) {
+                tagsList = JSON.parse(localStorage.getItem('tagsList'));
                 if (tagsList[_this.parents('a').text().trim()].type) {
                     delete tagsList[_this.parent().text().trim()];
                     for (i in tagsList) {
@@ -461,6 +466,7 @@ RPA.prototype = {
     clearCache: function () {
         $.post('/admin/clearCache', function (json) {
             200 == json.code ? toastr.success('清除成功！') : toastr.error('网络异常，请求失败！');
+            localStorage.removeItem('sidebarList');
         });
     },
 

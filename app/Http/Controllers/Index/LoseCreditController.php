@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Index;
 
-use App\Http\Controllers\base\WebController;
+use App\Http\Controllers\base\BaseWebController;
 use App\Models\Admin\Rpa\rpa_immedtasks;
 use App\Models\Admin\Rpa\rpa_jjrcredit_sxstates;
 use App\Models\Index\Common\FuncLostCreditRecord;
 use App\Models\Index\Common\FuncLostCreditShowRecord;
+use App\Models\Index\Mediator\FuncMediatorInfo;
+use App\Models\Index\Mediator\FuncMediatorFlow;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -15,7 +18,7 @@ use Illuminate\Validation\ValidationException;
  * Class BrokenPromisesController
  * @package App\Http\Controllers\Index
  */
-class LoseCreditController extends WebController
+class LoseCreditController extends BaseWebController
 {
 
     const TASK_STATUS_WAIT = 0; // 查询中
@@ -27,6 +30,34 @@ class LoseCreditController extends WebController
 
     public $view_prefix = "Index.LoseCredit.";
 
+    public function __construct(){
+        // echo "因恒生账户系统维护,该功能暂时无法使用,预计晚上9点恢复";die;
+    }
+
+    /**
+     * 图片类型
+     * @var array
+     */
+    private $imageTypeList = [
+        'sf' => '证券业失信截图',
+        'cfa' => '期货业失信截图',
+        'xyzg' => '信用中国截图',
+        'hs' => '恒生黑名单截图',
+        'zxgk' => '执行信息公开网截图',
+        'gsxt' => '国家企信网截图',
+    ];
+
+    /**
+     * 类型列表
+     * @var array
+     */
+    private $typeList = [
+        'person' => '个人',
+        'company' => '企业',
+        'legalPerson' => '法人',
+        'agentPerson' => '授权代理人',
+    ];
+
     /**
      * 首页
      * @param Request $request
@@ -34,14 +65,43 @@ class LoseCreditController extends WebController
      */
     public function index(Request $request)
     {
-        return view($this->view_prefix.'index');
+        $data = [
+            'idCard' => '',
+            'number' => '',
+            'name' => '',
+        ];
+        return view($this->view_prefix.'index', ['data' => $data]);
+    }
+
+    /**
+     * 首页
+     * @param Request $request
+     * @return mixed
+     */
+    public function otherIndex(Request $request, $id)
+    {
+        $data = [
+            'idCard' => '',
+            'number' => '',
+            'name' => '',
+        ];
+        $flow = FuncMediatorFlow::where('number', $id)->first();
+        if($flow) {
+            $info = FuncMediatorInfo::find($flow->uid);
+            if($info) {
+                $data['idCard'] = $info->zjbh = substr_replace($info->zjbh, "********", 6, 8);
+                $data['number'] = $flow->number;
+                $data['name'] = $info->name;
+            }
+        }
+        
+        return view($this->view_prefix.'index', ['data' => $data]);
     }
 
     /**
      * 提交查询
      * @param Request $request
      * @return mixed
-     * @todo
      */
     public function query(Request $request)
     {
@@ -50,6 +110,13 @@ class LoseCreditController extends WebController
 
         if(isset($request->pName)) //自然人
         {
+            if($request->number) { //
+                $flow = FuncMediatorFlow::where('number', $request->number)->first();
+                $info = FuncMediatorInfo::find($flow->uid);
+                $request->pCard = $info->zjbh;
+                $request->pName = $info->name;
+            }
+            $request->pCard = strtoupper($request->pCard);
             if(!validation_filter_id_card($request->pCard)) {
                 return $this->ajax_return(500, '请输入正确的身份证');
             }
@@ -75,6 +142,7 @@ class LoseCreditController extends WebController
         }
         if(isset($request->fName)) // 法人{
         {
+            $request->fCard = strtoupper($request->fCard);
             if(!validation_filter_id_card($request->fCard)) {
                 return $this->ajax_return(500, '请输入正确的身份证');
             }
@@ -87,6 +155,7 @@ class LoseCreditController extends WebController
         }
         if(isset($request->dName)) //授权代理人
         {
+            $request->dCard = strtoupper($request->dCard);
             if(!validation_filter_id_card($request->dCard)) {
                 return $this->ajax_return(500, '请输入正确的身份证');
             }
@@ -131,14 +200,16 @@ class LoseCreditController extends WebController
                 ->orderBy('id', 'desc')->first();
             if($queryResult) {  // 有结果
                 $taskStatus = $this->judgeResult($queryResult);
-                if($taskStatus === self::TASK_STATUS_WAIT) {
-                    return $this->ajax_return(500, '查询中, 请稍后重试');
-                } else {
+                if(($taskStatus == self::TASK_STATUS_FAIL || $taskStatus == self::TASK_STATUS_LOST_CREDIT) && $request->resetQuery) {
                     $this->sendTask($v, $code);
+                    $this->changeStatus($queryResult);
+                    $taskStatus = self::TASK_STATUS_WAIT;
                 }
                 $v['status'] = $taskStatus;
             } else {
                 // 发送一条任务
+                $condition['created_at'] = date('Y-m-d H:i:s');
+                rpa_jjrcredit_sxstates::create($condition);
                 $this->sendTask($v, $code);
             }
         }
@@ -148,6 +219,22 @@ class LoseCreditController extends WebController
         $record->data = json_encode($dataList, JSON_UNESCAPED_UNICODE);
         $record->save();
         return $this->ajax_return(200, '', $code);
+    }
+
+    /**
+     * 更改状态
+     * @param $result
+     */
+    public function changeStatus($result){
+        foreach ($this->imageTypeList as $k => $v) {
+            $field = $k.'state';
+            if($result->$field == -1 || $result->$field == 1) { // 查询失败和失信
+                $result->$field = null;
+
+            }
+        }
+        $result->created_at = date('Y-m-d H:i:s');
+        $result->save();
     }
 
     /**
@@ -171,13 +258,9 @@ class LoseCreditController extends WebController
                 'idCard' => $data['idCard'],
                 'type' => $data['type'],
                 'quedate' => $currentDate
-            ])->first();
+            ])->orderBy('id', 'desc')->first();
             if($result) {
                 $taskStatus = $this->judgeResult($result);
-                if($taskStatus == self::TASK_STATUS_FAIL) { //任务失败  重新发送一条任务
-                    $this->sendTask($data, $record->code);
-                    $taskStatus = self::TASK_STATUS_WAIT;
-                }
             } else { // 没有找到记录
                 $taskStatus = self::TASK_STATUS_WAIT;
             }
@@ -190,7 +273,11 @@ class LoseCreditController extends WebController
             $record->status = 3;
             $record->save();
             return $this->ajax_return(201, '存在失信记录');
-        } elseif(in_array(self::TASK_STATUS_WAIT, $resultList)) {
+        } elseif(in_array(self::TASK_STATUS_FAIL, $resultList)) {
+            $record->status = 4;
+            $record->save();
+            return $this->ajax_return(500, '查询失败');
+        }  elseif(in_array(self::TASK_STATUS_WAIT, $resultList)) {
             return $this->ajax_return(202, '查询中,请稍后');
         } else {
             $record->status = 2;
@@ -201,6 +288,7 @@ class LoseCreditController extends WebController
 
     }
 
+
     /**
      * 展示失信查询
      * @param Request $request
@@ -208,7 +296,7 @@ class LoseCreditController extends WebController
      * @desc $status // 0 参数不全 1 验证成功  2 验证失败
      * promiseID=123456&TOKEN=2333&FlowID=1&userID=admin&userName=admin
      */
-    public function showLostCredit(Request $request)
+    public function showLostCreditBak(Request $request)
     {
         $newList = [];
         try{
@@ -222,7 +310,6 @@ class LoseCreditController extends WebController
             // 发送一个crm查询
             $data = $request->all();
             $result = $this->validateCrm($data);
-
             if($result) {
                 $uuid = $data['promiseID'];
                 $status = 1;
@@ -230,13 +317,27 @@ class LoseCreditController extends WebController
                     ['code', $uuid],
                     ['status', 2]
                 ])->first();
+
                 if(!$info) {
                     $status = 2;
                 } else {
                     $dataList = json_decode($info->data, true);
-                    $currentDate = date('Y-m-d');
-
+                    $currentDate = $info->date;
+                    
+                    $legalName = '';
+                    $legalCard = '';
                     foreach ($dataList as &$item) {
+                        if($item['kind'] == 'legalPerson') {
+                            $legalName = $item['name'];
+                            $legalCard = $item['card'];
+                        }
+                        if($item['kind'] == 'agentPerson') { 
+                            // 代理人
+                            if($legalName == $item['name'] && $legalCard == $item['card']) {
+                                continue;
+                            }
+
+                        }
                         $jjr = rpa_jjrcredit_sxstates::where([
                             ['name', $item['name']],
                             ['idCard', $item['idCard']],
@@ -265,8 +366,88 @@ class LoseCreditController extends WebController
         } catch (ValidationException $e) {
             $status = 0;
         }
+        return view($this->view_prefix.'show', [
+            'status' => $status,
+            'list' => $newList
+        ]);
+    }
 
+/**
+     * 展示失信查询
+     * @param Request $request
+     * @return mixed
+     * @desc $status // 0 参数不全 1 验证成功  2 验证失败
+     * promiseID=123456&TOKEN=2333&FlowID=1&userID=admin&userName=admin
+     */
+    public function showLostCredit(Request $request)
+    {
+        $newList = [];
+        try{
+            $request->validate([
+                'promiseID' => 'required',
+                'FlowID' => 'required',
+                'TOKEN' => 'required',
+                'userID' => 'required',
+                'userName' => 'required',
+            ]);
+            // 发送一个crm查询
+            $data = $request->all();
+            $result = $this->validateCrm($data);
+            if($result) {
+                $uuid = $data['promiseID'];
+                $status = 1;
+                $info = FuncLostCreditRecord::where([
+                    ['code', $uuid],
+                    ['status', 2]
+                ])->first();
+                if(!$info) {
+                    $status = 2;
+                } else {
+                    $dataList = json_decode($info->data, true);
+                    $currentDate = $info->date;
+                    
+                    $legalName = '';
+                    $legalCard = '';
+                    foreach ($dataList as &$item) {
+                        if($item['kind'] == 'legalPerson') {
+                            $legalName = $item['name'];
+                            $legalCard = $item['idCard'];
+                        }
+                        if($item['kind'] == 'agentPerson') { 
+                            // 代理人
+                            if($legalName == $item['name'] && $legalCard == $item['idCard']) {
+                                continue;
+                            }
 
+                        }
+                        $jjr = rpa_jjrcredit_sxstates::where([
+                            ['name', $item['name']],
+                            ['idCard', $item['idCard']],
+                            ['type', $item['type']],
+                            ['quedate', $currentDate],
+                        ])->first()->toArray();
+                        $img = $this->handleImg($jjr);
+                        $newList[] = [
+                            'name' => $this->typeList[$item['kind']],
+                            'type' => $item['kind'],
+                            'list' => $img
+                        ];
+                    }
+                }
+            } else {
+                $status = 2;
+            }
+            FuncLostCreditShowRecord::create([
+                'promise_id' => $data['promiseID'],
+                'flow_id' => $data['FlowID'],
+                'token' => $data['TOKEN'],
+                'user_id' => $data['userID'],
+                'user_name' => $data['userName'],
+                'status' => $status
+            ]);
+        } catch (ValidationException $e) {
+            $status = 0;
+        }
         return view($this->view_prefix.'show', [
             'status' => $status,
             'list' => $newList
@@ -325,7 +506,6 @@ class LoseCreditController extends WebController
      * 获取识别吗  20200101000001
      * @param $id
      * @return string
-     * @todo
      */
     private function getUUID($id)
     {
@@ -337,7 +517,6 @@ class LoseCreditController extends WebController
      * 发送任务
      * @param $data
      * @param $code
-     * @todo 存入数据
      */
     private function sendTask($data, $code)
     {
@@ -405,6 +584,12 @@ class LoseCreditController extends WebController
                 $data['JJR_DLR_BH'] = $v['idCard'];
             }
         }
+
+        if($data['JJR_FR_MC'] == $data['JJR_DLR_MC'] && $data['JJR_FR_BH'] == $data['JJR_DLR_BH']) { // 同一人
+            $data['JJR_DLR_MC'] = '';
+            $data['JJR_DLR_BH'] = '';
+        }
+
         $param = [
             'type' => 'credit',
             'action' => 'submitRecord',
@@ -415,29 +600,7 @@ class LoseCreditController extends WebController
         ];
         $result = $this->getCrmData($param);
     }
-    /**
-     * 图片类型
-     * @var array
-     */
-    private $imageTypeList = [
-        'sf' => '证券业失信截图',
-        'cfa' => '期货业失信截图',
-        'xyzg' => '信用中国截图',
-        'hs' => '恒生黑名单截图',
-        'zxgk' => '执行信息公开网截图',
-        'gsxt' => '国家企信网截图',
-    ];
 
-    /**
-     * 类型列表
-     * @var array
-     */
-    private $typeList = [
-        'person' => '个人',
-        'company' => '企业',
-        'legalPerson' => '法人',
-        'agentPerson' => '授权代理人',
-    ];
 
     /**
      * 处理照片数组

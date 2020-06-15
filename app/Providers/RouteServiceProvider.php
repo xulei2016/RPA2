@@ -46,6 +46,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         //遍历admin.php后缀的路由文件
         $mapAdminRoutes = $this->loadRoutesFile(base_path('routes/web/Admin'));
+        $mapFrontRoutes = $this->loadRoutesFile(base_path('routes/web/Front'));
 
 
         $this->mapApiRoutes();
@@ -54,6 +55,7 @@ class RouteServiceProvider extends ServiceProvider
 
         //自定义map
         $this->mapRoutes($mapAdminRoutes, 'admin.php', 'admin', 'web', $this->Admin);
+        $this->mapRoutes($mapFrontRoutes, 'front.php', '', 'web', $this->Index);
         $this->mapIndexRoutes();
 
     }

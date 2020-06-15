@@ -1244,3 +1244,89 @@ body .accent-olive .card-primary.card-outline {
 }
 
 /*****************************多菜单tabs end******************************/
+
+
+/*****************************菜单搜索start******************************/
+body .sidebar-light- .sidebar .sidebar-form{
+    border-radius: 3px;
+    border: 1px solid #374850;
+    background-color: #374850;
+    margin: 10px 10px;
+}
+body .sidebar-dark- .sidebar .sidebar-form{
+    border-radius: 3px;
+    border: 1px solid #374850;
+    background-color: #374850;
+    margin: 10px 10px;
+}
+body .sidebar-dark- .sidebar .sidebar-form input {
+    color: #fff;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 2px;
+    box-shadow: none;
+    background-color: #475d77;
+    border: 1px solid #475d77;
+    height: 35px;
+}
+body .sidebar-light- .sidebar .sidebar-form input {
+    color: #fff;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 2px;
+    box-shadow: none;
+    background-color: #fff;
+    border: 1px solid #fff;
+    height: 35px;
+}
+body .sidebar-dark- .sidebar .sidebar-form button{
+    color: #999;
+    border-top-left-radius: 0;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 0;
+    box-shadow: none;
+    background-color: #475d77;
+    border: 1px solid transparent;
+    height: 100%;
+}
+body .sidebar-light- .sidebar .sidebar-form button{
+    color: #999;
+    border-top-left-radius: 0;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    border-bottom-left-radius: 0;
+    box-shadow: none;
+    background-color: #ffffff;
+    border: 1px solid transparent;
+    height: 100%;
+}
+body .sidebar .sidebar-form .menuresult {
+    z-index: 999;
+    position: absolute;
+    top: 35px;
+    left: -1px;
+    width: 100%;
+    max-height: 250px;
+    overflow: auto;
+    margin: 0;
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+/*****************************菜单搜索end******************************/
+
+
+/*****************************顶部固定start******************************/
+.layout-navbar-fixed .main-sidebar {
+    margin-top: 0 !important;
+}
+.layout-navbar-fixed .main-sidebar .sidebar{
+    margin-top: 0 !important;
+}
+.layout-navbar-fixed .content-wrapper {
+    margin-top: 64px !important;
+}
+/*****************************顶部固定end******************************/

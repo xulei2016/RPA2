@@ -44,7 +44,7 @@ class LoginListener
         $login_info = [
             'ip' => $ip,
             'login_time' => $event->getTimestamp(),
-            'user_id' => $event->getStatus() ? $event->getUser()->id : '',
+            'user_id' => $event->getStatus() ? $event->getUser()->id : null,
             'account' => $event->request->name,
             'status' => $event->getStatus()
         ];
@@ -59,7 +59,7 @@ class LoginListener
         $geoip = [];
         $mode = '((127\.0\.0\.1)|(localhost)|(10\.\d{1,3}\.\d{1,3}\.\d{1,3})|(172\.((1[6-9])|(2\d)|(3[01]))\.\d{1,3}\.\d{1,3})|(192\.168\.\d{1,3}\.\d{1,3}))';
         if(!preg_match($mode, $ip)){
-            $reader = new Reader('GeoLite2-City.mmdb');
+            $reader = new Reader('../GeoLite2-City.mmdb');
             $record = $reader->city($ip);
             $geoip = [
                 'isoCode' => $record->country->isoCode,
@@ -79,7 +79,7 @@ class LoginListener
         } catch (\Exception $e) {
             $address = false;
         } finally {
-            $address = $address ? json_decode($address, true)['data'] : [];
+            $address = $address ? json_decode($address, true)['data']??[] : [];
         }
 
         // jenssegers/agent 的方法来提取agent信息

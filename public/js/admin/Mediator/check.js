@@ -29,7 +29,16 @@ $(function(){
             time_type = state;
         }});
 
+        $(modal+' form input#special_rate').bootstrapSwitch({"onColor":"info","offColor":"danger",'onText':"否",'offText':"是",onSwitchChange:function(e,state2){
+            if(!state2){
+                $(modal+" form input#rate").attr('type','text');
+            }else{
+                $(modal+" form input#rate").attr('type','number');
+            }
+            special_rate = state2;
+        }});
         $(modal+' form input#is_send').bootstrapSwitch({"onColor":"info","offColor":"danger",'onText':"发送",'offText':"不发送"});
+        $(modal+' form input#is_review').bootstrapSwitch({"onColor":"info","offColor":"danger",'onText':"加入",'offText':"不加入"});
     }
     //添加
     function add(e){

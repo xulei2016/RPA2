@@ -2,7 +2,7 @@
     <head>
         <title>请修改初始密码</title>
         <link rel="stylesheet" href="{{URL::asset('/include/bootstrap/dist/css/bootstrap.css')}} ">
-        <link rel="stylesheet" href="{{URL::asset('/include/sweetalert2/sweetalert2.css')}} ">
+        <link rel="stylesheet" href="{{URL::asset('/include/sweetalert2/sweetalert2.min.css')}} ">
     </head>
     <body>
         <div class="container-fluid">

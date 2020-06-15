@@ -18,7 +18,7 @@ class BaseWebController extends BaseController
         $qc = new QcSmsService();
         $code = mt_rand(100000,999999);
         $res = $qc->single($phone,$code);
-        if($res['state'] == true && !isset($res['data']->errCode) && $res['data']->result == 0){
+        if($res['state'] == true && !isset($res['data']->errCode) && isset($res['data']->result) && $res['data']->result == 0){
             $captcha = RpaCaptcha::where('phone',$phone)->first();
             if($captcha){
                 $update = [

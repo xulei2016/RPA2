@@ -1,8 +1,8 @@
 <template>
-    <layout title="手持身份证照片" >
+    <layout title="手持身份证照片" :left="left" >
         <div style="text-align: center;margin-top: 60px;">
             <van-divider >请确保图像清晰、面部完整</van-divider>
-            <van-divider >点击图片进行上传</van-divider>
+            <van-divider v-if="status">默认显示之前上传的图片,点击图片可以重新上传</van-divider>
 
             <van-uploader name="sfz_sc_img" upload-text="签名" :disabled="disabled" :after-read="afterRead" :before-read="beforeRead" :preview-image="true" >
                     <img :src="sfz_sc_img" width="96%" alt="">
@@ -24,7 +24,9 @@
         data() {
             return {
                 btnName:'下一步',
+                left:'返回',
                 disabled:false,
+                status:false,
                 sfz_sc_img : "/images/index/mediator/hand_id_card.jpg",
                 form:{
                     sfz_sc_img:'',
@@ -59,7 +61,7 @@
                 Vue.api.uploadFile(file.file, 'sfz_sc_img').then(res => {
                     if(type === 'sfz_sc_img') {
                         this.sfz_sc_img = file.content;
-                        this.form.sfz_sc_img = res
+                        this.form.sfz_sc_img = res.path
                     }
                     this.$toast.clear();
                 }).catch(error => this.$toast(error));
@@ -89,7 +91,6 @@
                     return false;
                 }
                 Vue.api.doInfo(this.form).then(res => {
-                    this.$toast.success('保存成功');
                     Vue.utils.next();
                 }).catch(error => this.$toast(error));
             }
@@ -97,13 +98,18 @@
         created:function(){
             let info = JSON.parse(this.data);
             if(info.status === 1) {
+                this.status = true;
                 let user = info.data;
-                this.sfz_sc_img = user.sfz_sc_img_base64;
-                this.form.sfz_sc_img = user.sfz_sc_img;
+                if(user.sfz_sc_img_base64) {
+                    this.sfz_sc_img = user.sfz_sc_img_base64;
+                    this.form.sfz_sc_img = user.sfz_sc_img;
+                }
             }
             if(this.readonly === '1') {
                 this.disabled = true;
+                this.status = false;
                 this.btnName = '返回';
+                this.left = '';
             }
         }
     }

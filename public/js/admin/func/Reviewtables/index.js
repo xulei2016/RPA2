@@ -25,12 +25,10 @@ $(function(){
             }
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
-
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -120,6 +118,25 @@ $(function(){
                             res = '<span class="x-tag x-tag-sm x-tag-info">未回访</span>';
                         }else{
                             res = '<span class="x-tag x-tag-sm x-tag-danger">回访失败</span>';
+                        }
+                        return res;
+                    }
+                }, {
+                    field: 'reviewType',
+                    title: '回访方式',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    formatter: function(value, row, index){
+                        let res = "";
+                        if(row.status == 1){
+                            if(2 == value){
+                                res = '<span class="x-tag x-tag-sm">电话</span>';
+                            }else if(1 == value){
+                                res = '<span class="x-tag x-tag-sm x-tag-success">短信</span>';
+                            }else{
+                                res = '<span class="x-tag x-tag-sm x-tag-danger">未知</span>';
+                            }
                         }
                         return res;
                     }

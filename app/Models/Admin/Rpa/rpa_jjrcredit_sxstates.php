@@ -10,4 +10,8 @@ class rpa_jjrcredit_sxstates extends Model
     protected $table = 'rpa_jjrcredit_sxstates';
 
     public $timestamps = false;
+
+    protected $guarded = [];
+
+    // protected $connection = "master2";
 }

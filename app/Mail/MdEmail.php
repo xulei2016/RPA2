@@ -12,27 +12,18 @@ class MdEmail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    private $template = "mail.testmd";
+    private $templete = "mail.testmd";
 
     private $mail;
-
-    /**
-     * 任务最大尝试次数。
-     *
-     * @var int
-     */
-    public $tries = 3;
-
     /**
      * Create a new message instance.
      *
-     * @param SysMail $sendmail
-     * @param bool $template
+     * @return void
      */
-    public function __construct(SysMail $sendmail, $template = false)
+    public function __construct(SysMail $sysmail, $templete = false)
     {
-        $this->mail = $sendmail;
-        if($template) $this->template = $template;
+        $this->mail = $sysmail;
+        if($templete) $this->templete = $templete;
     }
 
     /**
@@ -43,12 +34,12 @@ class MdEmail extends Mailable implements ShouldQueue
     public function build()
     {
         if($this->mail->file_path){
-            return $this->markdown($this->template)
+            return $this->markdown($this->templete)
                 ->subject($this->mail->title)
                 ->with(['mail'=> $this->mail])
                 ->attach($this->mail->file_path);
         }else{
-            return $this->markdown($this->template)
+            return $this->markdown($this->templete)
                 ->subject($this->mail->title)
                 ->with(['mail'=> $this->mail]);
         }

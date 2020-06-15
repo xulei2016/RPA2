@@ -23,7 +23,22 @@ $(function(){
             add($(this).parents('form'));
         });
 
-        
+
+        // 搜索员工
+        $('.searchDoc').on('click', function(){
+            $('#modal-sm .modal-content').text('').load('/admin/rpa_plugin_version/searchDoc');
+            $('#modal-sm').modal('show');
+        });
+
+        //监听事件
+        document.addEventListener('searchDoc', function(e){
+            var id = e.detail.id;
+            var name = e.detail.oldname?e.detail.oldname:e.detail.name;
+            $('#doc_id').html("<option value='"+id+"'>"+name+"</option>");
+            $('#'+e.detail.parentId).modal('hide');
+        });
+
+
         //上传附件
         $('form input#zip').on('change', function(e){
             var file = document.getElementById("zip").files[0];

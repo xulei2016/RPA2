@@ -88,7 +88,6 @@ class ExtraController extends BaseController
         $data['real_date'] = $data['date'];
         RpaContractPublishExtra::where('hydm', $hydm)->delete();
         $number = RpaContractDict::where('name', 'DAY_NUMBER')->first()->value;
-        $this->dayList = $this->getAllDays();
         $dateList = $this->returnDays($data['date'], $number, $jys->code);
         $data['category'] = 1;
         $data['hydm'] = $hydm;
@@ -143,7 +142,6 @@ class ExtraController extends BaseController
             ['category', '=', 2]
         ])->delete();
         $number = RpaContractDict::where('name', 'DAY_NUMBER')->first()->value;
-        $this->dayList = $this->getAllDays();
         $dateList = $this->returnDays($data['date'], $number, $jys->code);
         $data['category'] = 1;
         $data['created_by'] = auth()->guard()->user()->id;

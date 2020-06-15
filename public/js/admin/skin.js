@@ -15,6 +15,7 @@
             linkSkin: '',
             size: '',
             fixedSidebar: true,
+            fixedNavbar: true,
         },
 
         //main-header
@@ -40,6 +41,9 @@
 
             //fixed sidebar
             fixedSidebar: $('.drawerPanel-container .drawer-item .fixed-siderbar input'),
+
+            //fixed navbar
+            fixedNavbar: $('.drawerPanel-container .drawer-item .fixed-navbar input'),
         }
     };
 
@@ -90,7 +94,7 @@
         }
     });
 
-    //font size
+    //fixedSidebar
     obj.drawerPanel.fixedSidebar.on('change', function () {
         let v = $(this).is(':checked');
         if (obj.current.fixedSidebar !== v) {
@@ -101,6 +105,16 @@
         }
     });
 
+    //fixedNavbar
+    obj.drawerPanel.fixedNavbar.on('change', function () {
+        let v = $(this).is(':checked');
+        if (obj.current.fixedNavbar !== v) {
+            v ? $('body').addClass(`layout-navbar-fixed`) : $('body').removeClass(`layout-navbar-fixed`);
+
+            obj.current.fixedNavbar = v;
+            saveSkin();
+        }
+    });
 
     /**
      * init
@@ -143,6 +157,10 @@
         if(!current.fixedSidebar){
             obj.sidebar.container.removeClass('fixed');
             obj.drawerPanel.fixedSidebar.attr("checked", false);
+        }
+        if(!current.fixedNavbar){
+            $('body').removeClass('fixed');
+            obj.drawerPanel.fixedNavbar.attr("checked", false);
         }
 
         $('body').addClass(`accent-${current.linkSkin} text-${current.size}`);

@@ -46,13 +46,12 @@
                     return false;
                 }
 
-                if(!this.xy1 || !this.xy3) {
+                if(this.xy1 === '未阅读' || this.xy3 === '未阅读') {
                     this.$toast('请先阅读并同意上述全部协议!');
                     return false;
                 }
 
                 Vue.api.doInfo(this.form).then(res => {
-                    this.$toast.success('保存成功');
                     Vue.utils.next();
                 }).catch(error => this.$toast(error));
             },
@@ -72,35 +71,21 @@
                 this.xy2 = '';
                 this.btnName = '返回';
             } else {
-                let agreement = sessionStorage.getItem('agreement');
-                let time = sessionStorage.getItem('agreementTime');
-                let current = Math.ceil(((new Date()).getTime())/1000); // 当前时间
-                if(time && (current-time < 3600*4 )) {
-
-                } else {
-                    agreement = '';sessionStorage.setItem('agreement', '');
-                    sessionStorage.setItem('agreementTime', current);
-                }
-                if(agreement) {
-                    if(agreement.indexOf('1') > -1) {
-                        this.xy1 = '已阅读'
-                    } else {
-                        this.xy1 = '';
+                Vue.api.getAgreement().then(agreement => {
+                    if(agreement) {
+                        if(agreement.indexOf('1') > -1) {
+                            this.xy1 = '已阅读'
+                        } else {
+                            this.xy1 = '未阅读';
+                        }
+                        if(agreement.indexOf('3') > -1) {
+                            this.xy3 = '已阅读'
+                        } else {
+                            this.xy3 = '未阅读';
+                        }
                     }
-                    // if(agreement.indexOf('2') > -1) {
-                    //     this.xy2 = '已同意'
-                    // } else {
-                    //     this.xy2 = '';
-                    // }
-                    if(agreement.indexOf('3') > -1) {
-                        this.xy3 = '已阅读'
-                    } else {
-                        this.xy3 = '';
-                    }
-                }
+                });
             }
-
-
         }
     }
 </script>

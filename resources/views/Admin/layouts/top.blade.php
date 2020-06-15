@@ -28,8 +28,8 @@
         <li class="nav-item admin-message navbar-right">
           <a class="nav-link" id="notification_count" href="#">
             <i style="font-size: 16px" class="fa fa-bell"></i>
-              @if(Auth::user()->notification_count >0)
-                    <span class="badge badge-warning navbar-badge">{{ Auth::user()->notification_count }}</span>
+              @if(Auth::user()->unreadNotifications->count() >0)
+                    <span class="badge badge-warning navbar-badge">{{ Auth::user()->unreadNotifications->count() }}</span>
               @endif
           </a>
           <div class="hidden popup">
@@ -39,7 +39,7 @@
                         <a href="javascript:void(0);" class="popup-close"><span class="fa fa-close"></span></a>
                     </div>
                     <div class="body notifications-menu">
-                        @if(Auth::user()->notification_count >0)
+                        @if(Auth::user()->unreadNotifications->count() >0)
                             <ul class="menu" id="notification_list">
                                 @foreach(Auth::user()->unreadNotifications as $v)
                                     @if($loop->index < 5)

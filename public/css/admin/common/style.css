@@ -307,14 +307,12 @@ weak {
     overflow: hidden;
     margin: 0 auto;
     border-radius: 5px;
-    padding: 110px 0 144px;
+    padding: 10% 0 0;
 }
 
 .footer {
-    position: absolute;
     width: 100%;
     bottom: 0;
-    margin: 48px 0 24px;
     text-align: center;
 }
 

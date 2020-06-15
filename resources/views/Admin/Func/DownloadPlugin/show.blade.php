@@ -3,6 +3,11 @@
     下载
 @endslot
 @slot("formContent")
+<style>
+    #swal2-content{
+        text-align: unset !important;
+    }
+</style>
 <div class="card">
     <!-- /.card-header -->
     <div class="card-body">
@@ -21,7 +26,12 @@
                             <td class="text-center">{{$v->show_name}}</td>
                             <td class="text-center">{{$v->desc}}</td>
                             <td class="text-center">{{$v->version}}</td>
-                            <td class="text-center"><a class="btn btn-sm btn-primary" href="/admin/rpa_download_plugin/download/{{$v->id}}">下载</a></td>
+                            <td class="text-center">
+                                <a class="btn btn-sm btn-primary" style="margin-right: 2px;" href="/admin/rpa_download_plugin/download/{{$v->id}}">下载</a>
+                                @if($v->doc_id)
+                                    <a class="btn btn-sm btn-primary versionDocument" item-id="{{ $v->doc_id }}">查看文档</a>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
@@ -32,5 +42,6 @@
 </div>
 @endslot
 @slot("formScript")
+    <script src="{{URL::asset('/js/admin/func/DownloadPlugin/show.js')}}"></script>
 @endslot
 @endcomponent

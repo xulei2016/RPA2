@@ -1,7 +1,9 @@
+@component('admin.widgets.viewForm')
+    @slot("title")
+        权限管理
+    @endslot
+    @slot("formContent")
     <div class="card-body">
-        <div class="card-header with-border">
-            <h3 class="card-title">权限管理</h3>
-        </div>
         <form class="form-horizontal" id="form">
 
             <ul id="tree" class="ztree"></ul>
@@ -11,6 +13,8 @@
             </div>
         </form>
     </div>
+    @endslot
+    @slot("formScript")
     <link rel="stylesheet" href="{{URL::asset('/include/zTree_v3/css/zTreeStyle/zTreeStyle.css')}}" type="text/css">
     <script type="text/javascript" src="{{URL::asset('/include/zTree_v3/js/jquery.ztree.core.min.js')}}"></script>
     <script type="text/javascript" src="{{URL::asset('/include/zTree_v3/js/jquery.ztree.excheck.min.js')}}"></script>
@@ -125,5 +129,6 @@
 
             init();
         });
-        
-  </script>
+    </script>
+    @endslot
+@endcomponent

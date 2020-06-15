@@ -26,11 +26,13 @@ $(function(){
         });
         laydate.render({ elem: et, type: 'date', max: nowDate });
 
+        
+        
+
         //根据条件查询信息
         $('#pjax-container #search-group #formSearch #search-btn').click(function() {
-            $('#tb_departments').bootstrapTable('refresh');
+            $('#tb_departments').bootstrapTable('refreshOptions',{pageNumber:1});
         });
-
         //enter键盘事件
         $("#pjax-container #search-group #formSearch input").keydown(function(event){
             event = event ? event: window.event;
@@ -49,6 +51,7 @@ $(function(){
         var temp = {
             phone : $("#pjax-container #search-group #phone").val(),
             type : $("#pjax-container #search-group #type").val(),
+            status : $("#pjax-container #search-group #status").val(),
             from_created_at : $("#pjax-container #search-group #startTime").val(),
             to_created_at : $("#pjax-container #search-group #endTime").val()
         };
@@ -80,6 +83,11 @@ $(function(){
             columns: [{
                     checkbox: true,
                 }, {
+                    field: 'id',
+                    title: 'ID',
+                    align: 'center',
+                    valign: 'middle'
+                }, {
                     field: 'type',
                     title: '短信平台',
                     align: 'center',
@@ -90,12 +98,28 @@ $(function(){
                     align: 'center',
                     valign: 'middle',
                 }, {
+                    field: 'status',
+                    title: '状态',
+                    align: 'center',
+                    valign: 'middle',
+                    formatter: function (res) { // 0未发送 1发送成功 2发送失败
+                        if(res == 2) {
+                            return '<span class="x-tag x-tag-sm x-tag-danger">发送失败</span>';
+                        } else if(res == 1 ) {
+                            return '<span class="x-tag x-tag-sm x-tag-success">发送成功</span>';
+                        } else if(res == 0 ){
+                            return '<span class="x-tag x-tag-sm x-tag-primary">未发送</span>';
+                        } else {
+                            return '<span class="x-tag x-tag-sm x-tag-primary">未知</span>';
+                        }
+                    }
+                }, {
                     field: 'content',
                     title: '发送内容',
                     align: 'center',
                     valign: 'middle'
                 }, {
-                    field: 'return',
+                    field: 'errMsg',
                     title: '返回信息',
                     align: 'center',
                     valign: 'middle'

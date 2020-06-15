@@ -31,9 +31,6 @@
                                             <input required type="checkbox" name="{{$config->item_key}}" id="{{$config->item_key}}" value="{{$config->item_value}}" class="form-control" />
                                         @elseif('textarea' == $config->type)
                                             <textarea required name="{{$config->item_key}}" id="{{$config->item_key}}" cols="100%" rows="6">{{$config->item_value}}</textarea>
-                                        @elseif('switch' == $config->type)
-                                            <label><input type="radio" name="{{$config->item_key}}" value="0" @if(!$config->item_value) checked @endif/>否</label>
-                                            <label><input type="radio" name="{{$config->item_key}}" value="1" @if($config->item_value) checked @endif/>是</label>
                                         @elseif('select' == $config->type)
                                             <select name="{{$config->item_key}}" id="{{$config->item_key}}" class="form-control">
                                                 @foreach(json_decode($config->option) as $k => $option)

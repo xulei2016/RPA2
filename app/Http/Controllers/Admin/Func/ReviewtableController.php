@@ -42,11 +42,13 @@ class ReviewtableController extends BaseAdminController{
         $select = [
             DB::raw('reviewPeopName,count(if(ischeck=1,true,null)) as must'),
             DB::raw('reviewPeopName,count(if(status=1,true,null)) as success'),
+            DB::raw('reviewPeopName,count(if(status=1 and reviewType=0,true,null)) as wz'),
+            DB::raw('reviewPeopName,count(if(status=1 and reviewType=1,true,null)) as dx'),
+            DB::raw('reviewPeopName,count(if(status=1 and reviewType=2,true,null)) as dh'),
             DB::raw('reviewPeopName,count(if(status=-1,true,null)) as error')
         ];
 
         return rpa_reviewtables::select($select)->where($condition)->groupBy("reviewPeopName")->paginate($rows);
-
     }
     /**
      * edit
@@ -61,7 +63,7 @@ class ReviewtableController extends BaseAdminController{
     {
         $this->log(__CLASS__, __FUNCTION__, $request, "修改 开户云回访状态");
         $id = $request->id;
-        $data = $this->get_params($request, [['status',-1],['khyj',''],['bz',''],['reason', '']]);
+        $data = $this->get_params($request, [['status',-1],['reviewType',0],['khyj',''],['bz',''],['reason', '']]);
         if($data['status'] == -1 && empty($data['reason'])){
             return $this->ajax_return(500, '回访失败原因不能为空！');
         }

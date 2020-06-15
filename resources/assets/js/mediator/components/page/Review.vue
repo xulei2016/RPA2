@@ -78,7 +78,6 @@
                         return false;
                     } else {
                         Vue.api.doInfo(this.form).then(res => {
-                            this.$toast.success('保存成功');
                             Vue.utils.next();
                         }).catch(error => this.$toast(error));
                     }

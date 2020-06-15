@@ -17,6 +17,7 @@
                                 <a class="btn btn-success btn-sm" url="/admin/rpa_jjr_distribution/create" title="新增" onclick="operation($(this));">
                                     <span class="glyphicon glyphicon-plus"></span><span class="hidden-xs">&nbsp;添加任务</span>
                                 </a>
+                                <span class="x-tag x-tag-sm">未分配居间人数：{{ $count }}</span>
                             @endslot
                         @endcomponent
 

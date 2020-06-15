@@ -1,4 +1,14 @@
-import axios from 'axios';
+import  $ from 'jquery';
+import {Toast} from 'vant';
+
+let token = document.head.querySelector('meta[name="csrf-token"]');
+
+if(token) {
+    $.ajaxSetup({
+        headers: {'X-CSRF-TOKEN': token.content}
+    });
+}
+
 
 var prefix = "/mediator/";
 /**
@@ -8,17 +18,24 @@ var prefix = "/mediator/";
  * @returns {Promise<any>}
  */
 function request(url, param = {}, method = 'post'){
+
+    let option = {
+        url: url,
+        type: method,
+        dataType:'json',
+        data: param,
+    };
+    if(url === prefix + 'upload') {
+        option.processData = false;
+        option.contentType = false;
+    }
     return new Promise((resolve, reject) => {
-        axios({
-            url: url,
-            method: method,
-            data: param
-        })
+        $.ajax(option)
         .then((res) => {
-            if(res.data.code !== 200) {
-                reject(res.data.info?res.data.info:'网络异常');
+            if(res.code !== 200) {
+                reject(res.info?res.info:'网络异常');
             } else {
-                resolve(res.data.data);
+                resolve(res.data);
             }
         })
         .catch(function (error) {
@@ -57,7 +74,7 @@ export default {
 
     //上传图片
     uploadFile:(file, type) => {
-        var form = new FormData();
+        let form = new FormData();
         form.append('file', file);
         form.append('type', type);
         return new Promise((resolve, reject) => {
@@ -69,9 +86,17 @@ export default {
 
     //上传个人信息
     doInfo:(param) => {
+        Toast.loading({
+            duration: 0,       // 持续展示 toast
+            forbidClick: true, // 禁用背景点击
+            loadingType: 'spinner',
+        });
         return new Promise((resolve, reject) => {
             request(prefix + 'doInfo', param)
-                .then((res) => resolve(res))
+                .then((res) => {
+                    Toast.success();
+                    resolve(res);
+                })
                 .catch(error => reject(error));
         })
     },
@@ -154,9 +179,27 @@ export default {
     },
 
     // 银行卡检测
-    checkBankCard:(param) => {
+    checkBankCard:(card, bankBranch) => {
         return new Promise((resolve, reject) => {
-            request(prefix + 'checkBankCard', {card:param})
+            request(prefix + 'checkBankCard', {card:card, bankBranch:bankBranch})
+                .then((res) => resolve(res))
+                .catch(error => reject(error));
+        })
+    },
+
+    // 保存协议
+    saveAgreement:(agreement) => {
+        return new Promise((resolve, reject) => {
+            request(prefix + 'saveAgreement', {agreement:agreement})
+                .then((res) => resolve(res))
+                .catch(error => reject(error));
+        })
+    },
+
+    //获取协议
+    getAgreement:() => {
+        return new Promise((resolve, reject) => {
+            request(prefix + 'getAgreement', {}, 'get')
                 .then((res) => resolve(res))
                 .catch(error => reject(error));
         })

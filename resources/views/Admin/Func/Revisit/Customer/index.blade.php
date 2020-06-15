@@ -23,8 +23,10 @@
                                     <select name="status" id="status" class="form-control">
                                         <option value="" selected>状态:全部</option>
                                         <option value="2">待审核</option>
+                                        <option value="1">回访失败</option>
                                         <option value="0">未回访</option>
-                                        <option value="3">已归档</option>
+                                        <option value="3">已审核待归档</option>
+                                        <option value="4">已归档</option>
                                     </select>
                                 </div>
                                 <div class="col-sm-2">
@@ -32,6 +34,12 @@
                                 </div>
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="yybName" placeholder="营业部名称">
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="reviser" placeholder="回访人">
+                                </div>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="checker" placeholder="审核人">
                                 </div>
                                 <div class="col-sm-2">
                                     <input type="text" class="form-control" id="startTime" placeholder="开始时间">

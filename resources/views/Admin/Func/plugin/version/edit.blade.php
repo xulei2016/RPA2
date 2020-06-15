@@ -24,6 +24,18 @@
         </div>
 
         <div class="form-group row">
+            <label for="" class="col-sm-2">关联文档</label>
+            <div class="col-sm-9">
+                <select class="form-control" name="doc_id" id="doc_id" readonly>
+                    <option value="{{$pluginVersion->doc_id??''}}" >{{$pluginVersion->doc_id?$pluginVersion->docName:'未选择'}}</option>
+                </select>
+            </div>
+            <div class="col-sm-1">
+                <a class="btn btn-primary searchDoc"><i class="fa fa-search"></i></a>
+            </div>
+        </div>
+
+        <div class="form-group row">
             <label for="type" class="col-sm-2 control-label">状态</label>
             <div class="col-sm-10">
                 <div class="switch">

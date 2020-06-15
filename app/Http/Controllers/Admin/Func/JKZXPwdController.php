@@ -141,8 +141,8 @@ class JKZXPwdController extends BaseAdminController{
      */
     public function senddata(Request $request){
         $data = $this->get_params($request, ['id','tel','content']);
-        $res = $this->yx_sms($data['tel'],$data['content']);
-        if($res['status'] == '0'){
+        $res = $this->sendSmsSingle($data['tel'], $data['content'], 'JKZX');
+        if($res === true){
             $update = [
                 'tel' => $data['tel'],
                 'content' => $data['content'],
@@ -150,9 +150,9 @@ class JKZXPwdController extends BaseAdminController{
                 'status' => 1
             ];
             rpa_customer_jkzx::where('id',$data['id'])->update($update);
-            return $this->ajax_return(200, $res['msg']);
+            return $this->ajax_return(200, '短信发送成功');
         }else{
-            return $this->ajax_return(500, $res['msg']);
+            return $this->ajax_return(500, $res);
         }
     }
 
@@ -171,8 +171,8 @@ class JKZXPwdController extends BaseAdminController{
                 $has_send++;
             }else{
                 $content = $this->get_sms_content($jkzx);
-                $res = $this->yx_sms($jkzx['tel'],$content);
-                if($res['status'] == '0'){
+                $res = $this->sendSmsSingle($jkzx['tel'], $content, 'JKZX');
+                if($res === true){
                     $update = [
                         'tel' => $jkzx['tel'],
                         'content' => $content,

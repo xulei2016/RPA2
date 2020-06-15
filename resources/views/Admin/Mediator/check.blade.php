@@ -12,10 +12,25 @@
                 <div class="row">
                     <label for="rate" class="col-sm-2 control-label"><span class="must-tag">*</span>居间比例</label>
                     <div class="col-sm-10">
-                        <input class="form-control" type="number" id="rate" name="rate" value="{{ $flow->rate }}" required>
+                        <input class="form-control" type="number" id="rate" name="rate" value="{{ $flow->rate }}" required 
+                        @if($flow->type == 1) readonly @endif >
                     </div>
                 </div>
                 <br>
+                <div class="row">
+                    <label for="special_rate" class="col-sm-2 control-label"><span class="must-tag">*</span>特殊比例</label>
+                    <div class="col-sm-10">
+                        <input type="checkbox" class="my-switch" id="special_rate" name="special_rate" value="0" checked>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <label for="manager_number" class="col-sm-2 control-label"><span class="must-tag">*</span>客户经理编号</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" type="number" id="manager_number" name="manager_number" value="{{ $flow->manager_number }}" readonly>
+                    </div>
+                </div>
+                <br/>
                 <div class="row">
                     <label for="number" class="col-sm-2 control-label"><span class="must-tag">*</span>居间编号</label>
                     <div class="col-sm-10">
@@ -23,6 +38,11 @@
                     </div>
                 </div>
                 <br>
+                <div class="row">
+                    <label for="is_review" class="col-sm-2 control-label"><span class="must-tag">*</span>是否加入回访</label>
+                    <input type="checkbox" class="my-switch" id="is_review" name="is_review" value="1" checked>
+                </div>
+                <br/>
                 <div class="row">
                     <label for="remark" class="col-sm-2 control-label">备注</label>
                     <div class="col-sm-10">

@@ -58,12 +58,12 @@ class TXGateway extends Gateway
      * @return array
      * @throws GatewayErrorException
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message)
+    public function send(PhoneNumberInterface $to, MessageInterface $message, $params = [])
     {
         $result = $this->smsServerSingle->sendWithParam(
             86,
             $to->getNumber(),
-            $this->templateId,
+            $params['templateId'] ?? $this->templateId,
             [$message->getContent($this)],
             $this->config['smsSign'],
             "",

@@ -29,12 +29,6 @@
                             <td>{{ $info->info->phone }}</td>
                         </tr>
                         <tr>
-                            <th>出生日期</th>
-                            <td>{{ $info->birthday }}</td>
-                            <th>开户日期</th>
-                            <td>{{ $info->info->open_time }}</td>
-                        </tr>
-                        <tr>
                             <th>客户经理工号</th>
                             <td>{{ $info->manager_number }}</td>
                             <th>居间人编号</th>
@@ -47,7 +41,7 @@
                             <td>{{ $info->edu_background }}</td>
                         </tr>
                         <tr>
-                            <th>地址</th>
+                            <th>联系地址</th>
                             <td>{{ $info->address }}</td>
                             <th>邮编</th>
                             <td>{{ $info->postal_code }}</td>
@@ -55,7 +49,7 @@
                         <tr>
                             <th>职业</th>
                             <td>{{ $info->profession }}</td>
-                            <th>从业资格证号</th>
+                            <th>从业资格合格证编号</th>
                             <td>{{ $info->exam_number }}</td>
                         </tr>
                         <tr>
@@ -67,24 +61,34 @@
                                     <span class="x-tag x-tag-sm x-tag-danger">未通过</span>
                                 @endif
                             </td>
-                            <th>从业资格证</th>
+                            <th>从业资格合格证照片</th>
                             <td>
                                 @if($info->is_exam)
                                     <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}">
-                                        <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格证"  title="从业资格证">
+                                        <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->exam_img) }}" alt="从业资格合格证照片"  title="从业资格合格证照片">
                                     </div>
                                 @endif
                             </td>
+                        </tr>
+                        <tr>
+                            <th>开户日期</th>
+                            <td>{{ $info->info->open_time }}</td>
                         </tr>
                     </table>
                 </div>
                 <div class="tab-pane" id="idCard">
                     <table class="table table-bordered table-striped table-hover table-base">
                         <tr>
-                            <th>证件编号</th>
-                            <td>{{ $info->info->zjbh }}</td>
+                            <th>出生日期</th>
+                            <td>{{ $info->birthday }}</td>
                             <th>证件到期日</th>
                             <td>{{ $info->sfz_date_end }}</td>
+                        </tr>
+                        <tr>
+                            <th>证件编号</th>
+                            <td>{{ $info->zjbh }}</td>
+                            <th>身份证地址</th>
+                            <td>{{ $info->sfz_address }}</td>
                         </tr>
                         <tr>
                             <th>身份证正面照</th>
@@ -107,8 +111,6 @@
                                     <img width="40" height="40" src="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sfz_sc_img) }}" alt="手持身份证照"  title="手持身份证照">
                                 </div>
                             </td>
-                            <th>身份证地址</th>
-                            <td>{{ $info->sfz_address }}</td>
                         </tr>
                     </table>
                 </div>
@@ -140,11 +142,7 @@
                     <table class="table table-bordered table-striped table-hover table-base">
                         <tr>
                             <th>比例(%)</th>
-                            <td>{{ $info->rate }}</td>
-                            <th>金融比例(%)</th>
-                            <td>{{ $info->jr_rate }}</td>
-                        </tr>
-                        <tr>
+                            <td>{{ $info->rate }}</td> 
                             <th>签字照片  <button type="button" class="btn btn-sm btn-success" data-title="{{ $info->id }}" onclick="rotate($(this));"><i class="fa fa-rotate-right"></i></button></th>
                             <td colspan="3">
                                 <div data-fancybox href="/admin/showImage?url={{ \Illuminate\Support\Facades\Crypt::encrypt($info->sign_img) }}">
@@ -158,7 +156,6 @@
         </div>
     </div>
 </div>
-{{--<script src="{{ URL::asset('/include/jquery/jquery-3.3.1.min.js')}} "></script>--}}
 <script src=" {{ URL::asset('/include/fancybox/fancybox.js')}} "></script>
 <script>
     function rotate(obj){
@@ -168,6 +165,7 @@
             if(re.status == 200){
                 var src = $("#sign_img").attr('src')+"&"+Math.random();
                 $("#sign_img").attr('src',src);
+                $("#sign_img").parent().attr('href',src);
             }
         })
     }

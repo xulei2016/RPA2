@@ -1,8 +1,8 @@
 <template>
-    <layout title="上传签名" >
+    <layout title="上传签名" :left="left" >
         <div style="text-align: center;margin-top: 60px;">
             <van-divider >请确保签名为本人名字,图片、字迹清晰</van-divider>
-
+            <van-divider v-if="status">默认显示之前上传的图片,点击图片可以重新上传</van-divider>
             <van-uploader name="sign_img" upload-text="签名" :disabled="disabled"   :after-read="afterRead" :before-read="beforeRead" :preview-image="true" >
                     <img :src="sign_img" width="96%" alt="">
             </van-uploader>
@@ -22,7 +22,9 @@
         data() {
             return {
                 btnName:'下一步',
+                left:'返回',
                 disabled:false,
+                status:false,
                 sign_img : "/images/index/mediator/sign.png",
                 form:{
                     sign_img : "",
@@ -54,14 +56,44 @@
         methods: {
             afterRead(file, detail) {
                 let type = detail.name;
-                Vue.api.uploadFile(file.file, 'sign_img').then(res => {
-                    if(type === 'sign_img') {
-                        this.sign_img = file.content;
-                        this.form.sign_img = res
+                let maxSize = 200*1024; // 最大200k
+                let size = file.file.size;
+                if (size > maxSize) {
+                    let canvas = document.createElement('canvas'); // 创建Canvas对象(画布)
+                    let context = canvas.getContext('2d');
+                    let img = new Image();
+                    img.src = file.content; // 指定图片的DataURL(图片的base64编码数据)
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+                        let rate = width/height.toFixed(2);
+                        let baseHeight = 500;
+                        canvas.width = baseHeight*rate;
+                        canvas.height = baseHeight;
+                        context.drawImage(img, 0, 0, baseHeight*rate, baseHeight);
+                        file.content = canvas.toDataURL(file.file.type, 0.98); // 0.92为默认压缩质量
+                        let files = Vue.utils.dataURLtoFile(file.content, file.file.name);
+                        if(files.size < 1024) { // 压缩完图片小于1k 上传原图
+                           files = file.file;
+                        }
+                        Vue.api.uploadFile(files, 'sign_img').then(res => {
+                            if(type === 'sign_img') {
+                                this.sign_img = file.content;
+                                this.form.sign_img = res.path
+                            }
+                            this.$toast.clear();
+                        }).catch(error => this.$toast(error));
+                        return true;
                     }
-                    this.$toast.clear();
-                }).catch(error => this.$toast(error));
-                return true;
+                } else {
+                    Vue.api.uploadFile(file.file, 'sign_img').then(res => {
+                        if(type === 'sign_img') {
+                            this.sign_img = file.content;
+                            this.form.sign_img = res.path
+                        }
+                        this.$toast.clear();
+                    }).catch(error => this.$toast(error));
+                }
             },
             beforeRead(file) {
                 if (file.type !== 'image/jpeg' && file.type !== 'image/png') {
@@ -87,7 +119,6 @@
                     return false;
                 }
                 Vue.api.doInfo(this.form).then(res => {
-                    this.$toast.success('保存成功');
                     Vue.utils.next();
                 }).catch(error => this.$toast(error));
             }
@@ -95,13 +126,19 @@
         created:function () {
             let info = JSON.parse(this.data);
             if(info.status === 1) {
+                this.status = true;
                 let user = info.data;
-                this.form.sign_img = user.sign_img;
-                this.sign_img = user.sign_img_base64;
+                if(user.sign_img_base64) {
+                    this.form.sign_img = user.sign_img;
+                    this.sign_img = user.sign_img_base64;
+                }
+
             }
             if(this.readonly === '1') {
                 this.btnName = '返回';
+                this.status = false;
                 this.disabled = true;
+                this.left = '';
             }
         }
     }

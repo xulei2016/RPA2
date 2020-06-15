@@ -71,8 +71,6 @@
             </div>
         </div>
     </div>
-    <script src="{{URL::asset('/include/bootstrap-slider/bootstrap-slider.js')}}"></script>
-    <script src="{{URL::asset('/include/ion.rangeSlider/js/ion.rangeSlider.js')}}"></script>
     <script src="{{URL::asset('/js/admin/func/risk/index.js')}}"></script>
     <script src="{{URL::asset('/include/simple-calendar/javascripts/simple-calendar.js')}}"></script>
 @endsection

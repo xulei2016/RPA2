@@ -50,74 +50,12 @@
 
 
                 </div>
-{{--       node start        --}}
+{{--       node end       --}}
 {{--       person start        --}}
                 <div style="display: none" id="personCard">
-                    <div class="card card-primary card-outline" style="min-height: 700px;">
-                        <div class="card-header">
-                            <div>员工详细信息</div>
-                        </div>
-                        <div class="card-body">
-                            <table class="table table-bordered table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th width="50%">属性</th>
-                                        <th width="50%">值</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>用户名</td>
-                                        <td id="item_name">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>真实姓名</td>
-                                        <td id="item_realName">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>状态</td>
-                                        <td id="item_statusName">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>部门</td>
-                                        <td id="item_department">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>岗位</td>
-                                        <td id="item_post">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>角色</td>
-                                        <td id="item_roleLists">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>性别</td>
-                                        <td id="item_gender">男</td>
-                                    </tr>
-                                    <tr>
-                                        <td>手机号</td>
-                                        <td id="item_phone">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>邮箱</td>
-                                        <td id="item_email">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>地址</td>
-                                        <td id="item_address">暂无</td>
-                                    </tr>
-                                    <tr>
-                                        <td>操作</td>
-                                        <td id="item_operation">
-                                            <button class="btn btn-primary btn-sm edit_user">编辑</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+
                 </div>
-{{--       person start        --}}
+{{--       person end       --}}
 
             </div>
         </div>

@@ -6,11 +6,14 @@ use App\Models\Admin\Admin\SysAdmin;
 use App\Models\Admin\Base\SysMessage;
 use App\Models\Admin\Base\SysMessageObjects;
 use App\Models\Admin\Base\SysMessageTypes;
+use App\Models\Admin\Base\SysSmsLog;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Base\BaseAdminController;
 use Illuminate\Notifications\DatabaseNotification;
+use App\Notifications\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class MessageController extends BaseAdminController
 {
@@ -59,13 +62,25 @@ class MessageController extends BaseAdminController
         $selectInfo = $this->get_params($request, ['title','from_add_time','to_add_time']);
         $condition = $this->getPagingList($selectInfo, ['title'=>'like','from_add_time'=>'>=','to_add_time'=>'<=']);
         $rows = $request->rows;
-        $order = $request->sort ?? 'id';
+        $order = $request->sort ?? 'created_at';
         $sort = $request->sortOrder ?? 'desc';
-        $result = Auth::user()->notifications()->where($condition)
+        $result = Auth::user()->notifications()
+            ->where($condition)
             ->orderBy($order, $sort)
             ->paginate($rows);
         return $result;
     }
+
+    /**
+     * 标记所有信息已读
+     */
+    public function readAllMessage(Request $request)
+    {
+        Auth::user()->unreadNotifications->markAsRead();
+        $this->log(__CLASS__, __FUNCTION__, $request, "阅读全部通知");
+        return $this->ajax_return(200, '操作成功');
+    }
+
     /****************************历史消息****************************************************/
     public function history_list(Request $request)
     {
@@ -92,5 +107,21 @@ class MessageController extends BaseAdminController
             ->paginate($rows);
         return $result;
     }
-
+    /*******************************短信记录************************************************/
+    public function sms_list(Request $request)
+    {
+        $this->log(__CLASS__, __FUNCTION__, $request, "短信发送 列表");
+        return view('admin/Base/message/sms_list');
+    }
+    public function sms_pagination(Request $request){
+        $selectInfo = $this->get_params($request, ['type','phone','from_created_at','to_created_at']);
+        $condition = $this->getPagingList($selectInfo, ['type'=>'=','phone'=>'=','from_created_at'=>'>=','to_created_at'=>'<=']);
+        $rows = $request->rows;
+        $order = $request->sort ?? 'id';
+        $sort = $request->sortOrder ?? 'desc';
+        $result = SysSmsLog::where($condition)
+            ->orderBy($order, $sort)
+            ->paginate($rows);
+        return $result;
+    }
 }

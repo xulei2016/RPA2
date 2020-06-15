@@ -17,22 +17,10 @@ class MWGateway extends Gateway
 {
     use HasHttpRequest;
 
-    /**
-     * @var Config
-     */
     protected $config;
 
-
-    /**
-     * @var false|string
-     */
     protected $timestamp;
 
-
-    /**
-     * MWGateway constructor.
-     * @param array $config
-     */
     public function __construct(array $config)
     {
         parent::__construct($config);
@@ -51,7 +39,7 @@ class MWGateway extends Gateway
      * @return array|mixed
      * @throws GatewayErrorException
      */
-    public function send(PhoneNumberInterface $to, MessageInterface $message)
+    public function send(PhoneNumberInterface $to, MessageInterface $message, $params = [])
     {
         $apiStr = 'single_send';
 
@@ -116,12 +104,13 @@ class MWGateway extends Gateway
      */
     protected function encryption()
     {
+        $config = $this->config;
         $pwd = '';
 
-        if (1 == $this->config['mode']) {   //明文
-            $pwd = $this->config['password'];
-        } elseif (2 == $this->config['mode']) {  //加密
-            $pwd = $this->config['account'] . '00000000' . $this->config['password'] . $this->timestamp;
+        if (1 == $config['mode']) {   //明文
+            $pwd = $config['password'];
+        } elseif (2 == $config['mode']) {  //加密
+            $pwd = $config['account'] . '00000000' . $config['password'] . $this->timestamp;
             $pwd = MD5($pwd);
         }
 

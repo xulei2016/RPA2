@@ -248,6 +248,20 @@ class DocumentController extends BaseAdminController
     }
 
     /**
+     * 展示文档
+     * @param Request $request
+     * @param $id
+     * @return array
+     */
+    public function showDoc(Request $request, $id) {
+        $content = SysDocumentContent::where('id',$id)->first();
+        if($content) {
+            return $this->ajax_return(200, 'success', $content->content);
+        } else {
+            return $this->ajax_return(200, 'success', '暂无文档');
+        }
+    }
+    /**
      * 验证文件是否合法
      */
     public function upload($file, $disk='local') {
@@ -269,9 +283,25 @@ class DocumentController extends BaseAdminController
         }
 
         // 5.每月一个文件夹,分开存储, 生成一个随机文件名
-        $fileName = '/public/doc/images/'.date('Y_m').'/'.md5(time()) .mt_rand(0,9999).'.'. $fileExtension;
+        $fileName = '/doc/images/'.date('Y_m').'/'.md5(time()) .mt_rand(0,9999).'.'. $fileExtension;
         if (Storage::disk($disk)->put($fileName, file_get_contents($tmpFile)) ){
-            return Storage::url($fileName);
+            return "/admin/sys_document/showImg?url=".encrypt($fileName);
+        }
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function showImg(Request $request){
+        $url = decrypt($request->url);
+        $url = storage_path()."/app".$url;
+        if(file_exists($url)) {
+            $info = getimagesize($url);
+            $mime = $info['mime'];
+            header("Content-type:$mime");
+            echo file_get_contents($url);
+        } else {
+            echo "";
         }
     }
 }
